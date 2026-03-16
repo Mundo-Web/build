@@ -27,7 +27,7 @@ const SelectFormGroup = ({
     useEffect(() => {
         const $element = $(eRef.current);
 
-        // Initialize Select2
+        // Always initialize/update Select2
         $element.select2({
             dropdownParent,
             templateResult,
@@ -36,17 +36,20 @@ const SelectFormGroup = ({
             minimumResultsForSearch,
         });
 
+        // Sync value if provided
+        if (value !== undefined && value !== null) {
+            if (JSON.stringify($element.val()) !== JSON.stringify(value)) {
+                $element.val(value).trigger("change.select2");
+            }
+        }
+
+        $element.off("change", onChange);
         $element.on("change", onChange);
 
         return () => {
-            $element.off("change", onChange);
-
-            // Check if Select2 is initialized before destroying
-            if ($element.hasClass("select2-hidden-accessible")) {
-                $element.select2("destroy");
-            }
+            // Cleanup events if needed, but select2 might need to persist
         };
-    }, [...changeWith, value, disabled, dropdownParent]);
+    }, [...changeWith, value, disabled, dropdownParent, children]);
 
     return (
         <div

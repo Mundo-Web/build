@@ -1633,6 +1633,7 @@
                     "section_collections",
                     "section_stores",
                     "section_prices",
+                    "dat_prices",
                     "section_amenities"
                 ],
                 "options": [

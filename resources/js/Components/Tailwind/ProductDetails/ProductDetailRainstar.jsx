@@ -110,8 +110,14 @@ const ProductDetailRainstar = ({
             // First fallback to item selection
             setSelectedVariant(item);
             const initialAttributes = {};
-            if (item.attributes && item.attributes.length > 0) {
-                item.attributes.forEach((attr) => {
+            const itemAttrs = Array.isArray(item.attributes)
+                ? item.attributes
+                : Object.values(item.attributes || {});
+
+            console.log("ProductDetailRainstar: Initial attributes", itemAttrs);
+
+            if (itemAttrs.length > 0) {
+                itemAttrs.forEach((attr) => {
                     const attrName = attr.name || attr.slug;
                     const value = attr.pivot?.value || attr.value;
                     if (value) {
@@ -126,14 +132,20 @@ const ProductDetailRainstar = ({
             setSelectedAttributes(initialAttributes);
 
             if (item.agrupador) {
+                console.log("ProductDetailRainstar: Fetching variants for", item.agrupador);
                 setIsLoadingVariants(true);
                 fetch(`/api/items/variants/${item.agrupador}`)
                     .then((res) => res.json())
                     .then((data) => {
-                        const allVariants = [item, ...data];
+                        console.log("ProductDetailRainstar: Variants API data", data);
+                        const variantsData = Array.isArray(data)
+                            ? data
+                            : Object.values(data || {});
+                        const allVariants = [item, ...variantsData];
                         const uniqueVariants = Array.from(
                             new Map(allVariants.map((v) => [v.id, v])).values(),
                         );
+                        console.log("ProductDetailRainstar: Unique variants", uniqueVariants);
                         setVariantsForSelectedGroup(uniqueVariants);
 
                         // Select the first variant by default if it's a group as requested
@@ -142,12 +154,16 @@ const ProductDetailRainstar = ({
                             (v) => !v.is_master && v.id !== item.id,
                         );
 
-                        if (sellableVariants.length > 0) {
+                        if (sellableVariants.length > 0 && item.is_master) {
                             const first = sellableVariants[0];
                             setSelectedVariant(first);
                             const newAttrs = {};
-                            if (first.attributes) {
-                                first.attributes.forEach((a) => {
+                            const firstAttrs = Array.isArray(first.attributes)
+                                ? first.attributes
+                                : Object.values(first.attributes || {});
+
+                            if (firstAttrs.length > 0) {
+                                firstAttrs.forEach((a) => {
                                     const aName = a.name || a.slug;
                                     const aVal = a.pivot?.value || a.value;
                                     if (aVal) {
@@ -163,7 +179,7 @@ const ProductDetailRainstar = ({
                         }
                     })
                     .catch((err) => {
-                        console.error("Error fetching variants:", err);
+                        console.error("ProductDetailRainstar: Error fetching variants:", err);
                         setVariantsForSelectedGroup([item]);
                     })
                     .finally(() => setIsLoadingVariants(false));
@@ -222,7 +238,11 @@ const ProductDetailRainstar = ({
 
     const isValueAvailable = (attrName, valueToCheck, group) => {
         return group.variants.some((variant) => {
-            const hasThisValue = variant.attributes?.some((attr) => {
+            const variantAttrs = Array.isArray(variant.attributes)
+                ? variant.attributes
+                : Object.values(variant.attributes || {});
+
+            const hasThisValue = variantAttrs?.some((attr) => {
                 const name = attr.name || attr.slug;
                 const value = attr.pivot?.value || attr.value;
                 return name === attrName && value === valueToCheck;
@@ -234,7 +254,7 @@ const ProductDetailRainstar = ({
                 selectedAttributes,
             )) {
                 if (selectedAttrName === attrName) continue;
-                const hasSelectedAttr = variant.attributes?.some((attr) => {
+                const hasSelectedAttr = variantAttrs?.some((attr) => {
                     const name = attr.name || attr.slug;
                     const value = attr.pivot?.value || attr.value;
                     return (
@@ -249,21 +269,28 @@ const ProductDetailRainstar = ({
     };
 
     const findBestMatchingVariant = (attrName, valueData, group) => {
-        const candidates = group.variants.filter((v) =>
-            v.attributes?.some(
+        const candidates = group.variants.filter((v) => {
+            const vAttrs = Array.isArray(v.attributes)
+                ? v.attributes
+                : Object.values(v.attributes || {});
+            return vAttrs?.some(
                 (a) =>
                     (a.name || a.slug) === attrName &&
                     (a.pivot?.value || a.value) === valueData.value,
-            ),
-        );
+            );
+        });
 
         if (candidates.length === 0) return null;
 
         const scoredCandidates = candidates.map((v) => {
             let score = 0;
+            const vAttrs = Array.isArray(v.attributes)
+                ? v.attributes
+                : Object.values(v.attributes || {});
+
             Object.entries(selectedAttributes).forEach(([selName, selData]) => {
                 if (selName === attrName) return;
-                const matches = v.attributes?.some(
+                const matches = vAttrs?.some(
                     (a) =>
                         (a.name || a.slug) === selName &&
                         (a.pivot?.value || a.value) === selData.value,
@@ -300,14 +327,20 @@ const ProductDetailRainstar = ({
                   variants: variantsForSelectedGroup,
                   allAttributes: Array.from(
                       new Set(
-                          variantsForSelectedGroup.flatMap((v) =>
-                              v.attributes?.map((a) => a.name || a.slug),
-                          ),
+                          variantsForSelectedGroup.flatMap((v) => {
+                              const vAttrs = Array.isArray(v.attributes)
+                                  ? v.attributes
+                                  : Object.values(v.attributes || {});
+                              return vAttrs.map((a) => a.name || a.slug);
+                          }),
                       ),
                   ).map((name) => {
                       const values = [];
                       variantsForSelectedGroup.forEach((v) => {
-                          const attr = v.attributes?.find(
+                          const vAttrs = Array.isArray(v.attributes)
+                              ? v.attributes
+                              : Object.values(v.attributes || {});
+                          const attr = vAttrs.find(
                               (a) => (a.name || a.slug) === name,
                           );
                           if (attr) {
@@ -319,10 +352,14 @@ const ProductDetailRainstar = ({
                       });
                       return {
                           name,
-                          attribute:
-                              variantsForSelectedGroup[0].attributes?.find(
-                                  (a) => (a.name || a.slug) === name,
-                              ),
+                          attribute: variantsForSelectedGroup
+                              .map((v) =>
+                                  Array.isArray(v.attributes)
+                                      ? v.attributes
+                                      : Object.values(v.attributes || {}),
+                              )
+                              .flat()
+                              .find((a) => (a.name || a.slug) === name),
                           values,
                       };
                   }),
@@ -345,6 +382,8 @@ const ProductDetailRainstar = ({
               : []
     ).filter((s) => s.type === "general" || !s.type);
 
+    console.log("ProductDetailRainstar: Rendering with group", group);
+
     return (
         <main className="bg-white min-h-screen text-neutral-dark py-16 px-4 md:px-6 2xl:px-0">
             <div className="container mx-auto 2xl:max-w-7xl">
@@ -356,9 +395,12 @@ const ProductDetailRainstar = ({
                         <div className="w-24 space-y-4 shrink-0">
                             {[
                                 currentProduct?.image || item?.image,
-                                ...(currentProduct?.images ||
-                                    item?.images ||
-                                    []),
+                                ...(Array.isArray(currentProduct?.images)
+                                    ? currentProduct.images
+                                    : Object.values(currentProduct?.images || {})),
+                                ...(Array.isArray(item?.images)
+                                    ? item.images
+                                    : Object.values(item?.images || {})),
                             ]
                                 .filter((img, idx, self) => {
                                     const url = img?.url || img;
@@ -792,7 +834,9 @@ const ProductDetailRainstar = ({
                             >
                                 {[
                                     currentProduct?.image,
-                                    ...(currentProduct?.images || []),
+                                    ...(Array.isArray(currentProduct?.images)
+                                        ? currentProduct.images
+                                        : Object.values(currentProduct?.images || {})),
                                 ].map((img, i) => (
                                     <SwiperSlide key={i}>
                                         <img

@@ -1,119 +1,161 @@
-import React, { useEffect, useRef, useState } from "react"
-import SelectFormGroup from "../../Adminto/form/SelectFormGroup"
+import React, { useEffect, useRef, useState } from "react";
+import SelectFormGroup from "../../Adminto/form/SelectFormGroup";
 
-const ParamFormControl = ({ page, param, models, setUsing, setPages, isExtra }) => {
+const ParamFormControl = ({
+    page,
+    param,
+    models,
+    setUsing,
+    setPages,
+    isExtra,
+}) => {
+    const modelRef = useRef();
+    const fieldRef = useRef();
+    const withRef = useRef();
+    const fieldsRef = useRef();
 
-  const modelRef = useRef()
-  const fieldRef = useRef()
-  const withRef = useRef()
+    const using = page?.using;
 
-  const using = page?.using
+    const [selected, setSelected] = useState(() => {
+        const modelName = using?.[param]?.model;
+        return models.find((x) => x.name === modelName) ?? null;
+    });
 
-  const [selected, setSelected] = useState(null);
+    const onModelChange = (e) => {
+        const value = modelRef.current.value;
+        const model = models.find((x) => x.name == value) ?? null;
+        setSelected(model);
+    };
 
-  const onModelChange = (e) => {
-    const value = modelRef.current.value
-    const model = models.find(x => x.name == value) ?? null
-    setSelected(model)
-  }
-
-  useEffect(() => {
-    const modelName = using?.[param]?.model || "";
-    if ($(modelRef.current).val() !== modelName) {
-      $(modelRef.current).val(modelName).trigger('change');
-    }
-  }, [param])
-
-  useEffect(() => {
-    if (!selected && !using?.[param]?.model) return;
-    if (selected?.name === using?.[param]?.model) return;
-
-    setUsing(old => ({
-      ...old, [param]: {
-        ...old[param],
-        model: selected?.name ?? null
-      }
-    }))
-  }, [selected])
-
-  const fieldsRef = useRef()
-
-  useEffect(() => {
-    const field = using?.[param]?.field ?? null;
-    const relations = using?.[param]?.relations ?? [];
-    const fields = using?.[param]?.fields ?? [];
-    
-    if ($(fieldRef.current).val() !== field) {
-      $(fieldRef.current).val(field).trigger('change');
-    }
-    if (JSON.stringify($(withRef.current).val()) !== JSON.stringify(relations)) {
-      $(withRef.current).val(relations).trigger('change');
-    }
-    if (JSON.stringify($(fieldsRef.current).val()) !== JSON.stringify(fields)) {
-      $(fieldsRef.current).val(fields).trigger('change');
-    }
-  }, [selected, param])
-
-  const container = `${param}-container`
-  return <div id={container} className="row">
-    <label className="form-label">
-      {isExtra ? 'Dato adicional' : 'Parámetro URL'} <code>{param}</code>
-    </label>
-    <SelectFormGroup eRef={modelRef} label='Modelo' col='col-md-6' dropdownParent={`#${container}`} onChange={onModelChange}>
-      <option value="">Seleccione un modelo</option>
-      {models.map((model, index) => {
-        return <option key={index} value={model.name}>{model.name}</option>
-      })}
-    </SelectFormGroup>
-    <SelectFormGroup eRef={fieldRef} label={isExtra ? 'Filtrar por campo (Opcional)' : 'Campo'} col='col-md-6' dropdownParent={`#${container}`} onChange={e => {
-      setUsing(old => ({
-        ...old, [param]: {
-          ...old[param],
-          field: e.target.value
+    useEffect(() => {
+        const modelName = using?.[param]?.model || "";
+        const model = models.find((x) => x.name === modelName) ?? null;
+        if (selected?.name !== model?.name) {
+            setSelected(model);
         }
-      }))
-    }}>
-      <option value="">{isExtra ? 'Cargar toda la colección' : 'Seleccione un campo'}</option>
-      {selected?.fields?.map((field, index) => {
-        return <option key={index}>{field}</option>
-      })}
-    </SelectFormGroup>
-    <div className="col-12 mt-2">
-      <SelectFormGroup eRef={fieldsRef} label='Seleccionar campos (Optimización)' multiple dropdownParent={`#${container}`} onChange={e => {
-        const fields = $(e.target).val()
-        setUsing(old => ({
-          ...old, [param]: {
-            ...old[param],
-            fields
-          }
-        }))
-      }}>
-        {selected?.fields?.map((field, index) => {
-          return <option key={index}>{field}</option>
-        })}
-      </SelectFormGroup>
-      <small className="text-muted d-block mb-3" style={{ marginTop: '-10px' }}>
-        Si no seleccionas ninguno, se cargarán todos los campos (no recomendado por rendimiento).
-      </small>
-    </div>
-    <div className="col-12" hidden={(selected?.relations?.length ?? 0) == 0}>
-      <SelectFormGroup eRef={withRef} label='Relaciones / Includes' multiple dropdownParent={`#${container}`} onChange={e => {
-        const relations = $(e.target).val()
-        setUsing(old => ({
-          ...old, [param]: {
-            ...old[param],
-            relations
-          }
-        }))
-      }}>
-        {
-          selected?.relations?.map((rel, index) => {
-            return <option key={index}>{rel}</option>
-          })
-        }
-      </SelectFormGroup>
-    </div>
-  </div>
-}
+    }, [param, using?.[param]?.model, models]);
 
-export default ParamFormControl
+    const container = `${param}-container`;
+    return (
+        <div id={container} className="row">
+            <label className="form-label">
+                {isExtra ? "Dato adicional" : "Parámetro URL"}{" "}
+                <code>{param}</code>
+            </label>
+            <SelectFormGroup
+                eRef={modelRef}
+                label="Modelo"
+                col="col-md-6"
+                dropdownParent={`#${container}`}
+                value={using?.[param]?.model || ""}
+                onChange={(e) => {
+                    const value = e.target.value;
+                    const model = models.find((x) => x.name == value) ?? null;
+                    setSelected(model);
+                    setUsing((old) => ({
+                        ...old,
+                        [param]: {
+                            ...old[param],
+                            model: value || null,
+                            field: null,
+                            fields: [],
+                            relations: [],
+                        },
+                    }));
+                }}
+            >
+                <option value="">Seleccione un modelo</option>
+                {models.map((model, index) => {
+                    return (
+                        <option key={index} value={model.name}>
+                            {model.name}
+                        </option>
+                    );
+                })}
+            </SelectFormGroup>
+            <SelectFormGroup
+                eRef={fieldRef}
+                label={isExtra ? "Filtrar por campo (Opcional)" : "Campo"}
+                col="col-md-6"
+                dropdownParent={`#${container}`}
+                value={using?.[param]?.field || ""}
+                onChange={(e) => {
+                    setUsing((old) => ({
+                        ...old,
+                        [param]: {
+                            ...old[param],
+                            field: e.target.value,
+                        },
+                    }));
+                }}
+            >
+                <option value="">
+                    {isExtra
+                        ? "Cargar toda la colección"
+                        : "Seleccione un campo"}
+                </option>
+                {selected?.fields?.map((field, index) => {
+                    return <option key={index}>{field}</option>
+                })}
+            </SelectFormGroup>
+            <div className="col-12 mt-2">
+                <SelectFormGroup
+                    eRef={fieldsRef}
+                    label="Seleccionar campos (Optimización)"
+                    multiple
+                    dropdownParent={`#${container}`}
+                    value={using?.[param]?.fields || []}
+                    onChange={(e) => {
+                        const fields = $(e.target).val();
+                        setUsing((old) => ({
+                            ...old,
+                            [param]: {
+                                ...old[param],
+                                fields,
+                            },
+                        }));
+                    }}
+                >
+                    {selected?.fields?.map((field, index) => {
+                        return <option key={index}>{field}</option>;
+                    })}
+                </SelectFormGroup>
+                <small
+                    className="text-muted d-block mb-3"
+                    style={{ marginTop: "-10px" }}
+                >
+                    Si no seleccionas ninguno, se cargarán todos los campos (no
+                    recomendado por rendimiento).
+                </small>
+            </div>
+            <div
+                className="col-12"
+                hidden={(selected?.relations?.length ?? 0) == 0}
+            >
+                <SelectFormGroup
+                    eRef={withRef}
+                    label="Relaciones / Includes"
+                    multiple
+                    dropdownParent={`#${container}`}
+                    value={using?.[param]?.relations || []}
+                    onChange={(e) => {
+                        const relations = $(e.target).val();
+                        setUsing((old) => ({
+                            ...old,
+                            [param]: {
+                                ...old[param],
+                                relations,
+                            },
+                        }));
+                    }}
+                >
+                    {selected?.relations?.map((rel, index) => {
+                        return <option key={index}>{rel}</option>;
+                    })}
+                </SelectFormGroup>
+            </div>
+        </div>
+    );
+};
+
+export default ParamFormControl;

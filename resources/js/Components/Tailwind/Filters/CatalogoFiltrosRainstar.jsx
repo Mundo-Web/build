@@ -1020,12 +1020,14 @@ const CatalogoFiltrosRainstar = ({
                 setSubcategories(response.summary.subcategories || []);
                 setCollections(response.summary.collections || []);
                 setStores(response.summary.stores || []);
-                setPriceRanges(
-                    response.summary.priceRanges ||
-                        response.summary.price_ranges ||
-                        response.summary.prices ||
-                        [],
-                );
+                if (!data?.dat_prices) {
+                    setPriceRanges(
+                        response.summary.priceRanges ||
+                            response.summary.price_ranges ||
+                            response.summary.prices ||
+                            [],
+                    );
+                }
                 setTags(response.summary.tags || []);
                 setAmenities(
                     response.summary.amenities || data?.amenities || [],
@@ -1379,18 +1381,51 @@ const CatalogoFiltrosRainstar = ({
     );
 
     // Obtener rangos de precios - priorizar data.dat_prices si existe
-    const getPriceRanges = () => {
-        if (
-            data?.dat_prices &&
-            Array.isArray(data.dat_prices) &&
-            data.dat_prices.length > 0
-        ) {
-            return data.dat_prices;
-        }
-        return staticPriceRanges;
-    };
+    const activePriceRanges = React.useMemo(() => {
+        let customPrices = data?.dat_prices;
 
-    const activePriceRanges = getPriceRanges();
+        if (typeof customPrices === "string" && customPrices.trim() !== "") {
+            try {
+                // Intentar parsear como JSON estándar primero
+                customPrices = JSON.parse(customPrices);
+            } catch (e) {
+                // Si falla, puede ser un literal de JS (común si el usuario no pone comillas en las llaves)
+                try {
+                    // Usamos una función constructora para evaluar el string de forma un poco más segura que eval
+                    // eslint-disable-next-line no-new-func
+                    customPrices = new Function(`return ${customPrices}`)();
+                } catch (e2) {
+                    console.error("Error parsing dat_prices as JS literal:", e2);
+                    console.log("Malformed dat_prices value:", customPrices);
+                    customPrices = null;
+                }
+            }
+        }
+
+        if (Array.isArray(customPrices) && customPrices.length > 0) {
+            return customPrices.map((r) => ({
+                ...r,
+                min: Number(r.min),
+                max: Number(r.max),
+                label: r.label || `${CurrencySymbol()} ${r.min} - ${r.max}`,
+            }));
+        }
+
+        // Si no hay dat_prices, usar los del resumen del backend si existen
+        if (priceRanges && priceRanges.length > 0) {
+            return priceRanges.map((r) => ({
+                ...r,
+                min: Number(r.min),
+                max: Number(r.max),
+                label:
+                    r.label ||
+                    r.name ||
+                    `${CurrencySymbol()} ${r.min} - ${r.max}`,
+            }));
+        }
+
+        return staticPriceRanges;
+    }, [data?.dat_prices, priceRanges, staticPriceRanges]);
 
     // Filtrar categorías según el input
     const filteredCategories = categories.filter((category) =>
@@ -1413,20 +1448,22 @@ const CatalogoFiltrosRainstar = ({
         }
 
         return (
-            categoryIds.includes(subcategory.category_id) &&
-            subcategory.name
-                .toLowerCase()
-                .includes(searchSubcategory.toLowerCase())
+            categoryIds?.includes(subcategory.category_id) &&
+            subcategory?.name
+                ?.toLowerCase()
+                ?.includes(searchSubcategory.toLowerCase())
         );
     });
 
     // Filtrar marcas según el input
     const filteredBrands = brands.filter((brand) =>
-        brand.name.toLowerCase().includes(searchBrand.toLowerCase()),
+        brand?.name?.toLowerCase().includes(searchBrand.toLowerCase()),
     );
 
     const filteredCollections = collections.filter((collection) =>
-        collection.name.toLowerCase().includes(searchCollection.toLowerCase()),
+        collection?.name
+            ?.toLowerCase()
+            .includes(searchCollection.toLowerCase()),
     );
 
     // Filtrar tiendas según el input
@@ -2228,21 +2265,6 @@ const CatalogoFiltrosRainstar = ({
                                                     >
                                                         {/* Barra de búsqueda para subcategorías */}
                                                         <div className="relative mb-4">
-                                                            <motion.div
-                                                                className="absolute left-4 top-4 z-[99]"
-                                                                animate={{
-                                                                    scale: [
-                                                                        1, 1.1,
-                                                                        1,
-                                                                    ],
-                                                                }}
-                                                                transition={{
-                                                                    duration: 2,
-                                                                    repeat: Infinity,
-                                                                }}
-                                                            >
-                                                                <Search className="h-4 w-4" />
-                                                            </motion.div>
                                                             <input
                                                                 type="text"
                                                                 placeholder="BUSCAR SUBCATEGORÍAS..."

@@ -103,6 +103,7 @@ use App\Http\Controllers\ScrapController;
 use App\Http\Controllers\StrengthController;
 use App\Http\Controllers\BenefitController;
 use App\Http\Controllers\ApplicationController;
+use App\Http\Controllers\SocialController;
 use App\Http\Controllers\TemporalyImageController;
 use App\Http\Controllers\UnifiedImportController;
 
@@ -198,6 +199,8 @@ Route::get('/innovations/media/{uuid}', [AdminInnovationController::class, 'medi
 Route::get('/services/media/{uuid}', [AdminServiceController::class, 'media']);
 Route::get('/service-categories/media/{uuid}', [AdminServiceCategoryController::class, 'media']);
 Route::get('/service-subcategories/media/{uuid}', [AdminServiceSubCategoryController::class, 'media']);
+
+Route::post('/socials/paginate', [SocialController::class, 'paginate']);
 
 // Public route for service views tracking
 Route::post('/services/update-views', [AdminServiceController::class, 'updateViews']);
