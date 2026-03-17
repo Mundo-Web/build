@@ -36,7 +36,7 @@ const ProductCardItem = ({ item, index, onClick }) => {
                 <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-bl-full z-10 transition-transform duration-500 group-hover:scale-150" />
 
                 {/* Image Container */}
-                <div className="w-full h-auto aspect-square  flex items-center justify-center shadow-inner transition-transform duration-500 overflow-hidden bg-neutral-50">
+                <div className="w-full h-auto aspect-square  flex items-center justify-center shadow-inner transition-transform duration-500 overflow-hidden bg-neutral-50 relative">
                     <img
                         src={imageUrl}
                         alt={item.name}
@@ -45,11 +45,15 @@ const ProductCardItem = ({ item, index, onClick }) => {
                             (e.target.src = "/api/cover/thumbnail/null")
                         }
                     />
+                    {/* Overlay and Title */}
+                    <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/80 via-black/40 to-transparent z-20" />
+                    <div className="absolute inset-x-0 bottom-0 p-6 z-30">
+                        <h3 className="text-3xl md:text-4xl xl:text-6xl text-white text-center font-bold transition-transform duration-500 line-clamp-2">
+                            {item.name}
+                        </h3>
+                    </div>
                 </div>
                 <div className="p-6 flex flex-col flex-1">
-                    <h3 className="text-3xl md:text-3xl xl:text-4xl text-primary font-bold transition-transform duration-500 flex-shrink-0 mb-4">
-                        {item.name}
-                    </h3>
                     {item.description && (
                         <div
                             className="text-base text-neutral-light leading-relaxed line-clamp-3 mb-6 [&_*]:!text-neutral-light"
