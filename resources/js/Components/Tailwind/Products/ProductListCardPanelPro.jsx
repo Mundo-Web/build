@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Autoplay, Navigation, Pagination } from "swiper/modules";
+import { Navigation, Pagination } from "swiper/modules";
 import General from "../../../Utils/General";
 import "swiper/css";
 import "swiper/css/navigation";
@@ -106,12 +106,19 @@ const ProductListCardPanelPro = ({ items, data, onClickTracking }) => {
     const [paginationElProduct, setPaginationElProduct] = useState(null);
 
     useEffect(() => {
-        if (swiperInstanceProduct && paginationElProduct) {
-            swiperInstanceProduct.params.pagination.el = paginationElProduct;
-            swiperInstanceProduct.pagination.destroy();
-            swiperInstanceProduct.pagination.init();
-            swiperInstanceProduct.pagination.render();
-            swiperInstanceProduct.pagination.update();
+        if (swiperInstanceProduct) {
+            if (paginationElProduct) {
+                swiperInstanceProduct.params.pagination.el = paginationElProduct;
+                swiperInstanceProduct.pagination.destroy();
+                swiperInstanceProduct.pagination.init();
+                swiperInstanceProduct.pagination.render();
+                swiperInstanceProduct.pagination.update();
+            }
+            if (swiperInstanceProduct.navigation) {
+                swiperInstanceProduct.navigation.destroy();
+                swiperInstanceProduct.navigation.init();
+                swiperInstanceProduct.navigation.update();
+            }
         }
     }, [swiperInstanceProduct, paginationElProduct]);
 
@@ -373,13 +380,9 @@ const ProductListCardPanelPro = ({ items, data, onClickTracking }) => {
 
                     <div className="relative group/swiper">
                         <Swiper
-                            modules={[Autoplay, Navigation, Pagination]}
+                            modules={[Navigation, Pagination]}
                             spaceBetween={30}
                             slidesPerView={1.2}
-                            autoplay={{
-                                delay: 5000,
-                                disableOnInteraction: false,
-                            }}
                             loop={groupedItems.length > 1}
                             navigation={{
                                 prevEl: ".product-prev",
