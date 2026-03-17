@@ -108,7 +108,8 @@ const ProductListCardPanelPro = ({ items, data, onClickTracking }) => {
     useEffect(() => {
         if (swiperInstanceProduct) {
             if (paginationElProduct) {
-                swiperInstanceProduct.params.pagination.el = paginationElProduct;
+                swiperInstanceProduct.params.pagination.el =
+                    paginationElProduct;
                 swiperInstanceProduct.pagination.destroy();
                 swiperInstanceProduct.pagination.init();
                 swiperInstanceProduct.pagination.render();
@@ -421,7 +422,7 @@ const ProductListCardPanelPro = ({ items, data, onClickTracking }) => {
                         </Swiper>
 
                         {/* Navigation Buttons */}
-                        <button className="product-prev absolute -left-4 lg:-left-12 top-1/2 -translate-y-1/2 z-20 w-12 h-12 bg-white rounded-full shadow-lg flex items-center justify-center text-primary border border-neutral-100 opacity-0 group-hover/swiper:opacity-100 transition-all duration-300 hover:bg-primary hover:text-white disabled:opacity-0">
+                        <button className="product-prev absolute -left-4 lg:-left-16 top-1/2 -translate-y-1/2 z-20 w-12 h-12 bg-white rounded-full shadow-lg flex items-center justify-center text-primary border border-neutral-100  group-hover/swiper:opacity-100 transition-all duration-300 hover:bg-primary hover:text-white disabled:opacity-0">
                             <svg
                                 className="w-5 h-5"
                                 fill="none"
@@ -436,7 +437,7 @@ const ProductListCardPanelPro = ({ items, data, onClickTracking }) => {
                                 />
                             </svg>
                         </button>
-                        <button className="product-next absolute -right-4 lg:-right-12 top-1/2 -translate-y-1/2 z-20 w-12 h-12 bg-white rounded-full shadow-lg flex items-center justify-center text-primary border border-neutral-100 opacity-0 group-hover/swiper:opacity-100 transition-all duration-300 hover:bg-primary hover:text-white disabled:opacity-0">
+                        <button className="product-next absolute -right-4 lg:-right-16 top-1/2 -translate-y-1/2 z-20 w-12 h-12 bg-white rounded-full shadow-lg flex items-center justify-center text-primary border border-neutral-100  group-hover/swiper:opacity-100 transition-all duration-300 hover:bg-primary hover:text-white disabled:opacity-0">
                             <svg
                                 className="w-5 h-5"
                                 fill="none"
