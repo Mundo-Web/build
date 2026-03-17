@@ -96,8 +96,8 @@ const Generals = ({
             "admin_whistleblowing_email",
             "job_application_email",
             "admin_job_application_email",
-            "invite_provider_email",
-            "welcome_provider_email",
+            "invite_seller_email",
+            "welcome_seller_email",
         ],
         contact: [
             "phone_contact",
@@ -252,8 +252,8 @@ const Generals = ({
         "admin_whistleblowing_email",
         "job_application_email",
         "admin_job_application_email",
-        "invite_provider_email",
-        "welcome_provider_email",
+        "invite_seller_email",
+        "welcome_seller_email",
     ];
 
     // Memoizar plantillas de email - solo las que existen (para mostrar en UI)
@@ -312,8 +312,8 @@ const Generals = ({
             admin_whistleblowing_email: "admin_whistleblowing",
             job_application_email: "job_application",
             admin_job_application_email: "admin_job_application",
-            invite_provider_email: "invite_provider",
-            welcome_provider_email: "welcome_provider",
+            invite_seller_email: "invite_seller",
+            welcome_seller_email: "welcome_seller",
         };
         const type = correlativeToType[selectedEmailCorrelative];
         if (!type) {
@@ -2180,6 +2180,10 @@ const Generals = ({
                                                 "Aplicación Laboral (Cliente)",
                                             admin_job_application_email:
                                                 "Aplicación Laboral (Admin)",
+                                            invite_seller_email:
+                                                "Invitar Vendedor",
+                                            welcome_seller_email:
+                                                "Bienvenida Vendedor",
                                         };
                                         return (
                                             <option

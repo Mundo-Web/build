@@ -86,8 +86,8 @@ export default function SignUpRainstar({ data }) {
         const invitationToken = urlParams.get("token");
 
         // Si hay una invitación, obtener los datos
-        if (invitationType === "provider" && invitationToken) {
-            fetch(`/api/provider-invitation/${invitationToken}`)
+        if (invitationType === "seller" && invitationToken) {
+            fetch(`/api/seller-invitation/${invitationToken}`)
                 .then((res) => res.json())
                 .then((data) => {
                     if (data.success && data.data) {
@@ -211,7 +211,7 @@ export default function SignUpRainstar({ data }) {
 
                     {/* Right Side: Content (Header + Form) */}
                     <div className="lg:col-span-6">
-                        <div className="max-w-md mx-auto lg:mx-0 py-12">
+                        <div className=" mx-auto lg:mx-0 py-12">
                             <div className="mb-12">
                                 <h1 className="text-5xl lg:text-6xl xl:text-7xl font-black uppercase tracking-tighter leading-[0.8] mb-8">
                                     Crear <br /> Cuenta
@@ -272,7 +272,7 @@ export default function SignUpRainstar({ data }) {
                                     {invitationData && (
                                         <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-neutral-light mt-2">
                                             Este email está vinculado a tu
-                                            invitación como proveedor
+                                            invitación como vendedor
                                         </p>
                                     )}
                                 </div>

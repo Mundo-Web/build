@@ -38,7 +38,14 @@ class AuthServiceProvider extends ServiceProvider
 
         // Define Gate for Management - includes anyone who can manage referrals or apps
         Gate::define('Management', function ($user) {
-            return $user->hasRole(['Admin', 'Root', 'Provider']);
+            \Illuminate\Support\Facades\Log::debug('Gate Management check for user: ' . $user->email);
+            return $user->hasRole(['Admin', 'Root', 'Seller']);
+        });
+
+        // Define Gate for Seller role
+        Gate::define('Seller', function ($user) {
+            \Illuminate\Support\Facades\Log::debug('Gate Seller check for user: ' . $user->email . ' roles: ' . json_encode($user->getRoleNames()));
+            return $user->hasRole('Seller');
         });
     }
 }

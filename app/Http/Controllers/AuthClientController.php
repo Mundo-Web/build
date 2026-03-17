@@ -15,6 +15,7 @@ use App\Notifications\PasswordChangedNotification;
 use App\Notifications\VerifyAccountNotification;
 use App\Providers\RouteServiceProvider;
 use App\Services\EmailNotificationService;
+use Illuminate\Support\Facades\Log;
 use Exception;
 use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\RedirectResponse;
@@ -100,8 +101,8 @@ class AuthClientController extends BasicController
     {
         $response = new Response();
         try {
-            \Log::info('--- Signup Process Start (Original Version) ---');
-            \Log::info('Signup - Raw Request:', $request->all());
+            Log::info('--- Signup Process Start (Original Version) ---');
+            Log::info('Signup - Raw Request:', $request->all());
 
             $email = Controller::decode($request->email);
             $password = Controller::decode($request->password);
@@ -109,7 +110,7 @@ class AuthClientController extends BasicController
             $name = Controller::decode($request->name);
             $lastname = Controller::decode($request->lastname);
 
-            \Log::info('Signup - Decoded Data:', [
+            Log::info('Signup - Decoded Data:', [
                 'email' => $email,
                 'name' => $name,
                 'lastname' => $lastname
@@ -156,19 +157,19 @@ class AuthClientController extends BasicController
             try {
                 if ($request->invitation_token || $request->invitation_type) {
                     // Si es una invitación, usamos Notification::route
-                    \Log::info('Sending invitation email (Route Notification)...', ['email' => $email]);
+                    Log::info('Sending invitation email (Route Notification)...', ['email' => $email]);
                     \Illuminate\Support\Facades\Notification::route('mail', $email)
                         ->notify(new VerifyAccountNotification($verificationUrl, $name, $lastname));
                 } else {
                     // Flujo normal para customers
-                    \Log::info('Sending standard customer email (User Notification)...', ['user_id' => $user->id]);
+                    Log::info('Sending standard customer email (User Notification)...', ['user_id' => $user->id]);
                     $notificationService = new EmailNotificationService();
                     $notificationService->sendToUser($user, new VerifyAccountNotification($verificationUrl));
                 }
-                \Log::info('Welcome email sent successfully.');
+                Log::info('Welcome email sent successfully.');
             } catch (\Throwable $th) {
                 // Silently fail email sending but LOG IT
-                \Log::error('Welcome email failed: ' . $th->getMessage());
+                Log::error('Welcome email failed: ' . $th->getMessage());
             }
 
             // Asignar rol por defecto Customer
@@ -177,8 +178,8 @@ class AuthClientController extends BasicController
 
             // Validar si es una invitación de proveedor (Lógica posterior al registro base)
             try {
-                if ($request->invitation_token && $request->invitation_type === 'provider') {
-                    $invitation = \App\Models\ProviderInvitation::where('token', $request->invitation_token)
+                if ($request->invitation_token && $request->invitation_type === 'seller') {
+                    $invitation = \App\Models\SellerInvitation::where('token', $request->invitation_token)
                         ->where('email', $email)
                         ->where('status', 'pending')
                         ->first();
@@ -187,8 +188,8 @@ class AuthClientController extends BasicController
                         $invitation->status = 'accepted';
                         $invitation->save();
 
-                        // Cambiar rol a Provider
-                        $user->syncRoles(['Provider']);
+                        // Cambiar rol a Seller
+                        $user->syncRoles(['Seller']);
 
                         // Guardar referido: leer de la cookie, del request ref, o de la job_application
                         $referralCode = $request->cookie('referral_code');
@@ -202,7 +203,7 @@ class AuthClientController extends BasicController
                             if ($referrer) {
                                 $user->referred_by = $referrer->id;
                                 $user->save();
-                                \Log::info('Provider referred_by set during signup', [
+                                Log::info('Seller referred_by set during signup', [
                                     'user_id' => $user->id,
                                     'referred_by' => $referrer->id,
                                     'referral_code' => $referralCode
@@ -218,7 +219,7 @@ class AuthClientController extends BasicController
                                 if ($referrer) {
                                     $user->referred_by = $referrer->id;
                                     $user->save();
-                                    \Log::info('Provider referred_by set from job_application', [
+                                    Log::info('Seller referred_by set from job_application', [
                                         'user_id' => $user->id,
                                         'referred_by' => $referrer->id
                                     ]);
@@ -229,12 +230,12 @@ class AuthClientController extends BasicController
                 }
             } catch (\Throwable $th) {
                 // Ignorar error de invitación pero loggear
-                \Log::error('Error during provider invitation processing: ' . $th->getMessage());
+                Log::error('Error during seller invitation processing: ' . $th->getMessage());
             }
 
             // Iniciar sesión (opcional)
             Auth::login($user);
-            \Log::info('User logged in. Signup process completed successfully.');
+            Log::info('User logged in. Signup process completed successfully.');
 
             $response->status = 200;
             $response->message = 'Usuario registrado exitosamente.';

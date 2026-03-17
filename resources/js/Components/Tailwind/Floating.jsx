@@ -1,18 +1,16 @@
 import React from "react";
 
 const WhatsApp = React.lazy(() => import("./Floating/WhatsApp"));
-const WhatsAppProvider = React.lazy(
-    () => import("./Floating/WhatsAppProvider"),
-);
+const WhatsAppSeller = React.lazy(() => import("./Floating/WhatsAppSeller"));
 
 const Floating = ({ which, item, data, referrer }) => {
     const getFloating = () => {
         switch (which) {
             case "WhatsApp":
                 return <WhatsApp data={data} item={item} />;
-            case "WhatsAppProvider":
+            case "WhatsAppSeller":
                 return (
-                    <WhatsAppProvider
+                    <WhatsAppSeller
                         data={data}
                         item={item}
                         referrer={referrer}

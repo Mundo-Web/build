@@ -13,7 +13,7 @@ import { toast } from "sonner";
 import SubscriptionsRest from "../../../Actions/SubscriptionsRest";
 import Global from "../../../Utils/Global";
 import JobApplicationModal from "../Modals/JobApplicationModal";
-import ProviderJoinModal from "../Modals/ProviderJoinModal";
+import SellerJoinModal from "../Modals/SellerJoinModal";
 
 const FooterRainstar = ({ pages = [], generals = [], data, socials = [] }) => {
     const subscriptionsRest = new SubscriptionsRest();
@@ -22,7 +22,7 @@ const FooterRainstar = ({ pages = [], generals = [], data, socials = [] }) => {
 
     const [saving, setSaving] = useState(false);
     const [jobModalOpen, setJobModalOpen] = useState(false);
-    const [providerModalOpen, setProviderModalOpen] = useState(false);
+    const [sellerModalOpen, setSellerModalOpen] = useState(false);
 
     // Efecto para escuchar clics globales en enlaces que apuntan al modal
     React.useEffect(() => {
@@ -35,11 +35,11 @@ const FooterRainstar = ({ pages = [], generals = [], data, socials = [] }) => {
                 e.preventDefault();
                 setJobModalOpen(true);
             } else if (
-                href === "#providerjoinmodal" ||
+                href === "#sellerjoinmodal" ||
                 href === "#une-a-nosotros"
             ) {
                 e.preventDefault();
-                setProviderModalOpen(true);
+                setSellerModalOpen(true);
             }
         };
 
@@ -51,10 +51,10 @@ const FooterRainstar = ({ pages = [], generals = [], data, socials = [] }) => {
             if (hash === "#jobapplicationmodal") {
                 setJobModalOpen(true);
             } else if (
-                hash === "#providerjoinmodal" ||
+                hash === "#sellerjoinmodal" ||
                 hash === "#une-a-nosotros"
             ) {
-                setProviderModalOpen(true);
+                setSellerModalOpen(true);
             }
         };
 
@@ -186,7 +186,7 @@ const FooterRainstar = ({ pages = [], generals = [], data, socials = [] }) => {
 
                             <li>
                                 <button
-                                    onClick={() => setProviderModalOpen(true)}
+                                    onClick={() => setSellerModalOpen(true)}
                                     className="text-white hover:text-white transition-colors flex items-center justify-between group text-sm w-full text-left"
                                 >
                                     <span className="font-medium">
@@ -435,9 +435,9 @@ const FooterRainstar = ({ pages = [], generals = [], data, socials = [] }) => {
                 onClose={() => setJobModalOpen(false)}
             />
 
-            <ProviderJoinModal
-                isOpen={providerModalOpen}
-                onClose={() => setProviderModalOpen(false)}
+            <SellerJoinModal
+                isOpen={sellerModalOpen}
+                onClose={() => setSellerModalOpen(false)}
             />
         </footer>
     );

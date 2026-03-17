@@ -26,7 +26,7 @@ class JobApplicationController extends BasicController
             ->addSelect(['*'])
             ->addSelect(\Illuminate\Support\Facades\DB::raw("(SELECT COUNT(*) FROM {$userTable} WHERE {$userTable}.email = job_applications.email) as email_registered"));
 
-        if ($user->hasRole('Provider') && !$user->hasAnyRole(['Root', 'Admin'])) {
+        if ($user->hasRole('Seller') && !$user->hasAnyRole(['Root', 'Admin'])) {
             $query->where('referred_by_uuid', $user->uuid);
         }
 

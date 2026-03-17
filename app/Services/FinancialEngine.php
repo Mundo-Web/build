@@ -6,6 +6,9 @@ use App\Models\Sale;
 use App\Models\User;
 use App\Models\Rank;
 use App\Models\Commission;
+use App\Models\RankBonus;
+use App\Models\UserMilestone;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -31,11 +34,8 @@ class FinancialEngine
             // 1. Calcular Comisiones por cada item de la venta
             $this->calculateCommissions($sale, $promoter);
 
-            // 2. Actualizar Puntos (Volumen de ventas) del promotor
-            $this->updateUserPoints($promoter);
-
-            // 3. Evaluar ascenso de Rango
-            $this->evaluateRankUpgrade($promoter);
+            // 2. Actualizar y evaluar todo el árbol de este usuario
+            $this->evaluateUser($promoter);
 
             DB::commit();
         } catch (\Throwable $th) {
@@ -78,17 +78,39 @@ class FinancialEngine
     }
 
     /**
+     * Re-calcula puntos y evalúa rangos/bonos para un usuario específico (usado en cierres o recálculos masivos)
+     */
+    public function evaluateUser(User $user)
+    {
+        // 1. Actualizar Puntos (Volumen de ventas)
+        $this->updateUserPoints($user);
+
+        // 2. Evaluar ascenso de Rango
+        $this->evaluateRankUpgrade($user);
+
+        // 3. Evaluar Bonos (Milestones)
+        $this->evaluateRankBonuses($user);
+    }
+
+    /**
      * Actualiza los puntos totales del usuario y propaga a grupos
      */
     private function updateUserPoints(User $user)
     {
         // Calculamos el volumen total de ventas pagadas donde él es el referidor
-        $totalVolume = Sale::where('referrer_id', $user->id)->sum('total');
+        // Aseguramos que solo sumamos ventas confirmadas (Pagado)
+        $totalVolume = Sale::where('referrer_id', $user->id)
+            ->whereHas('status', function($q) {
+                $q->where('name', 'like', '%Pagado%');
+            })
+            ->sum('total_amount');
 
         // Calculamos la cantidad total de prendas vendidas
         $totalItems = DB::table('sales')
             ->join('sale_details', 'sales.id', '=', 'sale_details.sale_id')
+            ->join('sale_statuses', 'sales.status_id', '=', 'sale_statuses.id')
             ->where('sales.referrer_id', $user->id)
+            ->where('sale_statuses.name', 'like', '%Pagado%')
             ->sum('sale_details.quantity');
 
         $user->total_points = $totalVolume;
@@ -131,14 +153,25 @@ class FinancialEngine
         $bestRank = $user->rank;
 
         foreach ($allRanks as $rank) {
-            $valueToCheck = 0;
-            if ($rank->requirement_type === 'items') {
-                $valueToCheck = $rank->is_group ? $user->group_items : $user->total_items;
+            $personalValue = ($rank->requirement_type === 'items') ? $user->total_items : $user->total_points;
+            $groupValue = ($rank->requirement_type === 'items') ? $user->group_items : $user->group_points;
+
+            $achieved = false;
+            if ($rank->requirement_logic === 'AND') {
+                $achieved = ($personalValue >= $rank->min_personal_items) && ($groupValue >= $rank->min_group_items);
             } else {
-                $valueToCheck = $rank->is_group ? $user->group_points : $user->total_points;
+                // Lógica OR: Debe cumplir al menos uno de los requisitos definidos (> 0)
+                $pOk = ($rank->min_personal_items > 0) ? ($personalValue >= $rank->min_personal_items) : false;
+                $gOk = ($rank->min_group_items > 0) ? ($groupValue >= $rank->min_group_items) : false;
+                
+                if ($rank->min_personal_items <= 0 && $rank->min_group_items <= 0) {
+                    $achieved = true; // Rango inicial
+                } else {
+                    $achieved = $pOk || $gOk;
+                }
             }
 
-            if ($valueToCheck >= $rank->min_points) {
+            if ($achieved) {
                 // Si el rango es mayor en orden o es el primero que cumple
                 if (!$bestRank || $rank->order_index > $bestRank->order_index) {
                     $bestRank = $rank;
@@ -152,7 +185,116 @@ class FinancialEngine
 
             Log::info("Usuario {$user->name} ha subido al rango: {$bestRank->name}");
 
-            // Re-evaluar hacia arriba si el cambio de rango de un hijo afecta al padre (opcional según reglas)
+            // 1. Otorga el bono fijo directo del rango si existe
+            if ($bestRank->bonus_amount > 0) {
+                $this->awardRankUpBonus($user, $bestRank);
+            }
+
+            // 2. Busca y otorga todos los bonos tipo 'attainment' vinculados a este rango
+            $onUpgradeBonuses = RankBonus::where('rank_id', $bestRank->id)
+                ->where('trigger_type', 'attainment')
+                ->where('status', true)
+                ->get();
+
+            foreach ($onUpgradeBonuses as $bonus) {
+                $this->awardBonus($user, $bonus);
+            }
         }
+    }
+
+    /**
+     * Otorga el bono por ascenso de rango (Bono Fijo principal)
+     */
+    private function awardRankUpBonus(User $user, Rank $rank)
+    {
+        // Verificar si ya se le otorgó este bono de ascenso (una sola vez por el ID del rango)
+        $alreadyAwarded = UserMilestone::where('user_id', $user->id)
+            ->whereNull('rank_bonus_id')
+            ->where('description', 'like', "%alcanzar el rango {$rank->name}%")
+            ->exists();
+
+        if ($alreadyAwarded) return;
+
+        $commission = Commission::create([
+            'user_id' => $user->id,
+            'amount' => $rank->bonus_amount,
+            'base_amount' => $rank->min_personal_items ?: $rank->min_group_items,
+            'percent' => 0,
+            'type' => 'bonus',
+            'description' => "Bono por alcanzar el rango " . $rank->name,
+            'status' => 'pending'
+        ]);
+
+        UserMilestone::create([
+            'user_id' => $user->id,
+            'rank_bonus_id' => null,
+            'commission_id' => $commission->id,
+            'description' => "Bono por alcanzar el rango " . $rank->name,
+            'achieved_at' => now(),
+        ]);
+        
+        Log::info("¡Bono por ascenso otorgado! Usuario {$user->name} ganó S/ {$rank->bonus_amount} por subir a {$rank->name}");
+    }
+
+    /**
+     * Evalúa si el usuario es acreedor a algún bono por su desempeño grupal o personal (Disparador por Volumen)
+     */
+    private function evaluateRankBonuses(User $user)
+    {
+        // Obtenemos todos los bonos activos tipo VOLUMEN
+        $activeBonuses = RankBonus::where('status', true)
+            ->where('trigger_type', 'volume')
+            ->get();
+        
+        foreach ($activeBonuses as $bonus) {
+            // Si el bono requiere un rango específico, verificarlo
+            if ($bonus->rank_id && $user->rank_id !== $bonus->rank_id) {
+                continue;
+            }
+
+            $valueToCheck = 0;
+            if ($bonus->type === 'items') {
+                $valueToCheck = $bonus->is_group ? $user->group_items : $user->total_items;
+            } else {
+                $valueToCheck = $bonus->is_group ? $user->group_points : $user->total_points;
+            }
+
+            if ($valueToCheck >= $bonus->min_value) {
+                // Verificar si ya se le otorgó este bono en el mes actual
+                $alreadyAchieved = UserMilestone::where('user_id', $user->id)
+                    ->where('rank_bonus_id', $bonus->id)
+                    ->whereBetween('achieved_at', [Carbon::now()->startOfMonth(), Carbon::now()->endOfMonth()])
+                    ->exists();
+
+                if (!$alreadyAchieved) {
+                    $this->awardBonus($user, $bonus);
+                }
+            }
+        }
+    }
+
+    /**
+     * Otorga el bono al usuario y registra el hito
+     */
+    private function awardBonus(User $user, RankBonus $bonus)
+    {
+        $commission = Commission::create([
+            'user_id' => $user->id,
+            'amount' => $bonus->bonus_amount,
+            'base_amount' => $bonus->min_value,
+            'percent' => 0,
+            'type' => 'bonus',
+            'description' => "Bono alcanzado: " . $bonus->name,
+            'status' => 'pending'
+        ]);
+
+        UserMilestone::create([
+            'user_id' => $user->id,
+            'rank_bonus_id' => $bonus->id,
+            'commission_id' => $commission->id,
+            'achieved_at' => now(),
+        ]);
+
+        Log::info("¡Bono extra otorgado! Usuario {$user->name} ganó S/ {$bonus->bonus_amount} por {$bonus->name}");
     }
 }

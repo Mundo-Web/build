@@ -17,11 +17,16 @@ class Rank extends Model
         'id',
         'name',
         'description',
+        'benefits',
+        'min_personal_items',
+        'min_group_items',
+        'requirement_logic',
         'requirement_type',
         'is_group',
         'min_points',
         'commission_percent',
         'prize_commission_percent',
+        'bonus_amount',
         'color',
         'order_index',
         'status'
@@ -30,9 +35,13 @@ class Rank extends Model
     protected $casts = [
         'status' => 'boolean',
         'is_group' => 'boolean',
+        'min_personal_items' => 'decimal:2',
+        'min_group_items' => 'decimal:2',
         'min_points' => 'integer',
+        'benefits' => 'array',
         'commission_percent' => 'decimal:2',
         'prize_commission_percent' => 'decimal:2',
+        'bonus_amount' => 'decimal:2',
     ];
 
     protected static function boot()
@@ -48,5 +57,10 @@ class Rank extends Model
     public function users()
     {
         return $this->hasMany(User::class);
+    }
+
+    public function rankBonuses()
+    {
+        return $this->hasMany(RankBonus::class);
     }
 }

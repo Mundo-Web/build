@@ -45,6 +45,6 @@ class JobApplication extends Model
      */
     public function invitation()
     {
-        return $this->hasOne(ProviderInvitation::class, 'job_application_id');
+        return $this->hasOne(SellerInvitation::class, 'job_application_id');
     }
 }

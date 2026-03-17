@@ -60,6 +60,7 @@ use App\Http\Controllers\Admin\WebDetailController as AdminWebDetailController;
 use App\Http\Controllers\Admin\ItemImageController as AdminItemImageController;
 use App\Http\Controllers\Admin\FaqController as AdminFaqController;
 use App\Http\Controllers\Admin\RankController as AdminRankController;
+use App\Http\Controllers\Admin\RankBonusController as AdminRankBonusController;
 use App\Http\Controllers\Admin\ComboController as AdminComboController;
 use App\Http\Controllers\Admin\DeliveryZoneController as AdminDeliveryZoneController;
 use App\Http\Controllers\Admin\ImageUploadController;
@@ -71,7 +72,7 @@ use App\Http\Controllers\Admin\CouponController as AdminCouponController;
 use App\Http\Controllers\Admin\SaleStatusController as AdminSaleStatusController;
 use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\Admin\ClientController as AdminClientController;
-use App\Http\Controllers\Admin\ProviderController;
+use App\Http\Controllers\Admin\SellerController;
 use App\Http\Controllers\Admin\JobApplicationController as AdminJobApplicationController;
 use App\Http\Controllers\Admin\FillableController;
 use App\Http\Controllers\Admin\RoleHasMenuController;
@@ -175,8 +176,8 @@ Route::post('/job-applications', [JobApplicationController::class, 'save']);
 Route::post('/forgot-password-client', [AuthClientController::class, 'forgotPassword']);
 Route::post('/reset-password-client', [AuthClientController::class, 'resetPassword']);
 
-// Provider Invitations (public)
-Route::get('/provider-invitation/{token}', [ProviderController::class, 'getInvitationByToken']);
+// Seller Invitations (public)
+Route::get('/seller-invitation/{token}', [SellerController::class, 'getInvitationByToken']);
 
 // Google OAuth routes
 Route::post('/google-login', [App\Http\Controllers\GoogleAuthController::class, 'loginWithGoogle']);
@@ -501,6 +502,12 @@ Route::middleware('auth')->group(function () {
     Route::delete('/ranks/{id}', [AdminRankController::class, 'delete']);
     Route::put('/ranks/{id}/reorder', [AdminRankController::class, 'reorder']);
 
+    Route::post('/rank-bonuses', [AdminRankBonusController::class, 'save']);
+    Route::post('/rank-bonuses/paginate', [AdminRankBonusController::class, 'paginate']);
+    Route::patch('/rank-bonuses/status', [AdminRankBonusController::class, 'status']);
+    Route::patch('/rank-bonuses/{field}', [AdminRankBonusController::class, 'boolean']);
+    Route::delete('/rank-bonuses/{id}', [AdminRankBonusController::class, 'delete']);
+
 
     Route::post('/banners', [AdminBannerController::class, 'save']);
     Route::post('/banners/paginate', [AdminBannerController::class, 'paginate']);
@@ -700,17 +707,17 @@ Route::middleware('auth')->group(function () {
     Route::patch('/job-applications/{field}', [AdminJobApplicationController::class, 'boolean']);
     Route::delete('/job-applications/{id}', [AdminJobApplicationController::class, 'delete']);
 
-    // Providers management
-    Route::post('/providers', [ProviderController::class, 'save']);
-    Route::post('/providers/paginate', [ProviderController::class, 'paginate']);
-    Route::patch('/providers/{field}', [ProviderController::class, 'boolean']);
-    Route::post('/providers/invite', [ProviderController::class, 'invite']);
-    Route::post('/providers/accept-application', [ProviderController::class, 'acceptApplication']);
-    Route::get('/providers/tree', [ProviderController::class, 'getProviderTree']);
-    Route::get('/providers/{userId}/vault', [ProviderController::class, 'getVault']);
-    Route::post('/providers/vault', [ProviderController::class, 'updateVault']);
-    Route::delete('/providers/vault/{id}', [ProviderController::class, 'deleteVaultItem']);
-    Route::delete('/providers/{id}', [ProviderController::class, 'delete']);
+    // Sellers management
+    Route::post('/sellers', [SellerController::class, 'save']);
+    Route::post('/sellers/paginate', [SellerController::class, 'paginate']);
+    Route::patch('/sellers/{field}', [SellerController::class, 'boolean']);
+    Route::post('/sellers/invite', [SellerController::class, 'invite']);
+    Route::post('/sellers/accept-application', [SellerController::class, 'acceptApplication']);
+    Route::get('/sellers/tree', [SellerController::class, 'getSellerTree']);
+    Route::get('/sellers/{userId}/vault', [SellerController::class, 'getVault']);
+    Route::post('/sellers/vault', [SellerController::class, 'updateVault']);
+    Route::delete('/sellers/vault/{id}', [SellerController::class, 'deleteVaultItem']);
+    Route::delete('/sellers/{id}', [SellerController::class, 'delete']);
   });
 
   Route::middleware('can:Admin')->prefix('admin')->group(function () {
@@ -731,7 +738,7 @@ Route::middleware('auth')->group(function () {
     // Clients management
     Route::post('/clients/paginate', [AdminClientController::class, 'paginate']);
     Route::patch('/clients/{field}', [AdminClientController::class, 'boolean']);
-    Route::post('/clients/{id}/promote', [AdminClientController::class, 'promoteToProvider']);
+    Route::post('/clients/{id}/promote', [AdminClientController::class, 'promoteToSeller']);
 
     // System routes - accessible by Admin and Root
     Route::post('/system', [AdminSystemController::class, 'save']);
@@ -791,8 +798,8 @@ Route::middleware('auth')->group(function () {
     Route::patch('/sales/{field}', [CustomerSaleController::class, 'boolean']);
     Route::delete('/sales/{id}', [CustomerSaleController::class, 'delete']);
   });
-  Route::middleware('can:Provider')->prefix('provider')->group(function () {
-    Route::post('/vault/paginate', [ProviderController::class, 'paginateVault']);
+  Route::middleware('can:Seller')->prefix('seller')->group(function () {
+    Route::post('/vault/paginate', [SellerController::class, 'paginateVault']);
   });
 });
 

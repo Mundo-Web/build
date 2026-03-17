@@ -11,6 +11,7 @@
       { "label": "Cupones", "href": "/admin/coupons", "icon": "mdi mdi-brightness-percent" },
       { "label": "Reglas de Descuento", "href": "/admin/discount-rules", "icon": "mdi mdi-pencil-ruler" },
       { "label": "Plan de Carrera", "href": "/admin/ranks", "icon": "mdi mdi-seal-variant" },
+      { "label": "Bonos Grupales", "href": "/admin/rank-bonuses", "icon": "mdi mdi-gift-outline" },
       {
         "label": "Productos",
         "icon": "mdi mdi-view-dashboard",
@@ -107,7 +108,7 @@
         "children": [
           { "label": "Sistema", "href": "/admin/users", "icon": "mdi mdi-account-box-multiple" },
           { "label": "Clientes", "href": "/admin/clients", "icon": "mdi mdi-account-group" },
-          { "label": "Proveedores", "href": "/admin/providers", "icon": "mdi mdi-account-tie" }
+          { "label": "Vendedores", "href": "/admin/sellers", "icon": "mdi mdi-account-tie" }
         ]
       },
       { "label": "Menus", "href": "/admin/menus", "icon": "mdi mdi-menu", "role": "Root"},

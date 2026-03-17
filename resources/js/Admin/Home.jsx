@@ -9,7 +9,7 @@ import { Toaster, toast } from "sonner";
 import HomeRest from "../Actions/Admin/HomeRest";
 import Tippy from "@tippyjs/react";
 import { CurrencySymbol } from "../Utils/Number2Currency";
-import ProviderTreeCard from "../Components/Adminto/ProviderTreeCard";
+import SellerTreeCard from "../Components/Adminto/SellerTreeCard";
 
 const homeRest = new HomeRest();
 
@@ -265,9 +265,9 @@ const Home = ({
             name: "Vistas de Productos por Dispositivo",
             category: "Gráficos",
         },
-        // Organigrama de Proveedores
-        provider_tree: {
-            name: "Organigrama de Proveedores",
+        // Organigrama de Vendedores
+        seller_tree: {
+            name: "Organigrama de Vendedores",
             category: "Tablas",
         },
     };
@@ -5862,10 +5862,10 @@ const Home = ({
                 )}
             </div>
 
-            {/* Organigrama de Proveedores */}
-            {shouldShowCard("provider_tree") && (
+            {/* Organigrama de Vendedores */}
+            {shouldShowCard("seller_tree") && (
                 <div className="row g-4 mb-4">
-                    <ProviderTreeCard />
+                    <SellerTreeCard />
                 </div>
             )}
 

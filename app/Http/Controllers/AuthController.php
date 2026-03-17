@@ -46,6 +46,12 @@ class AuthController extends Controller
         case 'Root':
           return redirect('/admin/home');
           break;
+        case 'Seller':
+          return redirect('/seller/home');
+          break;
+        case 'Customer':
+          return redirect('/customer/dashboard');
+          break;
         default:
           Auth::guard('web')->logout();
           $request->session()->invalidate();

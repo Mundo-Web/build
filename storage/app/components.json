@@ -633,9 +633,9 @@
                 ]
             },
             {
-                "id": "WhatsAppProvider",
+                "id": "WhatsAppSeller",
                 "icon": "mdi mdi-whatsapp",
-                "name": "WhatsApp (Proveedor)",
+                "name": "WhatsApp (Vendedor)",
                 "image": "floating-whatsapp.png",
                 "generals": [
                     "whatsapp_advisors"

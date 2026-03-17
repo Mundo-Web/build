@@ -37,8 +37,8 @@ export default function SignUpSimple({ data }) {
         const invitationToken = urlParams.get("token");
 
         // Si hay una invitación, obtener los datos
-        if (invitationType === "provider" && invitationToken) {
-            fetch(`/api/provider-invitation/${invitationToken}`)
+        if (invitationType === "seller" && invitationToken) {
+            fetch(`/api/seller-invitation/${invitationToken}`)
                 .then((res) => res.json())
                 .then((data) => {
                     if (data.success && data.data) {
@@ -235,7 +235,7 @@ export default function SignUpSimple({ data }) {
                                         {invitationData && (
                                             <p className="text-xs text-gray-500 mt-1">
                                                 Este email está vinculado a tu
-                                                invitación como proveedor
+                                                invitación como vendedor
                                             </p>
                                         )}
                                     </div>

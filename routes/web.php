@@ -57,7 +57,7 @@ use App\Http\Controllers\Admin\ComplaintController as AdminComplaintController;
 use App\Http\Controllers\Admin\WhistleblowingController as AdminWhistleblowingController;
 use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\Admin\ClientController as AdminClientController;
-use App\Http\Controllers\Admin\ProviderController;
+use App\Http\Controllers\Admin\SellerController as AdminSellerController;
 use App\Http\Controllers\Admin\JobApplicationController as AdminJobApplicationController;
 use App\Http\Controllers\Admin\RoleHasMenuController;
 // Public 
@@ -176,9 +176,10 @@ Route::middleware(['can:Admin', 'auth'])->prefix('admin')->group(function () {
     Route::get('/coupons', [AdminCouponController::class, 'reactView'])->name('Admin/Coupons.jsx');
     Route::get('/faqs', [AdminFaqController::class, 'reactView'])->name('Admin/Faqs.jsx');
     Route::get('/ranks', [AdminRankController::class, 'reactView'])->name('Admin/Ranks.jsx');
+    Route::get('/rank-bonuses', [\App\Http\Controllers\Admin\RankBonusController::class, 'reactView'])->name('Admin/RankBonuses.jsx');
     Route::get('/users', [AdminUserController::class, 'reactView'])->name('Admin/Users.jsx');
     Route::get('/clients', [AdminClientController::class, 'reactView'])->name('Admin/Clients.jsx');
-    Route::get('/providers', [ProviderController::class, 'reactView'])->name('Admin/Providers.jsx');
+    Route::get('/sellers', [AdminSellerController::class, 'reactView'])->name('Admin/Sellers.jsx');
 
 
     Route::get('/gallery', [AdminGalleryController::class, 'reactView'])->name('Admin/Gallery.jsx');
@@ -193,12 +194,12 @@ Route::middleware(['can:Customer', 'auth'])->prefix('customer')->group(function 
     Route::get('/orders', [CustomerSaleController::class, 'reactView'])->name('Customer/Sales.jsx');
 });
 
-Route::middleware(['can:Provider', 'auth'])->prefix('provider')->group(function () {
-    Route::get('/home', [ProviderController::class, 'dashboard'])->name('Provider/Home.jsx');
-    Route::get('/vault', [ProviderController::class, 'vault'])->name('Provider/Vault.jsx');
-    Route::get('/profile', [ProviderController::class, 'profile'])->name('Provider/Profile.jsx');
-    Route::get('/job-applications', [ProviderController::class, 'jobApplications'])->name('Provider/JobApplications.jsx');
-    Route::get('/referrals', [ProviderController::class, 'referrals'])->name('Provider/Referrals.jsx');
+Route::middleware(['auth', 'can:Seller'])->prefix('seller')->group(function () {
+    Route::get('/home', [AdminSellerController::class, 'dashboard'])->name('Seller/Home.jsx');
+    Route::get('/vault', [AdminSellerController::class, 'vault'])->name('Seller/Vault.jsx');
+    Route::get('/profile', [AdminSellerController::class, 'profile'])->name('Seller/Profile.jsx');
+    Route::get('/job-applications', [AdminSellerController::class, 'jobApplications'])->name('Seller/JobApplications.jsx');
+    Route::get('/referrals', [AdminSellerController::class, 'referrals'])->name('Seller/Referrals.jsx');
 });
 
 // Email verification route

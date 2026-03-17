@@ -30,7 +30,8 @@ class NotificationVariablesController extends Controller
             'admin_whistleblowing' => \App\Notifications\AdminWhistleblowingNotification::class,
             'job_application' => \App\Notifications\JobApplicationNotification::class,
             'admin_job_application' => \App\Notifications\AdminJobApplicationNotification::class,
-            'invite_provider' => \App\Notifications\InviteProviderNotification::class,
+            'invite_seller' => \App\Notifications\InviteSellerNotification::class,
+            'welcome_seller' => \App\Notifications\WelcomeSellerNotification::class,
         ];
 
         if (array_key_exists($type, $mapping)) {

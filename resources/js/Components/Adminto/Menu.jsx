@@ -432,19 +432,19 @@ const Menu = ({ session, hasRole }) => {
                         </ul>
                     </div>
                 )}
-                {hasRole("Provider") && !hasAnyRole(["Root", "Admin"]) && (
+                {hasRole("Seller") && !hasAnyRole(["Root", "Admin"]) && (
                     <div id="sidebar-menu" className="show">
                         <ul id="side-menu">
-                            <li className="menu-title">Asesoría</li>
+                            <li className="menu-title">Ventas</li>
 
                             <MenuItem
-                                href="/provider/home"
+                                href="/seller/home"
                                 icon="mdi mdi-view-dashboard-outline"
                             >
                                 Dashboard
                             </MenuItem>
                             <MenuItem
-                                href="/provider/vault"
+                                href="/seller/vault"
                                 icon="mdi mdi-safe-square-outline"
                             >
                                 Mi Bóveda
@@ -452,13 +452,13 @@ const Menu = ({ session, hasRole }) => {
 
                             <li className="menu-title">Mi Red</li>
                             <MenuItem
-                                href="/provider/referrals"
+                                href="/seller/referrals"
                                 icon="mdi mdi-account-group-outline"
                             >
                                 Mis Referidos
                             </MenuItem>
                             <MenuItem
-                                href="/provider/job-applications"
+                                href="/seller/job-applications"
                                 icon="mdi mdi-clipboard-text-outline"
                             >
                                 Mis Solicitudes
@@ -466,7 +466,7 @@ const Menu = ({ session, hasRole }) => {
 
                             <li className="menu-title">Configuración</li>
                             <MenuItem
-                                href="/provider/profile"
+                                href="/seller/profile"
                                 icon="mdi mdi-account-cog-outline"
                             >
                                 Mi Perfil

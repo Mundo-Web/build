@@ -32,7 +32,7 @@ class JobApplicationController extends BasicController
             'phone' => 'nullable|string',
             'position' => 'nullable|string',
             'message' => 'nullable|string',
-            'type' => 'nullable|string|in:job,provider',
+            'type' => 'nullable|string|in:job,seller',
         ], $messages);
 
         // Agregar campos adicionales

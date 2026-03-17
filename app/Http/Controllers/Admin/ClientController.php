@@ -23,14 +23,14 @@ class ClientController extends BasicController
 
         return $query;
     }
-    public function promoteToProvider(Request $request, $id)
+    public function promoteToSeller(Request $request, $id)
     {
         try {
             $user = User::findOrFail($id);
 
-            // Eliminar rol de cliente y asignar proveedor
+            // Eliminar rol de cliente y asignar vendedor
             $user->removeRole('Customer');
-            $user->assignRole('Provider');
+            $user->assignRole('Seller');
 
             // Generar UUID si no tiene (aunque User ya debería tenerlo por observer/creation)
             if (!$user->uuid) {
@@ -40,7 +40,7 @@ class ClientController extends BasicController
 
             return response()->json([
                 'status' => 200,
-                'message' => 'Cliente promovido a Proveedor exitosamente',
+                'message' => 'Cliente promovido a Vendedor exitosamente',
                 'data' => $user
             ]);
         } catch (\Exception $e) {

@@ -331,10 +331,10 @@ const HeaderSticky = ({
         isCustomer =
             !roleNames.includes("admin") &&
             !roleNames.includes("root") &&
-            !roleNames.includes("provider");
+            !roleNames.includes("seller");
 
-        if (roleNames.includes("provider")) {
-            dashboardUrl = "/provider/home";
+        if (roleNames.includes("seller")) {
+            dashboardUrl = "/seller/home";
         }
     }
 

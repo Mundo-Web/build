@@ -25,9 +25,11 @@ class SaleObserver
         if ($sale->isDirty('status_id')) {
             $newStatus = SaleStatus::find($sale->status_id);
 
-            // Si el estado es "Culminado" o "Pagado" (dependiendo de tu lógica comercial)
-            // Aquí lo activamos para 'Culminado' o cualquier estado final que consideres
-            if ($newStatus && in_array(strtolower($newStatus->name), ['culminado', 'pagado', 'completado'])) {
+            // Si el estado es "Culminado", "Pagado" o similar
+            if ($newStatus && (
+                in_array(strtolower($newStatus->name), ['culminado', 'pagado', 'completado', 'entregado']) || 
+                str_contains(strtolower($newStatus->name), 'pagado')
+            )) {
                 Log::info("Procesando Cerebro Financiero para venta: " . $sale->code);
                 $this->financialEngine->processSale($sale);
             }
@@ -41,7 +43,10 @@ class SaleObserver
     {
         // Si la venta nace ya pagada (ej. por pasarela de pago), podrías procesarla aquí también
         $newStatus = SaleStatus::find($sale->status_id);
-        if ($newStatus && in_array(strtolower($newStatus->name), ['culminado', 'pagado', 'completado'])) {
+        if ($newStatus && (
+            in_array(strtolower($newStatus->name), ['culminado', 'pagado', 'completado', 'entregado']) || 
+            str_contains(strtolower($newStatus->name), 'pagado')
+        )) {
             $this->financialEngine->processSale($sale);
         }
     }

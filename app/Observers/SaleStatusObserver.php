@@ -110,7 +110,10 @@ class SaleStatusObserver
     protected function processFinancialBrain(Sale $sale)
     {
         $status = SaleStatus::find($sale->status_id);
-        if ($status && in_array(strtolower($status->name), ['culminado', 'pagado', 'completado'])) {
+        if ($status && (
+            in_array(strtolower($status->name), ['culminado', 'pagado', 'completado', 'entregado']) || 
+            str_contains(strtolower($status->name), 'pagado')
+        )) {
             Log::info("🔵 [Cerebro Financiero] Procesando venta: {$sale->code}");
             $this->financialEngine->processSale($sale);
         }

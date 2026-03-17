@@ -11,11 +11,11 @@ import Swal from "sweetalert2";
 import JobApplicationsRest from "../Actions/Admin/JobApplicationsRest";
 import InputFormGroup from "../Components/Adminto/form/InputFormGroup";
 import TextareaFormGroup from "../Components/Adminto/form/TextareaFormGroup";
-import ProvidersRest from "../Actions/Admin/ProvidersRest";
+import SellersRest from "../Actions/Admin/SellersRest";
 import Fillable from "../Utils/Fillable";
 
 const jobApplicationsRest = new JobApplicationsRest();
-const providersRest = new ProvidersRest();
+const sellersRest = new SellersRest();
 
 const JobApplications = () => {
     const gridRef = useRef();
@@ -147,9 +147,9 @@ const JobApplications = () => {
         $(gridRef.current).dxDataGrid("instance").refresh();
     };
 
-    const onAcceptAsProvider = async (data) => {
+    const onAcceptAsSeller = async (data) => {
         const { isConfirmed } = await Swal.fire({
-            title: "¿Aceptar como proveedor?",
+            title: "¿Aceptar como vendedor?",
             text: `Se creará una cuenta y se enviará un correo de bienvenida a ${data.email}`,
             icon: "question",
             showCancelButton: true,
@@ -159,7 +159,7 @@ const JobApplications = () => {
 
         if (!isConfirmed) return;
 
-        const result = await providersRest.acceptApplication({
+        const result = await sellersRest.acceptApplication({
             id: data.id,
         });
         if (result) {
@@ -239,9 +239,9 @@ const JobApplications = () => {
                         caption: "Tipo",
                         width: "100px",
                         cellTemplate: (container, { data }) => {
-                            const isProvider = data.type === "provider";
+                            const isSeller = data.type === "seller";
                             container.append(
-                                `<span class="badge ${isProvider ? "bg-primary" : "bg-info"}">${isProvider ? "Proveedor" : "Trabajo"}</span>`,
+                                `<span class="badge ${isSeller ? "bg-primary" : "bg-info"}">${isSeller ? "Vendedor" : "Trabajo"}</span>`,
                             );
                         },
                     },
@@ -359,8 +359,8 @@ const JobApplications = () => {
                                 }),
                             );
 
-                            // Solo mostrar botón de invitar si el tipo es 'provider'
-                            if (data.type === "provider") {
+                            // Solo mostrar botón de invitar si el tipo es 'seller'
+                            if (data.type === "seller") {
                                 const isEmailRegistered =
                                     data.email_registered &&
                                     data.email_registered > 0;
@@ -387,10 +387,10 @@ const JobApplications = () => {
                                         DxButton({
                                             className:
                                                 "btn btn-xs btn-soft-primary",
-                                            title: "Aceptar como proveedor (Crear cuenta)",
+                                            title: "Aceptar como vendedor (Crear cuenta)",
                                             icon: "fa fa-user-check",
                                             onClick: () =>
-                                                onAcceptAsProvider(data),
+                                                onAcceptAsSeller(data),
                                         }),
                                     );
                                 }
