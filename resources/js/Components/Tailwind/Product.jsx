@@ -44,6 +44,9 @@ import ProductLaPetaca from "./Products/ProductLaPetaca";
 const ProductListPanelPro = React.lazy(
     () => import("./Products/ProductListPanelPro"),
 );
+const ProductListCardPanelPro = React.lazy(
+    () => import("./Products/ProductListCardPanelPro"),
+);
 const ProductListHostinfinity = React.lazy(
     () => import("./Products/ProductListHostinfinity"),
 );
@@ -261,6 +264,17 @@ const Product = ({
             case "ProductListPanelPro":
                 return (
                     <ProductListPanelPro
+                        data={data}
+                        items={items}
+                        cart={cart}
+                        setCart={setCart}
+                        generals={generals}
+                        onClickTracking={handleClickTracking}
+                    />
+                );
+            case "ProductListCardPanelPro":
+                return (
+                    <ProductListCardPanelPro
                         data={data}
                         items={items}
                         cart={cart}

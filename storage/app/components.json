@@ -2939,6 +2939,40 @@
                 ]
             },
             {
+                "id": "ProductListCardPanelPro",
+                "name": "Productos - Card Panel Pro",
+                "image": "products-panelpro.png",
+                "data": [
+                    "title",
+                    "subtitle",
+                    "description"
+                ],
+                "using": {
+                    "model": "Item",
+                    "filters": [
+                        "featured",
+                        "recommended",
+                        "offering",
+                        "is_new",
+                        "is_master"
+                    ],
+                    "with": [
+                        "category",
+                        "subcategory",
+                        "brand",
+                        "images",
+                        "features",
+                        "amenities",
+                        "specifications",
+                        "attributes",
+                        "applications"
+                    ]
+                },
+                "generals": [
+                    "whatsapp_advisors"
+                ]
+            },
+            {
                 "id": "ProductListHostinfinity",
                 "name": "Productos - Hostinfinity (SaaS)",
                 "image": "products-hostinfinity.png",

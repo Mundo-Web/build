@@ -154,7 +154,7 @@ class HomeController extends BasicController
         $messagesYear = Message::whereBetween('created_at', [$startOfYear, Carbon::now()])->count();
 
         // Mensajes no leídos
-        $messagesUnread = Message::where('seen', false)->count();
+        $messagesUnread = Message::where('seen', 0)->where('status', 1)->count();
 
         // Satisfacción del cliente (dummy, si no hay tabla de feedback)
         $customerSatisfaction = 94.3;
