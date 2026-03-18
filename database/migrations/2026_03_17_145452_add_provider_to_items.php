@@ -13,9 +13,7 @@ return new class extends Migration
     {
         Schema::table('items', function (Blueprint $table) {
             if (!Schema::hasColumn('items', 'provider_id')) {
-                $table->char('provider_id', 36)->nullable()->after('store_id');
-                // Solo agregar llave foránea si estamos creando la columna
-                $table->foreign('provider_id')->references('id')->on('users')->onDelete('set null');
+                $table->foreignId('provider_id')->nullable()->after('store_id')->constrained('users')->onDelete('set null');
             }
             if (!Schema::hasColumn('items', 'review_status')) {
                 $table->enum('review_status', ['pending', 'approved', 'rejected'])->default('approved')->after('provider_id');
