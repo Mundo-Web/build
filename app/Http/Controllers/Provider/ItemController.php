@@ -29,4 +29,20 @@ class ItemController extends AdminItemController
 
         return parent::save($request);
     }
+
+    public function afterSave(Request $request, object $jpa, ?bool $isNew)
+    {
+        if ($isNew) {
+            try {
+                $corporateEmail = \App\Helpers\NotificationHelper::getCorporateEmail();
+                if ($corporateEmail) {
+                    $provider = \Illuminate\Support\Facades\Auth::user();
+                    \Illuminate\Support\Facades\Notification::route('mail', $corporateEmail)
+                        ->notify(new \App\Notifications\AdminNewItemNotification($jpa, $provider));
+                }
+            } catch (\Exception $e) {
+                \Illuminate\Support\Facades\Log::error('Error enviando notificación a admin de nuevo producto: ' . $e->getMessage());
+            }
+        }
+    }
 }

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\BasicController;
 use App\Models\Brand;
+use App\Models\General;
 use App\Models\Category;
 use App\Models\Collection;
 use App\Models\Item;
@@ -835,6 +836,24 @@ class ItemController extends BasicController
             }
 
             $item->save();
+
+            // Enviar notificación al proveedor
+            if ($item->provider && !empty($item->provider->email)) {
+                try {
+                    $statusMessages = [
+                        'approved' => 'Tu producto ha sido aprobado y ya está visible en la tienda.',
+                        'rejected' => 'Tu producto ha sido rechazado. Por favor, revisa tus datos y contacta con soporte para más información.',
+                        'pending' => 'Tu producto ha vuelto a estado de revisión pendiente.'
+                    ];
+
+                    $message = $statusMessages[$item->review_status] ?? 'Se ha actualizado el estado de revisión de tu producto.';
+                    
+                    $item->provider->notify(new \App\Notifications\ItemReviewStatusNotification($item, $message));
+                    
+                } catch (\Exception $emailEx) {
+                    \Illuminate\Support\Facades\Log::error('Error enviando notificación de estado a proveedor: ' . $emailEx->getMessage());
+                }
+            }
 
             return response()->json(['status' => true, 'message' => 'Estado de revisión actualizado correctamente']);
         } catch (\Exception $e) {

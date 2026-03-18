@@ -32,6 +32,7 @@ class DatabaseSeeder extends Seeder
             StatusSeeder::class,
             JobApplicationEmailTemplatesSeeder::class,
             CareerPlanSeeder::class,
+            ItemEmailTemplatesSeeder::class,
         ]);
 
         File::save(storage_path('app/pages.json'), '[]');

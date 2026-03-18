@@ -257,6 +257,8 @@ const Generals = ({
         "welcome_seller_email",
         "invite_provider_email",
         "welcome_provider_email",
+        "item_status_changed_email",
+        "admin_new_item_email",
     ];
 
     // Memoizar plantillas de email - solo las que existen (para mostrar en UI)
@@ -319,6 +321,8 @@ const Generals = ({
             welcome_seller_email: "welcome_seller",
             invite_provider_email: "invite_provider",
             welcome_provider_email: "welcome_provider",
+            item_status_changed_email: "item_status_changed",
+            admin_new_item_email: "admin_new_item",
         };
         const type = correlativeToType[selectedEmailCorrelative];
         if (!type) {
@@ -2193,6 +2197,10 @@ const Generals = ({
                                                 "Invitar Proveedor",
                                             welcome_provider_email:
                                                 "Bienvenida Proveedor",
+                                            item_status_changed_email:
+                                                "Cambio de Estado de Producto",
+                                            admin_new_item_email:
+                                                "Nuevo Producto de Proveedor",
                                         };
                                         return (
                                             <option
