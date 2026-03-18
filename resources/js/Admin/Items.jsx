@@ -300,6 +300,12 @@ const Items = ({
         e.dataTransfer.effectAllowed = "move";
     };
 
+    const handleStatusChange = async (id, status) => {
+        const result = await itemsRest.setStatus({ id, status });
+        if (!result) return;
+        $(gridRef.current).dxDataGrid("instance").refresh();
+    };
+
     const handleVideoDragEnd = () => {
         setDraggedVideoIndex(null);
     };
@@ -1144,6 +1150,85 @@ const Items = ({
                                             "/api/cover/thumbnail/null")
                                     }
                                 />,
+                            );
+                        },
+                    },
+                    Fillable.has("items", "provider_id") && {
+                        dataField: "provider.name",
+                        caption: "Proveedor",
+                        width: "120px",
+                        cellTemplate: (container, { data }) => {
+                            container.html(
+                                renderToString(
+                                    <span
+                                        className={
+                                            data.provider
+                                                ? "text-primary fw-bold"
+                                                : "text-muted small"
+                                        }
+                                    >
+                                        {data.provider
+                                            ? data.provider.name
+                                            : "Sistema"}
+                                    </span>,
+                                ),
+                            );
+                        },
+                    },
+                    Fillable.has("items", "review_status") && {
+                        dataField: "review_status",
+                        caption: "Revisión",
+                        width: "100px",
+                        cellTemplate: (container, { data }) => {
+                            const status = data.review_status || "approved";
+                            const labels = {
+                                pending: "Pendiente",
+                                approved: "Aprobado",
+                                rejected: "Rechazado",
+                            };
+                            const classNames = {
+                                pending: "bg-warning",
+                                approved: "bg-success",
+                                rejected: "bg-danger",
+                            };
+
+                            ReactAppend(
+                                container,
+                                <select
+                                    className={`badge ${classNames[status]} border-0 rounded-pill cursor-pointer text-center px-2`}
+                                    value={status}
+                                    onChange={(e) =>
+                                        handleStatusChange(
+                                            data.id,
+                                            e.target.value,
+                                        )
+                                    }
+                                    style={{
+                                        cursor: "pointer",
+                                        appearance: "none",
+                                        WebkitAppearance: "none",
+                                        minWidth: "90px",
+                                    }}
+                                >
+                                    <option
+                                        value="approved"
+                                        className="bg-white text-dark"
+                                    >
+                                        Aprobado
+                                    </option>
+                                    <option
+                                        value="pending"
+                                        className="bg-white text-dark"
+                                    >
+                                        Pendiente
+                                    </option>
+                                    <option
+                                        value="rejected"
+                                        className="bg-white text-dark"
+                                    >
+                                        Rechazado
+                                    </option>
+                                </select>,
                             );
                         },
                     },

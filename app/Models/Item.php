@@ -55,6 +55,8 @@ class Item extends Model
         'is_master',
         'weight',
         'store_id',
+        'provider_id',
+        'review_status',
 
         // Campos para habitaciones
         'max_occupancy',
@@ -157,6 +159,11 @@ class Item extends Model
         return $this->hasOne(Store::class, 'id', 'store_id');
     }
 
+    public function provider()
+    {
+        return $this->belongsTo(User::class, 'provider_id');
+    }
+
     public function tags()
     {
         return $this->belongsToMany(Tag::class, 'item_tags', 'item_id', 'tag_id')
@@ -249,6 +256,17 @@ class Item extends Model
     public function scopeRooms($query)
     {
         return $query->where('type', 'room');
+    }
+
+    /**
+     * Scope para filtrar solo productos aprobados o sin proveedor (admin)
+     */
+    public function scopeApproved($query)
+    {
+        return $query->where(function ($q) {
+            $q->where('review_status', 'approved')
+                ->orWhereNull('provider_id');
+        });
     }
 
     /**

@@ -98,6 +98,7 @@ const Generals = ({
             "admin_job_application_email",
             "invite_seller_email",
             "welcome_seller_email",
+            "invite_provider_email",
         ],
         contact: [
             "phone_contact",
@@ -254,6 +255,8 @@ const Generals = ({
         "admin_job_application_email",
         "invite_seller_email",
         "welcome_seller_email",
+        "invite_provider_email",
+        "welcome_provider_email",
     ];
 
     // Memoizar plantillas de email - solo las que existen (para mostrar en UI)
@@ -314,6 +317,8 @@ const Generals = ({
             admin_job_application_email: "admin_job_application",
             invite_seller_email: "invite_seller",
             welcome_seller_email: "welcome_seller",
+            invite_provider_email: "invite_provider",
+            welcome_provider_email: "welcome_provider",
         };
         const type = correlativeToType[selectedEmailCorrelative];
         if (!type) {
@@ -2184,6 +2189,10 @@ const Generals = ({
                                                 "Invitar Vendedor",
                                             welcome_seller_email:
                                                 "Bienvenida Vendedor",
+                                            invite_provider_email:
+                                                "Invitar Proveedor",
+                                            welcome_provider_email:
+                                                "Bienvenida Proveedor",
                                         };
                                         return (
                                             <option
@@ -2418,13 +2427,29 @@ const Generals = ({
                                                         className="form-check-input mt-0"
                                                         type="checkbox"
                                                         id="is_ecommerce"
-                                                        checked={formData.is_ecommerce}
-                                                        onChange={(e) => handleFieldChange("is_ecommerce", e.target.checked)}
-                                                        style={{ width: '2.5rem', height: '1.25rem', cursor: 'pointer' }}
+                                                        checked={
+                                                            formData.is_ecommerce
+                                                        }
+                                                        onChange={(e) =>
+                                                            handleFieldChange(
+                                                                "is_ecommerce",
+                                                                e.target
+                                                                    .checked,
+                                                            )
+                                                        }
+                                                        style={{
+                                                            width: "2.5rem",
+                                                            height: "1.25rem",
+                                                            cursor: "pointer",
+                                                        }}
                                                     />
-                                                    <label className="form-check-label fw-bold mb-0 cursor-pointer" htmlFor="is_ecommerce">
+                                                    <label
+                                                        className="form-check-label fw-bold mb-0 cursor-pointer"
+                                                        htmlFor="is_ecommerce"
+                                                    >
                                                         <i className="fas fa-shopping-cart text-primary me-2"></i>
-                                                        ¿Este proyecto es un E-commerce?
+                                                        ¿Este proyecto es un
+                                                        E-commerce?
                                                     </label>
                                                     <Tippy content="Si se activa, se habilitarán opciones de búsqueda y catálogo en el Schema de Google.">
                                                         <i className="fas fa-question-circle text-muted small cursor-help"></i>

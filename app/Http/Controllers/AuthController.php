@@ -49,6 +49,9 @@ class AuthController extends Controller
         case 'Seller':
           return redirect('/seller/home');
           break;
+        case 'Provider':
+          return redirect('/provider/home');
+          break;
         case 'Customer':
           return redirect('/customer/dashboard');
           break;

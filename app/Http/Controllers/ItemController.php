@@ -207,7 +207,9 @@ class ItemController extends BasicController
             ->leftJoin('item_tags AS item_tag', 'item_tag.item_id', 'items.id')
             ->leftJoin('item_amenity AS item_amenity', 'item_amenity.item_id', 'items.id')
             ->where('items.status', true)
-            ->where('items.visible', true);
+            ->where('items.visible', true)
+            ->where('items.review_status', 'approved');
+
 
 
         // Búsqueda inteligente con paráfrasis: detectar términos en cualquier orden

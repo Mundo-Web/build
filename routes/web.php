@@ -58,6 +58,7 @@ use App\Http\Controllers\Admin\WhistleblowingController as AdminWhistleblowingCo
 use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\Admin\ClientController as AdminClientController;
 use App\Http\Controllers\Admin\SellerController as AdminSellerController;
+use App\Http\Controllers\Admin\ProviderController as AdminProviderController;
 use App\Http\Controllers\Admin\JobApplicationController as AdminJobApplicationController;
 use App\Http\Controllers\Admin\RoleHasMenuController;
 // Public 
@@ -129,6 +130,8 @@ Route::middleware(['can:Admin', 'auth'])->prefix('admin')->group(function () {
     Route::get('/discount-rules', [AdminDiscountRulesController::class, 'reactView'])->name('Admin/DiscountRules.jsx');
     Route::get('/ads', [AdminAdController::class, 'reactView'])->name('Admin/Ads.jsx');
     Route::get('/job-applications', [AdminJobApplicationController::class, 'reactView'])->name('Admin/JobApplications.jsx');
+    Route::get('/role-has-menus', [RoleHasMenuController::class, 'reactView'])->name('Admin/RoleHasMenu.jsx');
+    Route::post('/items/status', [AdminItemController::class, 'setStatus']);
 
     Route::get('/combos', [AdminComboController::class, 'reactView'])->name('Admin/Combos.jsx');
 
@@ -180,6 +183,7 @@ Route::middleware(['can:Admin', 'auth'])->prefix('admin')->group(function () {
     Route::get('/users', [AdminUserController::class, 'reactView'])->name('Admin/Users.jsx');
     Route::get('/clients', [AdminClientController::class, 'reactView'])->name('Admin/Clients.jsx');
     Route::get('/sellers', [AdminSellerController::class, 'reactView'])->name('Admin/Sellers.jsx');
+    Route::get('/providers', [AdminProviderController::class, 'reactView'])->name('Admin/Providers.jsx');
 
 
     Route::get('/gallery', [AdminGalleryController::class, 'reactView'])->name('Admin/Gallery.jsx');
@@ -192,6 +196,11 @@ Route::middleware(['can:Admin', 'auth'])->prefix('admin')->group(function () {
 Route::middleware(['can:Customer', 'auth'])->prefix('customer')->group(function () {
     Route::get('/dashboard', [CustomerSaleController::class, 'reactView'])->name('Customer/Sales.jsx');
     Route::get('/orders', [CustomerSaleController::class, 'reactView'])->name('Customer/Sales.jsx');
+});
+
+Route::middleware(['auth', 'can:Provider'])->prefix('provider')->group(function () {
+    Route::get('/home', [\App\Http\Controllers\Provider\HomeController::class, 'reactView'])->name('Provider/Home.jsx');
+    Route::get('/items', [\App\Http\Controllers\Provider\ItemController::class, 'reactView'])->name('Provider/Items.jsx');
 });
 
 Route::middleware(['auth', 'can:Seller'])->prefix('seller')->group(function () {

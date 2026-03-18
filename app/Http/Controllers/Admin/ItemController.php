@@ -323,38 +323,51 @@ class ItemController extends BasicController
                 $agrupador = (string) Str::uuid();
             }
 
-            // Crear o actualizar el elemento
+            // Crear o actualizar el elemento - Preparar datos
+            $data = [
+                'category_id' => $request->input('category_id'),
+                'subcategory_id' => $subcategoryId,
+                'brand_id' => $brandId,
+                'collection_id' => $collectionId,
+                'store_id' => $storeId,
+                'name' => $request->input('name'),
+                'sku' => $request->input('sku'),
+                'color' => $request->input('color'),
+                'size' => $request->input('size'),
+                'summary' => $request->input('summary'),
+                'price' => $request->input('price'),
+                'discount' => $request->input('discount'),
+                'description' => $request->input('description'),
+                'weight' => $request->input('weight'),
+                'stock' => $request->input('stock', 0),
+                'type' => $request->input('type', 'product'),
+                'room_type' => $request->input('room_type'),
+                'max_occupancy' => $request->input('max_occupancy'),
+                'beds_count' => $request->input('beds_count'),
+                'size_m2' => $request->input('size_m2'),
+                'total_rooms' => $request->input('total_rooms'),
+                'is_master' => $request->boolean('is_master'),
+                'agrupador' => $agrupador,
+                'final_price' => $request->input('discount') > 0 ? $request->input('discount') : $request->input('price', 0),
+                'discount_percent' => ($request->input('price') > 0 && $request->input('discount') > 0)
+                    ? round((1 - ($request->input('discount') / $request->input('price'))) * 100)
+                    : 0,
+            ];
+
+            // Solo actualizar provider_id y review_status si vienen en el request
+            // o si es un registro nuevo (en cuyo caso default es approved para el admin)
+            if ($request->has('provider_id')) {
+                $data['provider_id'] = $request->input('provider_id');
+            }
+            if ($request->has('review_status')) {
+                $data['review_status'] = $request->input('review_status');
+            } else if (!$request->input('id')) {
+                $data['review_status'] = 'approved';
+            }
+
             $item = Item::updateOrCreate(
                 ['id' => $request->input('id')],
-                [
-                    'category_id' => $request->input('category_id'),
-                    'subcategory_id' => $subcategoryId,
-                    'brand_id' => $brandId,
-                    'collection_id' => $collectionId,
-                    'store_id' => $storeId,
-                    'name' => $request->input('name'),
-                    'sku' => $request->input('sku'),
-                    'color' => $request->input('color'),
-                    'size' => $request->input('size'),
-                    'summary' => $request->input('summary'),
-                    'price' => $request->input('price'),
-                    'discount' => $request->input('discount'),
-                    'description' => $request->input('description'),
-                    'weight' => $request->input('weight'),
-                    'stock' => $request->input('stock', 0),
-                    'type' => $request->input('type', 'product'),
-                    'room_type' => $request->input('room_type'),
-                    'max_occupancy' => $request->input('max_occupancy'),
-                    'beds_count' => $request->input('beds_count'),
-                    'size_m2' => $request->input('size_m2'),
-                    'total_rooms' => $request->input('total_rooms'),
-                    'is_master' => $request->boolean('is_master'),
-                    'agrupador' => $agrupador,
-                    'final_price' => $request->input('discount') > 0 ? $request->input('discount') : $request->input('price', 0),
-                    'discount_percent' => ($request->input('price') > 0 && $request->input('discount') > 0)
-                        ? round((1 - ($request->input('discount') / $request->input('price'))) * 100)
-                        : 0,
-                ]
+                $data
             );
 
             // Procesar PDFs (múltiples archivos con ordenamiento)
@@ -785,15 +798,48 @@ class ItemController extends BasicController
         ];
     }
 
-    public function setPaginationInstance(Request $request, string $model)
+    public function setPaginationInstance(Request $request, string $model): \Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Query\Builder
     {
         return $model::select(['items.*'])
-            ->with(['category', 'tags', 'store', 'subcategory', 'brand', 'images', 'collection', 'specifications', 'features', 'attributes'])
+            ->with(['category', 'tags', 'store', 'subcategory', 'brand', 'images', 'collection', 'specifications', 'features', 'attributes', 'provider'])
             ->leftJoin('categories AS category', 'category.id', 'items.category_id')
             ->leftJoin('brands AS brand', 'brand.id', 'items.brand_id')
             ->leftJoin('collections AS collection', 'collection.id', 'items.collection_id')
             ->leftJoin('stores AS store', 'store.id', 'items.store_id')
+            ->leftJoin('users AS provider', 'provider.id', 'items.provider_id')
             ->leftJoin('sub_categories AS subcategory', 'subcategory.id', 'items.subcategory_id');
+    }
+
+    public function setStatus(Request $request)
+    {
+        try {
+            $statusValue = $request->input('review_status') ?? $request->input('status');
+            
+            $request->merge(['review_status' => $statusValue]);
+
+            $request->validate([
+                'id' => 'required|exists:items,id',
+                'review_status' => 'required|in:pending,approved,rejected'
+            ]);
+
+            $item = Item::findOrFail($request->id);
+            $item->review_status = $request->review_status;
+            
+            // Si se aprueba, lo marcamos como visible/activo automáticamente
+            if ($request->review_status === 'approved') {
+                $item->status = true;
+                $item->visible = true;
+            } else if ($request->review_status === 'rejected') {
+                $item->status = false;
+                $item->visible = false;
+            }
+
+            $item->save();
+
+            return response()->json(['status' => true, 'message' => 'Estado de revisión actualizado correctamente']);
+        } catch (\Exception $e) {
+            return response()->json(['status' => false, 'message' => $e->getMessage()], 500);
+        }
     }
 
 

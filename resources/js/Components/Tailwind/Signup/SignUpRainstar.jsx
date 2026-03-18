@@ -86,37 +86,46 @@ export default function SignUpRainstar({ data }) {
         const invitationToken = urlParams.get("token");
 
         // Si hay una invitación, obtener los datos
-        if (invitationType === "seller" && invitationToken) {
-            fetch(`/api/seller-invitation/${invitationToken}`)
-                .then((res) => res.json())
-                .then((data) => {
-                    if (data.success && data.data) {
-                        setInvitationData({
-                            email: data.data.email,
-                            name: data.data.name,
-                            phone: data.data.phone,
-                            token: invitationToken,
-                            type: invitationType,
-                        });
+        if (invitationToken) {
+            const endpoint =
+                invitationType === "seller"
+                    ? `/api/seller-invitation/${invitationToken}`
+                    : invitationType === "provider"
+                      ? `/api/provider-invitation/${invitationToken}`
+                      : null;
 
-                        // Pre-llenar el formulario
-                        const nameParts = data.data.name
-                            ? data.data.name.trim().split(" ")
-                            : [];
-                        setFormData((prev) => ({
-                            ...prev,
-                            email: data.data.email || "",
-                            name: nameParts.length > 0 ? nameParts[0] : "",
-                            lastname:
-                                nameParts.length > 1
-                                    ? nameParts.slice(1).join(" ")
-                                    : "",
-                        }));
-                    }
-                })
-                .catch((err) => {
-                    console.error("Error fetching invitation:", err);
-                });
+            if (endpoint) {
+                fetch(endpoint)
+                    .then((res) => res.json())
+                    .then((data) => {
+                        if (data.status === 200 && data.data) {
+                            setInvitationData({
+                                email: data.data.email,
+                                name: data.data.name,
+                                phone: data.data.phone,
+                                token: invitationToken,
+                                type: invitationType,
+                            });
+
+                            // Pre-llenar el formulario
+                            const nameParts = data.data.name
+                                ? data.data.name.trim().split(" ")
+                                : [];
+                            setFormData((prev) => ({
+                                ...prev,
+                                email: data.data.email || "",
+                                name: nameParts.length > 0 ? nameParts[0] : "",
+                                lastname:
+                                    nameParts.length > 1
+                                        ? nameParts.slice(1).join(" ")
+                                        : "",
+                            }));
+                        }
+                    })
+                    .catch((err) => {
+                        console.error("Error fetching invitation:", err);
+                    });
+            }
         }
     }, []);
 
@@ -272,7 +281,10 @@ export default function SignUpRainstar({ data }) {
                                     {invitationData && (
                                         <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-neutral-light mt-2">
                                             Este email está vinculado a tu
-                                            invitación como vendedor
+                                            invitación como{" "}
+                                            {invitationData.type === "seller"
+                                                ? "vendedor"
+                                                : "proveedor"}
                                         </p>
                                     )}
                                 </div>

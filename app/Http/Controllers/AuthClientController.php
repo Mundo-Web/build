@@ -172,9 +172,11 @@ class AuthClientController extends BasicController
                 Log::error('Welcome email failed: ' . $th->getMessage());
             }
 
-            // Asignar rol por defecto Customer
-            $role = Role::firstOrCreate(['name' => 'Customer']);
-            $user->assignRole($role);
+            // Asignar rol por defecto Customer si no es invitación
+            if (!$request->invitation_type) {
+                $role = Role::firstOrCreate(['name' => 'Customer']);
+                $user->assignRole($role);
+            }
 
             // Validar si es una invitación de proveedor (Lógica posterior al registro base)
             try {
@@ -225,6 +227,27 @@ class AuthClientController extends BasicController
                                     ]);
                                 }
                             }
+                        }
+                    }
+                } elseif ($request->invitation_token && $request->invitation_type === 'provider') {
+                    $invitation = \App\Models\ProviderInvitation::where('token', $request->invitation_token)
+                        ->where('email', $email)
+                        ->where('status', 'pending')
+                        ->first();
+
+                    if ($invitation) {
+                        $invitation->status = 'accepted';
+                        $invitation->save();
+
+                        // Cambiar rol a Provider
+                        $user->syncRoles(['Provider']);
+
+                        // Enviar correo de bienvenida al proveedor
+                        try {
+                            $notificationService = new EmailNotificationService();
+                            $notificationService->sendToUser($user, new \App\Notifications\WelcomeProviderNotification($name, $email, $password));
+                        } catch (\Throwable $th) {
+                            Log::error('WelcomeProviderNotification failed: ' . $th->getMessage());
                         }
                     }
                 }

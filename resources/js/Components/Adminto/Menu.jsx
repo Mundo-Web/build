@@ -480,6 +480,40 @@ const Menu = ({ session, hasRole }) => {
                         </ul>
                     </div>
                 )}
+                {hasRole("Provider") && !hasAnyRole(["Root", "Admin"]) && (
+                    <div id="sidebar-menu" className="show">
+                        <ul id="side-menu">
+                            <MenuItem
+                                href="/provider/home"
+                                icon="mdi mdi-view-dashboard-outline"
+                            >
+                                Dashboard
+                            </MenuItem>
+
+                            <MenuItem
+                                href="/provider/items"
+                                icon="mdi mdi-package-variant-closed"
+                            >
+                                Mis Productos
+                            </MenuItem>
+
+                            <li className="menu-title">Perfil</li>
+                            <MenuItem
+                                href="/profile"
+                                icon="mdi mdi-account-box-outline"
+                            >
+                                Mi Perfil
+                            </MenuItem>
+
+                            <MenuItem
+                                href="/account"
+                                icon="mdi mdi-shield-lock-outline"
+                            >
+                                Mi Cuenta
+                            </MenuItem>
+                        </ul>
+                    </div>
+                )}
 
                 <div className="clearfix"></div>
             </div>

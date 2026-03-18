@@ -28,6 +28,7 @@ use App\Http\Controllers\Admin\StrengthController as AdminStrengthController;
 use App\Http\Controllers\Admin\BenefitController as AdminBenefitController;
 use App\Http\Controllers\Admin\AppController as AdminAppController;
 use App\Http\Controllers\Admin\CertificationController as AdminCertificationController;
+use App\Http\Controllers\Admin\ProviderController as AdminProviderController;
 use App\Http\Controllers\Admin\PartnerController as AdminPartnerController;
 use App\Http\Controllers\Admin\GeneralController as AdminGeneralController;
 use App\Http\Controllers\Admin\ProfileController as AdminProfileController;
@@ -178,6 +179,7 @@ Route::post('/reset-password-client', [AuthClientController::class, 'resetPasswo
 
 // Seller Invitations (public)
 Route::get('/seller-invitation/{token}', [SellerController::class, 'getInvitationByToken']);
+Route::get('/provider-invitation/{token}', [AdminProviderController::class, 'getInvitationByToken']);
 
 // Google OAuth routes
 Route::post('/google-login', [App\Http\Controllers\GoogleAuthController::class, 'loginWithGoogle']);
@@ -369,7 +371,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/items/media-update', [AdminItemController::class, 'updateMedia']);
     Route::post('/items', [AdminItemController::class, 'save']);
     Route::post('/items/paginate', [AdminItemController::class, 'paginate'])->withoutMiddleware('throttle');
-    Route::patch('/items/status', [AdminItemController::class, 'status']);
+    Route::match(['post', 'patch'], '/items/status', [AdminItemController::class, 'setStatus']);
     Route::patch('/items/{field}', [AdminItemController::class, 'boolean']);
     Route::delete('/items/{id}', [AdminItemController::class, 'delete']);
     Route::get('/items/export', [AdminItemController::class, 'export']);
@@ -718,6 +720,13 @@ Route::middleware('auth')->group(function () {
     Route::post('/sellers/vault', [SellerController::class, 'updateVault']);
     Route::delete('/sellers/vault/{id}', [SellerController::class, 'deleteVaultItem']);
     Route::delete('/sellers/{id}', [SellerController::class, 'delete']);
+
+    // Providers management
+    Route::post('/providers/paginate', [AdminProviderController::class, 'paginate']);
+    Route::post('/providers', [AdminProviderController::class, 'save']);
+    Route::patch('/providers/{field}', [AdminProviderController::class, 'boolean']);
+    Route::delete('/providers/{id}', [AdminProviderController::class, 'delete']);
+    Route::post('/providers/invite', [AdminProviderController::class, 'invite']);
   });
 
   Route::middleware('can:Admin')->prefix('admin')->group(function () {
@@ -797,6 +806,21 @@ Route::middleware('auth')->group(function () {
     Route::patch('/sales/status', [CustomerSaleController::class, 'status']);
     Route::patch('/sales/{field}', [CustomerSaleController::class, 'boolean']);
     Route::delete('/sales/{id}', [CustomerSaleController::class, 'delete']);
+  });
+
+  Route::middleware('can:Provider')->prefix('provider')->group(function () {
+
+    Route::post('/items/media-update', [\App\Http\Controllers\Provider\ItemController::class, 'updateMedia']);
+    Route::post('/items', [\App\Http\Controllers\Provider\ItemController::class, 'save']);
+    Route::post('/items/paginate', [\App\Http\Controllers\Provider\ItemController::class, 'paginate']);
+    Route::patch('/items/status', [\App\Http\Controllers\Provider\ItemController::class, 'status']);
+    Route::patch('/items/{field}', [\App\Http\Controllers\Provider\ItemController::class, 'boolean']);
+    Route::delete('/items/{id}', [\App\Http\Controllers\Provider\ItemController::class, 'delete']);
+    Route::get('/items/export', [\App\Http\Controllers\Provider\ItemController::class, 'export']);
+    Route::put('/items/{id}/reorder', [\App\Http\Controllers\Provider\ItemController::class, 'reorder']);
+    Route::post('/items/{id}/clone', [\App\Http\Controllers\Provider\ItemController::class, 'clone']);
+    Route::get('/items/variants/{agrupador}', [\App\Http\Controllers\Provider\ItemController::class, 'getVariants']);
+    Route::delete('/items/variant/{id}', [\App\Http\Controllers\Provider\ItemController::class, 'deleteVariant']);
   });
   Route::middleware('can:Seller')->prefix('seller')->group(function () {
     Route::post('/vault/paginate', [SellerController::class, 'paginateVault']);

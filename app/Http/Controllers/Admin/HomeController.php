@@ -40,6 +40,9 @@ class HomeController extends BasicController
         // Total stock disponible
         $totalStock = Item::where('visible', true)->where('status', 1)->sum('stock');
 
+        // Productos pendientes de revisión
+        $pendingProductsCount = Item::where('review_status', 'pending')->count();
+
         // Total ventas y monto generado hoy, mes, año
         $salesToday = Sale::whereDate('created_at', $today)->count();
         $salesMonth = Sale::whereBetween('created_at', [$startOfMonth, Carbon::now()])->count();
@@ -623,6 +626,7 @@ class HomeController extends BasicController
             'productClicksTodayByDevice' => $productClicksTodayByDevice,
             'productViewsByDevice' => $productViewsByDevice,
             'productViewsTodayByDevice' => $productViewsTodayByDevice,
+            'pendingProductsCount' => $pendingProductsCount,
             'dashboardVisibility' => $this->getDashboardVisibility(),
             'hasRootRole' => $this->hasRootRole(),
         ];

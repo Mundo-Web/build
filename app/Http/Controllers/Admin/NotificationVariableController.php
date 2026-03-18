@@ -35,6 +35,8 @@ class NotificationVariableController extends Controller
             'admin_job_application' => \App\Notifications\AdminJobApplicationNotification::class,
             'invite_seller'         => \App\Notifications\InviteSellerNotification::class,
             'welcome_seller'        => \App\Notifications\WelcomeSellerNotification::class,
+            'invite_provider'       => \App\Notifications\InviteProviderNotification::class,
+            'welcome_provider'      => \App\Notifications\WelcomeProviderNotification::class,
         ];
         if (!isset($map[$type])) {
             return response()->json(['error' => 'Tipo de notificación no válido'], 404);

@@ -81,7 +81,9 @@ const Home = ({
     productClicksTodayByDevice,
     // Props de vistas de productos por dispositivo
     productViewsByDevice,
+    // Vistas de productos hoy por dispositivo
     productViewsTodayByDevice,
+    pendingProductsCount,
 }) => {
     const [startDate, setStartDate] = useState(
         new Date(Date.now() - 29 * 24 * 60 * 60 * 1000),
@@ -269,6 +271,10 @@ const Home = ({
         seller_tree: {
             name: "Organigrama de Vendedores",
             category: "Tablas",
+        },
+        pending_products: {
+            name: "Productos Pendientes de Revisión",
+            category: "KPI",
         },
     };
 
@@ -486,6 +492,48 @@ const Home = ({
                                             Al día
                                         </div>
                                     )}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                )}
+                {shouldShowCard("pending_products") && pendingProductsCount > 0 && (
+                    <div className="col-xl-3 col-md-6">
+                        <div
+                            className="card border-0 h-100"
+                            style={{
+                                borderRadius: "1rem",
+                                boxShadow: "0 8px 25px rgba(0,0,0,0.08)",
+                                border: "2px solid #fbbf24",
+                            }}
+                        >
+                            <div className="card-body p-4">
+                                <div className="d-flex align-items-center justify-content-between mb-3">
+                                    <div
+                                        className="rounded-3 p-3"
+                                        style={{ background: "#fffbeb" }}
+                                    >
+                                        <i className="fas fa-exclamation-triangle text-warning fs-4"></i>
+                                    </div>
+                                    <div className="text-end">
+                                        <div className="fs-2 fw-bold text-dark mb-0">
+                                            {pendingProductsCount || "0"}
+                                        </div>
+                                        <div className="text-muted small">
+                                            Productos por Revisar
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="d-flex align-items-center justify-content-between">
+                                    <span className="text-muted small">
+                                        Proveedores esperando
+                                    </span>
+                                    <a
+                                        href="/admin/items"
+                                        className="btn btn-warning btn-sm rounded-pill px-3 fw-bold"
+                                    >
+                                        Gestionar
+                                    </a>
                                 </div>
                             </div>
                         </div>

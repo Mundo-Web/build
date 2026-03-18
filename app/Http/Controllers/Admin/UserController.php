@@ -43,7 +43,7 @@ class UserController extends BasicController
                 'name' => 'required|string|max:255',
                 'lastname' => 'required|string|max:255', 
                 'email' => 'required|email|max:255',
-                'role' => 'required|in:Admin,Root',
+                'role' => 'required|in:Admin,Root,Provider',
                 'status' => 'boolean'
             ];
 

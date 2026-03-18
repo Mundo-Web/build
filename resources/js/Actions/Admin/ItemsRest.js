@@ -127,6 +127,10 @@ class ItemsRest extends BasicRest {
             throw error;
         }
     };
+
+    setStatus = async ({ id, status }) => {
+        return await this.status({ id, status });
+    };
 }
 
 export default ItemsRest;

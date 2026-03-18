@@ -32,6 +32,9 @@ class NotificationVariablesController extends Controller
             'admin_job_application' => \App\Notifications\AdminJobApplicationNotification::class,
             'invite_seller' => \App\Notifications\InviteSellerNotification::class,
             'welcome_seller' => \App\Notifications\WelcomeSellerNotification::class,
+            'invite_provider' => \App\Notifications\InviteProviderNotification::class,
+            'welcome_provider' => \App\Notifications\WelcomeProviderNotification::class,
+
         ];
 
         if (array_key_exists($type, $mapping)) {
@@ -46,7 +49,7 @@ class NotificationVariablesController extends Controller
                 \Illuminate\Support\Facades\Log::warning("NotificationVariablesController: Method availableVariables not found in class {$notificationClass}");
             }
         } else {
-            \Illuminate\Support\Facades\Log::warning("NotificationVariablesController: Class not found or not mapped for type {$type} (Class: " . ($notificationClass ?? 'null') . ")");
+            \Illuminate\Support\Facades\Log::warning("NotificationVariablesController: Class not found [{$notificationClass}] or not mapped for type [{$type}]");
             // Fallback for types not mapped or classes without the method (backward compatibility)
             switch ($type) {
                 case 'purchase_summary':
