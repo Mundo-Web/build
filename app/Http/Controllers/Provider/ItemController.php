@@ -22,10 +22,28 @@ class ItemController extends AdminItemController
     public function save(Request $request): HttpResponse|ResponseFactory
     {
         // Forzar proveedor y estado de revisión al guardar
-        $request->merge([
+        $data = [
             'provider_id' => Auth::id(),
             'review_status' => 'pending'
-        ]);
+        ];
+
+        // Asegurar que el precio de venta se conserve si es un update
+        // o sea 0 si es nuevo, ya que el provider solo envía 'provider_price'
+        $id = $request->input('id');
+        if ($id) {
+            $item = Item::find($id);
+            if ($item) {
+                // Mantenemos el precio de venta público y descuentos actuales
+                $data['price'] = $item->price;
+                $data['discount'] = $item->discount;
+            }
+        } else {
+            // Para nuevos records, el precio público empieza en 0
+            $data['price'] = 0;
+            $data['discount'] = 0;
+        }
+
+        $request->merge($data);
 
         return parent::save($request);
     }

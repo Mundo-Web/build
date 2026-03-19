@@ -60,7 +60,7 @@ const Items = ({
     const sizeRef = useRef();
     const summaryRef = useRef();
     const priceRef = useRef();
-    const discountRef = useRef();
+
     const tagsRef = useRef();
     const bannerRef = useRef();
     const imageRef = useRef();
@@ -377,9 +377,9 @@ const Items = ({
         if (colorRef.current) colorRef.current.value = data?.color || "";
         if (sizeRef.current) sizeRef.current.value = data?.size || "";
         if (summaryRef.current) summaryRef.current.value = data?.summary || "";
-        if (priceRef.current) priceRef.current.value = data?.price || 0;
-        if (discountRef.current)
-            discountRef.current.value = data?.discount || 0;
+        if (priceRef.current)
+            priceRef.current.value = data?.provider_price || data?.price || 0;
+
         if (weightRef.current) weightRef.current.value = data?.weight || 0;
 
         SetSelectValue(tagsRef.current, data?.tags ?? [], "id", "name");
@@ -535,8 +535,8 @@ const Items = ({
             color: colorRef.current?.value,
             size: sizeRef.current?.value,
             summary: summaryRef.current?.value,
-            price: priceRef.current?.value || 0,
-            discount: discountRef.current?.value || 0,
+            provider_price: priceRef.current?.value || 0,
+            discount: 0,
             tags: $(tagsRef.current).val(),
             description:
                 descriptionRef.current?.value ||
@@ -1033,36 +1033,25 @@ const Items = ({
                         caption: "SKU",
                         width: "120px",
                     },
-                    Fillable.has("items", "final_price") && {
-                        dataField: "final_price",
-                        caption: "Precio",
+
+                    {
+                        dataField: "provider_price",
+                        caption: "P. Sugerido",
                         dataType: "number",
-                        width: "75px",
+                        width: "90px",
                         cellTemplate: (container, { data }) => {
                             container.html(
                                 renderToString(
-                                    <>
-                                        {data.discount > 0 && (
-                                            <small
-                                                className="d-block text-muted"
-                                                style={{
-                                                    textDecoration:
-                                                        "line-through",
-                                                }}
-                                            >
-                                                {CurrencySymbol()}{" "}
-                                                {Number2Currency(data.price)}
-                                            </small>
-                                        )}
-                                        <span>
+                                    <div className="text-start">
+                                        <span className="text-dark fw-bold small">
                                             {CurrencySymbol()}{" "}
                                             {Number2Currency(
-                                                data.discount > 0
-                                                    ? data.discount
-                                                    : data.price,
+                                                data.provider_price ||
+                                                    data.price ||
+                                                    0,
                                             )}
                                         </span>
-                                    </>,
+                                    </div>,
                                 ),
                             );
                         },
@@ -1914,16 +1903,10 @@ const Items = ({
                                             <div className="card-body">
                                                 <InputFormGroup
                                                     eRef={priceRef}
-                                                    label="Precio Regular"
+                                                    label="Precio del Proveedor (Sugerido)"
                                                     type="number"
                                                     step="0.01"
                                                     required
-                                                />
-                                                <InputFormGroup
-                                                    eRef={discountRef}
-                                                    label="Precio con Descuento"
-                                                    type="number"
-                                                    step="0.01"
                                                 />
                                             </div>
                                         </div>

@@ -24,6 +24,7 @@ class Item extends Model
         'name',
         'summary',
         'description',
+        'provider_price',
         'price',
         'discount',
         'final_price',

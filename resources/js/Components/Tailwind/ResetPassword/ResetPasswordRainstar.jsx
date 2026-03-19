@@ -160,7 +160,7 @@ export default function ResetPasswordRainstar({ data }) {
 
                     {/* Right Side: Content (Header + Form) */}
                     <div className="lg:col-span-6">
-                        <div className="max-w-md mx-auto lg:mx-0 py-12">
+                        <div className=" mx-auto lg:mx-0 py-12">
                             <div className="mb-12">
                                 <span className="text-[10px] font-black uppercase tracking-[0.4em] text-neutral-light mb-6 block">
                                     Seguridad

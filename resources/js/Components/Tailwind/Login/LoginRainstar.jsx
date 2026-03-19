@@ -136,7 +136,7 @@ export default function LoginRainstar({ data }) {
 
                     {/* Right Side: Content (Header + Form) */}
                     <div className="lg:col-span-6">
-                        <div className="max-w-md mx-auto lg:mx-0">
+                        <div className=" mx-auto lg:mx-0">
                             {/* Header moved here for readability */}
                             <div className="mb-12">
                                 <h1 className="text-5xl lg:text-6xl xl:text-7xl font-black uppercase tracking-tighter leading-[0.8] mb-8">

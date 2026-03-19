@@ -59,6 +59,7 @@ const Items = ({
     const sizeRef = useRef();
     const summaryRef = useRef();
     const priceRef = useRef();
+    const providerPriceRef = useRef();
     const discountRef = useRef();
     const tagsRef = useRef();
     const bannerRef = useRef();
@@ -371,6 +372,8 @@ const Items = ({
         if (sizeRef.current) sizeRef.current.value = data?.size || "";
         if (summaryRef.current) summaryRef.current.value = data?.summary || "";
         if (priceRef.current) priceRef.current.value = data?.price || 0;
+        if (providerPriceRef.current)
+            providerPriceRef.current.value = data?.provider_price || 0;
         if (discountRef.current)
             discountRef.current.value = data?.discount || 0;
         if (weightRef.current) weightRef.current.value = data?.weight || 0;
@@ -529,6 +532,7 @@ const Items = ({
             size: sizeRef.current?.value,
             summary: summaryRef.current?.value,
             price: priceRef.current?.value || 0,
+            provider_price: providerPriceRef.current?.value || 0,
             discount: discountRef.current?.value || 0,
             tags: $(tagsRef.current).val(),
             description:
@@ -1095,6 +1099,25 @@ const Items = ({
                                 ),
                             );
                         },
+                    },
+                    {
+                        dataField: "provider_price",
+                        caption: "P. Proveedor",
+                        dataType: "number",
+                        width: "85px",
+                        cellTemplate: (container, { data }) => {
+                            container.html(
+                                renderToString(
+                                    <div className="text-start">
+                                        <small className="text-muted d-block" style={{ fontSize: '10px' }}>Costo Prov.</small>
+                                        <span className="text-muted small">
+                                            {CurrencySymbol()}{" "}
+                                            {Number2Currency(data.provider_price || 0)}
+                                        </span>
+                                    </div>
+                                )
+                            );
+                        }
                     },
 
                     Fillable.has("items", "weight") && {
@@ -1973,10 +1996,16 @@ const Items = ({
                                             <div className="card-body">
                                                 <InputFormGroup
                                                     eRef={priceRef}
-                                                    label="Precio Regular"
+                                                    label="Precio de Venta (Público)"
                                                     type="number"
                                                     step="0.01"
                                                     required
+                                                />
+                                                <InputFormGroup
+                                                    eRef={providerPriceRef}
+                                                    label="Precio del Proveedor (Sugerido)"
+                                                    type="number"
+                                                    step="0.01"
                                                 />
                                                 <InputFormGroup
                                                     eRef={discountRef}
