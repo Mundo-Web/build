@@ -17,8 +17,10 @@ class TrackUserSession
     {
         $response = $next($request);
         
-        // Solo trackear requests no-AJAX y evitar rutas de assets/api innecesarias
-        if (!$request->ajax() && !$this->shouldSkipTracking($request)) {
+        $isInertia = $request->header('X-Inertia');
+        
+        // Solo trackear requests no-AJAX (o Inertia) y evitar rutas de assets/api innecesarias
+        if ((!$request->ajax() || $isInertia) && !$this->shouldSkipTracking($request)) {
             // Diferir el tracking para que NO bloquee la respuesta al usuario
             $requestData = [
                 'sessionId' => $request->session()->getId(),
@@ -27,6 +29,10 @@ class TrackUserSession
                 'ip' => $request->ip(),
                 'userAgent' => $request->userAgent(),
                 'cfCountry' => $request->server('HTTP_CF_IPCOUNTRY', 'PE'),
+                'referrer' => $request->headers->get('referer'),
+                'utm_source' => $request->query('utm_source'),
+                'utm_medium' => $request->query('utm_medium'),
+                'utm_campaign' => $request->query('utm_campaign'),
             ];
             
             app()->terminating(function () use ($requestData) {
@@ -77,6 +83,10 @@ class TrackUserSession
             $userSession->increment('page_views');
             $userSession->update([
                 'user_id' => $userId,
+                // Si la sesión ya existe, no sobreescribimos los UTM originales a menos que vengan nuevos
+                'utm_source' => $data['utm_source'] ?? $userSession->utm_source,
+                'utm_medium' => $data['utm_medium'] ?? $userSession->utm_medium,
+                'utm_campaign' => $data['utm_campaign'] ?? $userSession->utm_campaign,
                 'updated_at' => now()
             ]);
         } else {
@@ -91,6 +101,10 @@ class TrackUserSession
                     'city' => null,
                     'ip_address' => $data['ip'],
                     'user_agent' => $data['userAgent'],
+                    'referrer' => $data['referrer'],
+                    'utm_source' => $data['utm_source'],
+                    'utm_medium' => $data['utm_medium'],
+                    'utm_campaign' => $data['utm_campaign'],
                     'page_views' => 1,
                     'duration' => 0,
                     'converted' => false

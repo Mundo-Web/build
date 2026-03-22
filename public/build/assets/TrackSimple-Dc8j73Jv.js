@@ -1,1 +1,0 @@
-import"./vendor-react-DGtfu94Q.js";import"./SelectAPIFormGroup-fG2PH0ve.js";import{S as r}from"./SalesRest-B4gZXVGH.js";import"./___vite-browser-external_commonjs-proxy-B62enZY2.js";import"./BasicRest-CD-cSZ0W.js";import"./CardProductKatya-DGNAO7IM.js";import"./BooleanLimit-q2Ad9fGY.js";new r;

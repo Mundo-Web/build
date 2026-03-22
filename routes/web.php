@@ -201,6 +201,8 @@ Route::middleware(['can:Customer', 'auth'])->prefix('customer')->group(function 
 Route::middleware(['auth', 'can:Provider'])->prefix('provider')->group(function () {
     Route::get('/home', [\App\Http\Controllers\Provider\HomeController::class, 'reactView'])->name('Provider/Home.jsx');
     Route::get('/items', [\App\Http\Controllers\Provider\ItemController::class, 'reactView'])->name('Provider/Items.jsx');
+    Route::get('/orders', [\App\Http\Controllers\Provider\ProviderOrderController::class, 'reactView'])->name('Provider/Orders.jsx');
+    Route::get('/earnings', [\App\Http\Controllers\Provider\ProviderEarningController::class, 'reactView'])->name('Provider/Earnings.jsx');
 });
 
 Route::middleware(['auth', 'can:Seller'])->prefix('seller')->group(function () {

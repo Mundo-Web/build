@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import ItemsRest from "../../Actions/ItemsRest";
 
 const itemsRest = new ItemsRest();
@@ -60,6 +60,13 @@ const ProductDetail = ({
     textstatic,
     contacts,
 }) => {
+    // Registra la vista del producto al cargar el componente
+    useEffect(() => {
+        if (item?.id) {
+            handleViewUpdate(item);
+        }
+    }, [item?.id]);
+
     // Función centralizada para registrar vista del producto
     const handleViewUpdate = async (product) => {
         try {

@@ -239,6 +239,7 @@ class PaymentController extends Controller
                     }
                 } else {
                     // Es un item individual
+                    $itemJpa = Item::find($itemId);
                     SaleDetail::create([
                         'sale_id' => $sale->id,
                         'item_id' => $itemId,
@@ -248,11 +249,16 @@ class PaymentController extends Controller
                         'price' => $itemPrice,
                         'quantity' => $itemQuantity,
                         'image' => $itemImage,
+                        'provider_id' => $itemJpa?->provider_id,
+                        'provider_price' => $itemJpa?->provider_price,
                     ]);
 
                     Item::where('id', $itemId)->decrement('stock', $itemQuantity);
                 }
             }
+
+            // Registrar ganancias de proveedores
+            \App\Helpers\CommissionHelper::recordProviderEarnings($sale);
 
             Log::info('PaymentController - Detalles de venta procesados exitosamente');
 
@@ -448,20 +454,25 @@ class PaymentController extends Controller
             foreach ($request->cart as $item) {
                 $itemData = is_array($item) ? $item : (array) $item;
 
+                $itemJpa = Item::find($itemData['id']);
                 SaleDetail::create([
                     'sale_id' => $sale->id,
                     'item_id' => $itemData['id'],
                     'name' => $itemData['name'],
                     'price' => $itemData['final_price'],
                     'quantity' => $itemData['quantity'],
+                    'provider_id' => $itemJpa?->provider_id,
+                    'provider_price' => $itemJpa?->provider_price,
                 ]);
 
                 // Actualizar stock
-                $itemModel = Item::find($itemData['id']);
-                if ($itemModel && $itemModel->stock > 0) {
-                    $itemModel->decrement('stock', $itemData['quantity']);
+                if ($itemJpa && $itemJpa->stock > 0) {
+                    $itemJpa->decrement('stock', $itemData['quantity']);
                 }
             }
+
+            // Registrar ganancias de proveedores
+            \App\Helpers\CommissionHelper::recordProviderEarnings($sale);
 
             // Incrementar uso de cupón si aplica
             if ($request->coupon_id) {
@@ -671,6 +682,7 @@ class PaymentController extends Controller
 
             // Crear detalles de venta
             foreach ($request->cart as $itemData) {
+                $itemJpa = Item::find($itemData['id']);
                 $saleDetailData = [
                     'sale_id' => $sale->id,
                     'item_id' => $itemData['id'],
@@ -678,16 +690,20 @@ class PaymentController extends Controller
                     'price' => $itemData['final_price'],
                     'quantity' => $itemData['quantity'],
                     'image' => $itemData['image'] ?? null,
+                    'provider_id' => $itemJpa?->provider_id,
+                    'provider_price' => $itemJpa?->provider_price,
                 ];
 
                 SaleDetail::create($saleDetailData);
 
                 // Decrementar stock
-                $itemModel = Item::find($itemData['id']);
-                if ($itemModel && $itemModel->stock > 0) {
-                    $itemModel->decrement('stock', $itemData['quantity']);
+                if ($itemJpa && $itemJpa->stock > 0) {
+                    $itemJpa->decrement('stock', $itemData['quantity']);
                 }
             }
+
+            // Registrar ganancias de proveedores
+            \App\Helpers\CommissionHelper::recordProviderEarnings($sale);
 
             // Incrementar uso de cupón
             if ($request->coupon_id) {

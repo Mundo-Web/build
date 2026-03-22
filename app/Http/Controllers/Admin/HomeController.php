@@ -162,6 +162,131 @@ class HomeController extends BasicController
         // Satisfacción del cliente (dummy, si no hay tabla de feedback)
         $customerSatisfaction = 94.3;
 
+        // === MÉTRICAS AVANZADAS ESTILO GOOGLE ANALYTICS ===
+        
+        // 1. Tasa de Rebote (Bounce Rate)
+        // Porcentaje de sesiones que solo vieron 1 página
+        $totalSessionsCount = \App\Models\UserSession::count();
+        $bounceSessionsCount = \App\Models\UserSession::where('page_views', 1)->count();
+        $bounceRate = $totalSessionsCount > 0 ? round(($bounceSessionsCount / $totalSessionsCount) * 100, 2) : 0;
+
+        // 2. Duración Promedio de Sesión (en minutos)
+        $avgSessionDuration = round(\App\Models\UserSession::avg('duration') ?: 0, 2);
+
+        // 3. Ticket Promedio (AOV - Average Order Value)
+        $totalSalesAmount = Sale::sum('amount');
+        $totalSalesCount = Sale::count();
+        $aov = $totalSalesCount > 0 ? round($totalSalesAmount / $totalSalesCount, 2) : 0;
+
+        // 4. Tasa de Conversión (CVR - Conversion Rate)
+        // Ventas totales / Usuarios únicos totales
+        $uniqueVisits = \App\Models\UserSession::distinct('session_id')->count();
+        $cvr = $uniqueVisits > 0 ? round(($totalSalesCount / $uniqueVisits) * 100, 2) : 0;
+
+        // 5. Usuarios en Tiempo Real (últimos 15 minutos)
+        $realTimeUsers = \App\Models\UserSession::where('updated_at', '>=', now()->subMinutes(15))->count();
+
+        // 6. Fuentes de Tráfico (Acquisition) - Priorizamos UTM sobre Referrer
+        $trafficSources = DB::table('user_sessions')
+            ->select('utm_source', 'referrer', DB::raw('count(*) as count'))
+            ->groupBy('utm_source', 'referrer')
+            ->get()
+            ->map(function ($row) {
+                // Prioridad UTM Source
+                if ($row->utm_source) {
+                    $source = ucfirst(strtolower($row->utm_source));
+                } else {
+                    $referrer = $row->referrer ?: 'Directo';
+                    $source = 'Otros';
+                    
+                    $lowerReferrer = strtolower($referrer);
+                    if (str_contains($lowerReferrer, 'google')) $source = 'Google';
+                    elseif (str_contains($lowerReferrer, 'facebook') || str_contains($lowerReferrer, 'fb.me')) $source = 'Facebook';
+                    elseif (str_contains($lowerReferrer, 'instagram')) $source = 'Instagram';
+                    elseif (str_contains($lowerReferrer, 'whatsapp')) $source = 'WhatsApp';
+                    elseif (str_contains($lowerReferrer, 'tiktok')) $source = 'TikTok';
+                    elseif (str_contains($lowerReferrer, strtolower(parse_url(config('app.url'), PHP_URL_HOST)))) $source = 'Directo';
+                    elseif ($referrer === 'Directo') $source = 'Directo';
+                }
+                
+                return [
+                    'source' => $source,
+                    'count' => $row->count
+                ];
+            })
+            ->groupBy('source')
+            ->map(function ($group) {
+                return $group->sum('count');
+            })
+            ->toArray();
+
+        // Aseguramos que siempre existan las fuentes principales para el gráfico
+        $defaultSources = [
+            'Google' => 0,
+            'Facebook' => 0,
+            'Instagram' => 0,
+            'WhatsApp' => 0,
+            'TikTok' => 0,
+            'Directo' => 0,
+            'Otros' => 0
+        ];
+        $trafficSources = array_merge($defaultSources, $trafficSources);
+
+        // 7. Embudo de Conversión (Funnel)
+        $funnelData = [
+            ['label' => 'Visitas Únicas', 'value' => $uniqueVisits],
+            ['label' => 'Vistas de Productos', 'value' => AnalyticsEvent::where('event_type', 'product_view')->count()],
+            ['label' => 'Ventas Realizadas', 'value' => $totalSalesCount],
+        ];
+
+        // 8. Datos de Tendencia (Sparklines) para los últimos 7 días
+        $sparklineDates = collect(range(6, 0))->map(function($i) {
+            return Carbon::today()->subDays($i)->toDateString();
+        });
+
+        $sessionTrend = $sparklineDates->map(function($date) {
+            return \App\Models\UserSession::whereDate('created_at', $date)->count();
+        })->toArray();
+
+        $bounceTrend = $sparklineDates->map(function($date) {
+            $total = \App\Models\UserSession::whereDate('created_at', $date)->count();
+            $bounce = \App\Models\UserSession::whereDate('created_at', $date)->where('page_views', 1)->count();
+            return $total > 0 ? round(($bounce / $total) * 100, 1) : 0;
+        })->toArray();
+
+        $durationTrend = $sparklineDates->map(function($date) {
+            return round(\App\Models\UserSession::whereDate('created_at', $date)->avg('duration') ?: 0, 1);
+        })->toArray();
+
+        // 9. Tiempo Promedio de Preparación de Pedidos
+        $shippedStatusId = 'ad509181-6701-4fa1-a990-6bcb103254af';
+        $shippedTraces = DB::table('sale_status_traces')
+            ->where('status_id', $shippedStatusId)
+            ->limit(50) // Limitar para no sobrecargar si hay miles de trazas
+            ->get();
+
+        $prepDurations = [];
+        foreach ($shippedTraces as $trace) {
+            $sale = Sale::find($trace->sale_id);
+            if ($sale) {
+                $startTrace = DB::table('sale_status_traces')
+                    ->where('sale_id', $sale->id)
+                    ->whereIn('status_id', [
+                        '312f9a91-d3f2-4672-a6bf-678967616cac', // Pagado
+                        'bd60fc99-c0c0-463d-b738-1c72d7b085f5', // Pagado - Por verificar
+                        'f13fa605-72dd-4729-beaa-ee14c9bbc47b'  // Pendiente
+                    ])
+                    ->orderBy('created_at', 'asc')
+                    ->first();
+
+                $startTime = $startTrace ? Carbon::parse($startTrace->created_at) : $sale->created_at;
+                $endTime = Carbon::parse($trace->created_at);
+                $prepDurations[] = $endTime->diffInHours($startTime);
+            }
+        }
+        $avgOrderPreparationTime = count($prepDurations) > 0 ? round(array_sum($prepDurations) / count($prepDurations), 1) : 0;
+
+
         // === NUEVAS FUNCIONALIDADES ANALÍTICAS ===
 
         // Productos más vistos usando analytics_events
@@ -627,6 +752,18 @@ class HomeController extends BasicController
             'productViewsByDevice' => $productViewsByDevice,
             'productViewsTodayByDevice' => $productViewsTodayByDevice,
             'pendingProductsCount' => $pendingProductsCount,
+            // Métricas Avanzadas
+            'bounceRate' => $bounceRate,
+            'avgSessionDuration' => $avgSessionDuration,
+            'aov' => $aov,
+            'cvr' => $cvr,
+            'realTimeUsers' => $realTimeUsers,
+            'trafficSources' => $trafficSources,
+            'funnelData' => $funnelData,
+            'sessionTrend' => $sessionTrend,
+            'bounceTrend' => $bounceTrend,
+            'durationTrend' => $durationTrend,
+            'avgOrderPreparationTime' => $avgOrderPreparationTime,
             'dashboardVisibility' => $this->getDashboardVisibility(),
             'hasRootRole' => $this->hasRootRole(),
         ];
@@ -639,36 +776,50 @@ class HomeController extends BasicController
     {
         $visibilityRecord = General::where('correlative', 'VisibilityDashboard')->first();
 
-        if (!$visibilityRecord) {
-            // Verificar si el proyecto usa servicios
-            $hasServices = Service::count() > 0;
+        if ($visibilityRecord) {
+            $savedVisibility = json_decode($visibilityRecord->description, true) ?? [];
+            // Fusionar con los nuevos IDs por defecto para que aparezcan si no estaban guardados
+            return array_merge([
+                'advanced_analytics_section' => true,
+                'traffic_sources_chart' => true,
+                'conversion_funnel' => true,
+            ], $savedVisibility);
+        }
 
-            // Configuración por defecto si no existe el registro
-            $defaultVisibility = [
-                'total_orders' => true,
-                'total_revenue' => true,
-                'new_users' => true,
-                'contact_messages' => true,
-                'customer_satisfaction' => true,
-                'total_categories' => true,
-                'total_brands' => true,
-                'total_products' => true,
-                'statistics_chart' => true,
-                'orders_statistics' => true,
-                'sales_by_location' => true,
-                'top_selling_products' => true,
-                'new_featured_products' => true,
-                'most_used_coupons' => true,
-                'most_used_discount_rules' => true,
-                'brands_listing' => true,
-                'top_clients' => true,
-                // Analíticas de productos
-                'most_viewed_products' => true,
-                'visits_chart' => true,
-                'categories_chart' => true,
-                'brands_chart' => true,
-                'analytics_kpis' => true,
-            ];
+        // Verificar si el proyecto usa servicios
+        $hasServices = Service::count() > 0;
+
+        // Configuración por defecto si no existe el registro
+        $defaultVisibility = [
+            'total_orders' => true,
+            'total_revenue' => true,
+            'new_users' => true,
+            'contact_messages' => true,
+            'customer_satisfaction' => true,
+            'total_categories' => true,
+            'total_brands' => true,
+            'total_products' => true,
+            'average_order_duration' => true,
+            'statistics_chart' => true,
+            'orders_statistics' => true,
+            'sales_by_location' => true,
+            'top_selling_products' => true,
+            'new_featured_products' => true,
+            'most_used_coupons' => true,
+            'most_used_discount_rules' => true,
+            'brands_listing' => true,
+            'top_clients' => true,
+            // Analíticas de productos
+            'most_viewed_products' => true,
+            'visits_chart' => true,
+            'categories_chart' => true,
+            'brands_chart' => true,
+            'analytics_kpis' => true,
+            // Analítica Avanzada
+            'advanced_analytics_section' => true,
+            'traffic_sources_chart' => true,
+            'conversion_funnel' => true,
+        ];
 
             // Agregar analíticas de servicios solo si el proyecto las usa
             if ($hasServices) {
@@ -686,10 +837,7 @@ class HomeController extends BasicController
                 $defaultVisibility['service_clicks_vs_views'] = false;
             }
 
-            return $defaultVisibility;
-        }
-
-        return json_decode($visibilityRecord->description, true) ?? [];
+        return $defaultVisibility;
     }
 
     /**

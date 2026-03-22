@@ -104,26 +104,8 @@ const ProductDetailDental = ({
     useEffect(() => {
         if (item?.id) {
             productosRelacionados(item);
-
-            handleViewUpdate(item);
         }
     }, [item]); // Agregar `item` como dependencia
-    const handleViewUpdate = async (item) => {
-        try {
-            const request = {
-                id: item?.id,
-            };
-            const response = await itemsRest.updateViews(request);
-
-            // Verificar si la respuesta es válida
-            if (!response) {
-                return;
-            }
-        } catch (error) {
-            return;
-        }
-    };
-
     const productosRelacionados = async (item) => {
         try {
             // Preparar la solicitud

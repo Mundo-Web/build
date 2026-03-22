@@ -497,6 +497,20 @@ const Menu = ({ session, hasRole }) => {
                                 Mis Productos
                             </MenuItem>
 
+                            <MenuItem
+                                href="/provider/orders"
+                                icon="mdi mdi-cart-outline"
+                            >
+                                Mis Pedidos
+                            </MenuItem>
+
+                            <MenuItem
+                                href="/provider/earnings"
+                                icon="mdi mdi-wallet-outline"
+                            >
+                                Mis Ganancias
+                            </MenuItem>
+
                             <li className="menu-title">Perfil</li>
                             <MenuItem
                                 href="/profile"

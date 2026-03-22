@@ -26,6 +26,16 @@ class SaleStatusController extends BasicController
     {
         $response = new \SoDe\Extend\Response();
         try {
+            if (\Illuminate\Support\Facades\Auth::user()->hasRole('Provider')) {
+                $providerId = \Illuminate\Support\Facades\Auth::id();
+                $isLinked = \App\Models\SaleDetail::where('sale_id', $saleId)
+                    ->where('provider_id', $providerId)
+                    ->exists();
+                if (!$isLinked) {
+                    throw new \Exception('No tienes permisos para ver el historial de esta venta');
+                }
+            }
+
             // Obtener el historial de cambios de estado de una venta específica
             $traces = SaleStatusTrace::where('sale_id', $saleId)
                 ->with(['status:id,name,color,icon', 'user:id,name,lastname'])

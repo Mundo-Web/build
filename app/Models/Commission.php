@@ -17,6 +17,7 @@ class Commission extends Model
         'id',
         'user_id',
         'sale_id',
+        'sale_detail_id',
         'amount',
         'base_amount',
         'percent',

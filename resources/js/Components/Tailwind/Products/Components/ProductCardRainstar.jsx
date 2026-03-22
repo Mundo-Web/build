@@ -2,6 +2,10 @@ import React from "react";
 import { ArrowRight, ShoppingCart } from "lucide-react";
 import Global from "../../../../Utils/Global";
 
+import ItemsRest from "../../../../Actions/ItemsRest";
+
+const itemsRest = new ItemsRest();
+
 const ProductCardRainstar = ({ item, cart, setCart }) => {
     const isNew = item.status === "new" || item.is_new;
     const isOffer = item.offering || item.discount > 0;
@@ -14,7 +18,10 @@ const ProductCardRainstar = ({ item, cart, setCart }) => {
             : `/storage/images/item/${item.image}`
         : "/api/cover/thumbnail/null";
 
-    const goToDetail = () => {
+    const goToDetail = async () => {
+        try {
+            await itemsRest.updateClicks({ id: item.id });
+        } catch (e) {}
         const slug = item.slug || item.id;
         window.location.href = `/product/${slug}`;
     };

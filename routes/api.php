@@ -821,6 +821,12 @@ Route::middleware('auth')->group(function () {
     Route::post('/items/{id}/clone', [\App\Http\Controllers\Provider\ItemController::class, 'clone']);
     Route::get('/items/variants/{agrupador}', [\App\Http\Controllers\Provider\ItemController::class, 'getVariants']);
     Route::delete('/items/variant/{id}', [\App\Http\Controllers\Provider\ItemController::class, 'deleteVariant']);
+
+    Route::post('/orders/paginate', [\App\Http\Controllers\Provider\ProviderOrderController::class, 'paginate']);
+    Route::get('/orders/{id}', [\App\Http\Controllers\Provider\ProviderOrderController::class, 'get']);
+    Route::post('/earnings/paginate', [\App\Http\Controllers\Provider\ProviderEarningController::class, 'paginate']);
+    Route::get('/earnings/{id}', [\App\Http\Controllers\Provider\ProviderEarningController::class, 'get']);
+    Route::get('/sale-statuses/by-sale/{id}', [\App\Http\Controllers\Admin\SaleStatusController::class, 'bySale']);
   });
   Route::middleware('can:Seller')->prefix('seller')->group(function () {
     Route::post('/vault/paginate', [SellerController::class, 'paginateVault']);

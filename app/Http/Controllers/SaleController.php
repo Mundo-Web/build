@@ -374,6 +374,8 @@ class SaleController extends BasicController
                 $detailJpa->price = $itemJpa->final_price;
                 $detailJpa->quantity = $itemJpa->quantity;
                 $detailJpa->colors = $itemJpa->colors;
+                $detailJpa->provider_id = $itemJpa->provider_id;
+                $detailJpa->provider_price = $itemJpa->provider_price;
 
                 // Lógica de Bóveda de Inventario (Premios)
                 $quantityNeeded = $itemJpa->quantity;
@@ -457,6 +459,9 @@ class SaleController extends BasicController
             }
 
             $saleToReturn = Sale::with(['renewal', 'details'])->find($saleJpa->id);
+
+            // Registrar ganancias de proveedores
+            \App\Helpers\CommissionHelper::recordProviderEarnings($saleToReturn);
 
             return [true, $saleToReturn];
         } catch (\Throwable $th) {
@@ -684,6 +689,8 @@ class SaleController extends BasicController
                         'quantity' => $item['quantity'],
                         'colors' => $itemJpa->color,
                         'image' => $itemJpa->image,
+                        'provider_id' => $itemJpa->provider_id,
+                        'provider_price' => $itemJpa->provider_price,
                     ]);
 
                     $totalPrice += $itemJpa->final_price * $item['quantity'];
@@ -729,6 +736,9 @@ class SaleController extends BasicController
 
         $jpa->amount = $totalPrice;
         $jpa->save();
+
+        // Registrar ganancias de proveedores
+        \App\Helpers\CommissionHelper::recordProviderEarnings($jpa);
 
         // Incrementar el contador de uso del cupón si se aplicó uno (como PaymentController)
         if ($request->coupon_code) {

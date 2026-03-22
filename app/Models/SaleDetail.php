@@ -17,6 +17,8 @@ class SaleDetail extends Model
         'sale_id',
         'item_id',
         'combo_id', // Nuevo campo para identificar combos
+        'provider_id', // ID del proveedor
+        'provider_price', // Precio pactado con el proveedor
         'name',
         'price',
         'quantity',

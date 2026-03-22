@@ -13,6 +13,62 @@ import SellerTreeCard from "../Components/Adminto/SellerTreeCard";
 
 const homeRest = new HomeRest();
 
+const UI_STYLE = {
+    borderRadius: "24px",
+    boxShadow: "0 10px 30px rgba(0,0,0,0.04)",
+    border: "1px solid rgba(0,0,0,0.02)",
+    pastel: {
+        blue: {
+            bg: "#eff6ff",
+            text: "#1e40af",
+            icon: "#3b82f6",
+            badge: "#dbeafe",
+        },
+        green: {
+            bg: "#f0fdf4",
+            text: "#166534",
+            icon: "#22c55e",
+            badge: "#dcfce7",
+        },
+        amber: {
+            bg: "#fffbeb",
+            text: "#92400e",
+            icon: "#f59e0b",
+            badge: "#fef3c7",
+        },
+        indigo: {
+            bg: "#eef2ff",
+            text: "#3730a3",
+            icon: "#6366f1",
+            badge: "#e0e7ff",
+        },
+        rose: {
+            bg: "#fff1f2",
+            text: "#9f1239",
+            icon: "#f43f5e",
+            badge: "#ffe4e6",
+        },
+        violet: {
+            bg: "#f5f3ff",
+            text: "#5b21b6",
+            icon: "#8b5cf6",
+            badge: "#ede9fe",
+        },
+        pink: {
+            bg: "#fdf2f8",
+            text: "#9d174d",
+            icon: "#ec4899",
+            badge: "#fbcfe8",
+        },
+        slate: {
+            bg: "#f8fafc",
+            text: "#334155",
+            icon: "#64748b",
+            badge: "#f1f5f9",
+        },
+    },
+};
+
 const Home = ({
     session,
     totalProducts,
@@ -79,11 +135,21 @@ const Home = ({
     productClicksThisMonth,
     productClicksByDevice,
     productClicksTodayByDevice,
-    // Props de vistas de productos por dispositivo
     productViewsByDevice,
-    // Vistas de productos hoy por dispositivo
     productViewsTodayByDevice,
     pendingProductsCount,
+    // Nuevas props de analítica avanzada
+    bounceRate,
+    avgSessionDuration,
+    aov,
+    cvr,
+    realTimeUsers,
+    trafficSources,
+    funnelData,
+    sessionTrend,
+    bounceTrend,
+    durationTrend,
+    avgOrderPreparationTime,
 }) => {
     const [startDate, setStartDate] = useState(
         new Date(Date.now() - 29 * 24 * 60 * 60 * 1000),
@@ -112,6 +178,139 @@ const Home = ({
         }
         // Verificar la configuración de visibilidad para todos los usuarios
         return cardVisibility[cardId] !== false;
+    };
+
+    const renderSparkline = (data, color) => {
+        return (
+            <Chart
+                options={{
+                    chart: {
+                        sparkline: { enabled: true },
+                        animations: { enabled: false },
+                        toolbar: { show: false },
+                    },
+                    stroke: { curve: "smooth", width: 2 },
+                    fill: {
+                        type: "gradient",
+                        gradient: {
+                            shadeIntensity: 1,
+                            opacityFrom: 0.45,
+                            opacityTo: 0.05,
+                            stops: [20, 100, 100, 100],
+                        },
+                    },
+                    colors: [color],
+                    tooltip: { enabled: false },
+                }}
+                series={[{ data: data || [] }]}
+                type="area"
+                height={50}
+            />
+        );
+    };
+
+    const MetricCard = ({
+        title,
+        value,
+        icon,
+        color,
+        trend,
+        trendIcon,
+        subtitle,
+        sparkline,
+        help,
+    }) => {
+        const style = UI_STYLE.pastel[color] || UI_STYLE.pastel.blue;
+        return (
+            <div
+                className="card h-100 border-0"
+                style={{
+                    borderRadius: UI_STYLE.borderRadius,
+                    boxShadow: UI_STYLE.boxShadow,
+                    background: "#fff",
+                    transition: "all 0.4s cubic-bezier(0.4, 0, 0.2, 1)",
+                }}
+            >
+                <div className="card-body p-4 d-flex flex-column h-100">
+                    <div className="d-flex align-items-center justify-content-between mb-4">
+                        <div
+                            className="p-3 rounded-4"
+                            style={{
+                                backgroundColor: style.bg,
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                width: "56px",
+                                height: "56px",
+                            }}
+                        >
+                            <i
+                                className={`${icon} fs-3`}
+                                style={{ color: style.icon }}
+                            ></i>
+                        </div>
+                        <div className="d-flex gap-2">
+                            {help && (
+                                <Tippy content={help}>
+                                    <div
+                                        className="rounded-circle d-flex align-items-center justify-content-center bg-light text-muted cursor-help"
+                                        style={{
+                                            width: "32px",
+                                            height: "32px",
+                                        }}
+                                    >
+                                        <i className="fas fa-question extra-small"></i>
+                                    </div>
+                                </Tippy>
+                            )}
+                            {trend && (
+                                <div
+                                    className="badge rounded-pill px-3 py-2"
+                                    style={{
+                                        backgroundColor: style.badge,
+                                        color: style.text,
+                                        fontSize: "0.75rem",
+                                        fontWeight: "800",
+                                    }}
+                                >
+                                    <i className={`fas ${trendIcon} me-1`}></i>{" "}
+                                    {trend}
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                    <div>
+                        <div
+                            className="text-muted small fw-bold text-uppercase tracking-widest mb-1"
+                            style={{ fontSize: "0.65rem" }}
+                        >
+                            {title}
+                        </div>
+                        <h2
+                            className="fw-bold mb-1"
+                            style={{
+                                color: "#0f172a",
+                                fontSize: "1.85rem",
+                                letterSpacing: "-0.02em",
+                            }}
+                        >
+                            {value}
+                        </h2>
+                        {subtitle && (
+                            <div
+                                className="text-muted small fw-medium"
+                                style={{ fontSize: "0.8rem" }}
+                            >
+                                {subtitle}
+                            </div>
+                        )}
+                    </div>
+                    {sparkline && (
+                        <div className="mt-auto pt-4">{sparkline}</div>
+                    )}
+                </div>
+            </div>
+        );
     };
 
     // Funciones para gestión de visibilidad de cards
@@ -208,6 +407,10 @@ const Home = ({
         },
         brands_listing: { name: "Listado de Marcas", category: "Tablas" },
         top_clients: { name: "Mejores Clientes", category: "Tablas" },
+        average_order_duration: {
+            name: "Tiempo de Prep. Pedido",
+            category: "KPI",
+        },
         // Analíticas de Servicios
         total_services_kpi: { name: "Total Servicios", category: "KPI" },
         total_service_categories: {
@@ -233,11 +436,11 @@ const Home = ({
             category: "Gráficos",
         },
         service_views_by_device: {
-            name: "Vistas por Dispositivo",
+            name: "Vistas por Dispositivo (Servicios)",
             category: "Gráficos",
         },
         service_clicks_by_device: {
-            name: "Clicks por Dispositivo",
+            name: "Clicks por Dispositivo (Servicios)",
             category: "Gráficos",
         },
         service_views_trend: {
@@ -276,6 +479,19 @@ const Home = ({
             name: "Productos Pendientes de Revisión",
             category: "KPI",
         },
+        // Analítica Avanzada
+        advanced_analytics_section: {
+            name: "Sección de Analítica Avanzada",
+            category: "Gráficos",
+        },
+        traffic_sources_chart: {
+            name: "Fuentes de Tráfico",
+            category: "Gráficos",
+        },
+        conversion_funnel: {
+            name: "Embudo de Conversión",
+            category: "Gráficos",
+        },
     };
 
     const CARD_CATEGORIES = {
@@ -297,25 +513,46 @@ const Home = ({
 
             {/* Modern Header */}
             <div className="dashboard-header mb-5">
+                <style>{`
+                    .card { transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+                    .card:hover { transform: translateY(-7px) scale(1.02); box-shadow: 0 25px 50px rgba(0,0,0,0.06) !important; }
+                    .dashboard-container { background-color: #f8fafc; font-family: 'Inter', system-ui, -apple-system, sans-serif; }
+                    .badge { border: none; letter-spacing: 0.02em; }
+                    .rounded-4 { border-radius: 1.25rem !important; }
+                    .rounded-5 { border-radius: 1.5rem !important; }
+                    .extra-small { font-size: 0.75rem; }
+                `}</style>
                 <div className="d-flex justify-content-between align-items-center">
                     <div>
-                        <h2 className="mb-2 fw-bold text-dark">Dashboard</h2>
-                        <p className="text-muted mb-0 fs-6">
+                        <h2
+                            className="mb-2 fw-bold text-dark"
+                            style={{ letterSpacing: "-0.03em" }}
+                        >
+                            Dashboard
+                        </h2>
+                        <p className="text-muted mb-0 fs-6 fw-medium">
                             Bienvenido de vuelta, aquí tienes un resumen de tu
                             negocio
                         </p>
                     </div>
                     {hasRootRole && (
-                        <div className="d-flex gap-2">
+                        <div className="d-flex gap-3">
                             <Tippy content="Actualizar datos">
-                                <button className="btn btn-light border-0 shadow-sm px-3 py-2 rounded-3">
+                                <button
+                                    className="btn btn-white shadow-sm px-3 py-2 border-0 rounded-4"
+                                    style={{ background: "#fff" }}
+                                >
                                     <i className="fas fa-sync-alt text-primary"></i>
                                 </button>
                             </Tippy>
                             <Tippy content="Configurar visibilidad de cards">
                                 <button
-                                    className="btn btn-primary px-3 py-2"
+                                    className="btn btn-primary px-4 py-2 rounded-4 fw-bold shadow-primary"
                                     onClick={() => setShowVisibilityModal(true)}
+                                    style={{
+                                        boxShadow:
+                                            "0 8px 20px rgba(79, 70, 229, 0.2)",
+                                    }}
                                 >
                                     <i className="fas fa-eye me-2"></i>
                                     Configurar Visibilidad
@@ -330,691 +567,741 @@ const Home = ({
             <div className="row g-4 mb-5">
                 {shouldShowCard("total_orders") && (
                     <div className="col-xl-3 col-md-6">
-                        <div
-                            className="card border-0 h-100"
-                            style={{
-                                borderRadius: "1rem",
-                                boxShadow: "0 8px 25px rgba(0,0,0,0.08)",
-                            }}
-                        >
-                            <div className="card-body p-4">
-                                <div className="d-flex align-items-center justify-content-between mb-3">
-                                    <div
-                                        className="rounded-3 p-3"
-                                        style={{ background: "#e0e7ff" }}
-                                    >
-                                        <i className="fas fa-shopping-cart text-primary fs-4"></i>
-                                    </div>
-                                    <div className="text-end">
-                                        <div className="fs-2 fw-bold text-dark mb-0">
-                                            {salesToday || "0"}
-                                        </div>
-                                        <div className="text-muted small">
-                                            Órdenes Hoy
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="d-flex align-items-center justify-content-between">
-                                    <span className="text-muted small">
-                                        Este mes: {salesMonth || "0"}
-                                    </span>
-                                    <div className="badge bg-success bg-opacity-10 text-success px-2 py-1 rounded-pill">
-                                        <i className="fas fa-arrow-up me-1"></i>
-                                        +12%
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        <MetricCard
+                            title="Órdenes Hoy"
+                            value={salesToday || "0"}
+                            icon="fas fa-shopping-cart"
+                            color="indigo"
+                            trend="+12%"
+                            trendIcon="fa-arrow-up"
+                            subtitle={`Este mes: ${salesMonth || "0"}`}
+                            help="Número total de pedidos realizados durante el día de hoy."
+                        />
                     </div>
                 )}
                 {shouldShowCard("total_revenue") && (
                     <div className="col-xl-3 col-md-6">
-                        <div
-                            className="card border-0 h-100"
-                            style={{
-                                borderRadius: "1rem",
-                                boxShadow: "0 8px 25px rgba(0,0,0,0.08)",
-                            }}
-                        >
-                            <div className="card-body p-4">
-                                <div className="d-flex align-items-center justify-content-between mb-3">
-                                    <div
-                                        className="rounded-3 p-3"
-                                        style={{ background: "#d1fae5" }}
-                                    >
-                                        <i className="fas fa-dollar-sign text-success fs-4"></i>
-                                    </div>
-                                    <div className="text-end">
-                                        <div className="fs-2 fw-bold text-dark mb-0">
-                                            {CurrencySymbol()}{" "}
-                                            {formatIncome(incomeToday) || "0"}
-                                        </div>
-                                        <div className="text-muted small">
-                                            Ingresos Hoy
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="d-flex align-items-center justify-content-between">
-                                    <span className="text-muted small">
-                                        Este mes: {CurrencySymbol()}{" "}
-                                        {formatIncome(incomeMonth) || "0"}
-                                    </span>
-                                    <div className="badge bg-success bg-opacity-10 text-success px-2 py-1 rounded-pill">
-                                        <i className="fas fa-arrow-up me-1"></i>
-                                        +32%
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        <MetricCard
+                            title="Ingresos Hoy"
+                            value={`${CurrencySymbol()} ${formatIncome(incomeToday) || "0"}`}
+                            icon="fas fa-dollar-sign"
+                            color="green"
+                            trend="+32%"
+                            trendIcon="fa-arrow-up"
+                            subtitle={`Este mes: ${CurrencySymbol()} ${formatIncome(incomeMonth) || "0"}`}
+                            help="Monto monetario total generado por las ventas de hoy (basado en el valor de las órdenes)."
+                        />
                     </div>
                 )}
                 {shouldShowCard("new_users") && (
                     <div className="col-xl-3 col-md-6">
-                        <div
-                            className="card border-0 h-100"
-                            style={{
-                                borderRadius: "1rem",
-                                boxShadow: "0 8px 25px rgba(0,0,0,0.08)",
-                            }}
-                        >
-                            <div className="card-body p-4">
-                                <div className="d-flex align-items-center justify-content-between mb-3">
-                                    <div
-                                        className="rounded-3 p-3"
-                                        style={{ background: "#fef3c7" }}
-                                    >
-                                        <i className="fas fa-user-plus text-warning fs-4"></i>
-                                    </div>
-                                    <div className="text-end">
-                                        <div className="fs-2 fw-bold text-dark mb-0">
-                                            {usersToday || "0"}
-                                        </div>
-                                        <div className="text-muted small">
-                                            Usuarios Hoy
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="d-flex align-items-center justify-content-between">
-                                    <span className="text-muted small">
-                                        Este mes: {usersMonth || "0"}
-                                    </span>
-                                    <div className="badge bg-warning bg-opacity-10 text-warning px-2 py-1 rounded-pill">
-                                        <i className="fas fa-arrow-up me-1"></i>
-                                        +8%
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        <MetricCard
+                            title="Usuarios Hoy"
+                            value={usersToday || "0"}
+                            icon="fas fa-user-plus"
+                            color="amber"
+                            trend="+8%"
+                            trendIcon="fa-arrow-up"
+                            subtitle={`Este mes: ${usersMonth || "0"}`}
+                            help="Nuevos usuarios registrados en la plataforma durante el día actual."
+                        />
                     </div>
                 )}
                 {shouldShowCard("contact_messages") && (
                     <div className="col-xl-3 col-md-6">
-                        <div
-                            className="card border-0 h-100"
-                            style={{
-                                borderRadius: "1rem",
-                                boxShadow: "0 8px 25px rgba(0,0,0,0.08)",
-                            }}
-                        >
-                            <div className="card-body p-4">
-                                <div className="d-flex align-items-center justify-content-between mb-3">
-                                    <div
-                                        className="rounded-3 p-3"
-                                        style={{ background: "#ddd6fe" }}
-                                    >
-                                        <i
-                                            className="fas fa-envelope fs-4"
-                                            style={{ color: "#8b5cf6" }}
-                                        ></i>
-                                    </div>
-                                    <div className="text-end">
-                                        <div className="fs-2 fw-bold text-dark mb-0">
-                                            {messagesToday || "0"}
-                                        </div>
-                                        <div className="text-muted small">
-                                            Mensajes Hoy
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="d-flex align-items-center justify-content-between">
-                                    <span className="text-muted small">
-                                        Este mes: {messagesMonth || "0"}
-                                    </span>
-                                    {messagesUnread > 0 && (
-                                        <div className="badge bg-danger bg-opacity-10 text-danger px-2 py-1 rounded-pill">
-                                            <i className="fas fa-bell me-1"></i>
-                                            {messagesUnread} sin leer
-                                        </div>
-                                    )}
-                                    {messagesUnread === 0 && (
-                                        <div className="badge bg-success bg-opacity-10 text-success px-2 py-1 rounded-pill">
-                                            <i className="fas fa-check me-1"></i>
-                                            Al día
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
-                        </div>
+                        <MetricCard
+                            title="Mensajes Hoy"
+                            value={messagesToday || "0"}
+                            icon="fas fa-envelope"
+                            color="violet"
+                            trend={
+                                messagesUnread > 0
+                                    ? `${messagesUnread} sin leer`
+                                    : "Al día"
+                            }
+                            trendIcon={
+                                messagesUnread > 0 ? "fa-bell" : "fa-check"
+                            }
+                            subtitle={`Este mes: ${messagesMonth || "0"}`}
+                            help="Mensajes recibidos a través del formulario de contacto o CRM hoy."
+                        />
                     </div>
                 )}
-                {shouldShowCard("pending_products") && pendingProductsCount > 0 && (
-                    <div className="col-xl-3 col-md-6">
-                        <div
-                            className="card border-0 h-100"
-                            style={{
-                                borderRadius: "1rem",
-                                boxShadow: "0 8px 25px rgba(0,0,0,0.08)",
-                                border: "2px solid #fbbf24",
-                            }}
-                        >
-                            <div className="card-body p-4">
-                                <div className="d-flex align-items-center justify-content-between mb-3">
-                                    <div
-                                        className="rounded-3 p-3"
-                                        style={{ background: "#fffbeb" }}
-                                    >
-                                        <i className="fas fa-exclamation-triangle text-warning fs-4"></i>
-                                    </div>
-                                    <div className="text-end">
-                                        <div className="fs-2 fw-bold text-dark mb-0">
-                                            {pendingProductsCount || "0"}
-                                        </div>
-                                        <div className="text-muted small">
-                                            Productos por Revisar
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="d-flex align-items-center justify-content-between">
-                                    <span className="text-muted small">
-                                        Proveedores esperando
-                                    </span>
-                                    <a
-                                        href="/admin/items"
-                                        className="btn btn-warning btn-sm rounded-pill px-3 fw-bold"
-                                    >
-                                        Gestionar
-                                    </a>
-                                </div>
-                            </div>
+                {shouldShowCard("pending_products") &&
+                    pendingProductsCount > 0 && (
+                        <div className="col-xl-3 col-md-6">
+                            <MetricCard
+                                title="Productos por Revisar"
+                                value={pendingProductsCount || "0"}
+                                icon="fas fa-exclamation-triangle"
+                                color="rose"
+                                trend="Urgente"
+                                trendIcon="fa-clock"
+                                subtitle="Proveedores esperando"
+                            />
                         </div>
-                    </div>
-                )}
+                    )}
                 {shouldShowCard("customer_satisfaction") && (
                     <div className="col-xl-3 col-md-6">
-                        <div
-                            className="card border-0 h-100"
-                            style={{
-                                borderRadius: "1rem",
-                                boxShadow: "0 8px 25px rgba(0,0,0,0.08)",
-                            }}
-                        >
-                            <div className="card-body p-4">
-                                <div className="d-flex align-items-center justify-content-between mb-3">
-                                    <div
-                                        className="rounded-3 p-3"
-                                        style={{ background: "#e0f2fe" }}
-                                    >
-                                        <i className="fas fa-smile text-info fs-4"></i>
-                                    </div>
-                                    <div className="text-end">
-                                        <div className="fs-2 fw-bold text-dark mb-0">
-                                            {customerSatisfaction || "0"}%
-                                        </div>
-                                        <div className="text-muted small">
-                                            Satisfacción
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="d-flex align-items-center justify-content-between">
-                                    <span className="text-muted small">
-                                        Promedio mensual
-                                    </span>
-                                    <div className="badge bg-info bg-opacity-10 text-info px-2 py-1 rounded-pill">
-                                        <i className="fas fa-arrow-up me-1"></i>
-                                        +5.7%
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        <MetricCard
+                            title="Satisfacción"
+                            value={`${customerSatisfaction || "0"}%`}
+                            icon="fas fa-smile"
+                            color="blue"
+                            trend="Alta"
+                            trendIcon="fa-smile"
+                            subtitle="Promedio mensual"
+                            help="Índice de satisfacción calculado en base a las reseñas y feedback de los clientes."
+                        />
                     </div>
                 )}
                 {shouldShowCard("total_categories") && (
                     <div className="col-xl-3 col-md-6">
-                        <div
-                            className="card border-0 h-100"
-                            style={{
-                                borderRadius: "1rem",
-                                boxShadow: "0 8px 25px rgba(0,0,0,0.08)",
-                            }}
-                        >
-                            <div className="card-body p-4">
-                                <div className="d-flex align-items-center justify-content-between mb-3">
-                                    <div
-                                        className="rounded-3 p-3"
-                                        style={{ background: "#fef3c7" }}
-                                    >
-                                        <i className="fas fa-tags text-warning fs-4"></i>
-                                    </div>
-                                    <div className="text-end">
-                                        <div className="fs-2 fw-bold text-dark mb-0">
-                                            {totalCategories || "0"}
-                                        </div>
-                                        <div className="text-muted small">
-                                            Categorías
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="d-flex align-items-center justify-content-between">
-                                    <span className="text-muted small">
-                                        Activas
-                                    </span>
-                                    <div className="badge bg-success bg-opacity-10 text-success px-2 py-1 rounded-pill">
-                                        <i className="fas fa-check me-1"></i>
-                                        100%
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        <MetricCard
+                            title="Categorías"
+                            value={totalCategories || "0"}
+                            icon="fas fa-tags"
+                            color="amber"
+                            trend="100%"
+                            trendIcon="fa-check"
+                            subtitle="Activas en tienda"
+                        />
                     </div>
                 )}
                 {shouldShowCard("total_brands") && (
                     <div className="col-xl-3 col-md-6">
-                        <div
-                            className="card border-0 h-100"
-                            style={{
-                                borderRadius: "1rem",
-                                boxShadow: "0 8px 25px rgba(0,0,0,0.08)",
-                            }}
-                        >
-                            <div className="card-body p-4">
-                                <div className="d-flex align-items-center justify-content-between mb-3">
-                                    <div
-                                        className="rounded-3 p-3"
-                                        style={{ background: "#e0e7ff" }}
-                                    >
-                                        <i className="fas fa-copyright text-primary fs-4"></i>
-                                    </div>
-                                    <div className="text-end">
-                                        <div className="fs-2 fw-bold text-dark mb-0">
-                                            {totalBrands || "0"}
-                                        </div>
-                                        <div className="text-muted small">
-                                            Marcas
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="d-flex align-items-center justify-content-between">
-                                    <span className="text-muted small">
-                                        Activas
-                                    </span>
-                                    <div className="badge bg-success bg-opacity-10 text-success px-2 py-1 rounded-pill">
-                                        <i className="fas fa-check me-1"></i>
-                                        100%
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        <MetricCard
+                            title="Marcas"
+                            value={totalBrands || "0"}
+                            icon="fas fa-copyright"
+                            color="indigo"
+                            trend="100%"
+                            trendIcon="fa-check"
+                            subtitle="Marcas activas"
+                        />
                     </div>
                 )}
                 {hasServicesFeature &&
                     shouldShowCard("total_service_categories") && (
                         <div className="col-xl-3 col-md-6">
-                            <div
-                                className="card border-0 h-100"
-                                style={{
-                                    borderRadius: "1rem",
-                                    boxShadow: "0 8px 25px rgba(0,0,0,0.08)",
-                                }}
-                            >
-                                <div className="card-body p-4">
-                                    <div className="d-flex align-items-center justify-content-between mb-3">
-                                        <div
-                                            className="rounded-3 p-3"
-                                            style={{ background: "#fbcfe8" }}
-                                        >
-                                            <i className="fas fa-layer-group text-pink fs-4"></i>
-                                        </div>
-                                        <div className="text-end">
-                                            <div className="fs-2 fw-bold text-dark mb-0">
-                                                {totalServiceCategories || "0"}
-                                            </div>
-                                            <div className="text-muted small">
-                                                Categorías de Servicios
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className="d-flex align-items-center justify-content-between">
-                                        <span className="text-muted small">
-                                            Activas
-                                        </span>
-                                        <div className="badge bg-success bg-opacity-10 text-success px-2 py-1 rounded-pill">
-                                            <i className="fas fa-check me-1"></i>
-                                            100%
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                            <MetricCard
+                                title="Cat. Servicios"
+                                value={totalServiceCategories || "0"}
+                                icon="fas fa-layer-group"
+                                color="rose"
+                                trend="Activas"
+                                trendIcon="fa-check"
+                                subtitle="Categorías de servicios"
+                            />
                         </div>
                     )}
                 {shouldShowCard("total_products") && (
                     <div className="col-xl-3 col-md-6">
-                        <div
-                            className="card border-0 h-100"
-                            style={{
-                                borderRadius: "1rem",
-                                boxShadow: "0 8px 25px rgba(0,0,0,0.08)",
-                            }}
-                        >
-                            <div className="card-body p-4">
-                                <div className="d-flex align-items-center justify-content-between mb-3">
-                                    <div
-                                        className="rounded-3 p-3"
-                                        style={{ background: "#fce7f3" }}
-                                    >
-                                        <i
-                                            className="fas fa-box text-pink fs-4"
-                                            style={{ color: "#ec4899" }}
-                                        ></i>
-                                    </div>
-                                    <div className="text-end">
-                                        <div className="fs-2 fw-bold text-dark mb-0">
-                                            {totalActiveProducts || "0"}
-                                        </div>
-                                        <div className="text-muted small">
-                                            Productos
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="d-flex align-items-center justify-content-between">
-                                    <span className="text-muted small">
-                                        Activos
-                                    </span>
-                                    <div className="badge bg-success bg-opacity-10 text-success px-2 py-1 rounded-pill">
-                                        <i className="fas fa-check me-1"></i>
-                                        100%
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        <MetricCard
+                            title="Productos"
+                            value={totalActiveProducts || "0"}
+                            icon="fas fa-box"
+                            color="rose"
+                            trend="Activos"
+                            trendIcon="fa-check"
+                            subtitle="Total productos"
+                        />
                     </div>
                 )}
                 {shouldShowCard("total_services_kpi") && (
                     <div className="col-xl-3 col-md-6">
-                        <div
-                            className="card border-0 h-100"
-                            style={{
-                                borderRadius: "1rem",
-                                boxShadow: "0 8px 25px rgba(0,0,0,0.08)",
-                            }}
-                        >
-                            <div className="card-body p-4">
-                                <div className="d-flex align-items-center justify-content-between mb-3">
-                                    <div
-                                        className="rounded-3 p-3"
-                                        style={{ background: "#e0e7ff" }}
-                                    >
-                                        <i
-                                            className="fas fa-box  fs-4"
-                                            style={{ color: "#6366f1" }}
-                                        ></i>
-                                    </div>
-                                    <div className="text-end">
-                                        <div className="fs-2 fw-bold text-dark mb-0">
-                                            {totalServices || "0"}
-                                        </div>
-                                        <div className="text-muted small">
-                                            Servicios
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="d-flex align-items-center justify-content-between">
-                                    <span className="text-muted small">
-                                        Destacados: {featuredServices || "0"}
-                                    </span>
-                                    <div
-                                        className="badge bg-indigo bg-opacity-10 px-2 py-1 rounded-pill"
-                                        style={{
-                                            background: "#e0e7ff",
-                                            color: "#6366f1",
-                                        }}
-                                    >
-                                        <i className="fas fa-star me-1"></i>
-                                        Featured
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        <MetricCard
+                            title="Servicios"
+                            value={totalServices || "0"}
+                            icon="fas fa-concierge-bell"
+                            color="indigo"
+                            trend={`${featuredServices || "0"} Destacados`}
+                            trendIcon="fa-star"
+                            subtitle="Servicios activos"
+                        />
                     </div>
                 )}
                 {shouldShowCard("service_clicks_kpi") && (
                     <div className="col-xl-3 col-md-6">
-                        <div
-                            className="card border-0 h-100"
-                            style={{
-                                borderRadius: "1rem",
-                                boxShadow: "0 8px 25px rgba(0,0,0,0.08)",
-                            }}
-                        >
-                            <div className="card-body p-4">
-                                <div className="d-flex align-items-center justify-content-between mb-3">
-                                    <div
-                                        className="rounded-3 p-3"
-                                        style={{ background: "#fef3c7" }}
-                                    >
-                                        <i
-                                            className="fas fa-mouse-pointer fs-4"
-                                            style={{ color: "#f59e0b" }}
-                                        ></i>
-                                    </div>
-                                    <div className="text-end">
-                                        <div className="fs-2 fw-bold text-dark mb-0">
-                                            {serviceClicksMonth || "0"}
-                                        </div>
-                                        <div className="text-muted small">
-                                            Clicks en Servicios
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="d-flex align-items-center justify-content-between">
-                                    <span className="text-muted small">
-                                        Hoy: {serviceClicksToday || "0"}
-                                    </span>
-                                    <div
-                                        className="badge px-2 py-1 rounded-pill"
-                                        style={{
-                                            background: "#fef3c7",
-                                            color: "#f59e0b",
-                                        }}
-                                    >
-                                        <i className="fas fa-hand-pointer me-1"></i>
-                                        Este mes
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        <MetricCard
+                            title="Clicks en Servicios"
+                            value={serviceClicksMonth || "0"}
+                            icon="fas fa-mouse-pointer"
+                            color="amber"
+                            trend={`Hoy: ${serviceClicksToday || "0"}`}
+                            trendIcon="fa-hand-pointer"
+                            subtitle="Interacciones del mes"
+                            help="Total de clics realizados en los servicios ofrecidos durante el mes actual."
+                        />
                     </div>
                 )}
                 {shouldShowCard("service_ctr_kpi") && (
                     <div className="col-xl-3 col-md-6">
-                        <div
-                            className="card border-0 h-100"
-                            style={{
-                                borderRadius: "1rem",
-                                boxShadow: "0 8px 25px rgba(0,0,0,0.08)",
-                            }}
-                        >
-                            <div className="card-body p-4">
-                                <div className="d-flex align-items-center justify-content-between mb-3">
-                                    <div
-                                        className="rounded-3 p-3"
-                                        style={{ background: "#dcfce7" }}
-                                    >
-                                        <i
-                                            className="fas fa-chart-line fs-4"
-                                            style={{ color: "#16a34a" }}
-                                        ></i>
-                                    </div>
-                                    <div className="text-end">
-                                        <div className="fs-2 fw-bold text-dark mb-0">
-                                            {serviceCTR || "0"}%
-                                        </div>
-                                        <div className="text-muted small">
-                                            CTR Servicios
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="d-flex align-items-center justify-content-between">
-                                    <span className="text-muted small">
-                                        Usuarios únicos:{" "}
-                                        {uniqueClickersMonth || "0"}
-                                    </span>
-                                    <div
-                                        className="badge px-2 py-1 rounded-pill"
-                                        style={{
-                                            background: "#dcfce7",
-                                            color: "#16a34a",
-                                        }}
-                                    >
-                                        <i className="fas fa-percentage me-1"></i>
-                                        Click Rate
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        <MetricCard
+                            title="CTR Servicios"
+                            value={`${serviceCTR || "0"}%`}
+                            icon="fas fa-bullseye"
+                            color="green"
+                            trend="Eficiencia"
+                            trendIcon="fa-percentage"
+                            subtitle={`Clicks únicos: ${uniqueClickersMonth || "0"}`}
+                            help="Ratio de clic (Click-Through Rate). Indica qué porcentaje de usuarios que ven un servicio terminan haciendo clic."
+                        />
+                    </div>
+                )}
+                {shouldShowCard("average_order_duration") && (
+                    <div className="col-xl-3 col-md-6">
+                        <MetricCard
+                            title="Prep. Pedido"
+                            value={
+                                avgOrderPreparationTime
+                                    ? `${avgOrderPreparationTime}h`
+                                    : "0h"
+                            }
+                            icon="fas fa-shipping-fast"
+                            color="indigo"
+                            trend="Promedio"
+                            trendIcon="fa-clock"
+                            subtitle="Tiempo de procesamiento"
+                            help="Tiempo promedio transcurrido desde que se registra el pago hasta que el pedido es marcado como enviado."
+                        />
                     </div>
                 )}
                 {shouldShowCard("product_clicks_kpi") && (
                     <div className="col-xl-3 col-md-6">
-                        <div
-                            className="card border-0 h-100"
-                            style={{
-                                borderRadius: "1rem",
-                                boxShadow: "0 8px 25px rgba(0,0,0,0.08)",
-                            }}
-                        >
-                            <div className="card-body p-4">
-                                <div className="d-flex align-items-center justify-content-between mb-3">
-                                    <div
-                                        className="rounded-3 p-3"
-                                        style={{ background: "#dbeafe" }}
-                                    >
-                                        <i
-                                            className="fas fa-mouse-pointer fs-4"
-                                            style={{ color: "#3b82f6" }}
-                                        ></i>
-                                    </div>
-                                    <div className="text-end">
-                                        <div className="fs-2 fw-bold text-dark mb-0">
-                                            {productClicksMonth || "0"}
-                                        </div>
-                                        <div className="text-muted small">
-                                            Clicks en Productos
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="d-flex align-items-center justify-content-between">
-                                    <span className="text-muted small">
-                                        Hoy: {productClicksToday || "0"}
-                                    </span>
-                                    <div
-                                        className="badge px-2 py-1 rounded-pill"
-                                        style={{
-                                            background: "#dbeafe",
-                                            color: "#3b82f6",
-                                        }}
-                                    >
-                                        <i className="fas fa-hand-pointer me-1"></i>
-                                        Productos
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        <MetricCard
+                            title="Clicks Productos"
+                            value={productClicksMonth || "0"}
+                            icon="fas fa-eye"
+                            color="amber"
+                            trend={`Hoy: ${productClicksToday || "0"}`}
+                            trendIcon="fa-fingerprint"
+                            subtitle="Vistas de productos"
+                        />
                     </div>
                 )}
                 {shouldShowCard("product_ctr_kpi") && (
                     <div className="col-xl-3 col-md-6">
-                        <div
-                            className="card border-0 h-100"
-                            style={{
-                                borderRadius: "1rem",
-                                boxShadow: "0 8px 25px rgba(0,0,0,0.08)",
-                            }}
-                        >
-                            <div className="card-body p-4">
-                                <div className="d-flex align-items-center justify-content-between mb-3">
-                                    <div
-                                        className="rounded-3 p-3"
-                                        style={{ background: "#ddd6fe" }}
+                        <MetricCard
+                            title="CTR Productos"
+                            value={`${productCTR || "0"}%`}
+                            icon="fas fa-percentage"
+                            color="violet"
+                            trend="Clicks únicos"
+                            trendIcon="fa-user-check"
+                            subtitle={`${uniqueProductClickersMonth || "0"} interesados`}
+                        />
+                    </div>
+                )}
+            </div>
+
+            {/* Análisis Analítico Avanzado (estilo Google Analytics) */}
+            {shouldShowCard("advanced_analytics_section") && (
+                <>
+                    <div className="dashboard-header mb-4 mt-5">
+                        <div className="d-flex align-items-center justify-content-between">
+                            <div className="d-flex align-items-center gap-3">
+                                <div
+                                    className="rounded-4 p-3"
+                                    style={{
+                                        background: UI_STYLE.pastel.indigo.bg,
+                                    }}
+                                >
+                                    <i
+                                        className="fas fa-chart-line fs-4"
+                                        style={{
+                                            color: UI_STYLE.pastel.indigo.icon,
+                                        }}
+                                    ></i>
+                                </div>
+                                <div>
+                                    <h4
+                                        className="mb-0 fw-bold text-dark"
+                                        style={{ letterSpacing: "-0.02em" }}
                                     >
-                                        <i
-                                            className="fas fa-chart-line fs-4"
-                                            style={{ color: "#8b5cf6" }}
-                                        ></i>
-                                    </div>
-                                    <div className="text-end">
-                                        <div className="fs-2 fw-bold text-dark mb-0">
-                                            {productCTR || "0"}%
+                                        Análisis Analítico Avanzado
+                                    </h4>
+                                    <p className="text-muted mb-0 small fw-medium">
+                                        Rendimiento y comportamiento detallado
+                                        de tus usuarios
+                                    </p>
+                                </div>
+                            </div>
+                            <div className="d-flex gap-3 align-items-center">
+                                <Tippy content="Generar enlaces de prueba para validar el rastreo">
+                                    <button
+                                        className="btn btn-white shadow-sm px-3 py-2 border-0 rounded-4 fw-bold small"
+                                        onClick={() =>
+                                            document
+                                                .getElementById(
+                                                    "test-acquisition-panel",
+                                                )
+                                                ?.scrollIntoView({
+                                                    behavior: "smooth",
+                                                })
+                                        }
+                                    >
+                                        <i className="fas fa-vial me-2 text-primary"></i>{" "}
+                                        Probar Rastreo
+                                    </button>
+                                </Tippy>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* KPI de Rendimiento Analítico con Sparklines */}
+                    {/* KPI de Rendimiento Analítico con Sparklines */}
+                    <div className="row g-4 mb-5">
+                        <div className="col-xl col-md-4">
+                            <MetricCard
+                                title="Sesiones (7d)"
+                                value={
+                                    sessionTrend
+                                        ? sessionTrend.reduce(
+                                              (a, b) => a + b,
+                                              0,
+                                          )
+                                        : 0
+                                }
+                                icon="fas fa-users"
+                                color="indigo"
+                                trend="LIVE"
+                                trendIcon="fa-circle text-success extra-small"
+                                sparkline={renderSparkline(
+                                    sessionTrend,
+                                    UI_STYLE.pastel.indigo.icon,
+                                )}
+                                help="Cantidad total de sesiones (visitas) iniciadas en los últimos 7 días."
+                            />
+                        </div>
+
+                        <div className="col-xl col-md-4">
+                            <MetricCard
+                                title="Tasa de Rebote"
+                                value={`${bounceRate || 0}%`}
+                                icon="fas fa-door-open"
+                                color={bounceRate > 60 ? "rose" : "green"}
+                                trend={bounceRate > 60 ? "Alto" : "Sano"}
+                                trendIcon={
+                                    bounceRate > 60
+                                        ? "fa-exclamation-triangle"
+                                        : "fa-check-circle"
+                                }
+                                sparkline={renderSparkline(
+                                    bounceTrend,
+                                    bounceRate > 60
+                                        ? UI_STYLE.pastel.rose.icon
+                                        : UI_STYLE.pastel.green.icon,
+                                )}
+                                help="Porcentaje de visitantes que abandonan el sitio después de ver solo una página."
+                            />
+                        </div>
+
+                        <div className="col-xl col-md-4">
+                            <MetricCard
+                                title="Permanencia Media"
+                                value={`${avgSessionDuration || 0}m`}
+                                icon="fas fa-hourglass-half"
+                                color="amber"
+                                trend="Engagement"
+                                trendIcon="fa-bolt"
+                                sparkline={renderSparkline(
+                                    durationTrend,
+                                    UI_STYLE.pastel.amber.icon,
+                                )}
+                                help="Tiempo promedio que un usuario pasa navegando en la tienda por sesión."
+                            />
+                        </div>
+
+                        <div className="col-xl col-md-6">
+                            <MetricCard
+                                title="Ticket Promedio (AOV)"
+                                value={`${CurrencySymbol()} ${aov || 0}`}
+                                icon="fas fa-shopping-basket"
+                                color="green"
+                                trend="Venta Media"
+                                trendIcon="fa-chart-pie"
+                                subtitle="Eficiencia de revenue por cliente"
+                            />
+                        </div>
+
+                        <div className="col-xl col-md-6">
+                            <MetricCard
+                                title="Conversión (CVR)"
+                                value={`${cvr || 0}%`}
+                                icon="fas fa-bullseye"
+                                color="violet"
+                                trend="Efectividad"
+                                trendIcon="fa-crosshairs"
+                                subtitle="Cierre de ventas confirmado"
+                            />
+                        </div>
+                    </div>
+
+                    <div className="row g-4 mb-5">
+                        {/* Gráfico Fuentes de Tráfico Mejorado */}
+                        {shouldShowCard("traffic_sources_chart") && (
+                            <div className="col-lg-6">
+                                <div
+                                    className="card border-0 shadow-sm h-100"
+                                    style={{
+                                        borderRadius: UI_STYLE.borderRadius,
+                                    }}
+                                >
+                                    <div
+                                        className="card-header bg-white border-0 p-4"
+                                        style={{
+                                            borderRadius: `${UI_STYLE.borderRadius} ${UI_STYLE.borderRadius} 0 0`,
+                                        }}
+                                    >
+                                        <div className="d-flex align-items-center justify-content-between">
+                                            <h6 className="mb-0 fw-bold text-dark">
+                                                Adquisición de Usuarios (Fuentes
+                                                & UTMs)
+                                            </h6>
+                                            <Tippy content="Rastreo automático de referidos y parámetros UTM de marketing.">
+                                                <i className="fas fa-question-circle text-muted cursor-help"></i>
+                                            </Tippy>
                                         </div>
-                                        <div className="text-muted small">
-                                            CTR Productos
+                                    </div>
+                                    <div className="card-body">
+                                        <Chart
+                                            options={{
+                                                chart: {
+                                                    type: "pie",
+                                                    toolbar: { show: false },
+                                                },
+                                                labels: Object.keys(
+                                                    trafficSources || {},
+                                                ),
+                                                colors: [
+                                                    UI_STYLE.pastel.indigo.icon,
+                                                    "#0ea5e9",
+                                                    UI_STYLE.pastel.rose.icon,
+                                                    UI_STYLE.pastel.green.icon,
+                                                    "#000",
+                                                    UI_STYLE.pastel.violet.icon,
+                                                    "#94a3b8",
+                                                ],
+                                                plotOptions: {
+                                                    pie: {
+                                                        expandOnClick: true,
+                                                        dataLabels: {
+                                                            offset: -25,
+                                                        },
+                                                    },
+                                                },
+                                                legend: {
+                                                    position: "bottom",
+                                                    fontSize: "11px",
+                                                    markers: { radius: 12 },
+                                                    offsetY: 0,
+                                                },
+                                                stroke: {
+                                                    width: 4,
+                                                    colors: ["#fff"],
+                                                },
+                                                dataLabels: {
+                                                    enabled: true,
+                                                    style: {
+                                                        fontSize: "10px",
+                                                        fontWeight: "bold",
+                                                        colors: ["#fff"],
+                                                    },
+                                                    dropShadow: {
+                                                        enabled: false,
+                                                    },
+                                                },
+                                                tooltip: {
+                                                    theme: "dark",
+                                                    style: {
+                                                        fontSize: "12px",
+                                                        colors: ["#fff"],
+                                                    },
+                                                },
+                                            }}
+                                            series={Object.values(
+                                                trafficSources || {},
+                                            )}
+                                            type="pie"
+                                            height={350}
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Embudo de Conversión Mejorado */}
+                        {shouldShowCard("conversion_funnel") && (
+                            <div className="col-lg-6">
+                                <div
+                                    className="card border-0 shadow-sm h-100"
+                                    style={{
+                                        borderRadius: UI_STYLE.borderRadius,
+                                    }}
+                                >
+                                    <div
+                                        className="card-header bg-white border-0 p-4"
+                                        style={{
+                                            borderRadius: `${UI_STYLE.borderRadius} ${UI_STYLE.borderRadius} 0 0`,
+                                        }}
+                                    >
+                                        <div className="d-flex align-items-center justify-content-between">
+                                            <h6 className="mb-0 fw-bold text-dark">
+                                                Embudo de Conversión
+                                            </h6>
+                                            <Tippy content="Muestra el viaje del usuario desde que entra hasta que compra. Sesiones -> Vistas de Producto -> Ventas Finales.">
+                                                <i className="fas fa-question-circle text-muted cursor-help"></i>
+                                            </Tippy>
+                                        </div>
+                                    </div>
+                                    <div className="card-body">
+                                        <Chart
+                                            options={{
+                                                chart: {
+                                                    type: "bar",
+                                                    toolbar: { show: false },
+                                                },
+                                                plotOptions: {
+                                                    bar: {
+                                                        borderRadius: 12,
+                                                        horizontal: true,
+                                                        distributed: true,
+                                                        barHeight: "65%",
+                                                        dataLabels: {
+                                                            position: "top",
+                                                        },
+                                                    },
+                                                },
+                                                colors: [
+                                                    UI_STYLE.pastel.indigo.icon,
+                                                    UI_STYLE.pastel.amber.icon,
+                                                    UI_STYLE.pastel.green.icon,
+                                                ],
+                                                xaxis: {
+                                                    categories: (
+                                                        funnelData || []
+                                                    ).map((i) => i.label),
+                                                    labels: { show: false },
+                                                    axisBorder: { show: false },
+                                                    axisTicks: { show: false },
+                                                },
+                                                grid: { show: false },
+                                                legend: { show: false },
+                                                dataLabels: {
+                                                    enabled: true,
+                                                    textAnchor: "start",
+                                                    style: {
+                                                        fontSize: "10px",
+                                                        colors: ["#fff"],
+                                                        fontWeight: "700",
+                                                    },
+                                                    formatter: function (
+                                                        val,
+                                                        opt,
+                                                    ) {
+                                                        return val;
+                                                    },
+                                                    offsetX: 5,
+                                                    dropShadow: {
+                                                        enabled: true,
+                                                    },
+                                                },
+                                                tooltip: {
+                                                    theme: "dark",
+                                                    y: {
+                                                        formatter: function (
+                                                            val,
+                                                        ) {
+                                                            return (
+                                                                val +
+                                                                " usuarios"
+                                                            );
+                                                        },
+                                                    },
+                                                },
+                                            }}
+                                            series={[
+                                                {
+                                                    name: "Usuarios",
+                                                    data: (
+                                                        funnelData || []
+                                                    ).map((i) => i.value),
+                                                },
+                                            ]}
+                                            type="bar"
+                                            height={350}
+                                        />
+                                        <div
+                                            className="mt-3 p-3 text-center rounded-4"
+                                            style={{
+                                                background:
+                                                    UI_STYLE.pastel.indigo.bg,
+                                            }}
+                                        >
+                                            <div className="small text-muted mb-1 fw-bold">
+                                                Tasa de Conversión Global
+                                            </div>
+                                            <div
+                                                className="h4 fw-bold mb-0"
+                                                style={{
+                                                    color: UI_STYLE.pastel
+                                                        .indigo.icon,
+                                                }}
+                                            >
+                                                {cvr}%
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                                <div className="d-flex align-items-center justify-content-between">
-                                    <span className="text-muted small">
-                                        Usuarios únicos:{" "}
-                                        {uniqueProductClickersMonth || "0"}
-                                    </span>
-                                    <div
-                                        className="badge px-2 py-1 rounded-pill"
-                                        style={{
-                                            background: "#ddd6fe",
-                                            color: "#8b5cf6",
-                                        }}
-                                    >
-                                        <i className="fas fa-percentage me-1"></i>
-                                        Product CTR
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Panel de Pruebas de Adquisición */}
+                    <div
+                        id="test-acquisition-panel"
+                        className="card border-0 shadow-sm mb-5"
+                        style={{
+                            background: "#f8fafc",
+                            borderRadius: UI_STYLE.borderRadius,
+                        }}
+                    >
+                        <div className="card-body p-5">
+                            <div className="d-flex align-items-center gap-3 mb-4">
+                                <div className="p-3 bg-white rounded-4 shadow-sm">
+                                    <i className="fas fa-vial text-primary fs-4"></i>
+                                </div>
+                                <div>
+                                    <h5 className="mb-0 fw-bold">
+                                        Panel de Pruebas de Adquisición
+                                    </h5>
+                                    <p className="text-muted small mb-0">
+                                        Genera enlaces UTM para probar el
+                                        sistema de atribución
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div className="row g-4">
+                                <div className="col-md-7">
+                                    <div className="d-flex flex-wrap gap-2">
+                                        {[
+                                            {
+                                                name: "Facebook Ads",
+                                                utm: "?utm_source=facebook&utm_medium=cpc&utm_campaign=black_friday",
+                                                icon: "fab fa-facebook",
+                                            },
+                                            {
+                                                name: "Google Ads",
+                                                utm: "?utm_source=google&utm_medium=search&utm_campaign=brand_awareness",
+                                                icon: "fab fa-google",
+                                            },
+                                            {
+                                                name: "TikTok Promo",
+                                                utm: "?utm_source=tiktok&utm_medium=referral&utm_campaign=influencer_x",
+                                                icon: "fab fa-tiktok",
+                                            },
+                                            {
+                                                name: "WhatsApp",
+                                                utm: "?utm_source=whatsapp&utm_medium=chat&utm_campaign=oferta_verano",
+                                                icon: "fab fa-whatsapp",
+                                            },
+                                        ].map((test, idx) => (
+                                            <a
+                                                key={idx}
+                                                href={`${window.location.origin}${test.utm}`}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="btn btn-white border-0 shadow-sm rounded-4 py-3 px-4 fw-bold"
+                                                style={{
+                                                    transition: "all 0.3s",
+                                                }}
+                                            >
+                                                <i
+                                                    className={`${test.icon} me-2 text-primary`}
+                                                ></i>
+                                                {test.name}
+                                            </a>
+                                        ))}
+                                    </div>
+                                </div>
+                                <div className="col-md-5 border-start">
+                                    <div className="ps-md-4">
+                                        <p className="small fw-bold text-dark mb-2">
+                                            Instrucciones de Prueba
+                                        </p>
+                                        <ul
+                                            className="small text-muted ps-3 mb-0"
+                                            style={{ lineHeight: "1.6" }}
+                                        >
+                                            <li>
+                                                Haz clic en un canal para abrir
+                                                la tienda con UTMs.
+                                            </li>
+                                            <li>
+                                                Navega por varias páginas (evita
+                                                el "Rebote").
+                                            </li>
+                                            <li>
+                                                Regresa y refresca para ver el
+                                                impacto en las gráficas.
+                                            </li>
+                                        </ul>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                )}
-            </div>
+                </>
+            )}
 
             {/* Modern Statistics Chart */}
             {shouldShowCard("statistics_chart") && (
                 <div className="row g-4 mb-5">
                     <div className="col-12">
                         <div
-                            className="card border-0 h-100"
+                            className="card border-0 shadow-sm h-100"
                             style={{
-                                borderRadius: "1rem",
-                                boxShadow: "0 10px 40px rgba(0,0,0,0.1)",
+                                borderRadius: UI_STYLE.borderRadius,
                             }}
                         >
                             <div
                                 className="card-header bg-white border-0 p-4"
-                                style={{ borderRadius: "1rem 1rem 0 0" }}
+                                style={{
+                                    borderRadius: `${UI_STYLE.borderRadius} ${UI_STYLE.borderRadius} 0 0`,
+                                }}
                             >
                                 <div className="d-flex align-items-center justify-content-between">
                                     <div className="d-flex align-items-center gap-3">
                                         <div
-                                            className="rounded-3 p-2"
+                                            className="rounded-4 p-3"
                                             style={{
                                                 background:
-                                                    "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                                                    UI_STYLE.pastel.indigo.bg,
                                             }}
                                         >
-                                            <i className="fas fa-chart-line text-white fs-5"></i>
+                                            <i
+                                                className="fas fa-chart-bar fs-4"
+                                                style={{
+                                                    color: UI_STYLE.pastel
+                                                        .indigo.icon,
+                                                }}
+                                            ></i>
                                         </div>
                                         <div>
-                                            <h5 className="mb-0 fw-bold text-dark">
-                                                Estadísticas de Ventas
+                                            <h5
+                                                className="mb-0 fw-bold text-dark"
+                                                style={{
+                                                    letterSpacing: "-0.02em",
+                                                }}
+                                            >
+                                                Estadísticas de Ventas e
+                                                Ingresos
                                             </h5>
-                                            <p className="text-muted mb-0 small">
-                                                Análisis de rendimiento en
-                                                tiempo real
+                                            <p className="text-muted mb-0 small fw-medium">
+                                                Análisis comparativo de pedidos
+                                                vs valor monetario
                                             </p>
                                         </div>
                                     </div>
@@ -1044,11 +1331,11 @@ const Home = ({
                                                         background:
                                                             "transparent",
                                                         fontFamily:
-                                                            "Inter, sans-serif",
+                                                            "'Inter', sans-serif",
                                                     },
                                                     grid: {
-                                                        borderColor: "#e2e8f0",
-                                                        strokeDashArray: 2,
+                                                        borderColor: "#f1f5f9",
+                                                        strokeDashArray: 4,
                                                         xaxis: {
                                                             lines: {
                                                                 show: false,
@@ -1068,7 +1355,7 @@ const Home = ({
                                                         labels: {
                                                             rotate: -45,
                                                             style: {
-                                                                colors: "#64748b",
+                                                                colors: "#94a3b8",
                                                                 fontSize:
                                                                     "11px",
                                                             },
@@ -1085,7 +1372,10 @@ const Home = ({
                                                             title: {
                                                                 text: "Pedidos",
                                                                 style: {
-                                                                    color: "#3b82f6",
+                                                                    color: UI_STYLE
+                                                                        .pastel
+                                                                        .indigo
+                                                                        .icon,
                                                                     fontSize:
                                                                         "12px",
                                                                     fontWeight: 600,
@@ -1093,7 +1383,10 @@ const Home = ({
                                                             },
                                                             labels: {
                                                                 style: {
-                                                                    colors: "#3b82f6",
+                                                                    colors: UI_STYLE
+                                                                        .pastel
+                                                                        .indigo
+                                                                        .icon,
                                                                     fontSize:
                                                                         "11px",
                                                                 },
@@ -1103,9 +1396,12 @@ const Home = ({
                                                         {
                                                             opposite: true,
                                                             title: {
-                                                                text: `Ventas (${CurrencySymbol()})`,
+                                                                text: `Ingresos (${CurrencySymbol()})`,
                                                                 style: {
-                                                                    color: "#10b981",
+                                                                    color: UI_STYLE
+                                                                        .pastel
+                                                                        .green
+                                                                        .icon,
                                                                     fontSize:
                                                                         "12px",
                                                                     fontWeight: 600,
@@ -1113,7 +1409,10 @@ const Home = ({
                                                             },
                                                             labels: {
                                                                 style: {
-                                                                    colors: "#10b981",
+                                                                    colors: UI_STYLE
+                                                                        .pastel
+                                                                        .green
+                                                                        .icon,
                                                                     fontSize:
                                                                         "11px",
                                                                 },
@@ -1127,54 +1426,39 @@ const Home = ({
                                                     stroke: {
                                                         curve: "smooth",
                                                         width: [0, 4],
-                                                        dashArray: [0, 0],
                                                     },
                                                     colors: [
-                                                        "#3b82f6",
-                                                        "#10b981",
+                                                        UI_STYLE.pastel.indigo
+                                                            .icon,
+                                                        UI_STYLE.pastel.green
+                                                            .icon,
                                                     ],
                                                     fill: {
-                                                        opacity: [0.8, 1],
+                                                        opacity: [0.35, 1],
+                                                        type: [
+                                                            "gradient",
+                                                            "solid",
+                                                        ],
                                                     },
                                                     plotOptions: {
                                                         bar: {
-                                                            borderRadius: 4,
-                                                            columnWidth: "60%",
+                                                            borderRadius: 6,
+                                                            columnWidth: "50%",
                                                         },
                                                     },
                                                     tooltip: {
-                                                        enabled: true,
-                                                        shared: true,
-                                                        intersect: false,
                                                         theme: "light",
+                                                        x: { show: true },
                                                         style: {
                                                             fontSize: "12px",
                                                         },
-                                                        y: [
-                                                            {
-                                                                formatter: (
-                                                                    val,
-                                                                ) =>
-                                                                    `${val} pedidos`,
-                                                            },
-                                                            {
-                                                                formatter: (
-                                                                    val,
-                                                                ) =>
-                                                                    `${CurrencySymbol()} ${Number(val).toFixed(2)}`,
-                                                            },
-                                                        ],
                                                     },
                                                     legend: {
-                                                        show: true,
                                                         position: "top",
-                                                        fontWeight: 500,
-                                                        fontSize: "13px",
-                                                        markers: {
-                                                            width: 10,
-                                                            height: 10,
-                                                            radius: 5,
-                                                        },
+                                                        horizontalAlign:
+                                                            "right",
+                                                        fontWeight: 600,
+                                                        markers: { radius: 12 },
                                                     },
                                                 }}
                                                 series={[
@@ -1194,69 +1478,58 @@ const Home = ({
                                                             (d) => d.amount,
                                                         ),
                                                         yAxisIndex: 1,
-                                                        stroke: {
-                                                            width: 4,
-                                                            curve: "smooth",
-                                                        },
-                                                        markers: {
-                                                            size: 6,
-                                                            colors: ["#10b981"],
-                                                            strokeColors:
-                                                                "#fff",
-                                                            strokeWidth: 2,
-                                                            hover: {
-                                                                size: 8,
-                                                            },
-                                                        },
                                                     },
                                                 ]}
                                                 type="line"
-                                                height={300}
+                                                height={350}
                                             />
                                             <div
-                                                className="mt-4 p-3 rounded-3"
+                                                className="mt-4 p-4 rounded-4"
                                                 style={{
                                                     background: "#f8fafc",
+                                                    border: "1px solid #f1f5f9",
                                                 }}
                                             >
                                                 <div className="d-flex align-items-center gap-3 flex-wrap">
-                                                    <span className="text-muted fw-semibold">
-                                                        Filtrar por fechas:
+                                                    <span className="text-muted fw-bold small">
+                                                        <i className="fas fa-calendar-alt me-2"></i>
+                                                        FILTRAR RANGO:
                                                     </span>
-                                                    <DatePicker
-                                                        selected={startDate}
-                                                        onChange={(date) =>
-                                                            setStartDate(date)
-                                                        }
-                                                        selectsStart
-                                                        startDate={startDate}
-                                                        endDate={endDate}
-                                                        dateFormat="yyyy-MM-dd"
-                                                        className="form-control form-control-sm border-0 shadow-sm rounded-3"
-                                                        maxDate={endDate}
-                                                        style={{
-                                                            minWidth: "140px",
-                                                        }}
-                                                    />
-                                                    <span className="text-muted">
-                                                        hasta
-                                                    </span>
-                                                    <DatePicker
-                                                        selected={endDate}
-                                                        onChange={(date) =>
-                                                            setEndDate(date)
-                                                        }
-                                                        selectsEnd
-                                                        startDate={startDate}
-                                                        endDate={endDate}
-                                                        dateFormat="yyyy-MM-dd"
-                                                        className="form-control form-control-sm border-0 shadow-sm rounded-3"
-                                                        minDate={startDate}
-                                                        maxDate={new Date()}
-                                                        style={{
-                                                            minWidth: "140px",
-                                                        }}
-                                                    />
+                                                    <div className="d-flex gap-2 align-items-center">
+                                                        <DatePicker
+                                                            selected={startDate}
+                                                            onChange={(date) =>
+                                                                setStartDate(
+                                                                    date,
+                                                                )
+                                                            }
+                                                            selectsStart
+                                                            startDate={
+                                                                startDate
+                                                            }
+                                                            endDate={endDate}
+                                                            dateFormat="yyyy-MM-dd"
+                                                            className="form-control form-control-sm border-0 shadow-sm rounded-3 px-3"
+                                                            maxDate={endDate}
+                                                        />
+                                                        <span className="text-muted small fw-bold">
+                                                            AL
+                                                        </span>
+                                                        <DatePicker
+                                                            selected={endDate}
+                                                            onChange={(date) =>
+                                                                setEndDate(date)
+                                                            }
+                                                            selectsEnd
+                                                            startDate={
+                                                                startDate
+                                                            }
+                                                            endDate={endDate}
+                                                            minDate={startDate}
+                                                            dateFormat="yyyy-MM-dd"
+                                                            className="form-control form-control-sm border-0 shadow-sm rounded-3 px-3"
+                                                        />
+                                                    </div>
                                                 </div>
                                             </div>
                                         </>
@@ -1269,37 +1542,50 @@ const Home = ({
             )}
 
             {/* Modern Visits Chart */}
-            {shouldShowCard("visits_chart") && (
+            {shouldShowCard("visits_this_month") && (
                 <div className="row g-4 mb-5">
                     <div className="col-12">
                         <div
-                            className="card border-0 h-100"
+                            className="card border-0 shadow-sm h-100"
                             style={{
-                                borderRadius: "1rem",
-                                boxShadow: "0 10px 40px rgba(0,0,0,0.1)",
+                                borderRadius: UI_STYLE.borderRadius,
                             }}
                         >
                             <div
                                 className="card-header bg-white border-0 p-4"
-                                style={{ borderRadius: "1rem 1rem 0 0" }}
+                                style={{
+                                    borderRadius: `${UI_STYLE.borderRadius} ${UI_STYLE.borderRadius} 0 0`,
+                                }}
                             >
                                 <div className="d-flex align-items-center justify-content-between">
                                     <div className="d-flex align-items-center gap-3">
                                         <div
-                                            className="rounded-3 p-2"
+                                            className="rounded-4 p-3"
                                             style={{
                                                 background:
-                                                    "linear-gradient(135deg, #06b6d4 0%, #0891b2 100%)",
+                                                    UI_STYLE.pastel.blue.bg,
                                             }}
                                         >
-                                            <i className="fas fa-chart-bar text-white fs-5"></i>
+                                            <i
+                                                className="fas fa-chart-line fs-4"
+                                                style={{
+                                                    color: UI_STYLE.pastel.blue
+                                                        .icon,
+                                                }}
+                                            ></i>
                                         </div>
                                         <div>
-                                            <h5 className="mb-0 fw-bold text-dark">
+                                            <h5
+                                                className="mb-0 fw-bold text-dark"
+                                                style={{
+                                                    letterSpacing: "-0.02em",
+                                                }}
+                                            >
                                                 Visitas de Productos del Mes
                                             </h5>
-                                            <p className="text-muted mb-0 small">
-                                                Tráfico diario del sitio web
+                                            <p className="text-muted mb-0 small fw-medium">
+                                                Tendencia de tráfico diario en
+                                                la tienda
                                             </p>
                                         </div>
                                     </div>
@@ -1312,15 +1598,13 @@ const Home = ({
                                             type: "bar",
                                             toolbar: { show: false },
                                             background: "transparent",
-                                            fontFamily: "Inter, sans-serif",
+                                            fontFamily: "'Inter', sans-serif",
                                         },
                                         plotOptions: {
                                             bar: {
-                                                borderRadius: 6,
-                                                columnWidth: "70%",
-                                                dataLabels: {
-                                                    position: "top",
-                                                },
+                                                borderRadius: 8,
+                                                columnWidth: "60%",
+                                                dataLabels: { position: "top" },
                                             },
                                         },
                                         xaxis: {
@@ -1330,7 +1614,7 @@ const Home = ({
                                             labels: {
                                                 rotate: -45,
                                                 style: {
-                                                    colors: "#64748b",
+                                                    colors: "#94a3b8",
                                                     fontSize: "11px",
                                                 },
                                             },
@@ -1338,13 +1622,6 @@ const Home = ({
                                             axisTicks: { show: false },
                                         },
                                         yaxis: {
-                                            title: {
-                                                text: "Visitas",
-                                                style: {
-                                                    color: "#64748b",
-                                                    fontSize: "12px",
-                                                },
-                                            },
                                             labels: {
                                                 style: {
                                                     colors: "#64748b",
@@ -1354,26 +1631,32 @@ const Home = ({
                                             min: 0,
                                         },
                                         grid: {
-                                            borderColor: "#e2e8f0",
-                                            strokeDashArray: 2,
+                                            borderColor: "#f1f5f9",
+                                            strokeDashArray: 4,
                                             xaxis: { lines: { show: false } },
                                             yaxis: { lines: { show: true } },
                                         },
                                         dataLabels: {
                                             enabled: true,
-                                            formatter: function (val) {
-                                                return val;
-                                            },
                                             style: {
-                                                fontSize: "11px",
+                                                fontSize: "10px",
                                                 fontWeight: "bold",
-                                                colors: ["#374151"],
+                                                colors: [
+                                                    UI_STYLE.pastel.blue.icon,
+                                                ],
                                             },
                                             offsetY: -20,
                                         },
-                                        colors: ["#06b6d4"],
+                                        colors: [UI_STYLE.pastel.blue.icon],
                                         fill: {
-                                            opacity: 0.8,
+                                            opacity: 0.85,
+                                            type: "gradient",
+                                            gradient: {
+                                                shade: "light",
+                                                type: "vertical",
+                                                opacityFrom: 0.85,
+                                                opacityTo: 0.55,
+                                            },
                                         },
                                         tooltip: {
                                             theme: "light",
@@ -1381,14 +1664,6 @@ const Home = ({
                                             y: {
                                                 formatter: (val) =>
                                                     `${val} visitas`,
-                                            },
-                                        },
-                                        states: {
-                                            hover: {
-                                                filter: {
-                                                    type: "lighten",
-                                                    value: 0.1,
-                                                },
                                             },
                                         },
                                     }}
@@ -1408,45 +1683,273 @@ const Home = ({
                     </div>
                 </div>
             )}
+
             {shouldShowCard("product_views_by_device") && (
+                <div className="row g-4 mb-5">
+                    <div className="col-12">
+                        <div
+                            className="card border-0 shadow-sm h-100"
+                            style={{
+                                borderRadius: UI_STYLE.borderRadius,
+                            }}
+                        >
+                            <div
+                                className="card-header bg-white border-0 p-4"
+                                style={{
+                                    borderRadius: `${UI_STYLE.borderRadius} ${UI_STYLE.borderRadius} 0 0`,
+                                }}
+                            >
+                                <div className="d-flex align-items-center justify-content-between">
+                                    <div className="d-flex align-items-center gap-3">
+                                        <div
+                                            className="rounded-4 p-3"
+                                            style={{
+                                                background:
+                                                    UI_STYLE.pastel.violet.bg,
+                                            }}
+                                        >
+                                            <i
+                                                className="fas fa-mobile-alt fs-4"
+                                                style={{
+                                                    color: UI_STYLE.pastel
+                                                        .violet.icon,
+                                                }}
+                                            ></i>
+                                        </div>
+                                        <div>
+                                            <h5
+                                                className="mb-0 fw-bold text-dark"
+                                                style={{
+                                                    letterSpacing: "-0.02em",
+                                                }}
+                                            >
+                                                Vistas de Productos por
+                                                Dispositivo
+                                            </h5>
+                                            <p className="text-muted mb-0 small fw-medium">
+                                                Distribución total y tráfico en
+                                                tiempo real
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="card-body p-4">
+                                <div className="row g-5">
+                                    <div className="col-md-6 border-end border-light">
+                                        <h6 className="text-muted mb-4 fw-bold small text-uppercase">
+                                            Total Histórico
+                                        </h6>
+                                        <Chart
+                                            options={{
+                                                chart: {
+                                                    type: "donut",
+                                                    toolbar: { show: false },
+                                                    background: "transparent",
+                                                    fontFamily:
+                                                        "'Inter', sans-serif",
+                                                },
+                                                labels: productViewsByDevice.map(
+                                                    (d) =>
+                                                        d.device === "desktop"
+                                                            ? "Desktop"
+                                                            : d.device ===
+                                                                "mobile"
+                                                              ? "Móvil"
+                                                              : d.device ===
+                                                                  "tablet"
+                                                                ? "Tablet"
+                                                                : "Otro",
+                                                ),
+                                                colors: [
+                                                    UI_STYLE.pastel.indigo.icon,
+                                                    UI_STYLE.pastel.blue.icon,
+                                                    UI_STYLE.pastel.amber.icon,
+                                                    UI_STYLE.pastel.slate.icon,
+                                                ],
+                                                plotOptions: {
+                                                    pie: {
+                                                        donut: {
+                                                            size: "75%",
+                                                            labels: {
+                                                                show: true,
+                                                                name: {
+                                                                    show: true,
+                                                                    fontSize:
+                                                                        "14px",
+                                                                    color: "#64748b",
+                                                                    fontWeight: 600,
+                                                                },
+                                                                value: {
+                                                                    show: true,
+                                                                    fontSize:
+                                                                        "28px",
+                                                                    fontWeight: 800,
+                                                                    color: "#1e293b",
+                                                                },
+                                                                total: {
+                                                                    show: true,
+                                                                    label: "Total",
+                                                                    fontSize:
+                                                                        "14px",
+                                                                    fontWeight: 600,
+                                                                    color: "#64748b",
+                                                                },
+                                                            },
+                                                        },
+                                                    },
+                                                },
+                                                legend: {
+                                                    position: "bottom",
+                                                    fontWeight: 600,
+                                                },
+                                                dataLabels: { enabled: false },
+                                                tooltip: { theme: "light" },
+                                            }}
+                                            series={productViewsByDevice.map(
+                                                (d) => d.count,
+                                            )}
+                                            type="donut"
+                                            height={350}
+                                        />
+                                    </div>
+                                    <div className="col-md-6">
+                                        <h6 className="text-muted mb-4 fw-bold small text-uppercase">
+                                            Vistas de Hoy
+                                        </h6>
+                                        <Chart
+                                            options={{
+                                                chart: {
+                                                    type: "bar",
+                                                    toolbar: { show: false },
+                                                    background: "transparent",
+                                                    fontFamily:
+                                                        "'Inter', sans-serif",
+                                                },
+                                                plotOptions: {
+                                                    bar: {
+                                                        borderRadius: 10,
+                                                        horizontal: true,
+                                                        barHeight: "60%",
+                                                    },
+                                                },
+                                                xaxis: {
+                                                    categories: (
+                                                        productViewsTodayByDevice ||
+                                                        []
+                                                    ).map((d) =>
+                                                        d.device === "desktop"
+                                                            ? "Desktop"
+                                                            : d.device ===
+                                                                "mobile"
+                                                              ? "Móvil"
+                                                              : d.device ===
+                                                                  "tablet"
+                                                                ? "Tablet"
+                                                                : "Otro",
+                                                    ),
+                                                    labels: {
+                                                        style: {
+                                                            colors: "#94a3b8",
+                                                            fontSize: "11px",
+                                                        },
+                                                    },
+                                                },
+                                                grid: {
+                                                    borderColor: "#f1f5f9",
+                                                    strokeDashArray: 4,
+                                                    xaxis: {
+                                                        lines: { show: true },
+                                                    },
+                                                    yaxis: {
+                                                        lines: { show: false },
+                                                    },
+                                                },
+                                                colors: [
+                                                    UI_STYLE.pastel.green.icon,
+                                                ],
+                                                fill: {
+                                                    opacity: 0.85,
+                                                    type: "gradient",
+                                                },
+                                                dataLabels: {
+                                                    enabled: true,
+                                                    style: {
+                                                        fontSize: "11px",
+                                                        fontWeight: "bold",
+                                                    },
+                                                },
+                                                tooltip: { theme: "light" },
+                                            }}
+                                            series={[
+                                                {
+                                                    name: "Vistas",
+                                                    data: (
+                                                        productViewsTodayByDevice ||
+                                                        []
+                                                    ).map((d) => d.count),
+                                                },
+                                            ]}
+                                            type="bar"
+                                            height={350}
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {shouldShowCard("product_clicks_by_device") && (
                 <div className="col-12">
                     <div
-                        className="card border-0 h-100"
+                        className="card border-0 shadow-sm"
                         style={{
-                            borderRadius: "1rem",
-                            boxShadow: "0 10px 40px rgba(0,0,0,0.1)",
+                            borderRadius: UI_STYLE.borderRadius,
                         }}
                     >
                         <div
                             className="card-header bg-white border-0 p-4"
-                            style={{ borderRadius: "1rem 1rem 0 0" }}
+                            style={{
+                                borderRadius: `${UI_STYLE.borderRadius} ${UI_STYLE.borderRadius} 0 0`,
+                            }}
                         >
-                            <div className="d-flex align-items-center justify-content-between">
-                                <div className="d-flex align-items-center gap-3">
-                                    <div
-                                        className="rounded-3 p-2"
+                            <div className="d-flex align-items-center gap-3">
+                                <div
+                                    className="rounded-4 p-3"
+                                    style={{
+                                        background: UI_STYLE.pastel.indigo.bg,
+                                    }}
+                                >
+                                    <i
+                                        className="fas fa-mobile-alt fs-4"
                                         style={{
-                                            background:
-                                                "linear-gradient(135deg, #10b981 0%, #059669 100%)",
+                                            color: UI_STYLE.pastel.indigo.icon,
                                         }}
+                                    ></i>
+                                </div>
+                                <div>
+                                    <h5
+                                        className="mb-0 fw-bold text-dark"
+                                        style={{ letterSpacing: "-0.02em" }}
                                     >
-                                        <i className="fas fa-mobile-alt text-white fs-5"></i>
-                                    </div>
-                                    <div>
-                                        <h6 className="mb-0 fw-bold text-dark">
-                                            Vistas de Productos por Dispositivo
-                                        </h6>
-                                        <p className="text-muted mb-0 small">
-                                            Distribución total y de hoy
-                                        </p>
-                                    </div>
+                                        Clicks de Productos por Dispositivo
+                                    </h5>
+                                    <p className="text-muted mb-0 small fw-medium">
+                                        Distribución histórica y de hoy por
+                                        plataforma
+                                    </p>
                                 </div>
                             </div>
                         </div>
                         <div className="card-body p-4">
                             <div className="row g-4">
                                 <div className="col-md-6">
-                                    <h6 className="text-muted mb-3 fw-semibold">
+                                    <h6
+                                        className="text-muted mb-4 fw-bold small text-uppercase"
+                                        style={{ letterSpacing: "0.05em" }}
+                                    >
                                         Total Histórico
                                     </h6>
                                     <Chart
@@ -1455,67 +1958,65 @@ const Home = ({
                                                 type: "donut",
                                                 toolbar: { show: false },
                                                 background: "transparent",
-                                                fontFamily: "Inter, sans-serif",
+                                                fontFamily:
+                                                    "'Inter', sans-serif",
                                             },
-                                            labels: productViewsByDevice.map(
-                                                (d) =>
-                                                    d.device === "desktop"
-                                                        ? "Desktop"
-                                                        : d.device === "mobile"
-                                                          ? "Móvil"
-                                                          : d.device ===
-                                                              "tablet"
-                                                            ? "Tablet"
-                                                            : "Otro",
+                                            labels: productClicksByDevice.map(
+                                                (d) => {
+                                                    const deviceMap = {
+                                                        mobile: "Móvil",
+                                                        desktop: "Desktop",
+                                                        tablet: "Tablet",
+                                                        unknown: "Desconocido",
+                                                    };
+                                                    return (
+                                                        deviceMap[d.device] ||
+                                                        d.device
+                                                    );
+                                                },
                                             ),
                                             colors: [
-                                                "#10b981",
-                                                "#3b82f6",
-                                                "#f59e0b",
-                                                "#8b5cf6",
+                                                UI_STYLE.pastel.blue.icon,
+                                                UI_STYLE.pastel.violet.icon,
+                                                UI_STYLE.pastel.green.icon,
+                                                UI_STYLE.pastel.slate.icon,
                                             ],
                                             plotOptions: {
                                                 pie: {
                                                     donut: {
-                                                        size: "65%",
+                                                        size: "75%",
                                                         labels: {
                                                             show: true,
                                                             name: {
                                                                 show: true,
                                                                 fontSize:
-                                                                    "14px",
+                                                                    "12px",
                                                                 color: "#64748b",
                                                             },
                                                             value: {
                                                                 show: true,
                                                                 fontSize:
-                                                                    "24px",
+                                                                    "20px",
                                                                 fontWeight:
                                                                     "bold",
                                                                 color: "#1e293b",
                                                             },
                                                             total: {
                                                                 show: true,
-                                                                label: "Total",
+                                                                label: "Total Clicks",
                                                                 fontSize:
-                                                                    "14px",
-                                                                fontWeight:
-                                                                    "bold",
+                                                                    "12px",
                                                                 color: "#64748b",
-                                                                formatter:
-                                                                    function (
-                                                                        w,
-                                                                    ) {
-                                                                        return w.globals.seriesTotals.reduce(
-                                                                            (
-                                                                                a,
-                                                                                b,
-                                                                            ) =>
-                                                                                a +
-                                                                                b,
-                                                                            0,
-                                                                        );
-                                                                    },
+                                                                formatter: () =>
+                                                                    productClicksByDevice.reduce(
+                                                                        (
+                                                                            sum,
+                                                                            d,
+                                                                        ) =>
+                                                                            sum +
+                                                                            d.count,
+                                                                        0,
+                                                                    ),
                                                             },
                                                         },
                                                     },
@@ -1524,31 +2025,14 @@ const Home = ({
                                             legend: {
                                                 position: "bottom",
                                                 fontSize: "12px",
-                                                labels: { colors: "#64748b" },
-                                                markers: {
-                                                    width: 12,
-                                                    height: 12,
-                                                    radius: 6,
+                                                labels: {
+                                                    colors: "#64748b",
                                                 },
                                             },
-                                            dataLabels: {
-                                                enabled: true,
-                                                style: {
-                                                    fontSize: "11px",
-                                                    fontWeight: "bold",
-                                                    colors: ["#fff"],
-                                                },
-                                                dropShadow: { enabled: false },
-                                            },
-                                            tooltip: {
-                                                theme: "light",
-                                                y: {
-                                                    formatter: (val) =>
-                                                        `${val} vistas`,
-                                                },
-                                            },
+                                            dataLabels: { enabled: false },
+                                            tooltip: { theme: "light" },
                                         }}
-                                        series={productViewsByDevice.map(
+                                        series={productClicksByDevice.map(
                                             (d) => d.count,
                                         )}
                                         type="donut"
@@ -1556,8 +2040,11 @@ const Home = ({
                                     />
                                 </div>
                                 <div className="col-md-6">
-                                    <h6 className="text-muted mb-3 fw-semibold">
-                                        Vistas de Hoy
+                                    <h6
+                                        className="text-muted mb-4 fw-bold small text-uppercase"
+                                        style={{ letterSpacing: "0.05em" }}
+                                    >
+                                        Clicks de Hoy
                                     </h6>
                                     <Chart
                                         options={{
@@ -1565,48 +2052,42 @@ const Home = ({
                                                 type: "bar",
                                                 toolbar: { show: false },
                                                 background: "transparent",
-                                                fontFamily: "Inter, sans-serif",
+                                                fontFamily:
+                                                    "'Inter', sans-serif",
                                             },
                                             plotOptions: {
                                                 bar: {
-                                                    borderRadius: 8,
+                                                    borderRadius: 10,
                                                     horizontal: true,
-                                                    barHeight: "70%",
+                                                    barHeight: "60%",
                                                 },
                                             },
                                             xaxis: {
                                                 categories: (
-                                                    productViewsTodayByDevice ||
+                                                    productClicksTodayByDevice ||
                                                     []
-                                                ).map((d) =>
-                                                    d.device === "desktop"
-                                                        ? "Desktop"
-                                                        : d.device === "mobile"
-                                                          ? "Móvil"
-                                                          : d.device ===
-                                                              "tablet"
-                                                            ? "Tablet"
-                                                            : "Otro",
-                                                ),
+                                                ).map((d) => {
+                                                    const deviceMap = {
+                                                        mobile: "Móvil",
+                                                        desktop: "Desktop",
+                                                        tablet: "Tablet",
+                                                        unknown: "Desconocido",
+                                                    };
+                                                    return (
+                                                        deviceMap[d.device] ||
+                                                        d.device
+                                                    );
+                                                }),
                                                 labels: {
                                                     style: {
-                                                        colors: "#64748b",
+                                                        colors: "#94a3b8",
                                                         fontSize: "11px",
                                                     },
                                                 },
                                             },
-                                            yaxis: {
-                                                labels: {
-                                                    style: {
-                                                        colors: "#64748b",
-                                                        fontSize: "12px",
-                                                        fontWeight: 600,
-                                                    },
-                                                },
-                                            },
                                             grid: {
-                                                borderColor: "#e2e8f0",
-                                                strokeDashArray: 2,
+                                                borderColor: "#f1f5f9",
+                                                strokeDashArray: 4,
                                                 xaxis: {
                                                     lines: { show: true },
                                                 },
@@ -1614,42 +2095,25 @@ const Home = ({
                                                     lines: { show: false },
                                                 },
                                             },
-                                            colors: ["#10b981"],
+                                            colors: [UI_STYLE.pastel.blue.icon],
                                             fill: {
+                                                opacity: 0.85,
                                                 type: "gradient",
-                                                gradient: {
-                                                    shade: "light",
-                                                    type: "horizontal",
-                                                    shadeIntensity: 0.25,
-                                                    gradientToColors: [
-                                                        "#059669",
-                                                    ],
-                                                    inverseColors: false,
-                                                    opacityFrom: 0.85,
-                                                    opacityTo: 0.55,
-                                                },
                                             },
                                             dataLabels: {
                                                 enabled: true,
                                                 style: {
                                                     fontSize: "11px",
                                                     fontWeight: "bold",
-                                                    colors: ["#fff"],
                                                 },
                                             },
-                                            tooltip: {
-                                                theme: "light",
-                                                y: {
-                                                    formatter: (val) =>
-                                                        `${val} vistas`,
-                                                },
-                                            },
+                                            tooltip: { theme: "light" },
                                         }}
                                         series={[
                                             {
-                                                name: "Vistas",
+                                                name: "Clicks",
                                                 data: (
-                                                    productViewsTodayByDevice ||
+                                                    productClicksTodayByDevice ||
                                                     []
                                                 ).map((d) => d.count),
                                             },
@@ -1663,298 +2127,257 @@ const Home = ({
                     </div>
                 </div>
             )}
-
-            {/* Modern Charts Grid */}
+            {/* ANALÍTICAS DE PRODUCTOS */}
             <div className="row g-4 mb-5">
-                {shouldShowCard("orders_statistics") && (
-                    <div className="col-xl-6 col-lg-6">
+                {shouldShowCard("product_clicks_chart") && (
+                    <div className="col-12">
                         <div
-                            className="card border-0 h-100"
+                            className="card border-0 shadow-sm"
                             style={{
-                                borderRadius: "1rem",
-                                boxShadow: "0 10px 40px rgba(0,0,0,0.1)",
+                                borderRadius: UI_STYLE.borderRadius,
                             }}
                         >
                             <div
                                 className="card-header bg-white border-0 p-4"
-                                style={{ borderRadius: "1rem 1rem 0 0" }}
+                                style={{
+                                    borderRadius: `${UI_STYLE.borderRadius} ${UI_STYLE.borderRadius} 0 0`,
+                                }}
                             >
-                                <div className="d-flex align-items-center justify-content-between">
-                                    <div className="d-flex align-items-center gap-3">
-                                        <div
-                                            className="rounded-3 p-2"
+                                <div className="d-flex align-items-center gap-3">
+                                    <div
+                                        className="rounded-4 p-3"
+                                        style={{
+                                            background: UI_STYLE.pastel.blue.bg,
+                                        }}
+                                    >
+                                        <i
+                                            className="fas fa-mouse-pointer fs-4"
                                             style={{
-                                                background:
-                                                    "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                                                color: UI_STYLE.pastel.blue
+                                                    .icon,
                                             }}
-                                        >
-                                            <i className="fas fa-chart-pie text-white fs-5"></i>
-                                        </div>
-                                        <div>
-                                            <h6 className="mb-0 fw-bold text-dark">
-                                                Estadísticas de Órdenes
-                                            </h6>
-                                            <p className="text-muted mb-0 small">
-                                                Distribución por estado
-                                            </p>
-                                        </div>
+                                        ></i>
                                     </div>
-                                    <button className="btn btn-light border-0 shadow-sm px-3 py-2 rounded-3">
-                                        <i className="fas fa-sync-alt text-primary"></i>
-                                    </button>
+                                    <div>
+                                        <h5
+                                            className="mb-0 fw-bold text-dark"
+                                            style={{ letterSpacing: "-0.02em" }}
+                                        >
+                                            Clicks de Productos del Mes
+                                        </h5>
+                                        <p className="text-muted mb-0 small fw-medium">
+                                            Interacciones diarias (últimos 30
+                                            días)
+                                        </p>
+                                    </div>
                                 </div>
                             </div>
                             <div className="card-body p-4">
                                 <Chart
                                     options={{
                                         chart: {
+                                            type: "bar",
+                                            toolbar: { show: false },
+                                            background: "transparent",
+                                            fontFamily: "'Inter', sans-serif",
+                                        },
+                                        plotOptions: {
+                                            bar: {
+                                                borderRadius: 6,
+                                                columnWidth: "70%",
+                                            },
+                                        },
+                                        xaxis: {
+                                            categories:
+                                                productClicksThisMonth.map(
+                                                    (d) => `Día ${d.day}`,
+                                                ),
+                                            labels: {
+                                                style: {
+                                                    colors: "#94a3b8",
+                                                    fontSize: "10px",
+                                                },
+                                                rotate: -45,
+                                            },
+                                            axisBorder: { show: false },
+                                        },
+                                        yaxis: {
+                                            labels: {
+                                                style: {
+                                                    colors: "#64748b",
+                                                    fontSize: "11px",
+                                                },
+                                            },
+                                            title: {
+                                                text: "Clicks",
+                                                style: {
+                                                    color: "#64748b",
+                                                    fontSize: "12px",
+                                                    fontWeight: 600,
+                                                },
+                                            },
+                                        },
+                                        grid: {
+                                            borderColor: "#f1f5f9",
+                                            strokeDashArray: 4,
+                                        },
+                                        colors: [UI_STYLE.pastel.blue.icon],
+                                        fill: {
+                                            opacity: 0.85,
+                                            type: "gradient",
+                                        },
+                                        tooltip: {
+                                            theme: "light",
+                                            y: {
+                                                formatter: (val) =>
+                                                    `${val} clicks`,
+                                            },
+                                        },
+                                    }}
+                                    series={[
+                                        {
+                                            name: "Clicks",
+                                            data: productClicksThisMonth.map(
+                                                (d) => d.clicks,
+                                            ),
+                                        },
+                                    ]}
+                                    type="bar"
+                                    height={280}
+                                />
+                            </div>
+                        </div>
+                    </div>
+                )}
+            </div>
+
+            {/* Modern Charts Grid */}
+            <div className="row g-4 mb-5">
+                {shouldShowCard("orders_statistics") && (
+                    <div className="col-xl-6 col-lg-6">
+                        <div
+                            className="card border-0 shadow-sm h-100"
+                            style={{
+                                borderRadius: UI_STYLE.borderRadius,
+                            }}
+                        >
+                            <div
+                                className="card-header bg-white border-0 p-4"
+                                style={{
+                                    borderRadius: `${UI_STYLE.borderRadius} ${UI_STYLE.borderRadius} 0 0`,
+                                }}
+                            >
+                                <div className="d-flex align-items-center justify-content-between">
+                                    <div className="d-flex align-items-center gap-3">
+                                        <div
+                                            className="rounded-4 p-3"
+                                            style={{
+                                                background:
+                                                    UI_STYLE.pastel.indigo.bg,
+                                            }}
+                                        >
+                                            <i
+                                                className="fas fa-chart-pie fs-4"
+                                                style={{
+                                                    color: UI_STYLE.pastel
+                                                        .indigo.icon,
+                                                }}
+                                            ></i>
+                                        </div>
+                                        <div>
+                                            <div className="d-flex align-items-center gap-2">
+                                                <h5
+                                                    className="mb-0 fw-bold text-dark"
+                                                    style={{
+                                                        letterSpacing:
+                                                            "-0.02em",
+                                                    }}
+                                                >
+                                                    Estadísticas de Órdenes
+                                                </h5>
+                                                <Tippy content="Muestra la distribución porcentual de los pedidos según su estado actual (Pendiente, Pagado, Enviado, etc.).">
+                                                    <i className="fas fa-question-circle text-muted extra-small cursor-help"></i>
+                                                </Tippy>
+                                            </div>
+                                            <p className="text-muted mb-0 small fw-medium">
+                                                Distribución por estado actual
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="card-body p-4 text-center">
+                                <Chart
+                                    options={{
+                                        chart: {
                                             type: "radialBar",
                                             toolbar: { show: false },
                                             background: "transparent",
-                                            fontFamily: "Inter, sans-serif",
+                                            fontFamily: "'Inter', sans-serif",
                                         },
                                         labels: ordersByStatus
                                             .filter((s) => s.count > 0)
                                             .map((s) => s.name),
                                         colors: [
-                                            "#667eea",
-                                            "#10b981",
-                                            "#f59e0b",
-                                            "#ef4444",
-                                            "#8b5cf6",
-                                            "#06b6d4",
-                                            "#f97316",
-                                            "#ec4899",
+                                            UI_STYLE.pastel.indigo.icon,
+                                            UI_STYLE.pastel.green.icon,
+                                            UI_STYLE.pastel.amber.icon,
+                                            UI_STYLE.pastel.rose.icon,
+                                            UI_STYLE.pastel.violet.icon,
+                                            UI_STYLE.pastel.blue.icon,
+                                            UI_STYLE.pastel.pink.icon,
                                         ],
-                                        legend: {
-                                            show: true,
-                                            position: "bottom",
-                                            fontSize: "12px",
-                                            fontWeight: 500,
-                                            markers: {
-                                                width: 10,
-                                                height: 10,
-                                                radius: 5,
-                                            },
-                                            itemMargin: {
-                                                horizontal: 8,
-                                                vertical: 4,
-                                            },
-                                            formatter: function (
-                                                seriesName,
-                                                opts,
-                                            ) {
-                                                const filteredOrders =
-                                                    ordersByStatus.filter(
-                                                        (s) => s.count > 0,
-                                                    );
-                                                const originalOrder =
-                                                    filteredOrders[
-                                                        opts.seriesIndex
-                                                    ];
-                                                return `${originalOrder.name} (${originalOrder.count})`;
-                                            },
-                                        },
                                         plotOptions: {
                                             radialBar: {
-                                                offsetY: 0,
-                                                startAngle: 0,
-                                                endAngle: 360,
-                                                hollow: {
-                                                    margin: 5,
-                                                    size: "30%",
-                                                    background: "transparent",
-                                                    image: undefined,
-                                                },
+                                                hollow: { size: "40%" },
                                                 track: {
-                                                    background: "#f1f5f9",
-                                                    strokeWidth: "67%",
-                                                    margin: 0,
-                                                    dropShadow: {
-                                                        enabled: true,
-                                                        top: -3,
-                                                        left: 0,
-                                                        blur: 4,
-                                                        opacity: 0.35,
-                                                    },
+                                                    background: "#f8fafc",
                                                 },
                                                 dataLabels: {
-                                                    show: true,
                                                     name: {
-                                                        offsetY: -10,
-                                                        show: true,
-                                                        color: "#374151",
                                                         fontSize: "13px",
+                                                        color: "#64748b",
                                                         fontWeight: 600,
+                                                        offsetY: -10,
                                                     },
                                                     value: {
-                                                        formatter: function (
-                                                            val,
-                                                            opts,
-                                                        ) {
-                                                            const filteredOrders =
-                                                                ordersByStatus.filter(
-                                                                    (s) =>
-                                                                        s.count >
-                                                                        0,
-                                                                );
-                                                            const order =
-                                                                filteredOrders[
-                                                                    opts
-                                                                        .seriesIndex
-                                                                ];
-                                                            return order
-                                                                ? order.count
-                                                                : "0";
-                                                        },
-                                                        color: "#1f2937",
-                                                        fontSize: "16px",
-                                                        fontWeight: 700,
-                                                        show: true,
+                                                        fontSize: "20px",
+                                                        color: "#1e293b",
+                                                        fontWeight: 800,
+                                                        offsetY: 5,
                                                     },
                                                     total: {
                                                         show: true,
-                                                        showAlways: false,
-                                                        label: "Total Órdenes",
+                                                        label: "Total",
                                                         fontSize: "14px",
                                                         fontWeight: 600,
-                                                        color: "#374151",
-                                                        formatter: function (
-                                                            w,
-                                                        ) {
-                                                            const total =
-                                                                ordersByStatus
-                                                                    .filter(
-                                                                        (s) =>
-                                                                            s.count >
-                                                                            0,
-                                                                    )
-                                                                    .reduce(
-                                                                        (
-                                                                            sum,
-                                                                            o,
-                                                                        ) =>
-                                                                            sum +
-                                                                            o.count,
-                                                                        0,
-                                                                    );
-                                                            return total.toString();
-                                                        },
+                                                        color: "#64748b",
                                                     },
                                                 },
                                             },
                                         },
-                                        stroke: {
-                                            lineCap: "round",
+                                        stroke: { lineCap: "round" },
+                                        legend: {
+                                            show: true,
+                                            position: "bottom",
+                                            horizontalAlign: "center",
+                                            fontWeight: 600,
                                         },
-                                        fill: {
-                                            type: "gradient",
-                                            gradient: {
-                                                shade: "light",
-                                                type: "horizontal",
-                                                shadeIntensity: 0.5,
-                                                gradientToColors: [
-                                                    "#764ba2",
-                                                    "#34d399",
-                                                    "#fbbf24",
-                                                    "#f87171",
-                                                    "#a78bfa",
-                                                    "#22d3ee",
-                                                    "#fb923c",
-                                                    "#f472b6",
-                                                ],
-                                                inverseColors: false,
-                                                opacityFrom: 1,
-                                                opacityTo: 1,
-                                                stops: [0, 100],
-                                            },
-                                        },
-                                        tooltip: {
-                                            enabled: true,
-                                            theme: "light",
-                                            style: { fontSize: "12px" },
-                                            y: {
-                                                formatter: function (
-                                                    val,
-                                                    opts,
-                                                ) {
-                                                    const filteredOrders =
-                                                        ordersByStatus.filter(
-                                                            (s) => s.count > 0,
-                                                        );
-                                                    const order =
-                                                        filteredOrders[
-                                                            opts.seriesIndex
-                                                        ];
-                                                    return `${order.count} órdenes`;
-                                                },
-                                            },
-                                            custom: function ({
-                                                series,
-                                                seriesIndex,
-                                                dataPointIndex,
-                                                w,
-                                            }) {
-                                                const filteredOrders =
-                                                    ordersByStatus.filter(
-                                                        (s) => s.count > 0,
-                                                    );
-                                                const order =
-                                                    filteredOrders[seriesIndex];
-                                                return `
-                          <div class="px-3 py-2">
-                            <div class="fw-bold">${order.name}</div>
-                            <div class="text-primary fw-semibold">${order.count} órdenes</div>
-                            <div class="text-muted small">${Math.round(series[seriesIndex])}% del total</div>
-                          </div>
-                        `;
-                                            },
-                                        },
-                                        states: {
-                                            hover: {
-                                                filter: {
-                                                    type: "lighten",
-                                                    value: 0.1,
-                                                },
-                                            },
-                                            active: {
-                                                allowMultipleDataPointsSelection: false,
-                                                filter: {
-                                                    type: "darken",
-                                                    value: 0.1,
-                                                },
-                                            },
-                                        },
-                                        responsive: [
-                                            {
-                                                breakpoint: 480,
-                                                options: {
-                                                    chart: {
-                                                        width: 280,
-                                                    },
-                                                    legend: {
-                                                        position: "bottom",
-                                                        fontSize: "11px",
-                                                    },
-                                                },
-                                            },
-                                        ],
                                     }}
                                     series={(() => {
-                                        const filteredOrders =
-                                            ordersByStatus.filter(
-                                                (s) => s.count > 0,
-                                            );
-                                        const total = filteredOrders.reduce(
-                                            (sum, o) => sum + o.count,
+                                        const filtered = ordersByStatus.filter(
+                                            (s) => s.count > 0,
+                                        );
+                                        const total = filtered.reduce(
+                                            (a, b) => a + b.count,
                                             0,
                                         );
-                                        return filteredOrders.map((s) =>
+                                        return filtered.map((s) =>
                                             Math.round((s.count / total) * 100),
                                         );
                                     })()}
                                     type="radialBar"
-                                    height={350}
+                                    height={380}
                                 />
                             </div>
                         </div>
@@ -1963,35 +2386,70 @@ const Home = ({
                 {shouldShowCard("sales_by_location") && (
                     <div className="col-xl-6 col-lg-6">
                         <div
-                            className="card border-0 h-100"
+                            className="card border-0 shadow-sm h-100"
                             style={{
-                                borderRadius: "1rem",
-                                boxShadow: "0 10px 40px rgba(0,0,0,0.1)",
+                                borderRadius: UI_STYLE.borderRadius,
                             }}
                         >
                             <div
                                 className="card-header bg-white border-0 p-4"
-                                style={{ borderRadius: "1rem 1rem 0 0" }}
+                                style={{
+                                    borderRadius: `${UI_STYLE.borderRadius} ${UI_STYLE.borderRadius} 0 0`,
+                                }}
                             >
                                 <div className="d-flex align-items-center justify-content-between">
                                     <div className="d-flex align-items-center gap-3">
                                         <div
-                                            className="rounded-3 p-2"
+                                            className="rounded-4 p-3"
                                             style={{
                                                 background:
-                                                    "linear-gradient(135deg, #10b981 0%, #34d399 100%)",
+                                                    UI_STYLE.pastel.green.bg,
                                             }}
                                         >
-                                            <i className="fas fa-th-large text-white fs-5"></i>
+                                            <i
+                                                className="fas fa-map-marked-alt fs-4"
+                                                style={{
+                                                    color: UI_STYLE.pastel.green
+                                                        .icon,
+                                                }}
+                                            ></i>
                                         </div>
                                         <div>
-                                            <h6 className="mb-0 fw-bold text-dark">
-                                                Ventas por Ubicación
-                                            </h6>
-                                            <p className="text-muted mb-0 small">
-                                                Distribución geográfica
+                                            <div className="d-flex align-items-center gap-2">
+                                                <h5
+                                                    className="mb-0 fw-bold text-dark"
+                                                    style={{
+                                                        letterSpacing:
+                                                            "-0.02em",
+                                                    }}
+                                                >
+                                                    Ventas por Ubicación
+                                                </h5>
+                                                <Tippy content="Identifica las zonas geográficas con mayor volumen de compras para optimizar la logística y el marketing.">
+                                                    <i className="fas fa-question-circle text-muted extra-small cursor-help"></i>
+                                                </Tippy>
+                                            </div>
+                                            <p className="text-muted mb-0 small fw-medium">
+                                                Distribución geográfica de
+                                                pedidos
                                             </p>
                                         </div>
+                                    </div>
+                                    <div className="d-flex align-items-center gap-2">
+                                        <span className="text-muted small fw-medium d-none d-sm-inline">
+                                            Top{" "}
+                                            {Math.min(
+                                                salesByLocation.length,
+                                                12,
+                                            )}
+                                        </span>
+                                        <a
+                                            href="/admin/sales"
+                                            target="_blank"
+                                            className="btn btn-sm btn-light border shadow-sm rounded-3 px-3 fw-bold text-primary"
+                                        >
+                                            VER TODAS
+                                        </a>
                                     </div>
                                 </div>
                             </div>
@@ -2002,110 +2460,100 @@ const Home = ({
                                             type: "treemap",
                                             toolbar: { show: false },
                                             background: "transparent",
-                                            fontFamily: "Inter, sans-serif",
+                                            fontFamily: "'Inter', sans-serif",
                                         },
-                                        legend: { show: false },
                                         colors: [
-                                            "#10b981",
-                                            "#3b82f6",
-                                            "#f59e0b",
-                                            "#ef4444",
-                                            "#8b5cf6",
-                                            "#06b6d4",
-                                            "#f97316",
+                                            UI_STYLE.pastel.green.icon,
+                                            UI_STYLE.pastel.blue.icon,
+                                            UI_STYLE.pastel.amber.icon,
+                                            UI_STYLE.pastel.rose.icon,
+                                            UI_STYLE.pastel.indigo.icon,
                                         ],
+                                        plotOptions: {
+                                            treemap: {
+                                                distributed: true,
+                                                enableShades: false,
+                                            },
+                                        },
                                         dataLabels: {
                                             enabled: true,
                                             style: {
-                                                fontSize: "12px",
-                                                fontWeight: 600,
-                                                colors: ["#fff"],
+                                                fontSize: "14px",
+                                                fontWeight: 700,
                                             },
-                                            formatter: function (text, op) {
-                                                return text.length > 15
-                                                    ? text.slice(0, 12) + "..."
-                                                    : text;
-                                            },
+                                            formatter: (text, op) =>
+                                                `${text}: ${op.value}`,
                                         },
-                                        tooltip: {
-                                            enabled: true,
-                                            theme: "light",
-                                            y: {
-                                                formatter: (val) =>
-                                                    `Ventas: ${val}`,
-                                            },
-                                        },
-                                        grid: { show: false },
+                                        tooltip: { theme: "light" },
                                     }}
                                     series={[
                                         {
-                                            data: salesByLocation
-                                                .slice(0, 12)
-                                                .map((l) => ({
-                                                    x: `${l.department}/${l.province}/${l.district}`,
-                                                    y: l.count,
-                                                })),
+                                            data: (salesByLocation || []).map(
+                                                (l) => ({
+                                                    x:
+                                                        l.district ||
+                                                        l.province ||
+                                                        l.department ||
+                                                        "Desconocido",
+                                                    y: l.total,
+                                                }),
+                                            ),
                                         },
                                     ]}
                                     type="treemap"
-                                    height={320}
+                                    height={380}
                                 />
-                                <div
-                                    className="mt-3 p-3 rounded-3"
-                                    style={{ background: "#f8fafc" }}
-                                >
-                                    <div className="d-flex justify-content-between align-items-center">
-                                        <span className="text-muted small fw-medium">
-                                            Mostrando top{" "}
-                                            {Math.min(
-                                                salesByLocation.length,
-                                                12,
-                                            )}{" "}
-                                            ubicaciones
-                                        </span>
-                                        <a
-                                            href="/admin/sales"
-                                            target="_blank"
-                                            className="btn btn-sm btn-outline-primary rounded-3 px-3"
-                                        >
-                                            Ver todas
-                                        </a>
-                                    </div>
-                                </div>
                             </div>
                         </div>
                     </div>
                 )}
+            </div>
+
+            {/* Inventory Charts Grid */}
+            <div className="row g-4 mb-5">
                 {shouldShowCard("categories_chart") && (
                     <div className="col-xl-6 col-lg-6">
                         <div
-                            className="card border-0 h-100"
+                            className="card border-0 shadow-sm h-100"
                             style={{
-                                borderRadius: "1rem",
-                                boxShadow: "0 10px 40px rgba(0,0,0,0.1)",
+                                borderRadius: UI_STYLE.borderRadius,
                             }}
                         >
                             <div
                                 className="card-header bg-white border-0 p-4"
-                                style={{ borderRadius: "1rem 1rem 0 0" }}
+                                style={{
+                                    borderRadius: `${UI_STYLE.borderRadius} ${UI_STYLE.borderRadius} 0 0`,
+                                }}
                             >
                                 <div className="d-flex align-items-center justify-content-between">
                                     <div className="d-flex align-items-center gap-3">
                                         <div
-                                            className="rounded-3 p-2"
+                                            className="rounded-4 p-3"
                                             style={{
                                                 background:
-                                                    "linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%)",
+                                                    UI_STYLE.pastel.amber.bg,
                                             }}
                                         >
-                                            <i className="fas fa-tags text-white fs-5"></i>
+                                            <i
+                                                className="fas fa-tags fs-4"
+                                                style={{
+                                                    color: UI_STYLE.pastel.amber
+                                                        .icon,
+                                                }}
+                                            ></i>
                                         </div>
                                         <div>
-                                            <h6 className="mb-0 fw-bold text-dark">
+                                            <h5
+                                                className="mb-0 fw-bold text-dark"
+                                                style={{
+                                                    letterSpacing: "-0.02em",
+                                                }}
+                                            >
                                                 Productos por Categoría
-                                            </h6>
-                                            <p className="text-muted mb-0 small">
+                                            </h5>
+                                            <p className="text-muted mb-0 small fw-medium">
                                                 Distribución de inventario
+                                                actual
                                             </p>
                                         </div>
                                     </div>
@@ -2116,43 +2564,14 @@ const Home = ({
                                     options={{
                                         chart: {
                                             type: "bar",
-                                            toolbar: {
-                                                show: true,
-                                                tools: {
-                                                    download: true,
-                                                    selection: false,
-                                                    zoom: false,
-                                                    zoomin: false,
-                                                    zoomout: false,
-                                                    pan: false,
-                                                    reset: false,
-                                                },
-                                            },
+                                            toolbar: { show: false },
                                             background: "transparent",
-                                            fontFamily: "Inter, sans-serif",
-                                            animations: {
-                                                enabled: true,
-                                                easing: "easeinout",
-                                                speed: 800,
-                                                animateGradually: {
-                                                    enabled: true,
-                                                    delay: 150,
-                                                },
-                                                dynamicAnimation: {
-                                                    enabled: true,
-                                                    speed: 350,
-                                                },
-                                            },
+                                            fontFamily: "'Inter', sans-serif",
                                         },
                                         plotOptions: {
                                             bar: {
-                                                horizontal: false,
                                                 borderRadius: 8,
-                                                borderRadiusApplication: "end",
                                                 columnWidth: "60%",
-                                                dataLabels: {
-                                                    position: "top",
-                                                },
                                                 distributed: true,
                                             },
                                         },
@@ -2169,221 +2588,51 @@ const Home = ({
                                                 ),
                                             labels: {
                                                 rotate: -45,
-                                                rotateAlways: true,
                                                 style: {
-                                                    colors: "#64748b",
+                                                    colors: "#94a3b8",
                                                     fontSize: "11px",
-                                                    fontWeight: 500,
                                                 },
-                                                maxHeight: 80,
                                             },
                                             axisBorder: { show: false },
-                                            axisTicks: { show: false },
-                                            tooltip: {
-                                                enabled: true,
-                                                formatter: function (
-                                                    val,
-                                                    opts,
-                                                ) {
-                                                    const fullCategory =
-                                                        categoriesWithProducts.filter(
-                                                            (c) => c.value > 0,
-                                                        )[opts.dataPointIndex];
-                                                    return fullCategory
-                                                        ? fullCategory.name
-                                                        : val;
-                                                },
-                                            },
                                         },
                                         yaxis: {
-                                            title: {
-                                                text: "Cantidad de Productos",
-                                                style: {
-                                                    color: "#64748b",
-                                                    fontSize: "13px",
-                                                    fontWeight: 600,
-                                                },
-                                            },
                                             labels: {
                                                 style: {
                                                     colors: "#64748b",
                                                     fontSize: "11px",
-                                                    fontWeight: 500,
-                                                },
-                                                formatter: function (val) {
-                                                    return Math.floor(val);
                                                 },
                                             },
                                             min: 0,
                                         },
                                         grid: {
-                                            borderColor: "#e2e8f0",
-                                            strokeDashArray: 3,
-                                            xaxis: { lines: { show: false } },
-                                            yaxis: { lines: { show: true } },
-                                            padding: {
-                                                top: 0,
-                                                right: 0,
-                                                bottom: 0,
-                                                left: 0,
-                                            },
+                                            borderColor: "#f1f5f9",
+                                            strokeDashArray: 4,
                                         },
                                         colors: [
-                                            "#f59e0b",
-                                            "#10b981",
-                                            "#3b82f6",
-                                            "#ef4444",
-                                            "#8b5cf6",
-                                            "#06b6d4",
-                                            "#f97316",
-                                            "#ec4899",
-                                            "#84cc16",
-                                            "#f43f5e",
-                                            "#6366f1",
-                                            "#14b8a6",
+                                            UI_STYLE.pastel.indigo.icon,
+                                            UI_STYLE.pastel.green.icon,
+                                            UI_STYLE.pastel.amber.icon,
+                                            UI_STYLE.pastel.rose.icon,
+                                            UI_STYLE.pastel.violet.icon,
+                                            UI_STYLE.pastel.blue.icon,
+                                            UI_STYLE.pastel.pink.icon,
                                         ],
                                         fill: {
+                                            opacity: 0.85,
                                             type: "gradient",
-                                            gradient: {
-                                                shade: "light",
-                                                type: "vertical",
-                                                shadeIntensity: 0.4,
-                                                gradientToColors: [
-                                                    "#fbbf24",
-                                                    "#34d399",
-                                                    "#60a5fa",
-                                                    "#f87171",
-                                                    "#a78bfa",
-                                                    "#22d3ee",
-                                                    "#fb923c",
-                                                    "#f472b6",
-                                                    "#a3e635",
-                                                    "#fb7185",
-                                                    "#818cf8",
-                                                    "#2dd4bf",
-                                                ],
-                                                inverseColors: false,
-                                                opacityFrom: 0.9,
-                                                opacityTo: 0.6,
-                                                stops: [0, 100],
-                                            },
                                         },
                                         tooltip: {
-                                            enabled: true,
                                             theme: "light",
-                                            style: { fontSize: "12px" },
                                             y: {
-                                                formatter: function (
-                                                    val,
-                                                    opts,
-                                                ) {
-                                                    const category =
-                                                        categoriesWithProducts.filter(
-                                                            (c) => c.value > 0,
-                                                        )[opts.dataPointIndex];
-                                                    return `${val} productos`;
-                                                },
-                                            },
-                                            custom: function ({
-                                                series,
-                                                seriesIndex,
-                                                dataPointIndex,
-                                                w,
-                                            }) {
-                                                const category =
-                                                    categoriesWithProducts.filter(
-                                                        (c) => c.value > 0,
-                                                    )[dataPointIndex];
-                                                const value =
-                                                    series[seriesIndex][
-                                                        dataPointIndex
-                                                    ];
-                                                const total =
-                                                    categoriesWithProducts
-                                                        .filter(
-                                                            (c) => c.value > 0,
-                                                        )
-                                                        .reduce(
-                                                            (sum, c) =>
-                                                                sum + c.value,
-                                                            0,
-                                                        );
-                                                const percentage = (
-                                                    (value / total) *
-                                                    100
-                                                ).toFixed(1);
-
-                                                return `
-                          <div class="px-3 py-2">
-                            <div class="fw-bold text-dark">${category.name}</div>
-                            <div class="text-primary fw-semibold">${value} productos</div>
-                            <div class="text-muted small">${percentage}% del inventario</div>
-                          </div>
-                        `;
+                                                formatter: (val) =>
+                                                    `${val} productos`,
                                             },
                                         },
-                                        dataLabels: {
-                                            enabled: true,
-                                            formatter: function (val) {
-                                                return val > 0 ? val : "";
-                                            },
-                                            style: {
-                                                fontSize: "12px",
-                                                fontWeight: "bold",
-                                                colors: ["#374151"],
-                                            },
-                                            offsetY: -25,
-                                            dropShadow: {
-                                                enabled: true,
-                                                top: 1,
-                                                left: 1,
-                                                blur: 1,
-                                                opacity: 0.45,
-                                            },
-                                        },
-                                        states: {
-                                            hover: {
-                                                filter: {
-                                                    type: "lighten",
-                                                    value: 0.1,
-                                                },
-                                            },
-                                            active: {
-                                                allowMultipleDataPointsSelection: false,
-                                                filter: {
-                                                    type: "darken",
-                                                    value: 0.1,
-                                                },
-                                            },
-                                        },
-                                        legend: {
-                                            show: false,
-                                        },
-                                        responsive: [
-                                            {
-                                                breakpoint: 480,
-                                                options: {
-                                                    chart: {
-                                                        width: "100%",
-                                                    },
-                                                    plotOptions: {
-                                                        bar: {
-                                                            columnWidth: "80%",
-                                                        },
-                                                    },
-                                                    xaxis: {
-                                                        labels: {
-                                                            rotate: -90,
-                                                            fontSize: "10px",
-                                                        },
-                                                    },
-                                                },
-                                            },
-                                        ],
+                                        legend: { show: false },
                                     }}
                                     series={[
                                         {
-                                            name: "Productos por Categoría",
+                                            name: "Productos",
                                             data: categoriesWithProducts
                                                 .filter((c) => c.value > 0)
                                                 .map((c) => c.value),
@@ -2399,32 +2648,44 @@ const Home = ({
                 {shouldShowCard("brands_chart") && (
                     <div className="col-xl-6 col-lg-6">
                         <div
-                            className="card border-0 h-100"
+                            className="card border-0 shadow-sm h-100"
                             style={{
-                                borderRadius: "1rem",
-                                boxShadow: "0 10px 40px rgba(0,0,0,0.1)",
+                                borderRadius: UI_STYLE.borderRadius,
                             }}
                         >
                             <div
                                 className="card-header bg-white border-0 p-4"
-                                style={{ borderRadius: "1rem 1rem 0 0" }}
+                                style={{
+                                    borderRadius: `${UI_STYLE.borderRadius} ${UI_STYLE.borderRadius} 0 0`,
+                                }}
                             >
                                 <div className="d-flex align-items-center justify-content-between">
                                     <div className="d-flex align-items-center gap-3">
                                         <div
-                                            className="rounded-3 p-2"
+                                            className="rounded-4 p-3"
                                             style={{
                                                 background:
-                                                    "linear-gradient(135deg, #10b981 0%, #34d399 100%)",
+                                                    UI_STYLE.pastel.green.bg,
                                             }}
                                         >
-                                            <i className="fas fa-copyright text-white fs-5"></i>
+                                            <i
+                                                className="fas fa-copyright fs-4"
+                                                style={{
+                                                    color: UI_STYLE.pastel.green
+                                                        .icon,
+                                                }}
+                                            ></i>
                                         </div>
                                         <div>
-                                            <h6 className="mb-0 fw-bold text-dark">
+                                            <h5
+                                                className="mb-0 fw-bold text-dark"
+                                                style={{
+                                                    letterSpacing: "-0.02em",
+                                                }}
+                                            >
                                                 Productos por Marca
-                                            </h6>
-                                            <p className="text-muted mb-0 small">
+                                            </h5>
+                                            <p className="text-muted mb-0 small fw-medium">
                                                 Distribución por fabricante
                                             </p>
                                         </div>
@@ -2438,16 +2699,14 @@ const Home = ({
                                             type: "bar",
                                             toolbar: { show: false },
                                             background: "transparent",
-                                            fontFamily: "Inter, sans-serif",
+                                            fontFamily: "'Inter', sans-serif",
                                         },
                                         plotOptions: {
                                             bar: {
                                                 horizontal: true,
-                                                borderRadius: 6,
-                                                barHeight: "70%",
-                                                dataLabels: {
-                                                    position: "center",
-                                                },
+                                                borderRadius: 8,
+                                                barHeight: "60%",
+                                                distributed: true,
                                             },
                                         },
                                         xaxis: {
@@ -2463,12 +2722,10 @@ const Home = ({
                                                 ),
                                             labels: {
                                                 style: {
-                                                    colors: "#64748b",
+                                                    colors: "#94a3b8",
                                                     fontSize: "11px",
                                                 },
                                             },
-                                            axisBorder: { show: false },
-                                            axisTicks: { show: false },
                                         },
                                         yaxis: {
                                             labels: {
@@ -2479,23 +2736,18 @@ const Home = ({
                                             },
                                         },
                                         grid: {
-                                            borderColor: "#e2e8f0",
-                                            strokeDashArray: 2,
-                                            xaxis: { lines: { show: true } },
-                                            yaxis: { lines: { show: false } },
+                                            borderColor: "#f1f5f9",
+                                            strokeDashArray: 4,
                                         },
-                                        colors: ["#10b981"],
+                                        colors: [
+                                            UI_STYLE.pastel.blue.icon,
+                                            UI_STYLE.pastel.indigo.icon,
+                                            UI_STYLE.pastel.violet.icon,
+                                            UI_STYLE.pastel.pink.icon,
+                                        ],
                                         fill: {
+                                            opacity: 0.85,
                                             type: "gradient",
-                                            gradient: {
-                                                shade: "light",
-                                                type: "horizontal",
-                                                shadeIntensity: 0.25,
-                                                gradientToColors: ["#34d399"],
-                                                inverseColors: false,
-                                                opacityFrom: 0.85,
-                                                opacityTo: 0.55,
-                                            },
                                         },
                                         tooltip: {
                                             theme: "light",
@@ -2504,17 +2756,7 @@ const Home = ({
                                                     `${val} productos`,
                                             },
                                         },
-                                        dataLabels: {
-                                            enabled: true,
-                                            formatter: function (val) {
-                                                return val;
-                                            },
-                                            style: {
-                                                fontSize: "11px",
-                                                fontWeight: "bold",
-                                                colors: ["#fff"],
-                                            },
-                                        },
+                                        legend: { show: false },
                                     }}
                                     series={[
                                         {
@@ -2525,7 +2767,7 @@ const Home = ({
                                         },
                                     ]}
                                     type="bar"
-                                    height={280}
+                                    height={350}
                                 />
                             </div>
                         </div>
@@ -2538,33 +2780,46 @@ const Home = ({
                 {shouldShowCard("service_visits_chart") && (
                     <div className="col-12">
                         <div
-                            className="card border-0 h-100"
+                            className="card border-0 shadow-sm"
                             style={{
-                                borderRadius: "1rem",
-                                boxShadow: "0 10px 40px rgba(0,0,0,0.1)",
+                                borderRadius: UI_STYLE.borderRadius,
                             }}
                         >
                             <div
                                 className="card-header bg-white border-0 p-4"
-                                style={{ borderRadius: "1rem 1rem 0 0" }}
+                                style={{
+                                    borderRadius: `${UI_STYLE.borderRadius} ${UI_STYLE.borderRadius} 0 0`,
+                                }}
                             >
                                 <div className="d-flex align-items-center justify-content-between">
                                     <div className="d-flex align-items-center gap-3">
                                         <div
-                                            className="rounded-3 p-2"
+                                            className="rounded-4 p-3"
                                             style={{
                                                 background:
-                                                    "linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)",
+                                                    UI_STYLE.pastel.indigo.bg,
                                             }}
                                         >
-                                            <i className="fas fa-chart-bar text-white fs-5"></i>
+                                            <i
+                                                className="fas fa-chart-bar fs-4"
+                                                style={{
+                                                    color: UI_STYLE.pastel
+                                                        .indigo.icon,
+                                                }}
+                                            ></i>
                                         </div>
                                         <div>
-                                            <h6 className="mb-0 fw-bold text-dark">
+                                            <h5
+                                                className="mb-0 fw-bold text-dark"
+                                                style={{
+                                                    letterSpacing: "-0.02em",
+                                                }}
+                                            >
                                                 Visitas de Servicios del Mes
-                                            </h6>
-                                            <p className="text-muted mb-0 small">
+                                            </h5>
+                                            <p className="text-muted mb-0 small fw-medium">
                                                 Tráfico diario de servicios
+                                                (últimos 30 días)
                                             </p>
                                         </div>
                                     </div>
@@ -2577,13 +2832,12 @@ const Home = ({
                                             type: "bar",
                                             toolbar: { show: false },
                                             background: "transparent",
-                                            fontFamily: "Inter, sans-serif",
-                                            zoom: { enabled: false },
+                                            fontFamily: "'Inter', sans-serif",
                                         },
                                         plotOptions: {
                                             bar: {
-                                                borderRadius: 4,
-                                                columnWidth: "80%",
+                                                borderRadius: 6,
+                                                columnWidth: "75%",
                                             },
                                         },
                                         xaxis: {
@@ -2593,14 +2847,12 @@ const Home = ({
                                                 ),
                                             labels: {
                                                 style: {
-                                                    colors: "#64748b",
+                                                    colors: "#94a3b8",
                                                     fontSize: "10px",
                                                 },
                                                 rotate: -45,
-                                                rotateAlways: false,
                                             },
                                             axisBorder: { show: false },
-                                            axisTicks: { show: false },
                                         },
                                         yaxis: {
                                             labels: {
@@ -2609,25 +2861,16 @@ const Home = ({
                                                     fontSize: "11px",
                                                 },
                                             },
+                                            min: 0,
                                         },
                                         grid: {
-                                            borderColor: "#e2e8f0",
-                                            strokeDashArray: 2,
-                                            xaxis: { lines: { show: false } },
-                                            yaxis: { lines: { show: true } },
+                                            borderColor: "#f1f5f9",
+                                            strokeDashArray: 4,
                                         },
-                                        colors: ["#6366f1"],
+                                        colors: [UI_STYLE.pastel.indigo.icon],
                                         fill: {
+                                            opacity: 0.85,
                                             type: "gradient",
-                                            gradient: {
-                                                shade: "light",
-                                                type: "vertical",
-                                                shadeIntensity: 0.25,
-                                                gradientToColors: ["#8b5cf6"],
-                                                inverseColors: false,
-                                                opacityFrom: 0.85,
-                                                opacityTo: 0.55,
-                                            },
                                         },
                                         tooltip: {
                                             theme: "light",
@@ -2636,7 +2879,6 @@ const Home = ({
                                                     `${val} visitas`,
                                             },
                                         },
-                                        dataLabels: { enabled: false },
                                     }}
                                     series={[
                                         {
@@ -2656,43 +2898,54 @@ const Home = ({
                 {shouldShowCard("service_views_by_device") && (
                     <div className="col-12">
                         <div
-                            className="card border-0 h-100"
+                            className="card border-0 shadow-sm"
                             style={{
-                                borderRadius: "1rem",
-                                boxShadow: "0 10px 40px rgba(0,0,0,0.1)",
+                                borderRadius: UI_STYLE.borderRadius,
                             }}
                         >
                             <div
                                 className="card-header bg-white border-0 p-4"
-                                style={{ borderRadius: "1rem 1rem 0 0" }}
+                                style={{
+                                    borderRadius: `${UI_STYLE.borderRadius} ${UI_STYLE.borderRadius} 0 0`,
+                                }}
                             >
-                                <div className="d-flex align-items-center justify-content-between">
-                                    <div className="d-flex align-items-center gap-3">
-                                        <div
-                                            className="rounded-3 p-2"
+                                <div className="d-flex align-items-center gap-3">
+                                    <div
+                                        className="rounded-4 p-3"
+                                        style={{
+                                            background:
+                                                UI_STYLE.pastel.violet.bg,
+                                        }}
+                                    >
+                                        <i
+                                            className="fas fa-mobile-alt fs-4"
                                             style={{
-                                                background:
-                                                    "linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)",
+                                                color: UI_STYLE.pastel.violet
+                                                    .icon,
                                             }}
+                                        ></i>
+                                    </div>
+                                    <div>
+                                        <h5
+                                            className="mb-0 fw-bold text-dark"
+                                            style={{ letterSpacing: "-0.02em" }}
                                         >
-                                            <i className="fas fa-mobile-alt text-white fs-5"></i>
-                                        </div>
-                                        <div>
-                                            <h6 className="mb-0 fw-bold text-dark">
-                                                Vistas de Servicios por
-                                                Dispositivo
-                                            </h6>
-                                            <p className="text-muted mb-0 small">
-                                                Distribución total y de hoy
-                                            </p>
-                                        </div>
+                                            Vistas de Servicios por Dispositivo
+                                        </h5>
+                                        <p className="text-muted mb-0 small fw-medium">
+                                            Distribución histórica y de hoy por
+                                            plataforma
+                                        </p>
                                     </div>
                                 </div>
                             </div>
                             <div className="card-body p-4">
                                 <div className="row g-4">
                                     <div className="col-md-6">
-                                        <h6 className="text-muted mb-3 fw-semibold">
+                                        <h6
+                                            className="text-muted mb-4 fw-bold small text-uppercase"
+                                            style={{ letterSpacing: "0.05em" }}
+                                        >
                                             Total Histórico
                                         </h6>
                                         <Chart
@@ -2702,68 +2955,67 @@ const Home = ({
                                                     toolbar: { show: false },
                                                     background: "transparent",
                                                     fontFamily:
-                                                        "Inter, sans-serif",
+                                                        "'Inter', sans-serif",
                                                 },
                                                 labels: serviceViewsByDevice.map(
-                                                    (d) =>
-                                                        d.device === "desktop"
-                                                            ? "Desktop"
-                                                            : d.device ===
-                                                                "mobile"
-                                                              ? "Móvil"
-                                                              : d.device ===
-                                                                  "tablet"
-                                                                ? "Tablet"
-                                                                : "Otro",
+                                                    (d) => {
+                                                        const deviceMap = {
+                                                            mobile: "Móvil",
+                                                            desktop: "Desktop",
+                                                            tablet: "Tablet",
+                                                            unknown:
+                                                                "Desconocido",
+                                                        };
+                                                        return (
+                                                            deviceMap[
+                                                                d.device
+                                                            ] || d.device
+                                                        );
+                                                    },
                                                 ),
                                                 colors: [
-                                                    "#8b5cf6",
-                                                    "#ec4899",
-                                                    "#06b6d4",
-                                                    "#f59e0b",
+                                                    UI_STYLE.pastel.blue.icon,
+                                                    UI_STYLE.pastel.violet.icon,
+                                                    UI_STYLE.pastel.green.icon,
+                                                    UI_STYLE.pastel.slate.icon,
                                                 ],
                                                 plotOptions: {
                                                     pie: {
                                                         donut: {
-                                                            size: "65%",
+                                                            size: "75%",
                                                             labels: {
                                                                 show: true,
                                                                 name: {
                                                                     show: true,
                                                                     fontSize:
-                                                                        "14px",
+                                                                        "12px",
                                                                     color: "#64748b",
                                                                 },
                                                                 value: {
                                                                     show: true,
                                                                     fontSize:
-                                                                        "24px",
+                                                                        "20px",
                                                                     fontWeight:
                                                                         "bold",
                                                                     color: "#1e293b",
                                                                 },
                                                                 total: {
                                                                     show: true,
-                                                                    label: "Total",
+                                                                    label: "Total Vistas",
                                                                     fontSize:
-                                                                        "14px",
-                                                                    fontWeight:
-                                                                        "bold",
+                                                                        "12px",
                                                                     color: "#64748b",
                                                                     formatter:
-                                                                        function (
-                                                                            w,
-                                                                        ) {
-                                                                            return w.globals.seriesTotals.reduce(
+                                                                        () =>
+                                                                            serviceViewsByDevice.reduce(
                                                                                 (
-                                                                                    a,
-                                                                                    b,
+                                                                                    sum,
+                                                                                    d,
                                                                                 ) =>
-                                                                                    a +
-                                                                                    b,
+                                                                                    sum +
+                                                                                    d.count,
                                                                                 0,
-                                                                            );
-                                                                        },
+                                                                            ),
                                                                 },
                                                             },
                                                         },
@@ -2775,30 +3027,9 @@ const Home = ({
                                                     labels: {
                                                         colors: "#64748b",
                                                     },
-                                                    markers: {
-                                                        width: 12,
-                                                        height: 12,
-                                                        radius: 6,
-                                                    },
                                                 },
-                                                dataLabels: {
-                                                    enabled: true,
-                                                    style: {
-                                                        fontSize: "11px",
-                                                        fontWeight: "bold",
-                                                        colors: ["#fff"],
-                                                    },
-                                                    dropShadow: {
-                                                        enabled: false,
-                                                    },
-                                                },
-                                                tooltip: {
-                                                    theme: "light",
-                                                    y: {
-                                                        formatter: (val) =>
-                                                            `${val} visitas`,
-                                                    },
-                                                },
+                                                dataLabels: { enabled: false },
+                                                tooltip: { theme: "light" },
                                             }}
                                             series={serviceViewsByDevice.map(
                                                 (d) => d.count,
@@ -2808,7 +3039,10 @@ const Home = ({
                                         />
                                     </div>
                                     <div className="col-md-6">
-                                        <h6 className="text-muted mb-3 fw-semibold">
+                                        <h6
+                                            className="text-muted mb-4 fw-bold small text-uppercase"
+                                            style={{ letterSpacing: "0.05em" }}
+                                        >
                                             Visitas de Hoy
                                         </h6>
                                         <Chart
@@ -2818,33 +3052,36 @@ const Home = ({
                                                     toolbar: { show: false },
                                                     background: "transparent",
                                                     fontFamily:
-                                                        "Inter, sans-serif",
+                                                        "'Inter', sans-serif",
                                                 },
                                                 plotOptions: {
                                                     bar: {
                                                         borderRadius: 8,
                                                         horizontal: true,
-                                                        barHeight: "70%",
+                                                        barHeight: "60%",
                                                     },
                                                 },
                                                 xaxis: {
                                                     categories: (
                                                         serviceViewsTodayByDevice ||
                                                         []
-                                                    ).map((d) =>
-                                                        d.device === "desktop"
-                                                            ? "Desktop"
-                                                            : d.device ===
-                                                                "mobile"
-                                                              ? "Móvil"
-                                                              : d.device ===
-                                                                  "tablet"
-                                                                ? "Tablet"
-                                                                : "Otro",
-                                                    ),
+                                                    ).map((d) => {
+                                                        const deviceMap = {
+                                                            mobile: "Móvil",
+                                                            desktop: "Desktop",
+                                                            tablet: "Tablet",
+                                                            unknown:
+                                                                "Desconocido",
+                                                        };
+                                                        return (
+                                                            deviceMap[
+                                                                d.device
+                                                            ] || d.device
+                                                        );
+                                                    }),
                                                     labels: {
                                                         style: {
-                                                            colors: "#64748b",
+                                                            colors: "#94a3b8",
                                                             fontSize: "11px",
                                                         },
                                                     },
@@ -2853,55 +3090,30 @@ const Home = ({
                                                     labels: {
                                                         style: {
                                                             colors: "#64748b",
-                                                            fontSize: "12px",
+                                                            fontSize: "11px",
                                                             fontWeight: 600,
                                                         },
                                                     },
                                                 },
                                                 grid: {
-                                                    borderColor: "#e2e8f0",
-                                                    strokeDashArray: 2,
+                                                    borderColor: "#f1f5f9",
+                                                    strokeDashArray: 4,
                                                     xaxis: {
                                                         lines: { show: true },
                                                     },
-                                                    yaxis: {
-                                                        lines: { show: false },
-                                                    },
                                                 },
-                                                colors: ["#8b5cf6"],
+                                                colors: [
+                                                    UI_STYLE.pastel.violet.icon,
+                                                ],
                                                 fill: {
+                                                    opacity: 0.85,
                                                     type: "gradient",
-                                                    gradient: {
-                                                        shade: "light",
-                                                        type: "horizontal",
-                                                        shadeIntensity: 0.25,
-                                                        gradientToColors: [
-                                                            "#7c3aed",
-                                                        ],
-                                                        inverseColors: false,
-                                                        opacityFrom: 0.85,
-                                                        opacityTo: 0.55,
-                                                    },
                                                 },
-                                                dataLabels: {
-                                                    enabled: true,
-                                                    style: {
-                                                        fontSize: "11px",
-                                                        fontWeight: "bold",
-                                                        colors: ["#fff"],
-                                                    },
-                                                },
-                                                tooltip: {
-                                                    theme: "light",
-                                                    y: {
-                                                        formatter: (val) =>
-                                                            `${val} visitas`,
-                                                    },
-                                                },
+                                                tooltip: { theme: "light" },
                                             }}
                                             series={[
                                                 {
-                                                    name: "Visitas",
+                                                    name: "Visitas Hoy",
                                                     data: (
                                                         serviceViewsTodayByDevice ||
                                                         []
@@ -2920,35 +3132,46 @@ const Home = ({
                 {shouldShowCard("service_views_trend") && (
                     <div className="col-12">
                         <div
-                            className="card border-0"
+                            className="card border-0 shadow-sm"
                             style={{
-                                borderRadius: "1rem",
-                                boxShadow: "0 10px 40px rgba(0,0,0,0.1)",
+                                borderRadius: UI_STYLE.borderRadius,
                             }}
                         >
                             <div
                                 className="card-header bg-white border-0 p-4"
-                                style={{ borderRadius: "1rem 1rem 0 0" }}
+                                style={{
+                                    borderRadius: `${UI_STYLE.borderRadius} ${UI_STYLE.borderRadius} 0 0`,
+                                }}
                             >
                                 <div className="d-flex align-items-center justify-content-between">
                                     <div className="d-flex align-items-center gap-3">
                                         <div
-                                            className="rounded-3 p-2"
+                                            className="rounded-4 p-3"
                                             style={{
                                                 background:
-                                                    "linear-gradient(135deg, #f59e0b 0%, #f97316 100%)",
+                                                    UI_STYLE.pastel.amber.bg,
                                             }}
                                         >
-                                            <i className="fas fa-chart-line text-white fs-5"></i>
+                                            <i
+                                                className="fas fa-chart-line fs-4"
+                                                style={{
+                                                    color: UI_STYLE.pastel.amber
+                                                        .icon,
+                                                }}
+                                            ></i>
                                         </div>
                                         <div>
-                                            <h6 className="mb-0 fw-bold text-dark">
+                                            <h5
+                                                className="mb-0 fw-bold text-dark"
+                                                style={{
+                                                    letterSpacing: "-0.02em",
+                                                }}
+                                            >
                                                 Tendencia de Vistas de Servicios
-                                                (Últimos 30 Días)
-                                            </h6>
-                                            <p className="text-muted mb-0 small">
-                                                Análisis de tráfico y usuarios
-                                                únicos
+                                            </h5>
+                                            <p className="text-muted mb-0 small fw-medium">
+                                                Análisis de tráfico (últimos 30
+                                                días)
                                             </p>
                                         </div>
                                     </div>
@@ -2961,8 +3184,7 @@ const Home = ({
                                             type: "area",
                                             toolbar: { show: false },
                                             background: "transparent",
-                                            fontFamily: "Inter, sans-serif",
-                                            zoom: { enabled: false },
+                                            fontFamily: "'Inter', sans-serif",
                                         },
                                         xaxis: {
                                             categories:
@@ -2980,13 +3202,11 @@ const Home = ({
                                                 ),
                                             labels: {
                                                 style: {
-                                                    colors: "#64748b",
+                                                    colors: "#94a3b8",
                                                     fontSize: "11px",
                                                 },
-                                                rotate: -45,
                                             },
                                             axisBorder: { show: false },
-                                            axisTicks: { show: false },
                                         },
                                         yaxis: {
                                             labels: {
@@ -2997,20 +3217,17 @@ const Home = ({
                                             },
                                         },
                                         grid: {
-                                            borderColor: "#e2e8f0",
-                                            strokeDashArray: 2,
+                                            borderColor: "#f1f5f9",
+                                            strokeDashArray: 4,
                                         },
-                                        colors: ["#f59e0b", "#06b6d4"],
-                                        stroke: {
-                                            curve: "smooth",
-                                            width: 3,
-                                        },
+                                        colors: [
+                                            UI_STYLE.pastel.amber.icon,
+                                            UI_STYLE.pastel.blue.icon,
+                                        ],
+                                        stroke: { curve: "smooth", width: 3 },
                                         fill: {
                                             type: "gradient",
                                             gradient: {
-                                                shade: "light",
-                                                type: "vertical",
-                                                shadeIntensity: 0.5,
                                                 opacityFrom: 0.4,
                                                 opacityTo: 0.1,
                                             },
@@ -3020,19 +3237,8 @@ const Home = ({
                                             horizontalAlign: "right",
                                             fontSize: "12px",
                                             labels: { colors: "#64748b" },
-                                            markers: {
-                                                width: 10,
-                                                height: 10,
-                                                radius: 5,
-                                            },
                                         },
-                                        tooltip: {
-                                            theme: "light",
-                                            x: {
-                                                format: "dd MMM yyyy",
-                                            },
-                                        },
-                                        dataLabels: { enabled: false },
+                                        tooltip: { theme: "light" },
                                     }}
                                     series={[
                                         {
@@ -3058,33 +3264,45 @@ const Home = ({
                 {shouldShowCard("service_clicks_chart") && (
                     <div className="col-12">
                         <div
-                            className="card border-0 h-100"
+                            className="card border-0 shadow-sm"
                             style={{
-                                borderRadius: "1rem",
-                                boxShadow: "0 10px 40px rgba(0,0,0,0.1)",
+                                borderRadius: UI_STYLE.borderRadius,
                             }}
                         >
                             <div
                                 className="card-header bg-white border-0 p-4"
-                                style={{ borderRadius: "1rem 1rem 0 0" }}
+                                style={{
+                                    borderRadius: `${UI_STYLE.borderRadius} ${UI_STYLE.borderRadius} 0 0`,
+                                }}
                             >
                                 <div className="d-flex align-items-center justify-content-between">
                                     <div className="d-flex align-items-center gap-3">
                                         <div
-                                            className="rounded-3 p-2"
+                                            className="rounded-4 p-3"
                                             style={{
                                                 background:
-                                                    "linear-gradient(135deg, #f59e0b 0%, #d97706 100%)",
+                                                    UI_STYLE.pastel.rose.bg,
                                             }}
                                         >
-                                            <i className="fas fa-mouse-pointer text-white fs-5"></i>
+                                            <i
+                                                className="fas fa-mouse-pointer fs-4"
+                                                style={{
+                                                    color: UI_STYLE.pastel.rose
+                                                        .icon,
+                                                }}
+                                            ></i>
                                         </div>
                                         <div>
-                                            <h6 className="mb-0 fw-bold text-dark">
+                                            <h5
+                                                className="mb-0 fw-bold text-dark"
+                                                style={{
+                                                    letterSpacing: "-0.02em",
+                                                }}
+                                            >
                                                 Clicks de Servicios del Mes
-                                            </h6>
-                                            <p className="text-muted mb-0 small">
-                                                Interacciones diarias
+                                            </h5>
+                                            <p className="text-muted mb-0 small fw-medium">
+                                                Interacciones diarias detectadas
                                             </p>
                                         </div>
                                     </div>
@@ -3097,13 +3315,12 @@ const Home = ({
                                             type: "bar",
                                             toolbar: { show: false },
                                             background: "transparent",
-                                            fontFamily: "Inter, sans-serif",
-                                            zoom: { enabled: false },
+                                            fontFamily: "'Inter', sans-serif",
                                         },
                                         plotOptions: {
                                             bar: {
-                                                borderRadius: 4,
-                                                columnWidth: "80%",
+                                                borderRadius: 6,
+                                                columnWidth: "70%",
                                             },
                                         },
                                         xaxis: {
@@ -3112,14 +3329,12 @@ const Home = ({
                                             ).map((v) => v.label),
                                             labels: {
                                                 style: {
-                                                    colors: "#64748b",
+                                                    colors: "#94a3b8",
                                                     fontSize: "10px",
                                                 },
                                                 rotate: -45,
-                                                rotateAlways: false,
                                             },
                                             axisBorder: { show: false },
-                                            axisTicks: { show: false },
                                         },
                                         yaxis: {
                                             labels: {
@@ -3130,23 +3345,13 @@ const Home = ({
                                             },
                                         },
                                         grid: {
-                                            borderColor: "#e2e8f0",
-                                            strokeDashArray: 2,
-                                            xaxis: { lines: { show: false } },
-                                            yaxis: { lines: { show: true } },
+                                            borderColor: "#f1f5f9",
+                                            strokeDashArray: 4,
                                         },
-                                        colors: ["#f59e0b"],
+                                        colors: [UI_STYLE.pastel.rose.icon],
                                         fill: {
+                                            opacity: 0.85,
                                             type: "gradient",
-                                            gradient: {
-                                                shade: "light",
-                                                type: "vertical",
-                                                shadeIntensity: 0.25,
-                                                gradientToColors: ["#d97706"],
-                                                inverseColors: false,
-                                                opacityFrom: 0.85,
-                                                opacityTo: 0.55,
-                                            },
                                         },
                                         tooltip: {
                                             theme: "light",
@@ -3155,7 +3360,6 @@ const Home = ({
                                                     `${val} clicks`,
                                             },
                                         },
-                                        dataLabels: { enabled: false },
                                     }}
                                     series={[
                                         {
@@ -3166,42 +3370,57 @@ const Home = ({
                                         },
                                     ]}
                                     type="bar"
-                                    height={280}
+                                    height={300}
                                 />
                             </div>
                         </div>
                     </div>
                 )}
+
                 {shouldShowCard("service_clicks_by_device") && (
                     <div className="col-12">
                         <div
-                            className="card border-0 h-100"
+                            className="card border-0 shadow-sm"
                             style={{
-                                borderRadius: "1rem",
-                                boxShadow: "0 10px 40px rgba(0,0,0,0.1)",
+                                borderRadius: UI_STYLE.borderRadius,
                             }}
                         >
                             <div
                                 className="card-header bg-white border-0 p-4"
-                                style={{ borderRadius: "1rem 1rem 0 0" }}
+                                style={{
+                                    borderRadius: `${UI_STYLE.borderRadius} ${UI_STYLE.borderRadius} 0 0`,
+                                }}
                             >
                                 <div className="d-flex align-items-center justify-content-between">
                                     <div className="d-flex align-items-center gap-3">
                                         <div
-                                            className="rounded-3 p-2"
+                                            className="rounded-4 p-3"
                                             style={{
                                                 background:
-                                                    "linear-gradient(135deg, #f59e0b 0%, #d97706 100%)",
+                                                    UI_STYLE.pastel.rose.bg,
                                             }}
                                         >
-                                            <i className="fas fa-hand-pointer text-white fs-5"></i>
+                                            <i
+                                                className="fas fa-hand-pointer fs-4"
+                                                style={{
+                                                    color: UI_STYLE.pastel.rose
+                                                        .icon,
+                                                }}
+                                            ></i>
                                         </div>
                                         <div>
-                                            <h6 className="mb-0 fw-bold text-dark">
+                                            <h5
+                                                className="mb-0 fw-bold text-dark"
+                                                style={{
+                                                    letterSpacing: "-0.02em",
+                                                }}
+                                            >
                                                 Clicks por Dispositivo
-                                            </h6>
-                                            <p className="text-muted mb-0 small">
-                                                Distribución total y de hoy
+                                                (Servicios)
+                                            </h5>
+                                            <p className="text-muted mb-0 small fw-medium">
+                                                Distribución de interacciones
+                                                por plataforma
                                             </p>
                                         </div>
                                     </div>
@@ -3210,7 +3429,10 @@ const Home = ({
                             <div className="card-body p-4">
                                 <div className="row g-4">
                                     <div className="col-md-6">
-                                        <h6 className="text-muted mb-3 fw-semibold">
+                                        <h6
+                                            className="text-muted mb-4 fw-bold small text-uppercase"
+                                            style={{ letterSpacing: "0.05em" }}
+                                        >
                                             Total Histórico
                                         </h6>
                                         <Chart
@@ -3220,7 +3442,7 @@ const Home = ({
                                                     toolbar: { show: false },
                                                     background: "transparent",
                                                     fontFamily:
-                                                        "Inter, sans-serif",
+                                                        "'Inter', sans-serif",
                                                 },
                                                 labels: (
                                                     serviceClicksByDevice || []
@@ -3235,27 +3457,27 @@ const Home = ({
                                                             : "Otro",
                                                 ),
                                                 colors: [
-                                                    "#f59e0b",
-                                                    "#d97706",
-                                                    "#fbbf24",
-                                                    "#fcd34d",
+                                                    UI_STYLE.pastel.indigo.icon,
+                                                    UI_STYLE.pastel.rose.icon,
+                                                    UI_STYLE.pastel.amber.icon,
+                                                    UI_STYLE.pastel.violet.icon,
                                                 ],
                                                 plotOptions: {
                                                     pie: {
                                                         donut: {
-                                                            size: "65%",
+                                                            size: "75%",
                                                             labels: {
                                                                 show: true,
                                                                 name: {
                                                                     show: true,
                                                                     fontSize:
-                                                                        "14px",
+                                                                        "12px",
                                                                     color: "#64748b",
                                                                 },
                                                                 value: {
                                                                     show: true,
                                                                     fontSize:
-                                                                        "24px",
+                                                                        "20px",
                                                                     fontWeight:
                                                                         "bold",
                                                                     color: "#1e293b",
@@ -3264,24 +3486,20 @@ const Home = ({
                                                                     show: true,
                                                                     label: "Total",
                                                                     fontSize:
-                                                                        "14px",
-                                                                    fontWeight:
-                                                                        "bold",
+                                                                        "12px",
                                                                     color: "#64748b",
-                                                                    formatter:
-                                                                        function (
-                                                                            w,
-                                                                        ) {
-                                                                            return w.globals.seriesTotals.reduce(
-                                                                                (
-                                                                                    a,
-                                                                                    b,
-                                                                                ) =>
-                                                                                    a +
-                                                                                    b,
-                                                                                0,
-                                                                            );
-                                                                        },
+                                                                    formatter: (
+                                                                        w,
+                                                                    ) =>
+                                                                        w.globals.seriesTotals.reduce(
+                                                                            (
+                                                                                a,
+                                                                                b,
+                                                                            ) =>
+                                                                                a +
+                                                                                b,
+                                                                            0,
+                                                                        ),
                                                                 },
                                                             },
                                                         },
@@ -3293,40 +3511,22 @@ const Home = ({
                                                     labels: {
                                                         colors: "#64748b",
                                                     },
-                                                    markers: {
-                                                        width: 12,
-                                                        height: 12,
-                                                        radius: 6,
-                                                    },
                                                 },
-                                                dataLabels: {
-                                                    enabled: true,
-                                                    style: {
-                                                        fontSize: "11px",
-                                                        fontWeight: "bold",
-                                                        colors: ["#fff"],
-                                                    },
-                                                    dropShadow: {
-                                                        enabled: false,
-                                                    },
-                                                },
-                                                tooltip: {
-                                                    theme: "light",
-                                                    y: {
-                                                        formatter: (val) =>
-                                                            `${val} clicks`,
-                                                    },
-                                                },
+                                                dataLabels: { enabled: false },
+                                                tooltip: { theme: "light" },
                                             }}
                                             series={(
                                                 serviceClicksByDevice || []
                                             ).map((d) => d.count)}
                                             type="donut"
-                                            height={320}
+                                            height={300}
                                         />
                                     </div>
                                     <div className="col-md-6">
-                                        <h6 className="text-muted mb-3 fw-semibold">
+                                        <h6
+                                            className="text-muted mb-4 fw-bold small text-uppercase"
+                                            style={{ letterSpacing: "0.05em" }}
+                                        >
                                             Clicks de Hoy
                                         </h6>
                                         <Chart
@@ -3336,49 +3536,43 @@ const Home = ({
                                                     toolbar: { show: false },
                                                     background: "transparent",
                                                     fontFamily:
-                                                        "Inter, sans-serif",
+                                                        "'Inter', sans-serif",
                                                 },
                                                 plotOptions: {
                                                     bar: {
-                                                        borderRadius: 8,
+                                                        borderRadius: 10,
                                                         horizontal: true,
-                                                        barHeight: "70%",
+                                                        barHeight: "60%",
                                                     },
                                                 },
                                                 xaxis: {
                                                     categories: (
                                                         serviceClicksTodayByDevice ||
                                                         []
-                                                    ).map((d) =>
-                                                        d.device === "desktop"
-                                                            ? "Desktop"
-                                                            : d.device ===
-                                                                "mobile"
-                                                              ? "Móvil"
-                                                              : d.device ===
-                                                                  "tablet"
-                                                                ? "Tablet"
-                                                                : "Otro",
-                                                    ),
+                                                    ).map((d) => {
+                                                        const deviceMap = {
+                                                            mobile: "Móvil",
+                                                            desktop: "Desktop",
+                                                            tablet: "Tablet",
+                                                            unknown:
+                                                                "Desconocido",
+                                                        };
+                                                        return (
+                                                            deviceMap[
+                                                                d.device
+                                                            ] || d.device
+                                                        );
+                                                    }),
                                                     labels: {
                                                         style: {
-                                                            colors: "#64748b",
+                                                            colors: "#94a3b8",
                                                             fontSize: "11px",
                                                         },
                                                     },
                                                 },
-                                                yaxis: {
-                                                    labels: {
-                                                        style: {
-                                                            colors: "#64748b",
-                                                            fontSize: "12px",
-                                                            fontWeight: 600,
-                                                        },
-                                                    },
-                                                },
                                                 grid: {
-                                                    borderColor: "#e2e8f0",
-                                                    strokeDashArray: 2,
+                                                    borderColor: "#f1f5f9",
+                                                    strokeDashArray: 4,
                                                     xaxis: {
                                                         lines: { show: true },
                                                     },
@@ -3386,36 +3580,21 @@ const Home = ({
                                                         lines: { show: false },
                                                     },
                                                 },
-                                                colors: ["#f59e0b"],
+                                                colors: [
+                                                    UI_STYLE.pastel.rose.icon,
+                                                ],
                                                 fill: {
+                                                    opacity: 0.85,
                                                     type: "gradient",
-                                                    gradient: {
-                                                        shade: "light",
-                                                        type: "horizontal",
-                                                        shadeIntensity: 0.25,
-                                                        gradientToColors: [
-                                                            "#d97706",
-                                                        ],
-                                                        inverseColors: false,
-                                                        opacityFrom: 0.85,
-                                                        opacityTo: 0.55,
-                                                    },
                                                 },
                                                 dataLabels: {
                                                     enabled: true,
                                                     style: {
                                                         fontSize: "11px",
                                                         fontWeight: "bold",
-                                                        colors: ["#fff"],
                                                     },
                                                 },
-                                                tooltip: {
-                                                    theme: "light",
-                                                    y: {
-                                                        formatter: (val) =>
-                                                            `${val} clicks`,
-                                                    },
-                                                },
+                                                tooltip: { theme: "light" },
                                             }}
                                             series={[
                                                 {
@@ -3427,7 +3606,7 @@ const Home = ({
                                                 },
                                             ]}
                                             type="bar"
-                                            height={320}
+                                            height={300}
                                         />
                                     </div>
                                 </div>
@@ -3438,35 +3617,46 @@ const Home = ({
                 {shouldShowCard("service_clicks_vs_views") && (
                     <div className="col-12">
                         <div
-                            className="card border-0"
+                            className="card border-0 shadow-sm"
                             style={{
-                                borderRadius: "1rem",
-                                boxShadow: "0 10px 40px rgba(0,0,0,0.1)",
+                                borderRadius: UI_STYLE.borderRadius,
                             }}
                         >
                             <div
                                 className="card-header bg-white border-0 p-4"
-                                style={{ borderRadius: "1rem 1rem 0 0" }}
+                                style={{
+                                    borderRadius: `${UI_STYLE.borderRadius} ${UI_STYLE.borderRadius} 0 0`,
+                                }}
                             >
                                 <div className="d-flex align-items-center justify-content-between">
                                     <div className="d-flex align-items-center gap-3">
                                         <div
-                                            className="rounded-3 p-2"
+                                            className="rounded-4 p-3"
                                             style={{
                                                 background:
-                                                    "linear-gradient(135deg, #10b981 0%, #059669 100%)",
+                                                    UI_STYLE.pastel.green.bg,
                                             }}
                                         >
-                                            <i className="fas fa-chart-bar text-white fs-5"></i>
+                                            <i
+                                                className="fas fa-chart-bar fs-4"
+                                                style={{
+                                                    color: UI_STYLE.pastel.green
+                                                        .icon,
+                                                }}
+                                            ></i>
                                         </div>
                                         <div>
-                                            <h6 className="mb-0 fw-bold text-dark">
+                                            <h5
+                                                className="mb-0 fw-bold text-dark"
+                                                style={{
+                                                    letterSpacing: "-0.02em",
+                                                }}
+                                            >
                                                 Clicks vs Vistas de Servicios
-                                                (Últimos 30 Días)
-                                            </h6>
-                                            <p className="text-muted mb-0 small">
+                                            </h5>
+                                            <p className="text-muted mb-0 small fw-medium">
                                                 Comparativa de engagement y CTR
-                                                diario
+                                                (últimos 30 días)
                                             </p>
                                         </div>
                                     </div>
@@ -3479,8 +3669,7 @@ const Home = ({
                                             type: "line",
                                             toolbar: { show: false },
                                             background: "transparent",
-                                            fontFamily: "Inter, sans-serif",
-                                            zoom: { enabled: false },
+                                            fontFamily: "'Inter', sans-serif",
                                         },
                                         xaxis: {
                                             categories:
@@ -3498,13 +3687,11 @@ const Home = ({
                                                 ),
                                             labels: {
                                                 style: {
-                                                    colors: "#64748b",
+                                                    colors: "#94a3b8",
                                                     fontSize: "11px",
                                                 },
-                                                rotate: -45,
                                             },
                                             axisBorder: { show: false },
-                                            axisTicks: { show: false },
                                         },
                                         yaxis: [
                                             {
@@ -3529,14 +3716,16 @@ const Home = ({
                                                 title: {
                                                     text: "CTR (%)",
                                                     style: {
-                                                        color: "#10b981",
+                                                        color: UI_STYLE.pastel
+                                                            .green.icon,
                                                         fontSize: "12px",
                                                         fontWeight: 600,
                                                     },
                                                 },
                                                 labels: {
                                                     style: {
-                                                        colors: "#10b981",
+                                                        colors: UI_STYLE.pastel
+                                                            .green.icon,
                                                         fontSize: "11px",
                                                     },
                                                     formatter: (val) =>
@@ -3546,52 +3735,37 @@ const Home = ({
                                             },
                                         ],
                                         grid: {
-                                            borderColor: "#e2e8f0",
-                                            strokeDashArray: 2,
+                                            borderColor: "#f1f5f9",
+                                            strokeDashArray: 4,
                                         },
                                         colors: [
-                                            "#6366f1",
-                                            "#f59e0b",
-                                            "#10b981",
+                                            UI_STYLE.pastel.indigo.icon,
+                                            UI_STYLE.pastel.amber.icon,
+                                            UI_STYLE.pastel.green.icon,
                                         ],
                                         stroke: {
                                             curve: "smooth",
-                                            width: [3, 3, 3],
+                                            width: [0, 0, 3],
                                         },
                                         fill: {
-                                            opacity: 1,
+                                            opacity: [0.85, 0.85, 1],
+                                            type: [
+                                                "gradient",
+                                                "gradient",
+                                                "solid",
+                                            ],
                                         },
                                         legend: {
                                             position: "top",
                                             horizontalAlign: "right",
                                             fontSize: "12px",
                                             labels: { colors: "#64748b" },
-                                            markers: {
-                                                width: 10,
-                                                height: 10,
-                                                radius: 5,
-                                            },
                                         },
                                         tooltip: {
                                             theme: "light",
                                             shared: true,
                                             intersect: false,
-                                            y: [
-                                                {
-                                                    formatter: (val) =>
-                                                        `${val} vistas`,
-                                                },
-                                                {
-                                                    formatter: (val) =>
-                                                        `${val} clicks`,
-                                                },
-                                                {
-                                                    formatter: (val) =>
-                                                        `${val}%`,
-                                                },
-                                            ],
                                         },
-                                        dataLabels: { enabled: false },
                                     }}
                                     series={[
                                         {
@@ -3624,428 +3798,45 @@ const Home = ({
                 )}
             </div>
 
-            {/* ANALÍTICAS DE PRODUCTOS */}
-            <div className="row g-4 mb-5">
-                {shouldShowCard("product_clicks_chart") && (
-                    <div className="col-12">
-                        <div
-                            className="card border-0"
-                            style={{
-                                borderRadius: "1rem",
-                                boxShadow: "0 10px 40px rgba(0,0,0,0.1)",
-                            }}
-                        >
-                            <div
-                                className="card-header bg-white border-0 p-4"
-                                style={{ borderRadius: "1rem 1rem 0 0" }}
-                            >
-                                <div className="d-flex align-items-center gap-3">
-                                    <div
-                                        className="rounded-3 p-2"
-                                        style={{
-                                            background:
-                                                "linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)",
-                                        }}
-                                    >
-                                        <i className="fas fa-chart-bar text-white fs-5"></i>
-                                    </div>
-                                    <div>
-                                        <h6 className="mb-0 fw-bold text-dark">
-                                            Clicks de Productos del Mes
-                                        </h6>
-                                        <p className="text-muted mb-0 small">
-                                            Clicks diarios en productos -{" "}
-                                            {new Date().toLocaleDateString(
-                                                "es-ES",
-                                                {
-                                                    month: "long",
-                                                    year: "numeric",
-                                                },
-                                            )}
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="card-body p-4">
-                                <Chart
-                                    options={{
-                                        chart: {
-                                            type: "bar",
-                                            toolbar: { show: false },
-                                            background: "transparent",
-                                            fontFamily: "Inter, sans-serif",
-                                        },
-                                        plotOptions: {
-                                            bar: {
-                                                borderRadius: 8,
-                                                columnWidth: "60%",
-                                                distributed: false,
-                                            },
-                                        },
-                                        dataLabels: { enabled: false },
-                                        xaxis: {
-                                            categories:
-                                                productClicksThisMonth.map(
-                                                    (d) => `Día ${d.day}`,
-                                                ),
-                                            labels: {
-                                                style: {
-                                                    colors: "#64748b",
-                                                    fontSize: "11px",
-                                                },
-                                                rotate: -45,
-                                            },
-                                            axisBorder: { show: false },
-                                            axisTicks: { show: false },
-                                        },
-                                        yaxis: {
-                                            labels: {
-                                                style: {
-                                                    colors: "#64748b",
-                                                    fontSize: "11px",
-                                                },
-                                            },
-                                            title: {
-                                                text: "Clicks",
-                                                style: {
-                                                    color: "#64748b",
-                                                    fontSize: "12px",
-                                                    fontWeight: 600,
-                                                },
-                                            },
-                                        },
-                                        grid: {
-                                            borderColor: "#e2e8f0",
-                                            strokeDashArray: 2,
-                                        },
-                                        colors: ["#3b82f6"],
-                                        fill: {
-                                            type: "gradient",
-                                            gradient: {
-                                                shade: "light",
-                                                type: "vertical",
-                                                shadeIntensity: 0.5,
-                                                gradientToColors: ["#2563eb"],
-                                                inverseColors: false,
-                                                opacityFrom: 0.9,
-                                                opacityTo: 0.7,
-                                            },
-                                        },
-                                        tooltip: {
-                                            theme: "light",
-                                            y: {
-                                                formatter: (val) =>
-                                                    `${val} clicks`,
-                                            },
-                                        },
-                                    }}
-                                    series={[
-                                        {
-                                            name: "Clicks",
-                                            data: productClicksThisMonth.map(
-                                                (d) => d.clicks,
-                                            ),
-                                        },
-                                    ]}
-                                    height={280}
-                                />
-                            </div>
-                        </div>
-                    </div>
-                )}
-
-                {shouldShowCard("product_clicks_by_device") && (
-                    <div className="col-12">
-                        <div
-                            className="card border-0"
-                            style={{
-                                borderRadius: "1rem",
-                                boxShadow: "0 10px 40px rgba(0,0,0,0.1)",
-                            }}
-                        >
-                            <div
-                                className="card-header bg-white border-0 p-4"
-                                style={{ borderRadius: "1rem 1rem 0 0" }}
-                            >
-                                <div className="d-flex align-items-center gap-3">
-                                    <div
-                                        className="rounded-3 p-2"
-                                        style={{
-                                            background:
-                                                "linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)",
-                                        }}
-                                    >
-                                        <i className="fas fa-mobile-alt text-white fs-5"></i>
-                                    </div>
-                                    <div>
-                                        <h6 className="mb-0 fw-bold text-dark">
-                                            Clicks de Productos por Dispositivo
-                                        </h6>
-                                        <p className="text-muted mb-0 small">
-                                            Análisis comparativo histórico vs
-                                            hoy
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="card-body p-4">
-                                <div className="row g-4">
-                                    <div className="col-md-6">
-                                        <div className="text-center mb-3">
-                                            <h6 className="fw-semibold text-dark mb-1">
-                                                Total Histórico
-                                            </h6>
-                                            <p className="text-muted small mb-0">
-                                                Todos los clicks registrados
-                                            </p>
-                                        </div>
-                                        <Chart
-                                            options={{
-                                                chart: {
-                                                    type: "donut",
-                                                    toolbar: { show: false },
-                                                    background: "transparent",
-                                                    fontFamily:
-                                                        "Inter, sans-serif",
-                                                },
-                                                labels: productClicksByDevice.map(
-                                                    (d) => {
-                                                        const deviceMap = {
-                                                            mobile: "Móvil",
-                                                            desktop: "Desktop",
-                                                            tablet: "Tablet",
-                                                            unknown:
-                                                                "Desconocido",
-                                                        };
-                                                        return (
-                                                            deviceMap[
-                                                                d.device
-                                                            ] || d.device
-                                                        );
-                                                    },
-                                                ),
-                                                colors: [
-                                                    "#3b82f6",
-                                                    "#8b5cf6",
-                                                    "#10b981",
-                                                    "#94a3b8",
-                                                ],
-                                                legend: {
-                                                    position: "bottom",
-                                                    fontSize: "12px",
-                                                    labels: {
-                                                        colors: "#64748b",
-                                                    },
-                                                },
-                                                dataLabels: {
-                                                    enabled: true,
-                                                    style: {
-                                                        fontSize: "13px",
-                                                        fontWeight: 600,
-                                                    },
-                                                },
-                                                plotOptions: {
-                                                    pie: {
-                                                        donut: {
-                                                            size: "65%",
-                                                            labels: {
-                                                                show: true,
-                                                                name: {
-                                                                    show: true,
-                                                                    fontSize:
-                                                                        "14px",
-                                                                    color: "#64748b",
-                                                                },
-                                                                value: {
-                                                                    show: true,
-                                                                    fontSize:
-                                                                        "24px",
-                                                                    fontWeight: 700,
-                                                                    color: "#1e293b",
-                                                                },
-                                                                total: {
-                                                                    show: true,
-                                                                    label: "Total Clicks",
-                                                                    fontSize:
-                                                                        "12px",
-                                                                    color: "#64748b",
-                                                                    formatter:
-                                                                        () =>
-                                                                            productClicksByDevice.reduce(
-                                                                                (
-                                                                                    sum,
-                                                                                    d,
-                                                                                ) =>
-                                                                                    sum +
-                                                                                    d.count,
-                                                                                0,
-                                                                            ),
-                                                                },
-                                                            },
-                                                        },
-                                                    },
-                                                },
-                                                tooltip: {
-                                                    theme: "light",
-                                                    y: {
-                                                        formatter: (val) =>
-                                                            `${val} clicks`,
-                                                    },
-                                                },
-                                            }}
-                                            series={productClicksByDevice.map(
-                                                (d) => d.count,
-                                            )}
-                                            type="donut"
-                                            height={320}
-                                        />
-                                    </div>
-                                    <div className="col-md-6">
-                                        <div className="text-center mb-3">
-                                            <h6 className="fw-semibold text-dark mb-1">
-                                                Clicks de Hoy
-                                            </h6>
-                                            <p className="text-muted small mb-0">
-                                                Actividad del día actual
-                                            </p>
-                                        </div>
-                                        <Chart
-                                            options={{
-                                                chart: {
-                                                    type: "bar",
-                                                    toolbar: { show: false },
-                                                    background: "transparent",
-                                                    fontFamily:
-                                                        "Inter, sans-serif",
-                                                },
-                                                plotOptions: {
-                                                    bar: {
-                                                        horizontal: true,
-                                                        borderRadius: 8,
-                                                        barHeight: "60%",
-                                                        distributed: true,
-                                                    },
-                                                },
-                                                dataLabels: {
-                                                    enabled: true,
-                                                    style: {
-                                                        fontSize: "13px",
-                                                        fontWeight: 600,
-                                                        colors: ["#fff"],
-                                                    },
-                                                },
-                                                xaxis: {
-                                                    categories:
-                                                        productClicksTodayByDevice.map(
-                                                            (d) => {
-                                                                const deviceMap =
-                                                                    {
-                                                                        mobile: "Móvil",
-                                                                        desktop:
-                                                                            "Desktop",
-                                                                        tablet: "Tablet",
-                                                                        unknown:
-                                                                            "Desconocido",
-                                                                    };
-                                                                return (
-                                                                    deviceMap[
-                                                                        d.device
-                                                                    ] ||
-                                                                    d.device
-                                                                );
-                                                            },
-                                                        ),
-                                                    labels: {
-                                                        style: {
-                                                            colors: "#64748b",
-                                                            fontSize: "11px",
-                                                        },
-                                                    },
-                                                    axisBorder: { show: false },
-                                                },
-                                                yaxis: {
-                                                    labels: {
-                                                        style: {
-                                                            colors: "#64748b",
-                                                            fontSize: "12px",
-                                                            fontWeight: 600,
-                                                        },
-                                                    },
-                                                },
-                                                grid: {
-                                                    borderColor: "#e2e8f0",
-                                                    strokeDashArray: 2,
-                                                    xaxis: {
-                                                        lines: { show: true },
-                                                    },
-                                                    yaxis: {
-                                                        lines: { show: false },
-                                                    },
-                                                },
-                                                colors: [
-                                                    "#3b82f6",
-                                                    "#8b5cf6",
-                                                    "#10b981",
-                                                    "#94a3b8",
-                                                ],
-                                                legend: { show: false },
-                                                tooltip: {
-                                                    theme: "light",
-                                                    y: {
-                                                        formatter: (val) =>
-                                                            `${val} clicks`,
-                                                    },
-                                                },
-                                            }}
-                                            series={[
-                                                {
-                                                    name: "Clicks Hoy",
-                                                    data: productClicksTodayByDevice.map(
-                                                        (d) => d.count,
-                                                    ),
-                                                },
-                                            ]}
-                                            type="bar"
-                                            height={320}
-                                        />
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                )}
-            </div>
-
             {/* Tablas de Productos */}
             <div className="row g-4 mb-5">
                 {shouldShowCard("most_clicked_products") && (
                     <div className="col-xl-6">
                         <div
-                            className="card border-0"
+                            className="card border-0 shadow-sm"
                             style={{
-                                borderRadius: "1rem",
-                                boxShadow: "0 10px 40px rgba(0,0,0,0.1)",
+                                borderRadius: UI_STYLE.borderRadius,
                             }}
                         >
                             <div
                                 className="card-header bg-white border-0 p-4"
-                                style={{ borderRadius: "1rem 1rem 0 0" }}
+                                style={{
+                                    borderRadius: `${UI_STYLE.borderRadius} ${UI_STYLE.borderRadius} 0 0`,
+                                }}
                             >
                                 <div className="d-flex align-items-center gap-3">
                                     <div
-                                        className="rounded-3 p-2"
+                                        className="rounded-4 p-3"
                                         style={{
-                                            background:
-                                                "linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)",
+                                            background: UI_STYLE.pastel.blue.bg,
                                         }}
                                     >
-                                        <i className="fas fa-mouse-pointer text-white fs-5"></i>
+                                        <i
+                                            className="fas fa-mouse-pointer fs-4"
+                                            style={{
+                                                color: UI_STYLE.pastel.blue
+                                                    .icon,
+                                            }}
+                                        ></i>
                                     </div>
                                     <div>
-                                        <h6 className="mb-0 fw-bold text-dark">
+                                        <h5
+                                            className="mb-0 fw-bold text-dark"
+                                            style={{ letterSpacing: "-0.02em" }}
+                                        >
                                             Productos Más Clickeados
-                                        </h6>
-                                        <p className="text-muted mb-0 small">
+                                        </h5>
+                                        <p className="text-muted mb-0 small fw-medium">
                                             Top 10 productos con más
                                             interacciones
                                         </p>
@@ -4054,17 +3845,29 @@ const Home = ({
                             </div>
                             <div className="card-body p-0">
                                 <div className="table-responsive">
-                                    <table className="table table-hover mb-0">
-                                        <thead className="bg-light">
+                                    <table className="table table-hover align-middle mb-0">
+                                        <thead className="bg-light/50">
                                             <tr>
                                                 <th className="px-4 py-3 border-0">
-                                                    <small className="text-muted fw-semibold">
-                                                        PRODUCTO
+                                                    <small
+                                                        className="text-muted fw-bold text-uppercase"
+                                                        style={{
+                                                            letterSpacing:
+                                                                "0.05em",
+                                                        }}
+                                                    >
+                                                        Producto
                                                     </small>
                                                 </th>
                                                 <th className="px-4 py-3 border-0 text-end">
-                                                    <small className="text-muted fw-semibold">
-                                                        CLICKS
+                                                    <small
+                                                        className="text-muted fw-bold text-uppercase"
+                                                        style={{
+                                                            letterSpacing:
+                                                                "0.05em",
+                                                        }}
+                                                    >
+                                                        Clicks
                                                     </small>
                                                 </th>
                                             </tr>
@@ -4074,8 +3877,11 @@ const Home = ({
                                             mostClickedProducts.length > 0 ? (
                                                 mostClickedProducts.map(
                                                     (product, index) => (
-                                                        <tr key={product.id}>
-                                                            <td className="px-4 py-3">
+                                                        <tr
+                                                            key={product.id}
+                                                            className="border-0"
+                                                        >
+                                                            <td className="px-4 py-3 border-0">
                                                                 <div className="d-flex align-items-center gap-3">
                                                                     <div className="position-relative">
                                                                         {product.image ? (
@@ -4084,7 +3890,7 @@ const Home = ({
                                                                                 alt={
                                                                                     product.name
                                                                                 }
-                                                                                className="rounded"
+                                                                                className="rounded-3 shadow-sm"
                                                                                 style={{
                                                                                     width: "48px",
                                                                                     height: "48px",
@@ -4100,24 +3906,20 @@ const Home = ({
                                                                             />
                                                                         ) : (
                                                                             <div
-                                                                                className="rounded d-flex align-items-center justify-content-center"
+                                                                                className="rounded-3 d-flex align-items-center justify-content-center bg-light"
                                                                                 style={{
                                                                                     width: "48px",
                                                                                     height: "48px",
-                                                                                    background:
-                                                                                        "#e5e7eb",
                                                                                 }}
                                                                             >
                                                                                 <i className="fas fa-box text-secondary"></i>
                                                                             </div>
                                                                         )}
                                                                         <span
-                                                                            className="position-absolute top-0 start-100 translate-middle badge rounded-pill"
+                                                                            className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-primary border-white border-2 text-white"
                                                                             style={{
-                                                                                background:
-                                                                                    "linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)",
                                                                                 fontSize:
-                                                                                    "9px",
+                                                                                    "10px",
                                                                             }}
                                                                         >
                                                                             #
@@ -4125,15 +3927,21 @@ const Home = ({
                                                                                 1}
                                                                         </span>
                                                                     </div>
-                                                                    <div className="flex-grow-1">
-                                                                        <div className="fw-semibold text-dark">
+                                                                    <div>
+                                                                        <div
+                                                                            className="fw-bold text-dark mb-0"
+                                                                            style={{
+                                                                                fontSize:
+                                                                                    "0.925rem",
+                                                                            }}
+                                                                        >
                                                                             {
                                                                                 product.name
                                                                             }
                                                                         </div>
-                                                                        <div className="small text-muted d-flex gap-2 flex-wrap">
+                                                                        <div className="text-muted extra-small fw-medium">
                                                                             {product.sku && (
-                                                                                <span>
+                                                                                <span className="me-2">
                                                                                     SKU:{" "}
                                                                                     {
                                                                                         product.sku
@@ -4141,58 +3949,32 @@ const Home = ({
                                                                                 </span>
                                                                             )}
                                                                             {product.color && (
-                                                                                <span>
+                                                                                <span className="me-2">
                                                                                     Color:{" "}
                                                                                     {
                                                                                         product.color
                                                                                     }
                                                                                 </span>
                                                                             )}
-                                                                            {product.size && (
-                                                                                <span>
-                                                                                    Talla:{" "}
-                                                                                    {
-                                                                                        product.size
-                                                                                    }
-                                                                                </span>
-                                                                            )}
-                                                                            {product.attributes &&
-                                                                                product.attributes.map(
-                                                                                    (
-                                                                                        attr,
-                                                                                        i,
-                                                                                    ) => (
-                                                                                        <span
-                                                                                            key={
-                                                                                                i
-                                                                                            }
-                                                                                        >
-                                                                                            {
-                                                                                                attr.name
-                                                                                            }
-
-                                                                                            :{" "}
-                                                                                            {
-                                                                                                attr
-                                                                                                    .pivot
-                                                                                                    .value
-                                                                                            }
-                                                                                        </span>
-                                                                                    ),
-                                                                                )}
                                                                         </div>
                                                                     </div>
                                                                 </div>
                                                             </td>
-                                                            <td className="px-4 py-3 text-end">
+                                                            <td className="px-4 py-3 border-0 text-end">
                                                                 <span
-                                                                    className="badge px-3 py-2 rounded-pill fw-semibold"
+                                                                    className="badge rounded-pill px-3 py-2 fw-bold"
                                                                     style={{
                                                                         background:
-                                                                            "#dbeafe",
-                                                                        color: "#3b82f6",
+                                                                            UI_STYLE
+                                                                                .pastel
+                                                                                .blue
+                                                                                .bg,
+                                                                        color: UI_STYLE
+                                                                            .pastel
+                                                                            .blue
+                                                                            .icon,
                                                                         fontSize:
-                                                                            "13px",
+                                                                            "0.85rem",
                                                                     }}
                                                                 >
                                                                     <i className="fas fa-mouse-pointer me-1"></i>
@@ -4209,9 +3991,14 @@ const Home = ({
                                                         colSpan="2"
                                                         className="text-center py-5 text-muted"
                                                     >
-                                                        <i className="fas fa-inbox fa-2x mb-3 d-block opacity-50"></i>
-                                                        No hay datos de clicks
-                                                        disponibles
+                                                        <div className="py-2">
+                                                            <i className="fas fa-inbox fa-3x mb-3 opacity-20"></i>
+                                                            <p className="mb-0 fw-medium">
+                                                                No hay datos de
+                                                                clicks
+                                                                disponibles
+                                                            </p>
+                                                        </div>
                                                     </td>
                                                 </tr>
                                             )}
@@ -4224,96 +4011,111 @@ const Home = ({
                 )}
 
                 {shouldShowCard("top_selling_products") && (
-                    <div className="col-xl-6 col-lg-6">
+                    <div className="col-xl-6">
                         <div
-                            className="card border-0 h-100"
+                            className="card border-0 shadow-sm"
                             style={{
-                                borderRadius: "1rem",
-                                boxShadow: "0 10px 40px rgba(0,0,0,0.1)",
+                                borderRadius: UI_STYLE.borderRadius,
                             }}
                         >
                             <div
                                 className="card-header bg-white border-0 p-4"
-                                style={{ borderRadius: "1rem 1rem 0 0" }}
+                                style={{
+                                    borderRadius: `${UI_STYLE.borderRadius} ${UI_STYLE.borderRadius} 0 0`,
+                                }}
                             >
-                                <div className="d-flex align-items-center justify-content-between">
-                                    <div className="d-flex align-items-center gap-3">
-                                        <div
-                                            className="rounded-3 p-2"
+                                <div className="d-flex align-items-center gap-3">
+                                    <div
+                                        className="rounded-4 p-3"
+                                        style={{
+                                            background:
+                                                UI_STYLE.pastel.green.bg,
+                                        }}
+                                    >
+                                        <i
+                                            className="fas fa-shopping-cart fs-4"
                                             style={{
-                                                background:
-                                                    "linear-gradient(135deg, #fd79a8 0%, #fdcb6e 100%)",
+                                                color: UI_STYLE.pastel.green
+                                                    .icon,
                                             }}
+                                        ></i>
+                                    </div>
+                                    <div>
+                                        <h5
+                                            className="mb-0 fw-bold text-dark"
+                                            style={{ letterSpacing: "-0.02em" }}
                                         >
-                                            <i className="fas fa-fire text-white fs-5"></i>
-                                        </div>
-                                        <div>
-                                            <h6 className="mb-0 fw-bold text-dark">
-                                                Productos Más Vendidos
-                                            </h6>
-                                            <p className="text-muted mb-0 small">
-                                                Top performers del mes
-                                            </p>
-                                        </div>
+                                            Productos Más Vendidos
+                                        </h5>
+                                        <p className="text-muted mb-0 small fw-medium">
+                                            Basado en el volumen de ventas total
+                                        </p>
                                     </div>
                                 </div>
                             </div>
                             <div className="card-body p-0">
-                                <div
-                                    className="table-responsive"
-                                    style={{ maxHeight: 380 }}
-                                >
+                                <div className="table-responsive">
                                     <table className="table table-hover align-middle mb-0">
-                                        <thead
-                                            style={{ background: "#f8fafc" }}
-                                        >
+                                        <thead className="bg-light/50">
                                             <tr>
-                                                <th className="border-0 py-3 px-4 fw-semibold text-muted">
-                                                    Producto
+                                                <th className="px-4 py-3 border-0">
+                                                    <small
+                                                        className="text-muted fw-bold text-uppercase"
+                                                        style={{
+                                                            letterSpacing:
+                                                                "0.05em",
+                                                        }}
+                                                    >
+                                                        Producto
+                                                    </small>
                                                 </th>
-                                                <th className="border-0 py-3 px-4 fw-semibold text-muted">
-                                                    Cantidad
-                                                </th>
-                                                <th className="border-0 py-3 px-4 fw-semibold text-muted">
-                                                    Tendencia
+                                                <th className="px-4 py-3 border-0 text-end">
+                                                    <small
+                                                        className="text-muted fw-bold text-uppercase"
+                                                        style={{
+                                                            letterSpacing:
+                                                                "0.05em",
+                                                        }}
+                                                    >
+                                                        Ventas
+                                                    </small>
                                                 </th>
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            {topProducts.map(
-                                                (product, index) => (
-                                                    <tr
-                                                        key={product.name}
-                                                        className="border-0"
-                                                    >
-                                                        <td className="px-4 py-3 border-0">
-                                                            <div className="d-flex align-items-center">
-                                                                <div className="position-relative me-3">
-                                                                    <img
-                                                                        src={`/storage/images/item/${product.image}`}
-                                                                        alt={
-                                                                            product.name
-                                                                        }
-                                                                        className="rounded-3 shadow-sm"
-                                                                        style={{
-                                                                            width: "48px",
-                                                                            height: "48px",
-                                                                            objectFit:
-                                                                                "cover",
-                                                                        }}
-                                                                        onError={(
-                                                                            e,
-                                                                        ) =>
-                                                                            (e.target.src =
-                                                                                "/api/cover/thumbnail/null")
-                                                                        }
-                                                                    />
-                                                                    <div className="position-absolute top-0 start-0 translate-middle">
-                                                                        <span
-                                                                            className="badge rounded-pill"
+                                            {topProducts &&
+                                            topProducts.length > 0 ? (
+                                                topProducts.map(
+                                                    (product, index) => (
+                                                        <tr
+                                                            key={product.id}
+                                                            className="border-0"
+                                                        >
+                                                            <td className="px-4 py-3 border-0">
+                                                                <div className="d-flex align-items-center gap-3">
+                                                                    <div className="position-relative">
+                                                                        <img
+                                                                            src={`/storage/images/item/${product.image}`}
+                                                                            alt={
+                                                                                product.name
+                                                                            }
+                                                                            className="rounded-3 shadow-sm"
                                                                             style={{
-                                                                                background:
-                                                                                    "linear-gradient(135deg, #fd79a8 0%, #fdcb6e 100%)",
+                                                                                width: "48px",
+                                                                                height: "48px",
+                                                                                objectFit:
+                                                                                    "cover",
+                                                                            }}
+                                                                            onError={(
+                                                                                e,
+                                                                            ) => {
+                                                                                e.target.src =
+                                                                                    "/api/cover/thumbnail/null";
+                                                                            }}
+                                                                        />
+                                                                        <span
+                                                                            className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-success border-white border-2 text-white"
+                                                                            style={{
                                                                                 fontSize:
                                                                                     "10px",
                                                                             }}
@@ -4323,75 +4125,89 @@ const Home = ({
                                                                                 1}
                                                                         </span>
                                                                     </div>
-                                                                </div>
-                                                                <div>
-                                                                    <div className="fw-semibold text-dark mb-1">
-                                                                        {
-                                                                            product.name
-                                                                        }
+                                                                    <div>
+                                                                        <div
+                                                                            className="fw-bold text-dark mb-0"
+                                                                            style={{
+                                                                                fontSize:
+                                                                                    "0.925rem",
+                                                                            }}
+                                                                        >
+                                                                            {
+                                                                                product.name
+                                                                            }
+                                                                        </div>
+                                                                        <div className="text-muted extra-small fw-medium">
+                                                                            {CurrencySymbol()}{" "}
+                                                                            {Number(
+                                                                                product.price,
+                                                                            ).toFixed(
+                                                                                2,
+                                                                            )}
+                                                                        </div>
                                                                     </div>
+                                                                </div>
+                                                            </td>
+                                                            <td className="px-4 py-3 border-0 text-end">
+                                                                <div className="d-flex flex-column align-items-end">
                                                                     <span
-                                                                        className="badge rounded-pill px-2 py-1"
+                                                                        className="badge rounded-pill px-3 py-2 fw-bold"
                                                                         style={{
                                                                             background:
-                                                                                "#fef3c7",
-                                                                            color: "#d97706",
+                                                                                UI_STYLE
+                                                                                    .pastel
+                                                                                    .green
+                                                                                    .bg,
+                                                                            color: UI_STYLE
+                                                                                .pastel
+                                                                                .green
+                                                                                .icon,
                                                                             fontSize:
-                                                                                "11px",
+                                                                                "0.85rem",
                                                                         }}
                                                                     >
-                                                                        Bestseller
+                                                                        {product.order_items_count ||
+                                                                            0}{" "}
+                                                                        vendidos
+                                                                    </span>
+                                                                    <span className="text-success extra-small fw-bold mt-1">
+                                                                        <i className="fas fa-arrow-up me-1"></i>
+                                                                        +
+                                                                        {Math.round(
+                                                                            Math.random() *
+                                                                                20,
+                                                                        )}
+                                                                        %
                                                                     </span>
                                                                 </div>
-                                                            </div>
-                                                        </td>
-                                                        <td className="px-4 py-3 border-0">
-                                                            <span
-                                                                className="badge rounded-pill px-3 py-2 fw-semibold"
-                                                                style={{
-                                                                    background:
-                                                                        "#d1fae5",
-                                                                    color: "#059669",
-                                                                    fontSize:
-                                                                        "12px",
-                                                                }}
-                                                            >
-                                                                {
-                                                                    product.quantity
-                                                                }
-                                                            </span>
-                                                        </td>
-                                                        <td className="px-4 py-3 border-0">
-                                                            <span
-                                                                className="badge rounded-pill px-3 py-2 fw-semibold"
-                                                                style={{
-                                                                    background:
-                                                                        "#dcfce7",
-                                                                    color: "#16a34a",
-                                                                    fontSize:
-                                                                        "12px",
-                                                                }}
-                                                            >
-                                                                <i className="fas fa-arrow-up me-1"></i>
-                                                                +
-                                                                {Math.round(
-                                                                    Math.random() *
-                                                                        20,
-                                                                )}
-                                                                %
-                                                            </span>
-                                                        </td>
-                                                    </tr>
-                                                ),
+                                                            </td>
+                                                        </tr>
+                                                    ),
+                                                )
+                                            ) : (
+                                                <tr>
+                                                    <td
+                                                        colSpan="2"
+                                                        className="text-center py-5 text-muted"
+                                                    >
+                                                        <div className="py-2">
+                                                            <i className="fas fa-box-open fa-3x mb-3 opacity-20"></i>
+                                                            <p className="mb-0 fw-medium">
+                                                                No hay datos de
+                                                                ventas
+                                                                disponibles
+                                                            </p>
+                                                        </div>
+                                                    </td>
+                                                </tr>
                                             )}
                                         </tbody>
                                     </table>
                                 </div>
                                 <div
-                                    className="d-flex justify-content-between align-items-center p-4"
+                                    className="p-4 bg-light/30 border-top d-flex justify-content-between align-items-center"
                                     style={{
-                                        background: "#f8fafc",
-                                        borderRadius: "0 0 1rem 1rem",
+                                        borderRadius: `0 0 ${UI_STYLE.borderRadius} ${UI_STYLE.borderRadius}`,
                                     }}
                                 >
                                     <span className="text-muted small fw-medium">
@@ -4400,9 +4216,9 @@ const Home = ({
                                     <a
                                         href="/admin/items"
                                         target="_blank"
-                                        className="btn btn-sm btn-outline-primary rounded-3 px-3"
+                                        className="btn btn-sm btn-outline-primary rounded-pill px-3 fw-bold"
                                     >
-                                        Ver todos
+                                        Ver catálogo completo
                                     </a>
                                 </div>
                             </div>
@@ -4410,71 +4226,99 @@ const Home = ({
                     </div>
                 )}
                 {shouldShowCard("new_featured_products") && (
-                    <div className="col-xl-6 col-lg-6">
+                    <div className="col-xl-6">
                         <div
-                            className="card border-0 h-100"
+                            className="card border-0 shadow-sm"
                             style={{
-                                borderRadius: "1rem",
-                                boxShadow: "0 10px 40px rgba(0,0,0,0.1)",
+                                borderRadius: UI_STYLE.borderRadius,
                             }}
                         >
                             <div
                                 className="card-header bg-white border-0 p-4"
-                                style={{ borderRadius: "1rem 1rem 0 0" }}
+                                style={{
+                                    borderRadius: `${UI_STYLE.borderRadius} ${UI_STYLE.borderRadius} 0 0`,
+                                }}
                             >
-                                <div className="d-flex align-items-center justify-content-between">
-                                    <div className="d-flex align-items-center gap-3">
-                                        <div
-                                            className="rounded-3 p-2"
+                                <div className="d-flex align-items-center gap-3">
+                                    <div
+                                        className="rounded-4 p-3"
+                                        style={{
+                                            background:
+                                                UI_STYLE.pastel.amber.bg,
+                                        }}
+                                    >
+                                        <i
+                                            className="fas fa-star fs-4"
                                             style={{
-                                                background:
-                                                    "linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%)",
+                                                color: UI_STYLE.pastel.amber
+                                                    .icon,
                                             }}
+                                        ></i>
+                                    </div>
+                                    <div>
+                                        <h5
+                                            className="mb-0 fw-bold text-dark"
+                                            style={{ letterSpacing: "-0.02em" }}
                                         >
-                                            <i className="fas fa-star text-white fs-5"></i>
-                                        </div>
-                                        <div>
-                                            <h6 className="mb-0 fw-bold text-dark">
-                                                Nuevos Productos Destacados
-                                            </h6>
-                                            <p className="text-muted mb-0 small">
-                                                Últimos lanzamientos destacados
-                                            </p>
-                                        </div>
+                                            Nuevos Productos Destacados
+                                        </h5>
+                                        <p className="text-muted mb-0 small fw-medium">
+                                            Últimos lanzamientos y novedades
+                                        </p>
                                     </div>
                                 </div>
                             </div>
                             <div className="card-body p-0">
-                                <div
-                                    className="table-responsive"
-                                    style={{ maxHeight: 380 }}
-                                >
+                                <div className="table-responsive">
                                     <table className="table table-hover align-middle mb-0">
-                                        <thead
-                                            style={{ background: "#f8fafc" }}
-                                        >
+                                        <thead className="bg-light/50">
                                             <tr>
-                                                <th className="border-0 py-3 px-4 fw-semibold text-muted">
-                                                    Producto
+                                                <th className="px-4 py-3 border-0">
+                                                    <small
+                                                        className="text-muted fw-bold text-uppercase"
+                                                        style={{
+                                                            letterSpacing:
+                                                                "0.05em",
+                                                        }}
+                                                    >
+                                                        Producto
+                                                    </small>
                                                 </th>
-                                                <th className="border-0 py-3 px-4 fw-semibold text-muted">
-                                                    Precio
+                                                <th className="px-4 py-3 border-0">
+                                                    <small
+                                                        className="text-muted fw-bold text-uppercase"
+                                                        style={{
+                                                            letterSpacing:
+                                                                "0.05em",
+                                                        }}
+                                                    >
+                                                        Precio
+                                                    </small>
                                                 </th>
-                                                <th className="border-0 py-3 px-4 fw-semibold text-muted">
-                                                    Estado
+                                                <th className="px-4 py-3 border-0 text-end">
+                                                    <small
+                                                        className="text-muted fw-bold text-uppercase"
+                                                        style={{
+                                                            letterSpacing:
+                                                                "0.05em",
+                                                        }}
+                                                    >
+                                                        Estado
+                                                    </small>
                                                 </th>
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            {newFeatured.map(
-                                                (product, index) => (
+                                            {newFeatured &&
+                                            newFeatured.length > 0 ? (
+                                                newFeatured.map((product) => (
                                                     <tr
                                                         key={product.id}
                                                         className="border-0"
                                                     >
                                                         <td className="px-4 py-3 border-0">
-                                                            <div className="d-flex align-items-center">
-                                                                <div className="position-relative me-3">
+                                                            <div className="d-flex align-items-center gap-3">
+                                                                <div className="position-relative">
                                                                     <img
                                                                         src={`/storage/images/item/${product.image}`}
                                                                         alt={
@@ -4489,55 +4333,70 @@ const Home = ({
                                                                         }}
                                                                         onError={(
                                                                             e,
-                                                                        ) =>
-                                                                            (e.target.src =
-                                                                                "/api/cover/thumbnail/null")
-                                                                        }
+                                                                        ) => {
+                                                                            e.target.src =
+                                                                                "/api/cover/thumbnail/null";
+                                                                        }}
                                                                     />
-                                                                    <div className="position-absolute top-0 start-0 translate-middle">
+                                                                    <div className="position-absolute top-0 start-100 translate-middle">
                                                                         <span
-                                                                            className="badge rounded-pill"
+                                                                            className="badge rounded-pill p-1"
                                                                             style={{
                                                                                 background:
-                                                                                    "linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%)",
-                                                                                fontSize:
-                                                                                    "10px",
+                                                                                    UI_STYLE
+                                                                                        .pastel
+                                                                                        .amber
+                                                                                        .bg,
                                                                             }}
                                                                         >
-                                                                            <i className="fas fa-star"></i>
+                                                                            <i
+                                                                                className="fas fa-sparkles"
+                                                                                style={{
+                                                                                    color: UI_STYLE
+                                                                                        .pastel
+                                                                                        .amber
+                                                                                        .icon,
+                                                                                    fontSize:
+                                                                                        "8px",
+                                                                                }}
+                                                                            ></i>
                                                                         </span>
                                                                     </div>
                                                                 </div>
                                                                 <div>
-                                                                    <div className="fw-semibold text-dark mb-1">
+                                                                    <div
+                                                                        className="fw-bold text-dark mb-0"
+                                                                        style={{
+                                                                            fontSize:
+                                                                                "0.925rem",
+                                                                        }}
+                                                                    >
                                                                         {
                                                                             product.name
                                                                         }
                                                                     </div>
                                                                     <span
-                                                                        className="badge rounded-pill px-2 py-1"
+                                                                        className="badge rounded-pill px-2 py-0 fw-medium"
                                                                         style={{
                                                                             background:
-                                                                                "#fef3c7",
-                                                                            color: "#d97706",
+                                                                                "#fffbeb",
+                                                                            color: "#b45309",
                                                                             fontSize:
-                                                                                "11px",
+                                                                                "10px",
+                                                                            border: "1px solid #fef3c7",
                                                                         }}
                                                                     >
-                                                                        Destacado
+                                                                        Nuevo
                                                                     </span>
                                                                 </div>
                                                             </div>
                                                         </td>
                                                         <td className="px-4 py-3 border-0">
                                                             <span
-                                                                className="badge rounded-pill px-3 py-2 fw-semibold"
+                                                                className="fw-bold text-dark"
                                                                 style={{
-                                                                    background:
-                                                                        "#d1fae5",
-                                                                    color: "#059669",
                                                                     fontSize:
-                                                                        "12px",
+                                                                        "0.95rem",
                                                                 }}
                                                             >
                                                                 {CurrencySymbol()}{" "}
@@ -4546,39 +4405,59 @@ const Home = ({
                                                                 ).toFixed(2)}
                                                             </span>
                                                         </td>
-                                                        <td className="px-4 py-3 border-0">
+                                                        <td className="px-4 py-3 border-0 text-end">
                                                             <span
-                                                                className="badge rounded-pill px-3 py-2 fw-semibold"
+                                                                className="badge rounded-pill px-3 py-2 fw-bold"
                                                                 style={{
                                                                     background:
-                                                                        "#fef3c7",
-                                                                    color: "#d97706",
+                                                                        UI_STYLE
+                                                                            .pastel
+                                                                            .amber
+                                                                            .bg,
+                                                                    color: UI_STYLE
+                                                                        .pastel
+                                                                        .amber
+                                                                        .icon,
                                                                     fontSize:
-                                                                        "12px",
+                                                                        "0.8rem",
                                                                 }}
                                                             >
-                                                                <i className="fas fa-sparkles me-1"></i>
-                                                                Nuevo
+                                                                Destacado
                                                             </span>
                                                         </td>
                                                     </tr>
-                                                ),
+                                                ))
+                                            ) : (
+                                                <tr>
+                                                    <td
+                                                        colSpan="3"
+                                                        className="text-center py-5 text-muted"
+                                                    >
+                                                        <div className="py-2">
+                                                            <i className="fas fa-tags fa-3x mb-3 opacity-20"></i>
+                                                            <p className="mb-0 fw-medium">
+                                                                No hay productos
+                                                                destacados
+                                                                recientes
+                                                            </p>
+                                                        </div>
+                                                    </td>
+                                                </tr>
                                             )}
                                         </tbody>
                                     </table>
                                 </div>
                                 <div
-                                    className="d-flex justify-content-between align-items-center p-4"
+                                    className="p-4 bg-light/30 border-top d-flex justify-content-between align-items-center"
                                     style={{
-                                        background: "#f8fafc",
-                                        borderRadius: "0 0 1rem 1rem",
+                                        borderRadius: `0 0 ${UI_STYLE.borderRadius} ${UI_STYLE.borderRadius}`,
                                     }}
                                 >
                                     <span className="text-muted small fw-medium">
-                                        Mostrando {newFeatured.length} productos
+                                        Total: {newFeatured.length} items
                                     </span>
-                                    <button className="btn btn-sm btn-outline-primary rounded-3 px-3">
-                                        Ver todos
+                                    <button className="btn btn-sm btn-outline-primary rounded-pill px-3 fw-bold">
+                                        Administrar destacados
                                     </button>
                                 </div>
                             </div>
@@ -4586,167 +4465,198 @@ const Home = ({
                     </div>
                 )}
                 {shouldShowCard("most_viewed_products") && (
-                    <div className="col-xl-6 col-lg-6">
+                    <div className="col-xl-6">
                         <div
-                            className="card border-0 h-100"
+                            className="card border-0 shadow-sm"
                             style={{
-                                borderRadius: "1rem",
-                                boxShadow: "0 10px 40px rgba(0,0,0,0.1)",
+                                borderRadius: UI_STYLE.borderRadius,
                             }}
                         >
                             <div
                                 className="card-header bg-white border-0 p-4"
-                                style={{ borderRadius: "1rem 1rem 0 0" }}
+                                style={{
+                                    borderRadius: `${UI_STYLE.borderRadius} ${UI_STYLE.borderRadius} 0 0`,
+                                }}
                             >
-                                <div className="d-flex align-items-center justify-content-between">
-                                    <div className="d-flex align-items-center gap-3">
-                                        <div
-                                            className="rounded-3 p-2"
+                                <div className="d-flex align-items-center gap-3">
+                                    <div
+                                        className="rounded-4 p-3"
+                                        style={{
+                                            background:
+                                                UI_STYLE.pastel.violet.bg,
+                                        }}
+                                    >
+                                        <i
+                                            className="fas fa-eye fs-4"
                                             style={{
-                                                background:
-                                                    "linear-gradient(135deg, #06b6d4 0%, #0891b2 100%)",
+                                                color: UI_STYLE.pastel.violet
+                                                    .icon,
                                             }}
+                                        ></i>
+                                    </div>
+                                    <div>
+                                        <h5
+                                            className="mb-0 fw-bold text-dark"
+                                            style={{ letterSpacing: "-0.02em" }}
                                         >
-                                            <i className="fas fa-eye text-white fs-5"></i>
-                                        </div>
-                                        <div>
-                                            <h6 className="mb-0 fw-bold text-dark">
-                                                Productos Más Vistos
-                                            </h6>
-                                            <p className="text-muted mb-0 small">
-                                                Mayor tráfico y visualizaciones
-                                            </p>
-                                        </div>
+                                            Productos Más Vistos
+                                        </h5>
+                                        <p className="text-muted mb-0 small fw-medium">
+                                            Mayor volumen de tráfico y
+                                            visualizaciones
+                                        </p>
                                     </div>
                                 </div>
                             </div>
                             <div className="card-body p-0">
-                                <div
-                                    className="table-responsive"
-                                    style={{ maxHeight: 380 }}
-                                >
+                                <div className="table-responsive">
                                     <table className="table table-hover align-middle mb-0">
-                                        <thead
-                                            style={{ background: "#f8fafc" }}
-                                        >
+                                        <thead className="bg-light/50">
                                             <tr>
-                                                <th className="border-0 py-3 px-4 fw-semibold text-muted">
-                                                    Producto
+                                                <th className="px-4 py-3 border-0">
+                                                    <small
+                                                        className="text-muted fw-bold text-uppercase"
+                                                        style={{
+                                                            letterSpacing:
+                                                                "0.05em",
+                                                        }}
+                                                    >
+                                                        Producto
+                                                    </small>
                                                 </th>
-                                                <th className="border-0 py-3 px-4 fw-semibold text-muted">
-                                                    Vistas
-                                                </th>
-                                                <th className="border-0 py-3 px-4 fw-semibold text-muted">
-                                                    Popularidad
+                                                <th className="px-4 py-3 border-0 text-end">
+                                                    <small
+                                                        className="text-muted fw-bold text-uppercase"
+                                                        style={{
+                                                            letterSpacing:
+                                                                "0.05em",
+                                                        }}
+                                                    >
+                                                        Vistas
+                                                    </small>
                                                 </th>
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            {mostViewedProducts.map(
-                                                (product, index) => (
-                                                    <tr
-                                                        key={product.id}
-                                                        className="border-0"
-                                                    >
-                                                        <td className="px-4 py-3 border-0">
-                                                            <div className="d-flex align-items-center">
-                                                                <div className="position-relative me-3">
-                                                                    <img
-                                                                        src={`/storage/images/item/${product.image}`}
-                                                                        alt={
-                                                                            product.name
-                                                                        }
-                                                                        className="rounded-3 shadow-sm"
-                                                                        style={{
-                                                                            width: "48px",
-                                                                            height: "48px",
-                                                                            objectFit:
-                                                                                "cover",
-                                                                        }}
-                                                                        onError={(
-                                                                            e,
-                                                                        ) =>
-                                                                            (e.target.src =
-                                                                                "/api/cover/thumbnail/null")
-                                                                        }
-                                                                    />
-                                                                    <div className="position-absolute top-0 start-0 translate-middle">
-                                                                        <span
-                                                                            className="badge rounded-pill"
+                                            {mostViewedProducts &&
+                                            mostViewedProducts.length > 0 ? (
+                                                mostViewedProducts.map(
+                                                    (product, index) => (
+                                                        <tr
+                                                            key={product.id}
+                                                            className="border-0"
+                                                        >
+                                                            <td className="px-4 py-3 border-0">
+                                                                <div className="d-flex align-items-center gap-3">
+                                                                    <div className="position-relative">
+                                                                        <img
+                                                                            src={`/storage/images/item/${product.image}`}
+                                                                            alt={
+                                                                                product.name
+                                                                            }
+                                                                            className="rounded-3 shadow-sm"
                                                                             style={{
-                                                                                background:
-                                                                                    "linear-gradient(135deg, #06b6d4 0%, #0891b2 100%)",
+                                                                                width: "48px",
+                                                                                height: "48px",
+                                                                                objectFit:
+                                                                                    "cover",
+                                                                            }}
+                                                                            onError={(
+                                                                                e,
+                                                                            ) => {
+                                                                                e.target.src =
+                                                                                    "/api/cover/thumbnail/null";
+                                                                            }}
+                                                                        />
+                                                                        <span
+                                                                            className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-info border-white border-2 text-white"
+                                                                            style={{
                                                                                 fontSize:
                                                                                     "10px",
                                                                             }}
                                                                         >
-                                                                            <i className="fas fa-eye"></i>
+                                                                            #
+                                                                            {index +
+                                                                                1}
+                                                                        </span>
+                                                                    </div>
+                                                                    <div>
+                                                                        <div
+                                                                            className="fw-bold text-dark mb-0"
+                                                                            style={{
+                                                                                fontSize:
+                                                                                    "0.925rem",
+                                                                            }}
+                                                                        >
+                                                                            {
+                                                                                product.name
+                                                                            }
+                                                                        </div>
+                                                                        <span
+                                                                            className="badge rounded-pill px-2 py-0 fw-medium"
+                                                                            style={{
+                                                                                background:
+                                                                                    "#f5f3ff",
+                                                                                color: "#7c3aed",
+                                                                                fontSize:
+                                                                                    "10px",
+                                                                                border: "1px solid #ede9fe",
+                                                                            }}
+                                                                        >
+                                                                            Trending
                                                                         </span>
                                                                     </div>
                                                                 </div>
-                                                                <div>
-                                                                    <div className="fw-semibold text-dark mb-1">
-                                                                        {
-                                                                            product.name
-                                                                        }
-                                                                    </div>
-                                                                    <span
-                                                                        className="badge rounded-pill px-2 py-1"
-                                                                        style={{
-                                                                            background:
-                                                                                "#e0f2fe",
-                                                                            color: "#0891b2",
-                                                                            fontSize:
-                                                                                "11px",
-                                                                        }}
-                                                                    >
-                                                                        Trending
-                                                                    </span>
-                                                                </div>
-                                                            </div>
-                                                        </td>
-                                                        <td className="px-4 py-3 border-0">
-                                                            <span
-                                                                className="badge rounded-pill px-3 py-2 fw-semibold"
-                                                                style={{
-                                                                    background:
-                                                                        "#dcfce7",
-                                                                    color: "#16a34a",
-                                                                    fontSize:
-                                                                        "12px",
-                                                                }}
-                                                            >
-                                                                {
-                                                                    product.view_count
-                                                                }
-                                                            </span>
-                                                        </td>
-                                                        <td className="px-4 py-3 border-0">
-                                                            <span
-                                                                className="badge rounded-pill px-3 py-2 fw-semibold"
-                                                                style={{
-                                                                    background:
-                                                                        "#e0f2fe",
-                                                                    color: "#0891b2",
-                                                                    fontSize:
-                                                                        "12px",
-                                                                }}
-                                                            >
-                                                                <i className="fas fa-fire me-1"></i>
-                                                                Popular
-                                                            </span>
-                                                        </td>
-                                                    </tr>
-                                                ),
+                                                            </td>
+                                                            <td className="px-4 py-3 border-0 text-end">
+                                                                <span
+                                                                    className="badge rounded-pill px-3 py-2 fw-bold"
+                                                                    style={{
+                                                                        background:
+                                                                            UI_STYLE
+                                                                                .pastel
+                                                                                .violet
+                                                                                .bg,
+                                                                        color: UI_STYLE
+                                                                            .pastel
+                                                                            .violet
+                                                                            .icon,
+                                                                        fontSize:
+                                                                            "0.85rem",
+                                                                    }}
+                                                                >
+                                                                    <i className="fas fa-eye me-1"></i>
+                                                                    {product.view_count ||
+                                                                        0}
+                                                                </span>
+                                                            </td>
+                                                        </tr>
+                                                    ),
+                                                )
+                                            ) : (
+                                                <tr>
+                                                    <td
+                                                        colSpan="2"
+                                                        className="text-center py-5 text-muted"
+                                                    >
+                                                        <div className="py-2">
+                                                            <i className="fas fa-eye-slash fa-3x mb-3 opacity-20"></i>
+                                                            <p className="mb-0 fw-medium">
+                                                                No hay datos de
+                                                                visualizaciones
+                                                                disponibles
+                                                            </p>
+                                                        </div>
+                                                    </td>
+                                                </tr>
                                             )}
                                         </tbody>
                                     </table>
                                 </div>
                                 <div
-                                    className="d-flex justify-content-between align-items-center p-4"
+                                    className="p-4 bg-light/30 border-top d-flex justify-content-between align-items-center"
                                     style={{
-                                        background: "#f8fafc",
-                                        borderRadius: "0 0 1rem 1rem",
+                                        borderRadius: `0 0 ${UI_STYLE.borderRadius} ${UI_STYLE.borderRadius}`,
                                     }}
                                 >
                                     <span className="text-muted small fw-medium">
@@ -4756,9 +4666,9 @@ const Home = ({
                                     <a
                                         href="/admin/items"
                                         target="_blank"
-                                        className="btn btn-sm btn-outline-primary rounded-3 px-3"
+                                        className="btn btn-sm btn-outline-primary rounded-pill px-3 fw-bold"
                                     >
-                                        Ver todos
+                                        Ver catálogo completo
                                     </a>
                                 </div>
                             </div>
@@ -5151,757 +5061,728 @@ const Home = ({
                                     <a
                                         href="/admin/services"
                                         target="_blank"
-                                        className="btn btn-sm btn-outline-primary rounded-3 px-3"
+                                        className="btn btn-sm btn-outline-primary rounded-pill px-3 fw-bold"
                                     >
-                                        Ver todos
+                                        Administrar servicios
                                     </a>
                                 </div>
                             </div>
                         </div>
                     </div>
                 )}
+
                 {shouldShowCard("most_used_coupons") && (
-                    <div className="col-xl-6 col-lg-6">
+                    <div className="col-xl-6">
                         <div
-                            className="card border-0 h-100"
+                            className="card border-0 shadow-sm"
                             style={{
-                                borderRadius: "1rem",
-                                boxShadow: "0 10px 40px rgba(0,0,0,0.1)",
+                                borderRadius: UI_STYLE.borderRadius,
                             }}
                         >
                             <div
                                 className="card-header bg-white border-0 p-4"
-                                style={{ borderRadius: "1rem 1rem 0 0" }}
+                                style={{
+                                    borderRadius: `${UI_STYLE.borderRadius} ${UI_STYLE.borderRadius} 0 0`,
+                                }}
                             >
-                                <div className="d-flex align-items-center justify-content-between">
-                                    <div className="d-flex align-items-center gap-3">
-                                        <div
-                                            className="rounded-3 p-2"
+                                <div className="d-flex align-items-center gap-3">
+                                    <div
+                                        className="rounded-4 p-3"
+                                        style={{
+                                            background: UI_STYLE.pastel.rose.bg,
+                                        }}
+                                    >
+                                        <i
+                                            className="fas fa-ticket-alt fs-4"
                                             style={{
-                                                background:
-                                                    "linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)",
+                                                color: UI_STYLE.pastel.rose
+                                                    .icon,
                                             }}
+                                        ></i>
+                                    </div>
+                                    <div>
+                                        <h5
+                                            className="mb-0 fw-bold text-dark"
+                                            style={{ letterSpacing: "-0.02em" }}
                                         >
-                                            <i className="fas fa-ticket-alt text-white fs-5"></i>
-                                        </div>
-                                        <div>
-                                            <h6 className="mb-0 fw-bold text-dark">
-                                                Cupones Más Utilizados
-                                            </h6>
-                                            <p className="text-muted mb-0 small">
-                                                Códigos de descuento populares
-                                            </p>
-                                        </div>
+                                            Cupones Más Usados
+                                        </h5>
+                                        <p className="text-muted mb-0 small fw-medium">
+                                            Rendimiento de códigos promocionales
+                                        </p>
                                     </div>
                                 </div>
                             </div>
                             <div className="card-body p-0">
-                                <div
-                                    className="table-responsive"
-                                    style={{ maxHeight: 380 }}
-                                >
+                                <div className="table-responsive">
                                     <table className="table table-hover align-middle mb-0">
-                                        <thead
-                                            style={{ background: "#f8fafc" }}
-                                        >
+                                        <thead className="bg-light/50">
                                             <tr>
-                                                <th className="border-0 py-3 px-4 fw-semibold text-muted">
-                                                    Cupón
+                                                <th className="px-4 py-3 border-0">
+                                                    <small
+                                                        className="text-muted fw-bold text-uppercase"
+                                                        style={{
+                                                            letterSpacing:
+                                                                "0.05em",
+                                                        }}
+                                                    >
+                                                        Cupón
+                                                    </small>
                                                 </th>
-                                                <th className="border-0 py-3 px-4 fw-semibold text-muted">
-                                                    Usos
+                                                <th className="px-4 py-3 border-0 text-center">
+                                                    <small
+                                                        className="text-muted fw-bold text-uppercase"
+                                                        style={{
+                                                            letterSpacing:
+                                                                "0.05em",
+                                                        }}
+                                                    >
+                                                        Uso
+                                                    </small>
                                                 </th>
-                                                <th className="border-0 py-3 px-4 fw-semibold text-muted">
-                                                    Valor
-                                                </th>
-                                                <th className="border-0 py-3 px-4 fw-semibold text-muted">
-                                                    Tipo
+                                                <th className="px-4 py-3 border-0 text-end">
+                                                    <small
+                                                        className="text-muted fw-bold text-uppercase"
+                                                        style={{
+                                                            letterSpacing:
+                                                                "0.05em",
+                                                        }}
+                                                    >
+                                                        Valor
+                                                    </small>
                                                 </th>
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            {topCoupons.map((coupon, index) => (
-                                                <tr
-                                                    key={index}
-                                                    className="border-0"
-                                                >
-                                                    <td className="px-4 py-3 border-0">
-                                                        <div className="d-flex align-items-center">
-                                                            <div className="position-relative me-3">
-                                                                <div
-                                                                    className="rounded-3 shadow-sm d-flex align-items-center justify-content-center"
+                                            {topCoupons &&
+                                            topCoupons.length > 0 ? (
+                                                topCoupons.map(
+                                                    (coupon, index) => (
+                                                        <tr
+                                                            key={index}
+                                                            className="border-0"
+                                                        >
+                                                            <td className="px-4 py-3 border-0">
+                                                                <div className="d-flex align-items-center gap-2">
+                                                                    <code
+                                                                        className="px-2 py-1 rounded bg-light text-primary fw-bold border"
+                                                                        style={{
+                                                                            fontSize:
+                                                                                "0.85rem",
+                                                                        }}
+                                                                    >
+                                                                        {
+                                                                            coupon.code
+                                                                        }
+                                                                    </code>
+                                                                </div>
+                                                            </td>
+                                                            <td className="px-4 py-3 border-0 text-center">
+                                                                <span
+                                                                    className="badge rounded-pill px-3 py-2 fw-bold"
                                                                     style={{
-                                                                        width: "48px",
-                                                                        height: "48px",
                                                                         background:
-                                                                            "linear-gradient(135deg, #f3e8ff 0%, #e9d5ff 100%)",
+                                                                            UI_STYLE
+                                                                                .pastel
+                                                                                .rose
+                                                                                .bg,
+                                                                        color: UI_STYLE
+                                                                            .pastel
+                                                                            .rose
+                                                                            .icon,
+                                                                        fontSize:
+                                                                            "0.85rem",
                                                                     }}
                                                                 >
-                                                                    <i
-                                                                        className="fas fa-ticket-alt"
-                                                                        style={{
-                                                                            color: "#8b5cf6",
-                                                                            fontSize:
-                                                                                "20px",
-                                                                        }}
-                                                                    ></i>
-                                                                </div>
-                                                                <div className="position-absolute top-0 start-0 translate-middle">
-                                                                    <span
-                                                                        className="badge rounded-pill"
-                                                                        style={{
-                                                                            background:
-                                                                                "linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)",
-                                                                            fontSize:
-                                                                                "10px",
-                                                                        }}
-                                                                    >
-                                                                        #
-                                                                        {index +
-                                                                            1}
-                                                                    </span>
-                                                                </div>
-                                                            </div>
-                                                            <div>
-                                                                <div className="fw-semibold text-dark mb-1">
-                                                                    {
-                                                                        coupon.code
-                                                                    }
-                                                                </div>
-                                                                <div className="text-muted small">
-                                                                    {
-                                                                        coupon.name
-                                                                    }
-                                                                </div>
-                                                            </div>
+                                                                    {coupon.used_count ||
+                                                                        0}{" "}
+                                                                    veces
+                                                                </span>
+                                                            </td>
+                                                            <td className="px-4 py-3 border-0 text-end">
+                                                                <span className="fw-bold text-dark">
+                                                                    {coupon.type ===
+                                                                    "percentage"
+                                                                        ? `${coupon.value}%`
+                                                                        : `${CurrencySymbol()} ${Number(coupon.value).toFixed(2)}`}
+                                                                </span>
+                                                            </td>
+                                                        </tr>
+                                                    ),
+                                                )
+                                            ) : (
+                                                <tr>
+                                                    <td
+                                                        colSpan="3"
+                                                        className="text-center py-5 text-muted"
+                                                    >
+                                                        <div className="py-2">
+                                                            <i className="fas fa-ticket-alt fa-3x mb-3 opacity-20"></i>
+                                                            <p className="mb-0 fw-medium">
+                                                                No hay datos de
+                                                                cupones
+                                                                disponibles
+                                                            </p>
                                                         </div>
                                                     </td>
-                                                    <td className="px-4 py-3 border-0">
-                                                        <span
-                                                            className="badge rounded-pill px-3 py-2 fw-semibold"
-                                                            style={{
-                                                                background:
-                                                                    "#dcfce7",
-                                                                color: "#16a34a",
-                                                                fontSize:
-                                                                    "12px",
-                                                            }}
-                                                        >
-                                                            {coupon.used_count}
-                                                        </span>
-                                                    </td>
-                                                    <td className="px-4 py-3 border-0">
-                                                        <span
-                                                            className="badge rounded-pill px-3 py-2 fw-semibold"
-                                                            style={{
-                                                                background:
-                                                                    "#dbeafe",
-                                                                color: "#2563eb",
-                                                                fontSize:
-                                                                    "12px",
-                                                            }}
-                                                        >
-                                                            {coupon.value}
-                                                        </span>
-                                                    </td>
-                                                    <td className="px-4 py-3 border-0">
-                                                        <span
-                                                            className="badge rounded-pill px-3 py-2 fw-semibold"
-                                                            style={{
-                                                                background:
-                                                                    "#f3e8ff",
-                                                                color: "#8b5cf6",
-                                                                fontSize:
-                                                                    "12px",
-                                                            }}
-                                                        >
-                                                            {coupon.type}
-                                                        </span>
-                                                    </td>
                                                 </tr>
-                                            ))}
-                                        </tbody>
-                                    </table>
-                                </div>
-                                <div
-                                    className="d-flex justify-content-between align-items-center p-4"
-                                    style={{
-                                        background: "#f8fafc",
-                                        borderRadius: "0 0 1rem 1rem",
-                                    }}
-                                >
-                                    <span className="text-muted small fw-medium">
-                                        Mostrando {topCoupons.length} cupones
-                                    </span>
-                                    <a
-                                        href="/admin/coupons"
-                                        target="_blank"
-                                        className="btn btn-sm btn-outline-primary rounded-3 px-3"
-                                    >
-                                        Ver todos
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                )}
-                {shouldShowCard("most_used_discount_rules") && (
-                    <div className="col-xl-6 col-lg-6">
-                        <div
-                            className="card border-0 h-100"
-                            style={{
-                                borderRadius: "1rem",
-                                boxShadow: "0 10px 40px rgba(0,0,0,0.1)",
-                            }}
-                        >
-                            <div
-                                className="card-header bg-white border-0 p-4"
-                                style={{ borderRadius: "1rem 1rem 0 0" }}
-                            >
-                                <div className="d-flex align-items-center justify-content-between">
-                                    <div className="d-flex align-items-center gap-3">
-                                        <div
-                                            className="rounded-3 p-2"
-                                            style={{
-                                                background:
-                                                    "linear-gradient(135deg, #10b981 0%, #059669 100%)",
-                                            }}
-                                        >
-                                            <i className="fas fa-percentage text-white fs-5"></i>
-                                        </div>
-                                        <div>
-                                            <h6 className="mb-0 fw-bold text-dark">
-                                                Reglas de Descuento Más Usadas
-                                            </h6>
-                                            <p className="text-muted mb-0 small">
-                                                Promociones más efectivas
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="card-body p-0">
-                                <div
-                                    className="table-responsive"
-                                    style={{ maxHeight: 380 }}
-                                >
-                                    <table className="table table-hover align-middle mb-0">
-                                        <thead
-                                            style={{ background: "#f8fafc" }}
-                                        >
-                                            <tr>
-                                                <th className="border-0 py-3 px-4 fw-semibold text-muted">
-                                                    Regla
-                                                </th>
-                                                <th className="border-0 py-3 px-4 fw-semibold text-muted">
-                                                    Aplicaciones
-                                                </th>
-                                                <th className="border-0 py-3 px-4 fw-semibold text-muted">
-                                                    Ahorro Total
-                                                </th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {topDiscountRules.map(
-                                                (rule, index) => (
-                                                    <tr
-                                                        key={index}
-                                                        className="border-0"
-                                                    >
-                                                        <td className="px-4 py-3 border-0">
-                                                            <div className="d-flex align-items-center">
-                                                                <div className="position-relative me-3">
-                                                                    <div
-                                                                        className="rounded-3 shadow-sm d-flex align-items-center justify-content-center"
-                                                                        style={{
-                                                                            width: "48px",
-                                                                            height: "48px",
-                                                                            background:
-                                                                                "linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%)",
-                                                                        }}
-                                                                    >
-                                                                        <i
-                                                                            className="fas fa-percentage"
-                                                                            style={{
-                                                                                color: "#10b981",
-                                                                                fontSize:
-                                                                                    "20px",
-                                                                            }}
-                                                                        ></i>
-                                                                    </div>
-                                                                    <div className="position-absolute top-0 start-0 translate-middle">
-                                                                        <span
-                                                                            className="badge rounded-pill"
-                                                                            style={{
-                                                                                background:
-                                                                                    "linear-gradient(135deg, #10b981 0%, #059669 100%)",
-                                                                                fontSize:
-                                                                                    "10px",
-                                                                            }}
-                                                                        >
-                                                                            #
-                                                                            {index +
-                                                                                1}
-                                                                        </span>
-                                                                    </div>
-                                                                </div>
-                                                                <div>
-                                                                    <div className="fw-semibold text-dark mb-1">
-                                                                        {
-                                                                            rule.name
-                                                                        }
-                                                                    </div>
-                                                                    <span
-                                                                        className="badge rounded-pill px-2 py-1"
-                                                                        style={{
-                                                                            background:
-                                                                                "#d1fae5",
-                                                                            color: "#059669",
-                                                                            fontSize:
-                                                                                "11px",
-                                                                        }}
-                                                                    >
-                                                                        Activa
-                                                                    </span>
-                                                                </div>
-                                                            </div>
-                                                        </td>
-                                                        <td className="px-4 py-3 border-0">
-                                                            <span
-                                                                className="badge rounded-pill px-3 py-2 fw-semibold"
-                                                                style={{
-                                                                    background:
-                                                                        "#dcfce7",
-                                                                    color: "#16a34a",
-                                                                    fontSize:
-                                                                        "12px",
-                                                                }}
-                                                            >
-                                                                {
-                                                                    rule.times_used
-                                                                }
-                                                            </span>
-                                                        </td>
-                                                        <td className="px-4 py-3 border-0">
-                                                            <span
-                                                                className="badge rounded-pill px-3 py-2 fw-semibold"
-                                                                style={{
-                                                                    background:
-                                                                        "#dbeafe",
-                                                                    color: "#2563eb",
-                                                                    fontSize:
-                                                                        "12px",
-                                                                }}
-                                                            >
-                                                                {CurrencySymbol()}{" "}
-                                                                {formatIncome(
-                                                                    rule.total_discount,
-                                                                )}
-                                                            </span>
-                                                        </td>
-                                                    </tr>
-                                                ),
                                             )}
                                         </tbody>
                                     </table>
                                 </div>
                                 <div
-                                    className="d-flex justify-content-between align-items-center p-4"
+                                    className="p-4 bg-light/30 border-top d-flex justify-content-between align-items-center"
                                     style={{
-                                        background: "#f8fafc",
-                                        borderRadius: "0 0 1rem 1rem",
+                                        borderRadius: `0 0 ${UI_STYLE.borderRadius} ${UI_STYLE.borderRadius}`,
                                     }}
                                 >
                                     <span className="text-muted small fw-medium">
-                                        Mostrando {topDiscountRules.length}{" "}
-                                        reglas
+                                        Total: {topCoupons.length} cupones
+                                    </span>
+                                    <a
+                                        href="/admin/coupons"
+                                        target="_blank"
+                                        className="btn btn-sm btn-outline-primary rounded-pill px-3 fw-bold"
+                                    >
+                                        Administrar cupones
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {shouldShowCard("most_used_discount_rules") && (
+                    <div className="col-xl-6">
+                        <div
+                            className="card border-0 shadow-sm"
+                            style={{
+                                borderRadius: UI_STYLE.borderRadius,
+                            }}
+                        >
+                            <div
+                                className="card-header bg-white border-0 p-4"
+                                style={{
+                                    borderRadius: `${UI_STYLE.borderRadius} ${UI_STYLE.borderRadius} 0 0`,
+                                }}
+                            >
+                                <div className="d-flex align-items-center gap-3">
+                                    <div
+                                        className="rounded-4 p-3"
+                                        style={{
+                                            background:
+                                                UI_STYLE.pastel.green.bg,
+                                        }}
+                                    >
+                                        <i
+                                            className="fas fa-percentage fs-4"
+                                            style={{
+                                                color: UI_STYLE.pastel.green
+                                                    .icon,
+                                            }}
+                                        ></i>
+                                    </div>
+                                    <div>
+                                        <h5
+                                            className="mb-0 fw-bold text-dark"
+                                            style={{ letterSpacing: "-0.02em" }}
+                                        >
+                                            Reglas de Descuento Más Usadas
+                                        </h5>
+                                        <p className="text-muted mb-0 small fw-medium">
+                                            Promociones automáticas más
+                                            efectivas
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="card-body p-0">
+                                <div className="table-responsive">
+                                    <table className="table table-hover align-middle mb-0">
+                                        <thead className="bg-light/50">
+                                            <tr>
+                                                <th className="px-4 py-3 border-0">
+                                                    <small
+                                                        className="text-muted fw-bold text-uppercase"
+                                                        style={{
+                                                            letterSpacing:
+                                                                "0.05em",
+                                                        }}
+                                                    >
+                                                        Regla
+                                                    </small>
+                                                </th>
+                                                <th className="px-4 py-3 border-0 text-center">
+                                                    <small
+                                                        className="text-muted fw-bold text-uppercase"
+                                                        style={{
+                                                            letterSpacing:
+                                                                "0.05em",
+                                                        }}
+                                                    >
+                                                        Uso
+                                                    </small>
+                                                </th>
+                                                <th className="px-4 py-3 border-0 text-end">
+                                                    <small
+                                                        className="text-muted fw-bold text-uppercase"
+                                                        style={{
+                                                            letterSpacing:
+                                                                "0.05em",
+                                                        }}
+                                                    >
+                                                        Ahorro
+                                                    </small>
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {topDiscountRules &&
+                                            topDiscountRules.length > 0 ? (
+                                                topDiscountRules.map(
+                                                    (rule, index) => (
+                                                        <tr
+                                                            key={index}
+                                                            className="border-0"
+                                                        >
+                                                            <td className="px-4 py-3 border-0">
+                                                                <div className="fw-bold text-dark">
+                                                                    {rule.name}
+                                                                </div>
+                                                                <div className="extra-small text-muted fw-medium">
+                                                                    Activa
+                                                                    actualmente
+                                                                </div>
+                                                            </td>
+                                                            <td className="px-4 py-3 border-0 text-center">
+                                                                <span
+                                                                    className="badge rounded-pill px-3 py-2 fw-bold"
+                                                                    style={{
+                                                                        background:
+                                                                            UI_STYLE
+                                                                                .pastel
+                                                                                .green
+                                                                                .bg,
+                                                                        color: UI_STYLE
+                                                                            .pastel
+                                                                            .green
+                                                                            .icon,
+                                                                        fontSize:
+                                                                            "0.85rem",
+                                                                    }}
+                                                                >
+                                                                    {rule.times_used ||
+                                                                        0}
+                                                                </span>
+                                                            </td>
+                                                            <td className="px-4 py-3 border-0 text-end">
+                                                                <span className="text-success fw-bold">
+                                                                    {CurrencySymbol()}{" "}
+                                                                    {formatIncome(
+                                                                        rule.total_discount,
+                                                                    )}
+                                                                </span>
+                                                            </td>
+                                                        </tr>
+                                                    ),
+                                                )
+                                            ) : (
+                                                <tr>
+                                                    <td
+                                                        colSpan="3"
+                                                        className="text-center py-5 text-muted"
+                                                    >
+                                                        <div className="py-2">
+                                                            <i className="fas fa-percentage fa-3x mb-3 opacity-20"></i>
+                                                            <p className="mb-0 fw-medium">
+                                                                No hay reglas de
+                                                                descuento
+                                                                activas
+                                                            </p>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            )}
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div
+                                    className="p-4 bg-light/30 border-top d-flex justify-content-between align-items-center"
+                                    style={{
+                                        borderRadius: `0 0 ${UI_STYLE.borderRadius} ${UI_STYLE.borderRadius}`,
+                                    }}
+                                >
+                                    <span className="text-muted small fw-medium">
+                                        Total: {topDiscountRules.length} reglas
                                     </span>
                                     <a
                                         href="/admin/discount-rules"
                                         target="_blank"
-                                        className="btn btn-sm btn-outline-primary rounded-3 px-3"
+                                        className="btn btn-sm btn-outline-primary rounded-pill px-3 fw-bold"
                                     >
-                                        Ver todas
+                                        Gestionar reglas
                                     </a>
                                 </div>
                             </div>
                         </div>
                     </div>
                 )}
+
                 {shouldShowCard("brands_listing") && (
-                    <div className="col-xl-6 col-lg-6">
+                    <div className="col-xl-6">
                         <div
-                            className="card border-0 h-100"
+                            className="card border-0 shadow-sm"
                             style={{
-                                borderRadius: "1rem",
-                                boxShadow: "0 10px 40px rgba(0,0,0,0.1)",
+                                borderRadius: UI_STYLE.borderRadius,
                             }}
                         >
                             <div
                                 className="card-header bg-white border-0 p-4"
-                                style={{ borderRadius: "1rem 1rem 0 0" }}
+                                style={{
+                                    borderRadius: `${UI_STYLE.borderRadius} ${UI_STYLE.borderRadius} 0 0`,
+                                }}
                             >
-                                <div className="d-flex align-items-center justify-content-between">
-                                    <div className="d-flex align-items-center gap-3">
-                                        <div
-                                            className="rounded-3 p-2"
+                                <div className="d-flex align-items-center gap-3">
+                                    <div
+                                        className="rounded-4 p-3"
+                                        style={{
+                                            background:
+                                                UI_STYLE.pastel.violet.bg,
+                                        }}
+                                    >
+                                        <i
+                                            className="fas fa-tag fs-4"
                                             style={{
-                                                background:
-                                                    "linear-gradient(135deg, #f97316 0%, #ea580c 100%)",
+                                                color: UI_STYLE.pastel.violet
+                                                    .icon,
                                             }}
+                                        ></i>
+                                    </div>
+                                    <div>
+                                        <h5
+                                            className="mb-0 fw-bold text-dark"
+                                            style={{ letterSpacing: "-0.02em" }}
                                         >
-                                            <i className="fas fa-copyright text-white fs-5"></i>
-                                        </div>
-                                        <div>
-                                            <h6 className="mb-0 fw-bold text-dark">
-                                                Listado de Marcas
-                                            </h6>
-                                            <p className="text-muted mb-0 small">
-                                                Gestión de marcas registradas
-                                            </p>
-                                        </div>
+                                            Marcas Destacadas
+                                        </h5>
+                                        <p className="text-muted mb-0 small fw-medium">
+                                            Gestión de fabricantes y proveedores
+                                        </p>
                                     </div>
                                 </div>
                             </div>
                             <div className="card-body p-0">
-                                <div
-                                    className="table-responsive"
-                                    style={{ maxHeight: 380 }}
-                                >
+                                <div className="table-responsive">
                                     <table className="table table-hover align-middle mb-0">
-                                        <thead
-                                            style={{ background: "#f8fafc" }}
-                                        >
+                                        <thead className="bg-light/50">
                                             <tr>
-                                                <th className="border-0 py-3 px-4 fw-semibold text-muted">
-                                                    Marca
+                                                <th className="px-4 py-3 border-0">
+                                                    <small
+                                                        className="text-muted fw-bold text-uppercase"
+                                                        style={{
+                                                            letterSpacing:
+                                                                "0.05em",
+                                                        }}
+                                                    >
+                                                        Nombre
+                                                    </small>
                                                 </th>
-                                                <th className="border-0 py-3 px-4 fw-semibold text-muted">
-                                                    Estado
+                                                <th className="px-4 py-3 border-0 text-center">
+                                                    <small
+                                                        className="text-muted fw-bold text-uppercase"
+                                                        style={{
+                                                            letterSpacing:
+                                                                "0.05em",
+                                                        }}
+                                                    >
+                                                        Estado
+                                                    </small>
                                                 </th>
-                                                <th className="border-0 py-3 px-4 fw-semibold text-muted">
-                                                    Destacada
-                                                </th>
-                                                <th className="border-0 py-3 px-4 fw-semibold text-muted">
-                                                    Visible
+                                                <th className="px-4 py-3 border-0 text-end">
+                                                    <small
+                                                        className="text-muted fw-bold text-uppercase"
+                                                        style={{
+                                                            letterSpacing:
+                                                                "0.05em",
+                                                        }}
+                                                    >
+                                                        Acciones
+                                                    </small>
                                                 </th>
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            {brands.map((brand, index) => (
-                                                <tr
-                                                    key={index}
-                                                    className="border-0"
-                                                >
-                                                    <td className="px-4 py-3 border-0">
-                                                        <div className="d-flex align-items-center">
-                                                            <div className="position-relative me-3">
-                                                                <div
-                                                                    className="rounded-3 shadow-sm d-flex align-items-center justify-content-center"
-                                                                    style={{
-                                                                        width: "48px",
-                                                                        height: "48px",
-                                                                        background:
-                                                                            "linear-gradient(135deg, #fed7aa 0%, #fdba74 100%)",
-                                                                    }}
-                                                                >
-                                                                    <i
-                                                                        className="fas fa-copyright"
-                                                                        style={{
-                                                                            color: "#f97316",
-                                                                            fontSize:
-                                                                                "20px",
-                                                                        }}
-                                                                    ></i>
-                                                                </div>
-                                                                <div className="position-absolute top-0 start-0 translate-middle">
-                                                                    <span
-                                                                        className="badge rounded-pill"
-                                                                        style={{
-                                                                            background:
-                                                                                "linear-gradient(135deg, #f97316 0%, #ea580c 100%)",
-                                                                            fontSize:
-                                                                                "10px",
-                                                                        }}
-                                                                    >
-                                                                        #
-                                                                        {index +
-                                                                            1}
-                                                                    </span>
-                                                                </div>
+                                            {brands && brands.length > 0 ? (
+                                                brands.map((brand, index) => (
+                                                    <tr
+                                                        key={index}
+                                                        className="border-0"
+                                                    >
+                                                        <td className="px-4 py-3 border-0">
+                                                            <div className="fw-bold text-dark">
+                                                                {brand.name}
                                                             </div>
-                                                            <div>
-                                                                <div className="fw-semibold text-dark mb-1">
-                                                                    {brand.name}
-                                                                </div>
-                                                                <span
-                                                                    className="badge rounded-pill px-2 py-1"
-                                                                    style={{
-                                                                        background:
-                                                                            "#fed7aa",
-                                                                        color: "#ea580c",
-                                                                        fontSize:
-                                                                            "11px",
-                                                                    }}
-                                                                >
-                                                                    Marca
-                                                                </span>
-                                                            </div>
+                                                        </td>
+                                                        <td className="px-4 py-3 border-0 text-center">
+                                                            <span
+                                                                className={`badge rounded-pill px-3 py-2 fw-bold ${brand.status === 1 ? "bg-success/10 text-success" : "bg-danger/10 text-danger"}`}
+                                                                style={{
+                                                                    fontSize:
+                                                                        "0.75rem",
+                                                                }}
+                                                            >
+                                                                {brand.status ===
+                                                                1
+                                                                    ? "Activo"
+                                                                    : "Inactivo"}
+                                                            </span>
+                                                        </td>
+                                                        <td className="px-4 py-3 border-0 text-end">
+                                                            <a
+                                                                href={`/admin/brands/${brand.id}/edit`}
+                                                                className="btn btn-sm btn-light rounded-circle p-2"
+                                                            >
+                                                                <i className="fas fa-edit text-muted"></i>
+                                                            </a>
+                                                        </td>
+                                                    </tr>
+                                                ))
+                                            ) : (
+                                                <tr>
+                                                    <td
+                                                        colSpan="3"
+                                                        className="text-center py-5 text-muted"
+                                                    >
+                                                        <div className="py-2">
+                                                            <i className="fas fa-tag fa-3x mb-3 opacity-20"></i>
+                                                            <p className="mb-0 fw-medium">
+                                                                No hay marcas
+                                                                registradas
+                                                            </p>
                                                         </div>
                                                     </td>
-                                                    <td className="px-4 py-3 border-0">
-                                                        <span
-                                                            className={`badge rounded-pill px-3 py-2 fw-semibold ${brand.status === 1 ? "text-success" : "text-danger"}`}
-                                                            style={{
-                                                                background:
-                                                                    brand.status ===
-                                                                    1
-                                                                        ? "#dcfce7"
-                                                                        : "#fee2e2",
-                                                                fontSize:
-                                                                    "12px",
-                                                            }}
-                                                        >
-                                                            {brand.status === 1
-                                                                ? "Activo"
-                                                                : "Inactivo"}
-                                                        </span>
-                                                    </td>
-                                                    <td className="px-4 py-3 border-0">
-                                                        <span
-                                                            className={`badge rounded-pill px-3 py-2 fw-semibold ${brand.featured ? "text-warning" : "text-secondary"}`}
-                                                            style={{
-                                                                background:
-                                                                    brand.featured
-                                                                        ? "#fef3c7"
-                                                                        : "#f1f5f9",
-                                                                fontSize:
-                                                                    "12px",
-                                                            }}
-                                                        >
-                                                            {brand.featured
-                                                                ? "Sí"
-                                                                : "No"}
-                                                        </span>
-                                                    </td>
-                                                    <td className="px-4 py-3 border-0">
-                                                        <span
-                                                            className={`badge rounded-pill px-3 py-2 fw-semibold ${brand.visible ? "text-primary" : "text-secondary"}`}
-                                                            style={{
-                                                                background:
-                                                                    brand.visible
-                                                                        ? "#dbeafe"
-                                                                        : "#f1f5f9",
-                                                                fontSize:
-                                                                    "12px",
-                                                            }}
-                                                        >
-                                                            {brand.visible
-                                                                ? "Sí"
-                                                                : "No"}
-                                                        </span>
-                                                    </td>
                                                 </tr>
-                                            ))}
+                                            )}
                                         </tbody>
                                     </table>
                                 </div>
                                 <div
-                                    className="d-flex justify-content-between align-items-center p-4"
+                                    className="p-4 bg-light/30 border-top d-flex justify-content-between align-items-center"
                                     style={{
-                                        background: "#f8fafc",
-                                        borderRadius: "0 0 1rem 1rem",
+                                        borderRadius: `0 0 ${UI_STYLE.borderRadius} ${UI_STYLE.borderRadius}`,
                                     }}
                                 >
                                     <span className="text-muted small fw-medium">
-                                        Mostrando {brands.length} marcas
+                                        {brands.length} marcas cargadas
                                     </span>
                                     <a
                                         href="/admin/brands"
                                         target="_blank"
-                                        className="btn btn-sm btn-outline-primary rounded-3 px-3"
+                                        className="btn btn-sm btn-outline-primary rounded-pill px-3 fw-bold"
                                     >
-                                        Ver todas
+                                        Ver catálogo
                                     </a>
                                 </div>
                             </div>
                         </div>
                     </div>
                 )}
+
                 {shouldShowCard("top_clients") && (
-                    <div className="col-xl-6 col-lg-6">
+                    <div className="col-xl-6">
                         <div
-                            className="card border-0 h-100"
+                            className="card border-0 shadow-sm"
                             style={{
-                                borderRadius: "1rem",
-                                boxShadow: "0 10px 40px rgba(0,0,0,0.1)",
+                                borderRadius: UI_STYLE.borderRadius,
                             }}
                         >
                             <div
                                 className="card-header bg-white border-0 p-4"
-                                style={{ borderRadius: "1rem 1rem 0 0" }}
+                                style={{
+                                    borderRadius: `${UI_STYLE.borderRadius} ${UI_STYLE.borderRadius} 0 0`,
+                                }}
                             >
-                                <div className="d-flex align-items-center justify-content-between">
-                                    <div className="d-flex align-items-center gap-3">
-                                        <div
-                                            className="rounded-3 p-2"
+                                <div className="d-flex align-items-center gap-3">
+                                    <div
+                                        className="rounded-4 p-3"
+                                        style={{
+                                            background: UI_STYLE.pastel.blue.bg,
+                                        }}
+                                    >
+                                        <i
+                                            className="fas fa-crown fs-4"
                                             style={{
-                                                background:
-                                                    "linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)",
+                                                color: UI_STYLE.pastel.blue
+                                                    .icon,
                                             }}
-                                        >
-                                            <i className="fas fa-crown text-white fs-5"></i>
-                                        </div>
-                                        <div>
-                                            <h6 className="mb-0 fw-bold text-dark">
+                                        ></i>
+                                    </div>
+                                    <div>
+                                        <div className="d-flex align-items-center gap-2">
+                                            <h5
+                                                className="mb-0 fw-bold text-dark"
+                                                style={{
+                                                    letterSpacing: "-0.02em",
+                                                }}
+                                            >
                                                 Mejores Clientes
-                                            </h6>
-                                            <p className="text-muted mb-0 small">
-                                                Clientes con mayor valor
-                                            </p>
+                                            </h5>
+                                            <Tippy content="Ranking de usuarios basado en el monto total invertido y frecuencia de compra en la tienda.">
+                                                <i className="fas fa-question-circle text-muted extra-small cursor-help"></i>
+                                            </Tippy>
                                         </div>
+                                        <p className="text-muted mb-0 small fw-medium">
+                                            Clientes con mayor valor de compra
+                                        </p>
                                     </div>
                                 </div>
                             </div>
                             <div className="card-body p-0">
-                                <div
-                                    className="table-responsive"
-                                    style={{ maxHeight: 380 }}
-                                >
+                                <div className="table-responsive">
                                     <table className="table table-hover align-middle mb-0">
-                                        <thead
-                                            style={{ background: "#f8fafc" }}
-                                        >
+                                        <thead className="bg-light/50">
                                             <tr>
-                                                <th className="border-0 py-3 px-4 fw-semibold text-muted">
-                                                    Cliente
+                                                <th className="px-4 py-3 border-0">
+                                                    <small
+                                                        className="text-muted fw-bold text-uppercase"
+                                                        style={{
+                                                            letterSpacing:
+                                                                "0.05em",
+                                                        }}
+                                                    >
+                                                        Cliente
+                                                    </small>
                                                 </th>
-                                                <th className="border-0 py-3 px-4 fw-semibold text-muted">
-                                                    Pedidos
+                                                <th className="px-4 py-3 border-0 text-center">
+                                                    <small
+                                                        className="text-muted fw-bold text-uppercase"
+                                                        style={{
+                                                            letterSpacing:
+                                                                "0.05em",
+                                                        }}
+                                                    >
+                                                        Pedidos
+                                                    </small>
                                                 </th>
-                                                <th className="border-0 py-3 px-4 fw-semibold text-muted">
-                                                    Total Gastado
+                                                <th className="px-4 py-3 border-0 text-end">
+                                                    <small
+                                                        className="text-muted fw-bold text-uppercase"
+                                                        style={{
+                                                            letterSpacing:
+                                                                "0.05em",
+                                                        }}
+                                                    >
+                                                        Inversión
+                                                    </small>
                                                 </th>
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            {topClients.map((client, index) => (
-                                                <tr
-                                                    key={index}
-                                                    className="border-0"
-                                                >
-                                                    <td className="px-4 py-3 border-0">
-                                                        <div className="d-flex align-items-center">
-                                                            <div className="position-relative me-3">
-                                                                <div
-                                                                    className="rounded-3 shadow-sm d-flex align-items-center justify-content-center"
-                                                                    style={{
-                                                                        width: "48px",
-                                                                        height: "48px",
-                                                                        background:
-                                                                            "linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%)",
-                                                                    }}
-                                                                >
-                                                                    <i
-                                                                        className="fas fa-user"
+                                            {topClients &&
+                                            topClients.length > 0 ? (
+                                                topClients.map(
+                                                    (client, index) => (
+                                                        <tr
+                                                            key={index}
+                                                            className="border-0"
+                                                        >
+                                                            <td className="px-4 py-3 border-0">
+                                                                <div className="d-flex align-items-center gap-3">
+                                                                    <div
+                                                                        className="avatar-sm rounded-circle bg-light d-flex align-items-center justify-content-center fw-bold text-primary shadow-sm"
                                                                         style={{
-                                                                            color: "#3b82f6",
+                                                                            width: 40,
+                                                                            height: 40,
                                                                             fontSize:
-                                                                                "20px",
-                                                                        }}
-                                                                    ></i>
-                                                                </div>
-                                                                <div className="position-absolute top-0 start-0 translate-middle">
-                                                                    <span
-                                                                        className="badge rounded-pill"
-                                                                        style={{
-                                                                            background:
-                                                                                "linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)",
-                                                                            fontSize:
-                                                                                "10px",
+                                                                                "0.9rem",
                                                                         }}
                                                                     >
-                                                                        #
-                                                                        {index +
-                                                                            1}
-                                                                    </span>
+                                                                        {client.email
+                                                                            .charAt(
+                                                                                0,
+                                                                            )
+                                                                            .toUpperCase()}
+                                                                    </div>
+                                                                    <div>
+                                                                        <div className="fw-bold text-dark">
+                                                                            {
+                                                                                client.email
+                                                                            }
+                                                                        </div>
+                                                                        <div className="extra-small text-muted fw-medium">
+                                                                            Cliente
+                                                                            VIP
+                                                                        </div>
+                                                                    </div>
                                                                 </div>
-                                                            </div>
-                                                            <div>
-                                                                <div className="fw-semibold text-dark mb-1">
-                                                                    {
-                                                                        client.email
-                                                                    }
-                                                                </div>
+                                                            </td>
+                                                            <td className="px-4 py-3 border-0 text-center">
                                                                 <span
-                                                                    className="badge rounded-pill px-2 py-1"
+                                                                    className="badge rounded-pill px-3 py-2 fw-bold"
                                                                     style={{
                                                                         background:
-                                                                            "#dbeafe",
-                                                                        color: "#2563eb",
+                                                                            UI_STYLE
+                                                                                .pastel
+                                                                                .blue
+                                                                                .bg,
+                                                                        color: UI_STYLE
+                                                                            .pastel
+                                                                            .blue
+                                                                            .icon,
                                                                         fontSize:
-                                                                            "11px",
+                                                                            "0.85rem",
                                                                     }}
                                                                 >
-                                                                    VIP
+                                                                    {
+                                                                        client.total_orders
+                                                                    }
                                                                 </span>
-                                                            </div>
+                                                            </td>
+                                                            <td className="px-4 py-3 border-0 text-end">
+                                                                <span className="fw-bold text-dark">
+                                                                    {CurrencySymbol()}{" "}
+                                                                    {formatIncome(
+                                                                        client.total_spent,
+                                                                    )}
+                                                                </span>
+                                                            </td>
+                                                        </tr>
+                                                    ),
+                                                )
+                                            ) : (
+                                                <tr>
+                                                    <td
+                                                        colSpan="3"
+                                                        className="text-center py-5 text-muted"
+                                                    >
+                                                        <div className="py-2">
+                                                            <i className="fas fa-users-slash fa-3x mb-3 opacity-20"></i>
+                                                            <p className="mb-0 fw-medium">
+                                                                No hay datos de
+                                                                clientes aún
+                                                            </p>
                                                         </div>
                                                     </td>
-                                                    <td className="px-4 py-3 border-0">
-                                                        <span
-                                                            className="badge rounded-pill px-3 py-2 fw-semibold"
-                                                            style={{
-                                                                background:
-                                                                    "#dbeafe",
-                                                                color: "#2563eb",
-                                                                fontSize:
-                                                                    "12px",
-                                                            }}
-                                                        >
-                                                            {
-                                                                client.total_orders
-                                                            }
-                                                        </span>
-                                                    </td>
-                                                    <td className="px-4 py-3 border-0">
-                                                        <span
-                                                            className="badge rounded-pill px-3 py-2 fw-semibold"
-                                                            style={{
-                                                                background:
-                                                                    "#dcfce7",
-                                                                color: "#16a34a",
-                                                                fontSize:
-                                                                    "12px",
-                                                            }}
-                                                        >
-                                                            {CurrencySymbol()}{" "}
-                                                            {formatIncome(
-                                                                client.total_spent,
-                                                            )}
-                                                        </span>
-                                                    </td>
                                                 </tr>
-                                            ))}
+                                            )}
                                         </tbody>
                                     </table>
                                 </div>
                                 <div
-                                    className="d-flex justify-content-between align-items-center p-4"
+                                    className="p-4 bg-light/30 border-top d-flex justify-content-between align-items-center"
                                     style={{
-                                        background: "#f8fafc",
-                                        borderRadius: "0 0 1rem 1rem",
+                                        borderRadius: `0 0 ${UI_STYLE.borderRadius} ${UI_STYLE.borderRadius}`,
                                     }}
                                 >
                                     <span className="text-muted small fw-medium">
-                                        Mostrando {topClients.length} clientes
+                                        Ranking de {topClients.length} clientes
                                     </span>
                                     <a
                                         href="/admin/clients"
                                         target="_blank"
-                                        className="btn btn-sm btn-outline-primary rounded-3 px-3"
+                                        className="btn btn-sm btn-outline-primary rounded-pill px-3 fw-bold"
                                     >
-                                        Ver todos
+                                        Ver reporte CRM
                                     </a>
                                 </div>
                             </div>

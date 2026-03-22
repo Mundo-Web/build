@@ -106,7 +106,6 @@ const ProductDetailRainstar = ({
 
     useEffect(() => {
         if (item?.id) {
-            handleViewUpdate(item);
             // First fallback to item selection
             setSelectedVariant(item);
             const initialAttributes = {};
@@ -132,12 +131,18 @@ const ProductDetailRainstar = ({
             setSelectedAttributes(initialAttributes);
 
             if (item.agrupador) {
-                console.log("ProductDetailRainstar: Fetching variants for", item.agrupador);
+                console.log(
+                    "ProductDetailRainstar: Fetching variants for",
+                    item.agrupador,
+                );
                 setIsLoadingVariants(true);
                 fetch(`/api/items/variants/${item.agrupador}`)
                     .then((res) => res.json())
                     .then((data) => {
-                        console.log("ProductDetailRainstar: Variants API data", data);
+                        console.log(
+                            "ProductDetailRainstar: Variants API data",
+                            data,
+                        );
                         const variantsData = Array.isArray(data)
                             ? data
                             : Object.values(data || {});
@@ -145,7 +150,10 @@ const ProductDetailRainstar = ({
                         const uniqueVariants = Array.from(
                             new Map(allVariants.map((v) => [v.id, v])).values(),
                         );
-                        console.log("ProductDetailRainstar: Unique variants", uniqueVariants);
+                        console.log(
+                            "ProductDetailRainstar: Unique variants",
+                            uniqueVariants,
+                        );
                         setVariantsForSelectedGroup(uniqueVariants);
 
                         // Select the first variant by default if it's a group as requested
@@ -179,7 +187,10 @@ const ProductDetailRainstar = ({
                         }
                     })
                     .catch((err) => {
-                        console.error("ProductDetailRainstar: Error fetching variants:", err);
+                        console.error(
+                            "ProductDetailRainstar: Error fetching variants:",
+                            err,
+                        );
                         setVariantsForSelectedGroup([item]);
                     })
                     .finally(() => setIsLoadingVariants(false));
@@ -189,13 +200,6 @@ const ProductDetailRainstar = ({
         }
     }, [item]);
 
-    const handleViewUpdate = async (item) => {
-        try {
-            await itemsRest.updateViews({ id: item?.id });
-        } catch (error) {
-            console.error("Error updating views:", error);
-        }
-    };
 
     const onAddClicked = (product) => {
         // Validation: The master item (container) should not be added to the cart
@@ -397,7 +401,9 @@ const ProductDetailRainstar = ({
                                 currentProduct?.image || item?.image,
                                 ...(Array.isArray(currentProduct?.images)
                                     ? currentProduct.images
-                                    : Object.values(currentProduct?.images || {})),
+                                    : Object.values(
+                                          currentProduct?.images || {},
+                                      )),
                                 ...(Array.isArray(item?.images)
                                     ? item.images
                                     : Object.values(item?.images || {})),
@@ -836,7 +842,9 @@ const ProductDetailRainstar = ({
                                     currentProduct?.image,
                                     ...(Array.isArray(currentProduct?.images)
                                         ? currentProduct.images
-                                        : Object.values(currentProduct?.images || {})),
+                                        : Object.values(
+                                              currentProduct?.images || {},
+                                          )),
                                 ].map((img, i) => (
                                     <SwiperSlide key={i}>
                                         <img

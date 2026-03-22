@@ -24,6 +24,9 @@ class UserSession extends Model
         'ip_address',
         'user_agent',
         'referrer',
+        'utm_source',
+        'utm_medium',
+        'utm_campaign',
         'page_views',
         'duration',
         'converted'
