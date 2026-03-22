@@ -2877,7 +2877,7 @@
     ]
   },
   "resources/js/Admin/Services.jsx": {
-    "file": "assets/Services-RjOXcJku.js",
+    "file": "assets/Services-BqhE9teu.js",
     "name": "Services",
     "src": "resources/js/Admin/Services.jsx",
     "isEntry": true,
@@ -9437,7 +9437,7 @@
     ]
   },
   "resources/js/Components/Tailwind/PostDetail.jsx": {
-    "file": "assets/PostDetail-4egOInR-.js",
+    "file": "assets/PostDetail-Bcx1_Pcd.js",
     "name": "PostDetail",
     "src": "resources/js/Components/Tailwind/PostDetail.jsx",
     "isDynamicEntry": true,
@@ -9451,7 +9451,7 @@
     ]
   },
   "resources/js/Components/Tailwind/PostDetails/PostDetailRainstar.jsx": {
-    "file": "assets/PostDetailRainstar-CvElp2B4.js",
+    "file": "assets/PostDetailRainstar-Chu-wFze.js",
     "name": "PostDetailRainstar",
     "src": "resources/js/Components/Tailwind/PostDetails/PostDetailRainstar.jsx",
     "isDynamicEntry": true,
@@ -10767,7 +10767,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Service.jsx": {
-    "file": "assets/Service-DOPoFzV7.js",
+    "file": "assets/Service-0EzzbO7p.js",
     "name": "Service",
     "src": "resources/js/Components/Tailwind/Service.jsx",
     "isDynamicEntry": true,
@@ -12448,7 +12448,7 @@
     ]
   },
   "resources/js/System.jsx": {
-    "file": "assets/System-8rj3uRV6.js",
+    "file": "assets/System-DIXF7QFA.js",
     "name": "System",
     "src": "resources/js/System.jsx",
     "isEntry": true,

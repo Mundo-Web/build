@@ -84,7 +84,7 @@ class ServiceController extends BasicController
                 'features' => 'nullable|string',
                 'specifications' => 'nullable|string',
                 'pdf' => 'nullable|array',
-                'pdf.*' => 'nullable|file|mimes:pdf|max:5120',
+                'pdf.*' => 'nullable|file|max:20480', // Aumentado a 20MB y sin restricción de formato
                 'deleted_pdfs' => 'nullable|string',
                 'linkvideo' => 'nullable|string',
                 'deleted_videos' => 'nullable|string',
@@ -177,42 +177,57 @@ class ServiceController extends BasicController
 
             // Procesar PDFs (múltiples archivos con ordenamiento)
             $pdfData = [];
+            $newFiles = [];
 
-            // Cargar PDFs existentes si hay
-            if ($service->pdf && is_array($service->pdf)) {
-                $pdfData = $service->pdf;
-            }
-
-            // Agregar nuevos PDFs
+            // 1. Manejar archivos nuevos (subirlos y generar paths)
             if ($request->hasFile('pdf')) {
-                $newPdfs = is_array($request->file('pdf')) ? $request->file('pdf') : [$request->file('pdf')];
-
-                foreach ($newPdfs as $index => $pdfFile) {
-                    if ($pdfFile && $pdfFile->isValid()) {
-                        $pdfName = uniqid() . '_' . time() . '.pdf';
-                        $pdfFile->storeAs('pdfs/service', $pdfName, 'public');
-
-                        $pdfData[] = [
-                            'name' => $pdfFile->getClientOriginalName(),
-                            'path' => $pdfName,
-                            'order' => count($pdfData)
+                $pdfFiles = is_array($request->file('pdf')) ? $request->file('pdf') : [$request->file('pdf')];
+                foreach ($pdfFiles as $file) {
+                    if ($file && $file->isValid()) {
+                        $uuid = Crypto::randomUUID();
+                        $ext = $file->getClientOriginalExtension();
+                        $filename = $uuid . '.' . $ext;
+                        $path = "images/service/{$filename}";
+                        Storage::put($path, file_get_contents($file));
+                        
+                        $newFiles[] = [
+                            'url' => $filename,
+                            'name' => $file->getClientOriginalName()
                         ];
                     }
                 }
             }
 
-            // Eliminar PDFs marcados para eliminación
-            if ($request->has('deleted_pdfs')) {
-                $deletedPdfs = json_decode($request->deleted_pdfs, true) ?? [];
-                foreach ($deletedPdfs as $pdfPath) {
-                    Storage::disk('public')->delete('pdfs/service/' . $pdfPath);
-                    $pdfData = array_filter($pdfData, function ($pdf) use ($pdfPath) {
-                        return $pdf['path'] !== $pdfPath;
-                    });
+            // 2. Reconstruir la lista según el orden enviado
+            if ($request->has('pdf_order')) {
+                $pdfOrder = json_decode($request->pdf_order, true) ?? [];
+                $newIndex = 0;
+                foreach ($pdfOrder as $pdfItem) {
+                    if ($pdfItem['type'] === 'new' && isset($newFiles[$newIndex])) {
+                        $pdfData[] = [
+                            'url' => $newFiles[$newIndex]['url'],
+                            'name' => $newFiles[$newIndex]['name'],
+                            'order' => $pdfItem['order']
+                        ];
+                        $newIndex++;
+                    } else if ($pdfItem['type'] === 'existing') {
+                        $pdfData[] = [
+                            'url' => $pdfItem['url'],
+                            'name' => $pdfItem['name'],
+                            'order' => $pdfItem['order']
+                        ];
+                    }
                 }
             }
 
-            // Reordenar PDFs
+            // 3. Eliminar archivos del disco
+            if ($request->has('deleted_pdfs')) {
+                $deletedPdfs = json_decode($request->deleted_pdfs, true) ?? [];
+                foreach ($deletedPdfs as $pdfUrl) {
+                    Storage::delete('images/service/' . $pdfUrl);
+                }
+            }
+
             if (!empty($pdfData)) {
                 $pdfData = array_values($pdfData);
                 foreach ($pdfData as $index => &$pdf) {

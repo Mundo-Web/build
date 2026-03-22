@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { ArrowUpRight } from "lucide-react";
+import { ArrowUpRight, Download, FileText } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import TextWithHighlight from "../../../Utils/TextWithHighlight";
 import General from "../../../Utils/General";
@@ -104,6 +104,16 @@ const ServiceCard = ({
                 >
                     <ArrowUpRight className="w-5 h-5 text-white" />
                 </div>
+
+                {/* Ícono flotante de descarga (si hay PDFs) */}
+                {service.pdf && service.pdf.length > 0 && (
+                    <div
+                        className={`absolute top-6 left-6 w-12 h-12 bg-white/10 backdrop-blur-xl rounded-xl flex items-center justify-center border border-white/30 shadow-2xl transform -translate-x-20 opacity-0 group-hover:translate-x-0 group-hover:opacity-100 group-hover:scale-110 transition-all duration-700 ease-out z-10`}
+                        title="Este servicio tiene documentos para descargar"
+                    >
+                        <Download className="w-5 h-5 text-white" />
+                    </div>
+                )}
 
                 {/* Contenido inferior con animaciones escalonadas */}
                 <div className="absolute bottom-0 left-0 right-0 p-8 lg:p-10 z-10 pointer-events-none">
@@ -387,6 +397,65 @@ const ServiceWebQuirurgica2 = ({ data, items = [], onClickTracking }) => {
                                                                 </div>
                                                             ),
                                                         )}
+                                                    </div>
+                                                </div>
+                                            )}
+
+                                        {/* Documentos / PDFs */}
+                                        {selectedService.pdf &&
+                                            selectedService.pdf.length > 0 && (
+                                                <div className="mb-6">
+                                                    <h4 className="text-base font-bold text-neutral-dark uppercase tracking-wide mb-4 flex items-center gap-2">
+                                                        <div className="w-8 h-8 bg-accent rounded-lg flex items-center justify-center">
+                                                            <Download className="w-5 h-5 text-white" />
+                                                        </div>
+                                                        Recursos Descargables
+                                                    </h4>
+                                                    <div className="space-y-2">
+                                                        {selectedService.pdf
+                                                            .sort(
+                                                                (a, b) =>
+                                                                    (a.order ||
+                                                                        0) -
+                                                                    (b.order ||
+                                                                        0),
+                                                            )
+                                                            .map(
+                                                                (
+                                                                    pdf,
+                                                                    index,
+                                                                ) => (
+                                                                    <a
+                                                                        key={
+                                                                            index
+                                                                        }
+                                                                        href={`/storage/images/service/${pdf.url}`}
+                                                                        target="_blank"
+                                                                        rel="noopener noreferrer"
+                                                                        className="flex items-center justify-between p-4 bg-gray-50 hover:bg-gray-100 rounded-xl transition-all duration-300 group border border-gray-100 hover:border-accent/30"
+                                                                    >
+                                                                        <div className="flex items-center gap-3">
+                                                                            <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center shadow-sm text-accent group-hover:scale-110 transition-transform">
+                                                                                <FileText className="w-5 h-5" />
+                                                                            </div>
+                                                                            <div>
+                                                                                <p className="text-sm font-bold text-neutral-dark group-hover:text-primary transition-colors">
+                                                                                    {
+                                                                                        pdf.name
+                                                                                    }
+                                                                                </p>
+                                                                                <p className="text-xs text-neutral-dark/50">
+                                                                                    Haga
+                                                                                    clic
+                                                                                    para
+                                                                                    descargar
+                                                                                </p>
+                                                                            </div>
+                                                                        </div>
+                                                                        <Download className="w-5 h-5 text-accent opacity-0 group-hover:opacity-100 transition-all transform translate-x-2 group-hover:translate-x-0" />
+                                                                    </a>
+                                                                ),
+                                                            )}
                                                     </div>
                                                 </div>
                                             )}

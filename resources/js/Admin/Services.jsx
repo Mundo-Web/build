@@ -142,11 +142,11 @@ const Services = ({ service_categories = [], service_sub_categories = [] }) => {
         e.preventDefault();
         const pdfToRemove = pdfs[index];
 
-        if (pdfToRemove.path) {
+        if (pdfToRemove.url) {
             const deletedInput = document.createElement("input");
             deletedInput.type = "hidden";
             deletedInput.name = "deleted_pdfs[]";
-            deletedInput.value = pdfToRemove.path;
+            deletedInput.value = pdfToRemove.url;
             deletedInput.className = "deleted-pdf-input";
             e.target.closest("form").appendChild(deletedInput);
         }
@@ -345,14 +345,15 @@ const Services = ({ service_categories = [], service_sub_categories = [] }) => {
             setGallery([]);
         }
 
+        // Cargar PDFs existentes
+        // Cargar PDFs existentes
         if (data?.pdf && Array.isArray(data.pdf)) {
-            setPdfs(
-                data.pdf.map((pdf) => ({
-                    name: pdf.name,
-                    path: pdf.path,
-                    order: pdf.order,
-                })),
-            );
+            const existingPdfs = data.pdf.map((pdf) => ({
+                url: pdf.url,
+                name: pdf.name || "Documento",
+                order: pdf.order || 0,
+            }));
+            setPdfs(existingPdfs);
         } else {
             setPdfs([]);
         }
@@ -492,11 +493,31 @@ const Services = ({ service_categories = [], service_sub_categories = [] }) => {
             formData.append("deleted_images", JSON.stringify(deletedImages));
         }
 
+        // Procesar archivos (PDFs/Documentos)
+        const pdfOrder = [];
         pdfs.forEach((pdf, index) => {
             if (pdf.file) {
-                formData.append(`pdf[]`, pdf.file);
+                // Es un archivo nuevo
+                formData.append('pdf[]', pdf.file);
+                pdfOrder.push({
+                    type: 'new',
+                    name: pdf.name,
+                    order: index
+                });
+            } else if (pdf.url) {
+                // Es un archivo existente
+                pdfOrder.push({
+                    type: 'existing',
+                    url: pdf.url,
+                    name: pdf.name,
+                    order: index
+                });
             }
         });
+
+        if (pdfOrder.length > 0) {
+            formData.append('pdf_order', JSON.stringify(pdfOrder));
+        }
 
         const deletedPdfInputs =
             document.querySelectorAll(".deleted-pdf-input");
@@ -1508,7 +1529,7 @@ const Services = ({ service_categories = [], service_sub_categories = [] }) => {
                                                     <div className="mb-4">
                                                         <label className="form-label fw-semibold text-dark mb-3">
                                                             <i className="fas fa-file-pdf me-2 text-danger"></i>
-                                                            Archivos PDF
+                                                            Archivos y Documentos
                                                             (Manuales /
                                                             Catálogos)
                                                             {pdfs.length >
@@ -1525,7 +1546,6 @@ const Services = ({ service_categories = [], service_sub_categories = [] }) => {
                                                             ref={pdfRef}
                                                             type="file"
                                                             multiple
-                                                            accept=".pdf"
                                                             hidden
                                                             onChange={
                                                                 handlePdfChange
@@ -1600,7 +1620,15 @@ const Services = ({ service_categories = [], service_sub_categories = [] }) => {
                                                                                     1}
                                                                             </span>
                                                                             <i className="fas fa-grip-vertical text-muted me-3"></i>
-                                                                            <i className="fas fa-file-pdf text-danger me-2"></i>
+                                                                            <i className={`fas ${
+                                                                                pdf.name?.toLowerCase().endsWith('.pdf') ? 'fa-file-pdf text-danger' :
+                                                                                pdf.name?.toLowerCase().endsWith('.doc') || pdf.name?.toLowerCase().endsWith('.docx') ? 'fa-file-word text-primary' :
+                                                                                pdf.name?.toLowerCase().endsWith('.xls') || pdf.name?.toLowerCase().endsWith('.xlsx') ? 'fa-file-excel text-success' :
+                                                                                pdf.name?.toLowerCase().endsWith('.ppt') || pdf.name?.toLowerCase().endsWith('.pptx') ? 'fa-file-powerpoint text-warning' :
+                                                                                pdf.name?.toLowerCase().endsWith('.zip') || pdf.name?.toLowerCase().endsWith('.rar') ? 'fa-file-archive text-warning' :
+                                                                                pdf.name?.toLowerCase().endsWith('.txt') ? 'fa-file-alt text-muted' :
+                                                                                'fa-file text-muted'
+                                                                            } me-2`}></i>
                                                                             <span
                                                                                 className="text-truncate"
                                                                                 style={{
@@ -1615,9 +1643,9 @@ const Services = ({ service_categories = [], service_sub_categories = [] }) => {
                                                                         </div>
                                                                         <div className="d-flex gap-2 flex-shrink-0">
                                                                             {!pdf.file &&
-                                                                                pdf.path && (
+                                                                                pdf.url && (
                                                                                     <a
-                                                                                        href={`/storage/pdfs/service/${pdf.path}`}
+                                                                                        href={`/storage/images/service/${pdf.url}`}
                                                                                         target="_blank"
                                                                                         rel="noopener noreferrer"
                                                                                         className="btn btn-sm btn-outline-primary"
