@@ -26,11 +26,14 @@ import DynamicField from "../Components/Adminto/form/DynamicField";
 import ModalImportItem from "./Components/ModalImportItem";
 import ItemVariantsManager from "./ItemAdminComponents/ItemVariantsManager";
 import Fillable from "../Utils/Fillable";
+import GeneralsRest from "../Actions/Admin/GeneralsRest";
+import { LinkIcon, Link as LinkIcon2 } from "lucide-react";
 
 const itemsRest = new ItemsRest();
 const amenitiesRest = new AmenitiesRest();
 const applicationsRest = new ApplicationsRest();
 const attributesRest = new AttributesRest();
+const generalsRest = new GeneralsRest();
 
 const Items = ({
     categories,
@@ -78,6 +81,7 @@ const Items = ({
     const weightRef = useRef();
     const amenitiesRef = useRef();
     const applicationsRef = useRef();
+    const fileCatalogoGeneralRef = useRef();
 
     const [isEditing, setIsEditing] = useState(false);
     const [selectedCategory, setSelectedCategory] = useState(null);
@@ -449,6 +453,11 @@ const Items = ({
 
         setIsMaster(Boolean(data?.is_master));
 
+        if (fileCatalogoGeneralRef.current)
+            fileCatalogoGeneralRef.current.checked = Boolean(
+                data?.file_catalogo_general,
+            );
+
         // Nuevos campos
         setFeatures(
             data?.features?.map((f) =>
@@ -562,6 +571,8 @@ const Items = ({
             clone_image: itemData?.clone_image || null,
             clone_banner: itemData?.clone_banner || null,
             clone_texture: itemData?.clone_texture || null,
+            file_catalogo_general:
+                fileCatalogoGeneralRef.current?.checked || false,
         };
 
         const formData = new FormData();
@@ -906,6 +917,70 @@ const Items = ({
         setShowVariantsManager(true);
     };
 
+    const onUploadCatalog = async () => {
+        const currentCatalogUrl =
+            generals.find((g) => g.correlative === "items.file_catalogo_url")
+                ?.description || "";
+
+        const { value: url } = await Swal.fire({
+            title: "Subir Catálogo General",
+            input: "text",
+            inputLabel: "URL del Catálogo (Link)",
+            inputValue: currentCatalogUrl,
+            placeholder: "https://ejemplo.com/catalogo.pdf",
+            html: `
+                <div class="text-start mt-3">
+                    <p class="text-sm text-muted mb-2">Puedes ingresar un <b>link externo</b> o cargar tu propio catálogo en nuestro servidor.</p>
+                    <div class="bg-light p-3 rounded-lg border border-gray-200">
+                        <p class="text-xs font-bold text-dark uppercase tracking-wider mb-2">Instrucciones para el repositorio:</p>
+                        <ol class="text-xs text-muted ps-3 mb-0">
+                            <li class="mb-1">Haz clic en <b>"Abrir Repositorio"</b> abajo.</li>
+                            <li class="mb-1">Sube tu archivo PDF o documento.</li>
+                            <li class="mb-1">Haz clic en el icono de enlace (<i class="fas fa-link"></i>) de tu archivo.</li>
+                            <li>Selecciona <b>"Copiar enlace"</b> y pégalo en el campo superior.</li>
+                        </ol>
+                    </div>
+                </div>
+            `,
+            showCancelButton: true,
+            confirmButtonText: "Guardar",
+            cancelButtonText: "Cancelar",
+            footer: '<button type="button" class="btn btn-primary w-100" onclick="window.open(\'/admin/repository\', \'_blank\')"><i class="fas fa-plus me-2"></i> Abrir Repositorio</button>',
+            inputValidator: (value) => {
+                if (!value) {
+                    return "Debes ingresar una URL";
+                }
+            },
+        });
+
+        if (url) {
+            try {
+                const dataToSend = [
+                    {
+                        correlative: "items.file_catalogo_url",
+                        name: "URL del Catálogo General en Productos",
+                        description: url,
+                    },
+                ];
+
+                const response = await generalsRest.save(dataToSend);
+
+                if (response) {
+                    Swal.fire({
+                        icon: "success",
+                        title: "Éxito",
+                        text: "Catálogo guardado correctamente",
+                        timer: 2000,
+                    });
+                    location.reload();
+                }
+            } catch (error) {
+                console.error("Error saving catalog:", error);
+                Swal.fire("Error", "No se pudo guardar el catálogo", "error");
+            }
+        }
+    };
+
     const refreshGrid = () => {
         try {
             if (gridRef.current) {
@@ -930,6 +1005,18 @@ const Items = ({
                 title="Items"
                 rest={itemsRest}
                 toolBar={(container) => {
+                    Fillable.has("items", "file_catalogo_general") &&
+                        container.unshift({
+                            widget: "dxButton",
+                            location: "after",
+                            options: {
+                                icon: "upload",
+                                text: "Subir Catálogo",
+                                hint: "Subir Catálogo (Link)",
+                                onClick: () => onUploadCatalog(),
+                            },
+                        });
+
                     container.unshift({
                         widget: "dxButton",
                         location: "after",
@@ -1109,15 +1196,22 @@ const Items = ({
                             container.html(
                                 renderToString(
                                     <div className="text-start">
-                                        <small className="text-muted d-block" style={{ fontSize: '10px' }}>Costo Prov.</small>
+                                        <small
+                                            className="text-muted d-block"
+                                            style={{ fontSize: "10px" }}
+                                        >
+                                            Costo Prov.
+                                        </small>
                                         <span className="text-muted small">
                                             {CurrencySymbol()}{" "}
-                                            {Number2Currency(data.provider_price || 0)}
+                                            {Number2Currency(
+                                                data.provider_price || 0,
+                                            )}
                                         </span>
-                                    </div>
-                                )
+                                    </div>,
+                                ),
                             );
-                        }
+                        },
                     },
 
                     Fillable.has("items", "weight") && {
@@ -2617,6 +2711,24 @@ const Items = ({
                                                     <i className="fas fa-plus me-2"></i>
                                                     Agregar PDFs
                                                 </button>
+                                            </div>
+
+                                            {/* Visibilidad de Catálogo General */}
+                                            <div
+                                                className="mb-3"
+                                                hidden={
+                                                    !Fillable.has(
+                                                        "items",
+                                                        "file_catalogo_general",
+                                                    )
+                                                }
+                                            >
+                                                <SwitchFormGroup
+                                                    label="Mostrar Catálogo General en la Web"
+                                                    eRef={
+                                                        fileCatalogoGeneralRef
+                                                    }
+                                                />
                                             </div>
 
                                             {/* Videos múltiples con ordenamiento */}

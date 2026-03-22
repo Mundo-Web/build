@@ -59,6 +59,8 @@ class Item extends Model
         'provider_id',
         'review_status',
 
+        'file_catalogo_general',
+
         // Campos para habitaciones
         'max_occupancy',
         'beds_count',
@@ -99,6 +101,7 @@ class Item extends Model
         'is_applications' => 'boolean',
         'is_attributes' => 'boolean',
         'is_master' => 'boolean',
+        'file_catalogo_general' => 'boolean',
     ];
 
     static function getForeign(Builder $builder, string $model, $relation)

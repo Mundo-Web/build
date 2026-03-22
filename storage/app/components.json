@@ -2969,7 +2969,8 @@
                     ]
                 },
                 "generals": [
-                    "whatsapp_advisors"
+                    "whatsapp_advisors",
+                    "items.file_catalogo_url"
                 ]
             },
             {

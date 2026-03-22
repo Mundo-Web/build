@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from "react";
+import { Download } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination } from "swiper/modules";
@@ -90,7 +91,12 @@ const ProductCardItem = ({ item, index, onClick }) => {
     );
 };
 
-const ProductListCardPanelPro = ({ items, data, onClickTracking }) => {
+const ProductListCardPanelPro = ({
+    items,
+    data,
+    onClickTracking,
+    generals,
+}) => {
     const [selectedImage, setSelectedImage] = useState(null);
     const [activeIndex, setActiveIndex] = useState(0);
     const [mainSwiper, setMainSwiper] = useState(null);
@@ -382,6 +388,34 @@ const ProductListCardPanelPro = ({ items, data, onClickTracking }) => {
                                 "Explore nuestra gama de productos seleccionados con los más altos estándares de calidad."}
                         </p>
                     </motion.div>
+                    {(() => {
+                        const catalogUrl = generals?.find(
+                            (g) => g.correlative === "items.file_catalogo_url",
+                        )?.description;
+
+                        if (catalogUrl) {
+                            return (
+                                <div className="mb-16 flex justify-center">
+                                    <a
+                                        href={catalogUrl}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="group inline-flex items-center gap-4 px-12 py-4 bg-accent text-white font-bold rounded-full transition-all duration-500 hover:shadow-[0_25px_50px_-12px_rgba(0,0,0,0.25)] hover:-translate-y-1 active:scale-95 shadow-xl"
+                                    >
+                                        <div className="flex items-center justify-center w-8 h-8 rounded-full bg-white/20 transition-transform duration-500 group-hover:scale-110">
+                                            <Download className="w-5 h-5 text-white" />
+                                        </div>
+                                        <div className="flex flex-col items-start leading-none">
+                                            <span className="text-lg font-bold">
+                                                Descargar Catálogo General
+                                            </span>
+                                        </div>
+                                    </a>
+                                </div>
+                            );
+                        }
+                        return null;
+                    })()}
 
                     <div className="relative group/swiper">
                         <Swiper
