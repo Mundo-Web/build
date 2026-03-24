@@ -1,1 +1,0 @@
-import{j as t}from"./vendor-react-DGtfu94Q.js";import{H as e}from"./HtmlContent-BgV1fuFe.js";const l=({data:l})=>t.jsx("section",{id:l?.element_id||null,className:"w-full",children:t.jsx(e,{html:l?.["code:html"]??""})});export{l as default};

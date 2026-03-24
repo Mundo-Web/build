@@ -1,0 +1,1 @@
+import{u as r,S as e,_ as a}from"./useStateManager-7e1e8489.esm-BbKD35DW.js";import{r as t}from"./vendor-react-DkiTIbBC.js";var s=t.forwardRef(function(s,o){var f=r(s);return t.createElement(e,a({ref:o},f))});export{s as S};

@@ -1,0 +1,2 @@
+const __vite__mapDeps=(i,m=__vite__mapDeps,d=(m.f||(m.f=["assets/FrameSimple-DK9Ez5gq.js","assets/vendor-react-DkiTIbBC.js","assets/HtmlContent-jTbuCee0.js","assets/FrameFull-CoxSgdpY.js"])))=>i.map(i=>d[i]);
+import{_ as r}from"./preload-helper-DAHR15QK.js";import{R as _}from"./vendor-react-DkiTIbBC.js";_.lazy(()=>r(()=>import("./FrameSimple-DK9Ez5gq.js"),__vite__mapDeps([0,1,2]))),_.lazy(()=>r(()=>import("./FrameFull-CoxSgdpY.js"),__vite__mapDeps([3,1,2])));

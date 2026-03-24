@@ -1,0 +1,1 @@
+import"./vendor-react-DkiTIbBC.js";import"./CartKuchara-CfVzzUwi.js";import"./MenuItem-CpyzDJkc.js";import"./vendor-swiper-CzbgrbaK.js";import"./index-nWFottC5.js";import"./___vite-browser-external_commonjs-proxy-CrtcsTbp.js";

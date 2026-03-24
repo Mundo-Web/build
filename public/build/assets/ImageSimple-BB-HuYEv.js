@@ -1,0 +1,1 @@
+import{j as e}from"./vendor-react-DkiTIbBC.js";const t=({data:t})=>e.jsx("img",{id:t?.element_id||null,className:"w-full object-cover object-center aspect-square",src:t?.image,style:{aspectRatio:t?.aspect_ratio??1}});export{t as default};
