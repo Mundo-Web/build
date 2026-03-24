@@ -645,7 +645,16 @@ class BasicController extends Controller
 
   public function beforeSave(Request $request)
   {
-    return $request->all();
+    $data = $request->all();
+    // Fallback: si el body no fue parseado (falta Content-Type: application/json)
+    // esto ocurre con la librería sode-extend-react que no envía el header automáticamente
+    if (empty($data) && !empty($request->getContent())) {
+      $decoded = json_decode($request->getContent(), true);
+      if (is_array($decoded) && !empty($decoded)) {
+        $data = $decoded;
+      }
+    }
+    return $data;
   }
 
   public function clearCache()
