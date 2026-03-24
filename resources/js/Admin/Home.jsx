@@ -150,6 +150,7 @@ const Home = ({
     bounceTrend,
     durationTrend,
     avgOrderPreparationTime,
+    webSessionsLast30Days,
 }) => {
     const [startDate, setStartDate] = useState(
         new Date(Date.now() - 29 * 24 * 60 * 60 * 1000),
@@ -479,9 +480,17 @@ const Home = ({
             name: "Productos Pendientes de Revisión",
             category: "KPI",
         },
-        // Analítica Avanzada
+        // Analítica Avanzada (aplica a cualquier tipo de web)
         advanced_analytics_section: {
-            name: "Sección de Analítica Avanzada",
+            name: "Sección: Analítica Web Avanzada (contenedor)",
+            category: "Gráficos",
+        },
+        visits_this_month: {
+            name: "Visitas de Productos del Mes",
+            category: "Gráficos",
+        },
+        web_sessions_chart: {
+            name: "Visitas Web Reales (30 días — estilo Google Analytics)",
             category: "Gráficos",
         },
         traffic_sources_chart: {
@@ -489,8 +498,29 @@ const Home = ({
             category: "Gráficos",
         },
         conversion_funnel: {
-            name: "Embudo de Conversión",
+            name: "Embudo / Comportamiento de Usuarios",
             category: "Gráficos",
+        },
+        // KPIs individuales de la sección Analítica Web
+        kpi_sessions: {
+            name: "Sesiones (7d)",
+            category: "AnalíticaWeb",
+        },
+        kpi_bounce_rate: {
+            name: "Tasa de Rebote",
+            category: "AnalíticaWeb",
+        },
+        kpi_avg_duration: {
+            name: "Permanencia Media",
+            category: "AnalíticaWeb",
+        },
+        kpi_avg_order_value: {
+            name: "Valor Medio por Visita",
+            category: "AnalíticaWeb",
+        },
+        kpi_cvr: {
+            name: "Tasa de Acción (CVR)",
+            category: "AnalíticaWeb",
         },
     };
 
@@ -498,6 +528,10 @@ const Home = ({
         KPI: { name: "Indicadores KPI", icon: "fas fa-chart-line" },
         Gráficos: { name: "Gráficos y Estadísticas", icon: "fas fa-chart-pie" },
         Tablas: { name: "Tablas de Datos", icon: "fas fa-table" },
+        AnalíticaWeb: {
+            name: "Analítica Web Avanzada — KPIs individuales",
+            icon: "fas fa-globe",
+        },
     };
 
     return (
@@ -819,11 +853,10 @@ const Home = ({
                                         className="mb-0 fw-bold text-dark"
                                         style={{ letterSpacing: "-0.02em" }}
                                     >
-                                        Análisis Analítico Avanzado
+                                        Analítica Web Avanzada
                                     </h4>
                                     <p className="text-muted mb-0 small fw-medium">
-                                        Rendimiento y comportamiento detallado
-                                        de tus usuarios
+                                        Rendimiento y comportamiento de usuarios
                                     </p>
                                 </div>
                             </div>
@@ -850,93 +883,291 @@ const Home = ({
                     </div>
 
                     {/* KPI de Rendimiento Analítico con Sparklines */}
-                    {/* KPI de Rendimiento Analítico con Sparklines */}
                     <div className="row g-4 mb-5">
-                        <div className="col-xl col-md-4">
-                            <MetricCard
-                                title="Sesiones (7d)"
-                                value={
-                                    sessionTrend
-                                        ? sessionTrend.reduce(
-                                              (a, b) => a + b,
-                                              0,
-                                          )
-                                        : 0
-                                }
-                                icon="fas fa-users"
-                                color="indigo"
-                                trend="LIVE"
-                                trendIcon="fa-circle text-success extra-small"
-                                sparkline={renderSparkline(
-                                    sessionTrend,
-                                    UI_STYLE.pastel.indigo.icon,
-                                )}
-                                help="Cantidad total de sesiones (visitas) iniciadas en los últimos 7 días."
-                            />
-                        </div>
+                        {shouldShowCard("kpi_sessions") && (
+                            <div className="col-xl col-md-4">
+                                <MetricCard
+                                    title="Sesiones (7d)"
+                                    value={
+                                        sessionTrend
+                                            ? sessionTrend.reduce(
+                                                  (a, b) => a + b,
+                                                  0,
+                                              )
+                                            : 0
+                                    }
+                                    icon="fas fa-users"
+                                    color="indigo"
+                                    trend="LIVE"
+                                    trendIcon="fa-circle text-success extra-small"
+                                    sparkline={renderSparkline(
+                                        sessionTrend,
+                                        UI_STYLE.pastel.indigo.icon,
+                                    )}
+                                    help="Cantidad total de sesiones (visitas) iniciadas en los últimos 7 días."
+                                />
+                            </div>
+                        )}
 
-                        <div className="col-xl col-md-4">
-                            <MetricCard
-                                title="Tasa de Rebote"
-                                value={`${bounceRate || 0}%`}
-                                icon="fas fa-door-open"
-                                color={bounceRate > 60 ? "rose" : "green"}
-                                trend={bounceRate > 60 ? "Alto" : "Sano"}
-                                trendIcon={
-                                    bounceRate > 60
-                                        ? "fa-exclamation-triangle"
-                                        : "fa-check-circle"
-                                }
-                                sparkline={renderSparkline(
-                                    bounceTrend,
-                                    bounceRate > 60
-                                        ? UI_STYLE.pastel.rose.icon
-                                        : UI_STYLE.pastel.green.icon,
-                                )}
-                                help="Porcentaje de visitantes que abandonan el sitio después de ver solo una página."
-                            />
-                        </div>
+                        {shouldShowCard("kpi_bounce_rate") && (
+                            <div className="col-xl col-md-4">
+                                <MetricCard
+                                    title="Tasa de Rebote"
+                                    value={`${bounceRate || 0}%`}
+                                    icon="fas fa-door-open"
+                                    color={bounceRate > 60 ? "rose" : "green"}
+                                    trend={bounceRate > 60 ? "Alto" : "Sano"}
+                                    trendIcon={
+                                        bounceRate > 60
+                                            ? "fa-exclamation-triangle"
+                                            : "fa-check-circle"
+                                    }
+                                    sparkline={renderSparkline(
+                                        bounceTrend,
+                                        bounceRate > 60
+                                            ? UI_STYLE.pastel.rose.icon
+                                            : UI_STYLE.pastel.green.icon,
+                                    )}
+                                    help="Porcentaje de visitantes que abandonan el sitio después de ver solo una página."
+                                />
+                            </div>
+                        )}
 
-                        <div className="col-xl col-md-4">
-                            <MetricCard
-                                title="Permanencia Media"
-                                value={`${avgSessionDuration || 0}m`}
-                                icon="fas fa-hourglass-half"
-                                color="amber"
-                                trend="Engagement"
-                                trendIcon="fa-bolt"
-                                sparkline={renderSparkline(
-                                    durationTrend,
-                                    UI_STYLE.pastel.amber.icon,
-                                )}
-                                help="Tiempo promedio que un usuario pasa navegando en la tienda por sesión."
-                            />
-                        </div>
+                        {shouldShowCard("kpi_avg_duration") && (
+                            <div className="col-xl col-md-4">
+                                <MetricCard
+                                    title="Permanencia Media"
+                                    value={`${avgSessionDuration || 0}m`}
+                                    icon="fas fa-hourglass-half"
+                                    color="amber"
+                                    trend="Engagement"
+                                    trendIcon="fa-bolt"
+                                    sparkline={renderSparkline(
+                                        durationTrend,
+                                        UI_STYLE.pastel.amber.icon,
+                                    )}
+                                    help="Tiempo promedio que un usuario pasa navegando en la tienda por sesión."
+                                />
+                            </div>
+                        )}
 
-                        <div className="col-xl col-md-6">
-                            <MetricCard
-                                title="Ticket Promedio (AOV)"
-                                value={`${CurrencySymbol()} ${aov || 0}`}
-                                icon="fas fa-shopping-basket"
-                                color="green"
-                                trend="Venta Media"
-                                trendIcon="fa-chart-pie"
-                                subtitle="Eficiencia de revenue por cliente"
-                            />
-                        </div>
+                        {shouldShowCard("kpi_avg_order_value") && (
+                            <div className="col-xl col-md-6">
+                                <MetricCard
+                                    title="Valor Medio por Visita"
+                                    value={`${CurrencySymbol()} ${aov || 0}`}
+                                    icon="fas fa-shopping-basket"
+                                    color="green"
+                                    trend="Media"
+                                    trendIcon="fa-chart-pie"
+                                    subtitle="Ticket promedio o valor generado por sesión"
+                                />
+                            </div>
+                        )}
 
-                        <div className="col-xl col-md-6">
-                            <MetricCard
-                                title="Conversión (CVR)"
-                                value={`${cvr || 0}%`}
-                                icon="fas fa-bullseye"
-                                color="violet"
-                                trend="Efectividad"
-                                trendIcon="fa-crosshairs"
-                                subtitle="Cierre de ventas confirmado"
-                            />
-                        </div>
+                        {shouldShowCard("kpi_cvr") && (
+                            <div className="col-xl col-md-6">
+                                <MetricCard
+                                    title="Tasa de Acción (CVR)"
+                                    value={`${cvr || 0}%`}
+                                    icon="fas fa-bullseye"
+                                    color="violet"
+                                    trend="Efectividad"
+                                    trendIcon="fa-crosshairs"
+                                    subtitle="% visitas que completaron una acción clave"
+                                />
+                            </div>
+                        )}
                     </div>
+
+                    {/* Gráfico GA-Style: Sesiones reales últimos 30 días */}
+                    {shouldShowCard("web_sessions_chart") && (
+                        <div
+                            className="card border-0 shadow-sm mb-5"
+                            style={{ borderRadius: UI_STYLE.borderRadius }}
+                        >
+                            <div
+                                className="card-header bg-white border-0 p-4"
+                                style={{
+                                    borderRadius: `${UI_STYLE.borderRadius} ${UI_STYLE.borderRadius} 0 0`,
+                                }}
+                            >
+                                <div className="d-flex align-items-center justify-content-between">
+                                    <div className="d-flex align-items-center gap-3">
+                                        <div
+                                            className="rounded-4 p-3"
+                                            style={{
+                                                background:
+                                                    UI_STYLE.pastel.indigo.bg,
+                                            }}
+                                        >
+                                            <i
+                                                className="fas fa-chart-area fs-5"
+                                                style={{
+                                                    color: UI_STYLE.pastel
+                                                        .indigo.icon,
+                                                }}
+                                            ></i>
+                                        </div>
+                                        <div>
+                                            <h6 className="mb-0 fw-bold text-dark">
+                                                Visitas Web — Últimos 30 Días
+                                            </h6>
+                                            <p className="text-muted mb-0 small">
+                                                Sesiones reales registradas en
+                                                la web
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div className="d-flex gap-4 align-items-center">
+                                        <div className="text-center">
+                                            <div
+                                                className="fw-bold fs-5"
+                                                style={{
+                                                    color: UI_STYLE.pastel
+                                                        .indigo.icon,
+                                                }}
+                                            >
+                                                {(webSessionsLast30Days || [])
+                                                    .reduce(
+                                                        (a, b) =>
+                                                            a + b.sessions,
+                                                        0,
+                                                    )
+                                                    .toLocaleString()}
+                                            </div>
+                                            <div
+                                                className="text-muted"
+                                                style={{
+                                                    fontSize: "0.65rem",
+                                                    fontWeight: 700,
+                                                    textTransform: "uppercase",
+                                                    letterSpacing: "0.05em",
+                                                }}
+                                            >
+                                                Sesiones (30d)
+                                            </div>
+                                        </div>
+                                        <div className="text-center">
+                                            <div
+                                                className="fw-bold fs-5"
+                                                style={{
+                                                    color: UI_STYLE.pastel.green
+                                                        .icon,
+                                                }}
+                                            >
+                                                {(webSessionsLast30Days || [])
+                                                    .reduce(
+                                                        (a, b) =>
+                                                            a + b.page_views,
+                                                        0,
+                                                    )
+                                                    .toLocaleString()}
+                                            </div>
+                                            <div
+                                                className="text-muted"
+                                                style={{
+                                                    fontSize: "0.65rem",
+                                                    fontWeight: 700,
+                                                    textTransform: "uppercase",
+                                                    letterSpacing: "0.05em",
+                                                }}
+                                            >
+                                                Páginas Vistas
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="card-body p-4">
+                                <Chart
+                                    options={{
+                                        chart: {
+                                            type: "area",
+                                            toolbar: { show: false },
+                                            background: "transparent",
+                                            animations: {
+                                                enabled: true,
+                                                speed: 600,
+                                            },
+                                        },
+                                        dataLabels: { enabled: false },
+                                        stroke: {
+                                            curve: "smooth",
+                                            width: [2.5, 2, 1.5],
+                                        },
+                                        fill: {
+                                            type: "gradient",
+                                            gradient: {
+                                                shadeIntensity: 1,
+                                                opacityFrom: 0.35,
+                                                opacityTo: 0.02,
+                                                stops: [0, 90, 100],
+                                            },
+                                        },
+                                        colors: [
+                                            UI_STYLE.pastel.indigo.icon,
+                                            UI_STYLE.pastel.green.icon,
+                                        ],
+                                        xaxis: {
+                                            categories: (
+                                                webSessionsLast30Days || []
+                                            ).map((d) => d.label),
+                                            labels: {
+                                                style: {
+                                                    fontSize: "10px",
+                                                    colors: "#94a3b8",
+                                                },
+                                                rotate: -35,
+                                            },
+                                            axisBorder: { show: false },
+                                            axisTicks: { show: false },
+                                        },
+                                        yaxis: {
+                                            labels: {
+                                                style: {
+                                                    fontSize: "11px",
+                                                    colors: "#94a3b8",
+                                                },
+                                                formatter: (v) => Math.round(v),
+                                            },
+                                        },
+                                        grid: {
+                                            borderColor: "#f1f5f9",
+                                            strokeDashArray: 4,
+                                        },
+                                        legend: {
+                                            position: "top",
+                                            horizontalAlign: "right",
+                                            fontSize: "12px",
+                                            markers: { radius: 12 },
+                                        },
+                                        tooltip: {
+                                            theme: "dark",
+                                            shared: true,
+                                            intersect: false,
+                                        },
+                                    }}
+                                    series={[
+                                        {
+                                            name: "Sesiones",
+                                            data: (
+                                                webSessionsLast30Days || []
+                                            ).map((d) => d.sessions),
+                                        },
+                                        {
+                                            name: "Páginas Vistas",
+                                            data: (
+                                                webSessionsLast30Days || []
+                                            ).map((d) => d.page_views),
+                                        },
+                                    ]}
+                                    type="area"
+                                    height={320}
+                                />
+                            </div>
+                        </div>
+                    )}
 
                     <div className="row g-4 mb-5">
                         {/* Gráfico Fuentes de Tráfico Mejorado */}
@@ -1048,9 +1279,10 @@ const Home = ({
                                     >
                                         <div className="d-flex align-items-center justify-content-between">
                                             <h6 className="mb-0 fw-bold text-dark">
-                                                Embudo de Conversión
+                                                Embudo de Comportamiento de
+                                                Usuarios
                                             </h6>
-                                            <Tippy content="Muestra el viaje del usuario desde que entra hasta que compra. Sesiones -> Vistas de Producto -> Ventas Finales.">
+                                            <Tippy content="Muestra el recorrido del usuario: Sesiones → Vistas de contenido → Acción final (compra, contacto, formulario, etc.).">
                                                 <i className="fas fa-question-circle text-muted cursor-help"></i>
                                             </Tippy>
                                         </div>

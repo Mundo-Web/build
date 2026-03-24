@@ -258,6 +258,22 @@ class HomeController extends BasicController
             return round(\App\Models\UserSession::whereDate('created_at', $date)->avg('duration') ?: 0, 1);
         })->toArray();
 
+        // 10. Visitas web reales (GA-style) — sesiones únicas por día últimos 30 días
+        $webSessionsLast30Days = [];
+        for ($i = 29; $i >= 0; $i--) {
+            $date = Carbon::today()->subDays($i);
+            $sessions    = \App\Models\UserSession::whereDate('created_at', $date)->count();
+            $pageViews   = \App\Models\UserSession::whereDate('created_at', $date)->sum('page_views');
+            $uniqueUsers = \App\Models\UserSession::whereDate('created_at', $date)->distinct('ip_address')->count('ip_address');
+            $webSessionsLast30Days[] = [
+                'date'         => $date->format('Y-m-d'),
+                'label'        => $date->format('d/m'),
+                'sessions'     => $sessions,
+                'page_views'   => (int) $pageViews,
+                'unique_users' => $uniqueUsers,
+            ];
+        }
+
         // 9. Tiempo Promedio de Preparación de Pedidos
         $shippedStatusId = 'ad509181-6701-4fa1-a990-6bcb103254af';
         $shippedTraces = DB::table('sale_status_traces')
@@ -763,6 +779,7 @@ class HomeController extends BasicController
             'sessionTrend' => $sessionTrend,
             'bounceTrend' => $bounceTrend,
             'durationTrend' => $durationTrend,
+            'webSessionsLast30Days' => $webSessionsLast30Days,
             'avgOrderPreparationTime' => $avgOrderPreparationTime,
             'dashboardVisibility' => $this->getDashboardVisibility(),
             'hasRootRole' => $this->hasRootRole(),
@@ -817,8 +834,14 @@ class HomeController extends BasicController
             'analytics_kpis' => true,
             // Analítica Avanzada
             'advanced_analytics_section' => true,
+            'web_sessions_chart' => true,
             'traffic_sources_chart' => true,
             'conversion_funnel' => true,
+            'kpi_sessions' => true,
+            'kpi_bounce_rate' => true,
+            'kpi_avg_duration' => true,
+            'kpi_avg_order_value' => true,
+            'kpi_cvr' => true,
         ];
 
             // Agregar analíticas de servicios solo si el proyecto las usa
