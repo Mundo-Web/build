@@ -68,7 +68,8 @@ class SystemController extends BasicController
                 foreach ($props['systems'] as $system) {
                     if ($system->component == 'content') continue;
                     $parent = collect($components)->firstWhere('id', $system->component);
-                    $component = collect($parent['options'])->firstWhere('id', $system->value);
+                    if (!$parent) continue;
+                    $component = collect($parent['options'] ?? [])->firstWhere('id', $system->value);
                     if (isset($component['generals'])) {
                         $generals_keys = array_merge($generals_keys, $component['generals']);
                     }
@@ -149,7 +150,8 @@ class SystemController extends BasicController
             foreach ($systems as $key => $system) {
                 if ($system->component == 'content') continue;
                 $parent = collect($components)->firstWhere('id', $system->component);
-                $component = collect($parent['options'])->firstWhere('id', $system->value);
+                if (!$parent) continue;
+                $component = collect($parent['options'] ?? [])->firstWhere('id', $system->value);
                 if (isset($component['using'])) {
                     $using = 'App\\Models\\' . $component['using']['model'];
                     $query = $using::select($component['using']['fields'] ?? ['*']);
