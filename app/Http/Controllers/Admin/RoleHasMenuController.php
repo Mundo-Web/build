@@ -27,11 +27,21 @@ class RoleHasMenuController extends BasicController
     public function save(Request $request): HttpResponse|ResponseFactory
     {
         $response = Response::simpleTryCatch(function () use ($request) {
+            $body = $request->all();
+            if (empty($body)) {
+                $body = json_decode($request->getContent(), true) ?? [];
+            }
+
+            $menu = $body['menu'] ?? null;
+            $canAccess = $body['can_access'] ?? true;
+
+            if (!$menu) throw new \Exception('El campo menu es requerido');
+
             $jpa = RoleHasMenu::updateOrCreate([
                 'role_id' => 1,
-                'menu' => $request->menu
+                'menu' => $menu
             ], [
-                'can_access' => $request->can_access
+                'can_access' => $canAccess
             ]);
             return $jpa;
         });

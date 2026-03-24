@@ -16,9 +16,15 @@ class FillableController extends Controller
         $response = Response::simpleTryCatch(function () use ($request, $model) {
             $jpa = General::where('correlative', 'fillable:' . $model)->first();
             if (!$jpa) throw new Exception('El modelo no es configurable');
-            $jpa->description = JSON::stringify($request->all());
+            
+            $body = $request->all();
+            if (empty($body)) {
+                $body = json_decode($request->getContent(), true);
+            }
+            
+            $jpa->description = JSON::stringify($body);
             $jpa->save();
-            return $request->all();
+            return $body;
         });
         return response($response->toArray(), $response->status);
     }

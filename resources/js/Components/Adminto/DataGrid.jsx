@@ -15,12 +15,20 @@ const DataGrid = ({ gridRef: dataGridRef, pageSize = 10, rest, columns, toolBar,
   const booleanLimitModalRef = useRef()
   const [saving, setSaving] = useState(false)
   const [activeModel, setActiveModel] = useState(Fillable.models[0] ?? null)
+
+  useEffect(() => {
+    if (!activeModel && Fillable.models.length > 0) {
+      setActiveModel(Fillable.models[0]);
+    }
+  }, [Fillable.models])
+
   const [savingBooleanLimits, setSavingBooleanLimits] = useState(false)
   const [booleanLimitForm, setBooleanLimitForm] = useState([])
 
   const openBooleanLimitModal = () => {
-    if (!activeModel) return
-    const limits = BooleanLimit.list(activeModel)
+    const currentModel = activeModel || Fillable.models[0];
+    if (!currentModel) return
+    const limits = BooleanLimit.list(currentModel)
     if (!limits.length) return
     setBooleanLimitForm(limits.map(limit => ({
       field: limit.field,
@@ -28,7 +36,7 @@ const DataGrid = ({ gridRef: dataGridRef, pageSize = 10, rest, columns, toolBar,
       max: typeof limit.max === 'number' ? limit.max : '',
       message: limit.message ?? '',
       general_key: limit.general_key,
-      model: activeModel,
+      model: currentModel,
     })))
     $(booleanLimitModalRef.current).modal('show')
   }
@@ -39,6 +47,7 @@ const DataGrid = ({ gridRef: dataGridRef, pageSize = 10, rest, columns, toolBar,
 
   const onBooleanLimitSubmit = async (e) => {
     e.preventDefault()
+    const currentModel = activeModel || Fillable.models[0];
     if (!booleanLimitForm.length) {
       $(booleanLimitModalRef.current).modal('hide')
       return
@@ -47,7 +56,7 @@ const DataGrid = ({ gridRef: dataGridRef, pageSize = 10, rest, columns, toolBar,
     const payload = booleanLimitForm
       .filter(item => item.general_key)
       .map(item => ({
-        model: item.model ?? activeModel,
+        model: item.model ?? currentModel,
         field: item.field,
         general_key: item.general_key,
         max: Number(item.max === '' ? 0 : item.max),
@@ -61,14 +70,14 @@ const DataGrid = ({ gridRef: dataGridRef, pageSize = 10, rest, columns, toolBar,
     if (!result) return
 
     if (result?.limits?.length) {
-      BooleanLimit.bulkUpdate(activeModel, result.limits)
+      BooleanLimit.bulkUpdate(currentModel, result.limits)
       setBooleanLimitForm(result.limits.map(({ field, limit }) => ({
         field,
         label: limit.label ?? field,
         max: typeof limit.max === 'number' ? limit.max : '',
         message: limit.message ?? '',
         general_key: limit.general_key ?? payload.find(item => item.field === field)?.general_key,
-        model: activeModel,
+        model: currentModel,
       })))
     }
 
@@ -77,19 +86,25 @@ const DataGrid = ({ gridRef: dataGridRef, pageSize = 10, rest, columns, toolBar,
 
   const onModalSubmit = async (e) => {
     e.preventDefault();
+    const currentModel = activeModel || Fillable.models[0];
+    if (!currentModel) return;
 
     // Get checkboxes only for the active model
-    const checkboxes = document.querySelectorAll(`input[type="checkbox"][id^="fillable-ck-${activeModel}"]`);
+    const checkboxes = document.querySelectorAll(`input[type="checkbox"][id^="fillable-ck-${currentModel}"]`);
     const fillableData = Array.from(checkboxes).reduce((acc, checkbox) => {
       acc[checkbox.value] = checkbox.checked;
       return acc;
     }, {});
 
     setSaving(true)
-    const result = await fillableRest.save(activeModel, fillableData);
+    const result = await fillableRest.save(currentModel, fillableData);
     setSaving(false)
     if (!result) return
-    Fillable.set(activeModel, result)
+    Fillable.set(currentModel, result)
+    localStorage.removeItem('dx-item-grid-columns'); // Limpiar caché de columnas de devExtreme si existe
+    setTimeout(() => {
+        location.reload();
+    }, 100);
   }
 
   useEffect(() => {
@@ -110,7 +125,10 @@ const DataGrid = ({ gridRef: dataGridRef, pageSize = 10, rest, columns, toolBar,
       },
       onToolbarPreparing: (e) => {
         const { items } = e.toolbarOptions;
-        hasRole('Root') && BooleanLimit.list(activeModel).length > 0 && items.unshift({
+        const currentModel = activeModel || Fillable.models[0];
+        const isAdmin = hasRole('Root') || hasRole('Admin');
+
+        isAdmin && currentModel && BooleanLimit.list(currentModel).length > 0 && items.unshift({
           widget: 'dxButton',
           location: 'before',
           options: {
@@ -121,12 +139,12 @@ const DataGrid = ({ gridRef: dataGridRef, pageSize = 10, rest, columns, toolBar,
           }
         })
 
-        hasRole('Root') && Fillable.models.length > 0 && items.unshift({
+        isAdmin && Fillable.models.length > 0 && items.unshift({
           widget: 'dxButton',
           location: 'before',
           options: {
             icon: 'mdi mdi-cog',
-            hint: 'Configurar campos',
+            hint: 'Configurar campos visibles',
             text: 'Configurar',
             onClick: () => $(modalRef.current).modal('show')
           }

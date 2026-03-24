@@ -14,6 +14,7 @@ class Item extends Model
     use HasFactory, HasUuids, HasDynamic;
 
     public $incrementing = false;
+    protected $table = 'items';
     protected $keyType = 'string';
 
     protected $fillable = [

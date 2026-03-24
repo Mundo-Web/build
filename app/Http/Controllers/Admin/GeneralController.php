@@ -45,22 +45,24 @@ class GeneralController extends BasicController
     {
         $response = Response::simpleTryCatch(function () use ($request) {
             $body = $request->all();
-
-            // Debug logging para ver qué datos llegan
-            Log::info('GeneralController save - Request data:', $body);
+            if (empty($body)) {
+                $body = json_decode($request->getContent(), true);
+            }
+            Log::info('GeneralController save - Request data: ' . json_encode($body));
 
             $processedCount = 0;
 
             // Si el cuerpo no es un array de arrays, entonces es un array directo de objetos
             // Verificamos si es un array directo de configuraciones generales
-            $isDirectArray = !empty($body) && is_array($body) && isset($body[0]);
+            $isDirectArray = !empty($body) && is_array($body) && isset($body[0]) && is_array($body[0]);
 
             if ($isDirectArray) {
                 // Es un array directo de objetos de configuración
                 foreach ($body as $record) {
-                    if (isset($record['correlative']) && isset($record['name'])) {
+                    $correlative = $record['correlative'] ?? null;
+                    if ($correlative && isset($record['name'])) {
                         General::updateOrCreate([
-                            'correlative' => $record['correlative']
+                            'correlative' => $correlative
                         ], [
                             'name' => $record['name'],
                             'description' => $record['description'] ?? ''

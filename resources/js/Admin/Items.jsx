@@ -924,43 +924,55 @@ const Items = ({
 
         const hasCatalog = !!currentCatalogUrl;
 
-        const { value: url, isDismissed, isDenied } = await Swal.fire({
-            title: "Subir Catálogo General",
-            input: "text",
-            inputLabel: "URL del Catálogo (Link)",
-            inputValue: currentCatalogUrl,
-            inputPlaceholder: "https://ejemplo.com/catalogo.pdf",
-            html: `
-                <div class="text-start mt-3">
-                    <p class="text-sm text-muted mb-2">Puedes ingresar un <b>link externo</b> o cargar tu propio catálogo en nuestro servidor. Deja el campo <b>vacío</b> y guarda para eliminar el catálogo.</p>
-                    <div class="bg-light p-3 rounded-lg border border-gray-200">
-                        <p class="text-xs font-bold text-dark uppercase tracking-wider mb-2">Instrucciones para el repositorio:</p>
-                        <ol class="text-xs text-muted ps-3 mb-0">
-                            <li class="mb-1">Haz clic en <b>"Abrir Repositorio"</b> abajo.</li>
-                            <li class="mb-1">Sube tu archivo PDF o documento.</li>
-                            <li class="mb-1">Haz clic en el icono de enlace (<i class="fas fa-link"></i>) de tu archivo.</li>
-                            <li>Selecciona <b>"Copiar enlace"</b> y pégalo en el campo superior.</li>
-                        </ol>
-                    </div>
-                </div>
-            `,
+        const {
+            value: result,
+            isDismissed,
+            isDenied,
+        } = await Swal.fire({
+            title: "Catálogo General",
             showCancelButton: true,
             confirmButtonText: "Guardar",
             cancelButtonText: "Cancelar",
             showDenyButton: hasCatalog,
-            denyButtonText: '<i class="fas fa-trash me-1"></i> Eliminar Catálogo',
+            denyButtonText:
+                '<i class="fas fa-trash me-1"></i> Eliminar Catálogo',
             denyButtonColor: "#dc3545",
+            html: `
+                <div class="text-start">
+                    <label class="form-label fw-semibold mb-1">URL del Catálogo (Link)</label>
+                    <input
+                        id="swal-catalog-url"
+                        type="text"
+                        class="swal2-input mx-0 w-100"
+                        placeholder="https://ejemplo.com/catalogo.pdf"
+                        value="${currentCatalogUrl.replace(/"/g, "&quot;")}"
+                    />
+                    <p class="text-sm text-muted mt-2 mb-2">Ingresa un <b>link externo</b> o carga tu catálogo en el repositorio. Deja el campo <b>vacío</b> y guarda para eliminar.</p>
+                    <div class="bg-light p-2 rounded border" style="font-size:14px;">
+                        <p class="fw-bold text-dark text-uppercase mb-1" style="font-size:16px;">Instrucciones para el repositorio:</p>
+                        <ol class="text-muted ps-3 mb-0">
+                            <li class="mb-1">Clic en <b>"Abrir Repositorio"</b> abajo.</li>
+                            <li class="mb-1">Sube tu archivo PDF o documento.</li>
+                            <li class="mb-1">Clic en el icono de enlace <i class="fas fa-link"></i> de tu archivo.</li>
+                            <li>Selecciona <b>"Copiar enlace"</b> y pégalo arriba.</li>
+                        </ol>
+                    </div>
+                </div>
+            `,
             footer: '<button type="button" class="btn btn-primary w-100" onclick="window.open(\'/admin/repository\', \'_blank\')"><i class="fas fa-plus me-2"></i> Abrir Repositorio</button>',
+            preConfirm: () => {
+                return document.getElementById("swal-catalog-url")?.value ?? "";
+            },
         });
 
         // Si el usuario canceló (X o botón Cancelar), no hacer nada
         if (isDismissed) return;
 
-        // Confirmar eliminación si se pulsó el botón rojo "Eliminar Catálogo"
+        // Si pulsó "Eliminar Catálogo" → pedir confirmación
         if (isDenied) {
             const { isConfirmed: confirmDelete } = await Swal.fire({
                 title: "¿Eliminar catálogo?",
-                text: "Se eliminará el enlace al catálogo general. Esta acción no borra el archivo del repositorio.",
+                text: "Se eliminará el enlace al catálogo general. El archivo en el repositorio no se borrará.",
                 icon: "warning",
                 showCancelButton: true,
                 confirmButtonText: "Sí, eliminar",
@@ -970,10 +982,19 @@ const Items = ({
             if (!confirmDelete) return;
         }
 
-        // Si isDenied → guardar vacío; si confirmó con "Guardar" → usar el value del input
-        const urlToSave = isDenied ? "" : (url ?? "");
+        // isDenied → vaciar URL; isConfirmed → usar el valor del input (puede ser "")
+        const urlToSave = isDenied ? "" : (result ?? "");
 
         try {
+            // Mostrar un loader mientras guarda
+            Swal.fire({
+                title: urlToSave
+                    ? "Guardando catálogo..."
+                    : "Eliminando catálogo...",
+                didOpen: () => Swal.showLoading(),
+                allowOutsideClick: false,
+            });
+
             const dataToSend = [
                 {
                     correlative: "items.file_catalogo_url",
@@ -982,22 +1003,41 @@ const Items = ({
                 },
             ];
 
-            const response = await generalsRest.save(dataToSend);
+            // Forzar el guardado usando fetch directo para asegurar Content-Type
+            const response = await fetch("/api/admin/generals", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-Xsrf-Token": decodeURIComponent(
+                        document.cookie.match(/XSRF-TOKEN=([^;]+)/)?.[1] || "",
+                    ),
+                },
+                body: JSON.stringify(dataToSend),
+            });
 
-            if (response) {
+            if (response.ok) {
                 Swal.fire({
                     icon: "success",
                     title: "Éxito",
                     text: urlToSave
                         ? "Catálogo guardado correctamente"
                         : "Catálogo eliminado correctamente",
-                    timer: 2000,
+                    timer: 1500,
+                    showConfirmButton: false,
+                }).then(() => {
+                    location.reload();
                 });
-                location.reload();
+            } else {
+                const errorData = await response.json().catch(() => ({}));
+                throw new Error(errorData.message || "Error en el servidor");
             }
         } catch (error) {
             console.error("Error saving catalog:", error);
-            Swal.fire("Error", "No se pudo guardar el catálogo", "error");
+            Swal.fire(
+                "Error",
+                "No se pudo procesar la solicitud: " + error.message,
+                "error",
+            );
         }
     };
 
@@ -1207,7 +1247,7 @@ const Items = ({
                             );
                         },
                     },
-                    {
+                    Fillable.has("items", "provider_price") && {
                         dataField: "provider_price",
                         caption: "P. Proveedor",
                         dataType: "number",
