@@ -812,9 +812,16 @@ class BasicController extends Controller
   {
     $response = new Response();
     try {
-      $this->model::where('id', $request->id)
+      $body = $request->all();
+      if (empty($body)) {
+        $body = json_decode($request->getContent(), true) ?? [];
+      }
+      $id = $body['id'] ?? $request->id;
+      $statusVal = $body['status'] ?? $request->status;
+
+      $this->model::where('id', $id)
         ->update([
-          'status' => $request->status ? 0 : 1
+          'status' => $statusVal ? 0 : 1
         ]);
 
       $response->status = 200;
@@ -840,18 +847,27 @@ class BasicController extends Controller
         throw new Exception('Modelo no configurado para la operación.');
       }
 
-      $field = (string) $request->field;
+      // Fallback: si el body no fue parseado (falta Content-Type: application/json)
+      $body = $request->all();
+      if (empty($body)) {
+        $body = json_decode($request->getContent(), true) ?? [];
+      }
+
+      $id    = $body['id']    ?? $request->id;
+      $field = (string) ($body['field'] ?? $request->field ?? '');
+      $rawValue = $body['value'] ?? $request->value;
+
       if ($field === '') {
         throw new Exception('Campo no proporcionado.');
       }
 
-      $value = filter_var($request->value, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
+      $value = filter_var($rawValue, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
       if ($value === null) {
         throw new Exception('Valor booleano inválido.');
       }
 
       /** @var Model $record */
-      $record = $modelClass::findOrFail($request->id);
+      $record = $modelClass::findOrFail($id);
       $previousValue = (bool) $record->{$field};
 
       $limitConfig = $this->getBooleanLimitConfigForField($field);
