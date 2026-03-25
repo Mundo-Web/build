@@ -246,6 +246,19 @@ const ServiceWebQuirurgica2 = ({
                     )}
                 </div>
 
+                {/* Grid Fibonacci Pattern - sin aspect ratios para llenar el grid naturalmente */}
+                <div className="grid grid-cols-12 gap-6 lg:gap-8 auto-rows-[400px]">
+                    {sortedServices.map((service, serviceIndex) => (
+                        <ServiceCard
+                            key={serviceIndex}
+                            service={service}
+                            index={serviceIndex}
+                            data={data}
+                            onCardClick={setSelectedService}
+                            onClickTracking={onClickTracking}
+                        />
+                    ))}
+                </div>
                 {(() => {
                     const catalogUrl = generals?.find(
                         (g) => g.correlative === "services.file_catalogo_url",
@@ -253,7 +266,7 @@ const ServiceWebQuirurgica2 = ({
 
                     if (catalogUrl) {
                         return (
-                            <div className="mb-16 flex justify-center">
+                            <div className="mt-10 flex justify-start">
                                 <a
                                     href={catalogUrl}
                                     target="_blank"
@@ -274,19 +287,6 @@ const ServiceWebQuirurgica2 = ({
                     }
                     return null;
                 })()}
-                {/* Grid Fibonacci Pattern - sin aspect ratios para llenar el grid naturalmente */}
-                <div className="grid grid-cols-12 gap-6 lg:gap-8 auto-rows-[400px]">
-                    {sortedServices.map((service, serviceIndex) => (
-                        <ServiceCard
-                            key={serviceIndex}
-                            service={service}
-                            index={serviceIndex}
-                            data={data}
-                            onCardClick={setSelectedService}
-                            onClickTracking={onClickTracking}
-                        />
-                    ))}
-                </div>
             </div>
 
             {/* Modal de Servicio - Solo para landing */}
