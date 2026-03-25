@@ -1,1 +1,0 @@
-import"./vendor-react-DkiTIbBC.js";import"./Footer-ByiMNtEZ.js";import"./TippyButton-CQKswuFW.js";import"./SelectAPIFormGroup-CuXqClqN.js";import"./MenuItem-CpyzDJkc.js";import"./Menu-CZ5ib_W7.js";import"./vendor-swiper-CzbgrbaK.js";import"./___vite-browser-external_commonjs-proxy-CrtcsTbp.js";import"./index-nWFottC5.js";moment.tz.setDefault("UTC");

@@ -48,10 +48,13 @@ class ServiceController extends BasicController
             ->orderBy('name')
             ->get();
 
+        $generals = \App\Models\General::all();
+
         return [
             'service_categories' => $categories,
             'service_sub_categories' => $subcategories,
-            'partners' => $partners
+            'partners' => $partners,
+            'generals' => $generals
         ];
     }
 

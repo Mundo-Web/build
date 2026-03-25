@@ -458,7 +458,16 @@ const System = ({
                 return wrapWithAnimation(
                     <ProductDetail
                         which={value}
-                        item={filteredData.Item || Object.values(filteredData).find(x => x && typeof x === 'object' && !Array.isArray(x) && (x.id || x.slug))}
+                        item={
+                            filteredData.Item ||
+                            Object.values(filteredData).find(
+                                (x) =>
+                                    x &&
+                                    typeof x === "object" &&
+                                    !Array.isArray(x) &&
+                                    (x.id || x.slug),
+                            )
+                        }
                         cart={cart}
                         setCart={setCart}
                         data={dataWithElementId}
@@ -549,6 +558,7 @@ const System = ({
                         which={value}
                         data={dataWithElementId}
                         items={getItems(itemsId)}
+                        generals={generals}
                     />,
                 );
             case "service-detail":

@@ -1,1 +1,0 @@
-import"./vendor-react-DkiTIbBC.js";import{C as o}from"./CoursesRest-BfLYSYF_.js";import"./BasicRest-Hx0T39B-.js";import"./SelectAPIFormGroup-CuXqClqN.js";import"./___vite-browser-external_commonjs-proxy-CrtcsTbp.js";import"./CardProductKatya-DeulnPkk.js";import"./BooleanLimit-q2Ad9fGY.js";new o;

@@ -19,7 +19,11 @@ import Fillable from "../Utils/Fillable";
 
 const servicesRest = new ServicesRest();
 
-const Services = ({ service_categories = [], service_sub_categories = [] }) => {
+const Services = ({
+    service_categories = [],
+    service_sub_categories = [],
+    generals = [],
+}) => {
     const gridRef = useRef();
     const modalRef = useRef();
 
@@ -617,6 +621,130 @@ const Services = ({ service_categories = [], service_sub_categories = [] }) => {
         }
     };
 
+    const onUploadCatalog = async () => {
+        const currentCatalogUrl =
+            generals.find((g) => g.correlative === "services.file_catalogo_url")
+                ?.description || "";
+
+        const hasCatalog = !!currentCatalogUrl;
+
+        const {
+            value: result,
+            isDismissed,
+            isDenied,
+        } = await Swal.fire({
+            title: "Catálogo General de Servicios",
+            showCancelButton: true,
+            confirmButtonText: "Guardar",
+            cancelButtonText: "Cancelar",
+            showDenyButton: hasCatalog,
+            denyButtonText:
+                '<i class="fas fa-trash me-1"></i> Eliminar Catálogo',
+            denyButtonColor: "#dc3545",
+            html: `
+                <div class="text-start">
+                    <label class="form-label fw-semibold mb-1">URL del Catálogo (Link)</label>
+                    <input
+                        id="swal-catalog-url"
+                        type="text"
+                        class="swal2-input mx-0 w-100"
+                        placeholder="https://ejemplo.com/catalogo.pdf"
+                        value="${currentCatalogUrl.replace(/"/g, "&quot;")}"
+                    />
+                    <p class="text-sm text-muted mt-2 mb-2">Ingresa un <b>link externo</b> o carga tu catálogo en el repositorio. Deja el campo <b>vacío</b> y guarda para eliminar.</p>
+                    <div class="bg-light p-2 rounded border" style="font-size:14px;">
+                        <p class="fw-bold text-dark text-uppercase mb-1" style="font-size:16px;">Instrucciones para el repositorio:</p>
+                        <ol class="text-muted ps-3 mb-0">
+                            <li class="mb-1">Clic en <b>"Abrir Repositorio"</b> abajo.</li>
+                            <li class="mb-1">Sube tu archivo PDF o documento.</li>
+                            <li class="mb-1">Clic en el icono de enlace <i class="fas fa-link"></i> de tu archivo.</li>
+                            <li>Selecciona <b>"Copiar enlace"</b> y pégalo arriba.</li>
+                        </ol>
+                    </div>
+                </div>
+            `,
+            footer: '<button type="button" class="btn btn-primary w-100" onclick="window.open(\'/admin/repository\', \'_blank\')"><i class="fas fa-plus me-2"></i> Abrir Repositorio</button>',
+            preConfirm: () => {
+                return document.getElementById("swal-catalog-url")?.value ?? "";
+            },
+        });
+
+        // Si el usuario canceló (X o botón Cancelar), no hacer nada
+        if (isDismissed) return;
+
+        // Si pulsó "Eliminar Catálogo" → pedir confirmación
+        if (isDenied) {
+            const { isConfirmed: confirmDelete } = await Swal.fire({
+                title: "¿Eliminar catálogo?",
+                text: "Se eliminará el enlace al catálogo general. El archivo en el repositorio no se borrará.",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonText: "Sí, eliminar",
+                cancelButtonText: "Cancelar",
+                confirmButtonColor: "#dc3545",
+            });
+            if (!confirmDelete) return;
+        }
+
+        // isDenied → vaciar URL; isConfirmed → usar el valor del input (puede ser "")
+        const urlToSave = isDenied ? "" : (result ?? "");
+
+        try {
+            // Mostrar un loader mientras guarda
+            Swal.fire({
+                title: urlToSave
+                    ? "Guardando catálogo..."
+                    : "Eliminando catálogo...",
+                didOpen: () => Swal.showLoading(),
+                allowOutsideClick: false,
+            });
+
+            const dataToSend = [
+                {
+                    correlative: "services.file_catalogo_url",
+                    name: "URL del Catálogo General en Servicios",
+                    description: urlToSave,
+                },
+            ];
+
+            // Forzar el guardado usando fetch directo para asegurar Content-Type
+            const response = await fetch("/api/admin/generals", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-Xsrf-Token": decodeURIComponent(
+                        document.cookie.match(/XSRF-TOKEN=([^;]+)/)?.[1] || "",
+                    ),
+                },
+                body: JSON.stringify(dataToSend),
+            });
+
+            if (response.ok) {
+                Swal.fire({
+                    icon: "success",
+                    title: "Éxito",
+                    text: urlToSave
+                        ? "Catálogo guardado correctamente"
+                        : "Catálogo eliminado correctamente",
+                    timer: 1500,
+                    showConfirmButton: false,
+                }).then(() => {
+                    location.reload();
+                });
+            } else {
+                const errorData = await response.json().catch(() => ({}));
+                throw new Error(errorData.message || "Error en el servidor");
+            }
+        } catch (error) {
+            console.error("Error saving catalog:", error);
+            Swal.fire(
+                "Error",
+                "No se pudo procesar la solicitud: " + error.message,
+                "error",
+            );
+        }
+    };
+
     return (
         <>
             <Table
@@ -624,6 +752,18 @@ const Services = ({ service_categories = [], service_sub_categories = [] }) => {
                 title="Servicios"
                 rest={servicesRest}
                 toolBar={(container) => {
+                    Fillable.has("services", "pdf") &&
+                        container.unshift({
+                            widget: "dxButton",
+                            location: "after",
+                            options: {
+                                icon: "upload",
+                                text: "Subir Catálogo",
+                                hint: "Subir Catálogo (Link)",
+                                onClick: () => onUploadCatalog(),
+                            },
+                        });
+
                     container.unshift({
                         widget: "dxButton",
                         location: "after",

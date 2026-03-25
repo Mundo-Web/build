@@ -5757,7 +5757,8 @@
                     ]
                 },
                 "generals": [
-                    "whatsapp_advisors"
+                    "whatsapp_advisors",
+                    "services.file_catalogo_url"
                 ]
             }
         ]

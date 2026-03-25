@@ -163,7 +163,12 @@ const ServiceCard = ({
     );
 };
 
-const ServiceWebQuirurgica2 = ({ data, items = [], onClickTracking }) => {
+const ServiceWebQuirurgica2 = ({
+    data,
+    items = [],
+    onClickTracking,
+    generals,
+}) => {
     const [selectedService, setSelectedService] = useState(null);
     const [isAdvisorDropdownOpen, setIsAdvisorDropdownOpen] = useState(false);
 
@@ -218,10 +223,10 @@ const ServiceWebQuirurgica2 = ({ data, items = [], onClickTracking }) => {
             <div className="2xl:max-w-7xl mx-auto px-primary 2xl:px-0">
                 {/* Encabezado con diseño moderno */}
                 <div
-                    className={`mb-20 max-w-4xl ${data?.class_header_container || ""}`}
+                    className={`mb-20 max-w-4xl mx-auto ${data?.class_header_container || ""}`}
                 >
                     <h2
-                        className={`text-5xl md:text-6xl lg:text-7xl font-extralight text-primary leading-tight mb-6 whitespace-pre-line ${data?.class_title || ""}`}
+                        className={`text-5xl md:text-6xl lg:text-7xl  font-extralight text-primary leading-tight mb-6 whitespace-pre-line ${data?.class_title || ""}`}
                     >
                         <TextWithHighlight
                             text={
@@ -241,6 +246,34 @@ const ServiceWebQuirurgica2 = ({ data, items = [], onClickTracking }) => {
                     )}
                 </div>
 
+                {(() => {
+                    const catalogUrl = generals?.find(
+                        (g) => g.correlative === "services.file_catalogo_url",
+                    )?.description;
+
+                    if (catalogUrl) {
+                        return (
+                            <div className="mb-16 flex justify-center">
+                                <a
+                                    href={catalogUrl}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="group inline-flex items-center gap-4 px-12 py-4 bg-accent text-white font-bold rounded-full transition-all duration-500 hover:shadow-[0_25px_50px_-12px_rgba(0,0,0,0.25)] hover:-translate-y-1 active:scale-95 shadow-xl"
+                                >
+                                    <div className="flex items-center justify-center w-8 h-8 rounded-full bg-white/20 transition-transform duration-500 group-hover:scale-110">
+                                        <Download className="w-5 h-5 text-white" />
+                                    </div>
+                                    <div className="flex flex-col items-start leading-none">
+                                        <span className="text-lg font-bold">
+                                            Descargar Plantilla
+                                        </span>
+                                    </div>
+                                </a>
+                            </div>
+                        );
+                    }
+                    return null;
+                })()}
                 {/* Grid Fibonacci Pattern - sin aspect ratios para llenar el grid naturalmente */}
                 <div className="grid grid-cols-12 gap-6 lg:gap-8 auto-rows-[400px]">
                     {sortedServices.map((service, serviceIndex) => (
