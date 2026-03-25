@@ -112,10 +112,22 @@ class SystemController extends BasicController
     public function updateOrder(Request $request)
     {
         $response = Response::simpleTryCatch(function () use ($request) {
-            $udpates = $request->all();
-            foreach ($udpates as $id => $after_component) {
+            $updates = $request->all();
+            if (empty($updates)) {
+                $updates = json_decode($request->getContent(), true);
+            }
+            foreach ($updates as $id => $data) {
                 $system = System::find($id);
-                $system->after_component = $after_component;
+                if (!$system) continue;
+
+                if (is_array($data)) {
+                    $system->after_component = $data['after_component'] ?? null;
+                    if (array_key_exists('page_id', $data)) {
+                        $system->page_id = $data['page_id'];
+                    }
+                } else {
+                    $system->after_component = $data;
+                }
                 $system->save();
             }
             Cache::flush();
@@ -129,6 +141,9 @@ class SystemController extends BasicController
             $pages = JSON::parse(File::get(storage_path('app/pages.json')));
 
             $pageData = $request->all();
+            if (empty($pageData)) {
+                $pageData = json_decode($request->getContent(), true);
+            }
             $pageId = $pageData['id'] ?? null;
 
             $isUpdated = false;

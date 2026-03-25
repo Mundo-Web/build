@@ -99,7 +99,11 @@ class GeneralController extends BasicController
     public function updateVisibility(Request $request): HttpResponse|ResponseFactory
     {
         $response = Response::simpleTryCatch(function () use ($request) {
-            $updates = $request->input('updates', []);
+            $body = $request->all();
+            if (empty($body)) {
+                $body = json_decode($request->getContent(), true);
+            }
+            $updates = $body['updates'] ?? [];
             $updatedCount = 0;
 
             foreach ($updates as $update) {
@@ -137,7 +141,11 @@ class GeneralController extends BasicController
                 throw new \Exception('No autorizado para administrar límites.');
             }
 
-            $limits = $request->input('limits', []);
+            $body = $request->all();
+            if (empty($body)) {
+                $body = json_decode($request->getContent(), true);
+            }
+            $limits = $body['limits'] ?? [];
 
             if (!is_array($limits)) {
                 throw new \InvalidArgumentException('Formato de límites inválido.');

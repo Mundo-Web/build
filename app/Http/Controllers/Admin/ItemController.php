@@ -272,6 +272,13 @@ class ItemController extends BasicController
     public function save(Request $request): HttpResponse|ResponseFactory
     {
         Log::info('ItemController save method called - Custom save executing');
+        $body = $request->all();
+        if (empty($body)) {
+            $body = json_decode($request->getContent(), true);
+            if ($body) {
+                $request->merge($body);
+            }
+        }
         DB::beginTransaction();
         try {
             // Validar los datos recibidos

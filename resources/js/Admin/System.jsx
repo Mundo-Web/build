@@ -198,16 +198,17 @@ const System = ({
         forcePlaceholderSize: true,
         update: async function (event, ui) {
 
+          const pageId = $(container).data('page-id') ?? null;
           const systemsSorted = [...$(container).children()];
           const updates = {};
 
-          systemsSorted.forEach(system => {
-            const id = $(system).data('id');
-            const after_component = $(system).prev().data('id') ?? null;
+          systemsSorted.forEach(item => {
+            const id = $(item).data('id');
+            const after_component = $(item).prev().data('id') ?? null;
 
             const currentSystem = systems.find(x => x.id == id);
-            if (currentSystem?.after_component !== after_component) {
-              updates[id] = after_component;
+            if (currentSystem?.after_component !== after_component || currentSystem?.page_id !== pageId) {
+              updates[id] = { after_component, page_id: pageId };
             }
           });
 
@@ -216,20 +217,16 @@ const System = ({
             if (!result) return;
 
             setSystems(old => {
-              // Crear una copia del array actual
               const newSystems = [...old];
-
-              // Actualizar todos los sistemas afectados de una vez
-              Object.entries(updates).forEach(([id, after_component]) => {
+              Object.entries(updates).forEach(([id, data]) => {
                 const index = newSystems.findIndex(s => s.id == id);
                 if (index !== -1) {
                   newSystems[index] = {
                     ...newSystems[index],
-                    after_component
+                    ...data
                   };
                 }
               });
-
               return newSystems;
             });
           }
