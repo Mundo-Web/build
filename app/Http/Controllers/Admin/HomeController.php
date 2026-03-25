@@ -890,7 +890,14 @@ class HomeController extends BasicController
                 ], 403);
             }
 
-            $visibilityConfig = $request->input('visibility', []);
+            $visibilityConfig = $request->input('visibility');
+
+            if (empty($visibilityConfig) && $request->getContent()) {
+                $content = json_decode($request->getContent(), true);
+                $visibilityConfig = $content['visibility'] ?? [];
+            } else {
+                $visibilityConfig = $visibilityConfig ?? [];
+            }
 
             // Buscar o crear el registro de visibilidad
             $visibilityRecord = General::where('correlative', 'VisibilityDashboard')->first();
