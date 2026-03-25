@@ -32,6 +32,8 @@ class Service extends Model
         'is_specifications',
         'is_gallery',
         'order_index',
+
+        "file_catalogo_general"
     ];
 
     protected $casts = [

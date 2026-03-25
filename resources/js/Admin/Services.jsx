@@ -502,25 +502,25 @@ const Services = ({
         pdfs.forEach((pdf, index) => {
             if (pdf.file) {
                 // Es un archivo nuevo
-                formData.append('pdf[]', pdf.file);
+                formData.append("pdf[]", pdf.file);
                 pdfOrder.push({
-                    type: 'new',
+                    type: "new",
                     name: pdf.name,
-                    order: index
+                    order: index,
                 });
             } else if (pdf.url) {
                 // Es un archivo existente
                 pdfOrder.push({
-                    type: 'existing',
+                    type: "existing",
                     url: pdf.url,
                     name: pdf.name,
-                    order: index
+                    order: index,
                 });
             }
         });
 
         if (pdfOrder.length > 0) {
-            formData.append('pdf_order', JSON.stringify(pdfOrder));
+            formData.append("pdf_order", JSON.stringify(pdfOrder));
         }
 
         const deletedPdfInputs =
@@ -752,7 +752,7 @@ const Services = ({
                 title="Servicios"
                 rest={servicesRest}
                 toolBar={(container) => {
-                    Fillable.has("services", "pdf") &&
+                    Fillable.has("services", "file_catalogo_general") &&
                         container.unshift({
                             widget: "dxButton",
                             location: "after",
@@ -1669,9 +1669,9 @@ const Services = ({
                                                     <div className="mb-4">
                                                         <label className="form-label fw-semibold text-dark mb-3">
                                                             <i className="fas fa-file-pdf me-2 text-danger"></i>
-                                                            Archivos y Documentos
-                                                            (Manuales /
-                                                            Catálogos)
+                                                            Archivos y
+                                                            Documentos (Manuales
+                                                            / Catálogos)
                                                             {pdfs.length >
                                                                 0 && (
                                                                 <span className="badge bg-danger ms-2">
@@ -1760,15 +1760,67 @@ const Services = ({
                                                                                     1}
                                                                             </span>
                                                                             <i className="fas fa-grip-vertical text-muted me-3"></i>
-                                                                            <i className={`fas ${
-                                                                                pdf.name?.toLowerCase().endsWith('.pdf') ? 'fa-file-pdf text-danger' :
-                                                                                pdf.name?.toLowerCase().endsWith('.doc') || pdf.name?.toLowerCase().endsWith('.docx') ? 'fa-file-word text-primary' :
-                                                                                pdf.name?.toLowerCase().endsWith('.xls') || pdf.name?.toLowerCase().endsWith('.xlsx') ? 'fa-file-excel text-success' :
-                                                                                pdf.name?.toLowerCase().endsWith('.ppt') || pdf.name?.toLowerCase().endsWith('.pptx') ? 'fa-file-powerpoint text-warning' :
-                                                                                pdf.name?.toLowerCase().endsWith('.zip') || pdf.name?.toLowerCase().endsWith('.rar') ? 'fa-file-archive text-warning' :
-                                                                                pdf.name?.toLowerCase().endsWith('.txt') ? 'fa-file-alt text-muted' :
-                                                                                'fa-file text-muted'
-                                                                            } me-2`}></i>
+                                                                            <i
+                                                                                className={`fas ${
+                                                                                    pdf.name
+                                                                                        ?.toLowerCase()
+                                                                                        .endsWith(
+                                                                                            ".pdf",
+                                                                                        )
+                                                                                        ? "fa-file-pdf text-danger"
+                                                                                        : pdf.name
+                                                                                                ?.toLowerCase()
+                                                                                                .endsWith(
+                                                                                                    ".doc",
+                                                                                                ) ||
+                                                                                            pdf.name
+                                                                                                ?.toLowerCase()
+                                                                                                .endsWith(
+                                                                                                    ".docx",
+                                                                                                )
+                                                                                          ? "fa-file-word text-primary"
+                                                                                          : pdf.name
+                                                                                                  ?.toLowerCase()
+                                                                                                  .endsWith(
+                                                                                                      ".xls",
+                                                                                                  ) ||
+                                                                                              pdf.name
+                                                                                                  ?.toLowerCase()
+                                                                                                  .endsWith(
+                                                                                                      ".xlsx",
+                                                                                                  )
+                                                                                            ? "fa-file-excel text-success"
+                                                                                            : pdf.name
+                                                                                                    ?.toLowerCase()
+                                                                                                    .endsWith(
+                                                                                                        ".ppt",
+                                                                                                    ) ||
+                                                                                                pdf.name
+                                                                                                    ?.toLowerCase()
+                                                                                                    .endsWith(
+                                                                                                        ".pptx",
+                                                                                                    )
+                                                                                              ? "fa-file-powerpoint text-warning"
+                                                                                              : pdf.name
+                                                                                                      ?.toLowerCase()
+                                                                                                      .endsWith(
+                                                                                                          ".zip",
+                                                                                                      ) ||
+                                                                                                  pdf.name
+                                                                                                      ?.toLowerCase()
+                                                                                                      .endsWith(
+                                                                                                          ".rar",
+                                                                                                      )
+                                                                                                ? "fa-file-archive text-warning"
+                                                                                                : pdf.name
+                                                                                                        ?.toLowerCase()
+                                                                                                        .endsWith(
+                                                                                                            ".txt",
+                                                                                                        )
+                                                                                                  ? "fa-file-alt text-muted"
+                                                                                                  : "fa-file text-muted"
+                                                                                } me-2`}
+                                                                            ></i>
                                                                             <span
                                                                                 className="text-truncate"
                                                                                 style={{
