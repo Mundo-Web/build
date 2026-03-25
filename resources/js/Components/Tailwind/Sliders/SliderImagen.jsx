@@ -6,17 +6,23 @@ import { useEffect, useRef, useState } from "react";
 import { adjustTextColor } from "../../../Functions/adjustTextColor";
 
 const SliderImagen = ({ items, data }) => {
-    const prevSlideRef = useRef(null);
-    const nextSlideRef = useRef(null);
+    const [prevEl, setPrevEl] = useState(null);
+    const [nextEl, setNextEl] = useState(null);
     const swiperRef = useRef(null);
     const [imagesLoaded, setImagesLoaded] = useState(false);
     const [, setMaxHeight] = useState(0);
 
     // Adjust button colors
     useEffect(() => {
-        adjustTextColor(prevSlideRef.current);
-        adjustTextColor(nextSlideRef.current);
-    }, []);
+        if (prevEl) {
+            console.log("SliderImagen: Botón previo detectado");
+            adjustTextColor(prevEl);
+        }
+        if (nextEl) {
+            console.log("SliderImagen: Botón siguiente detectado");
+            adjustTextColor(nextEl);
+        }
+    }, [prevEl, nextEl]);
 
     // Handle image loading and height calculation
     const handleImagesLoad = () => {
@@ -46,7 +52,7 @@ const SliderImagen = ({ items, data }) => {
                 <div className="mx-auto px-primary 2xl:px-0 2xl:max-w-7xl">
                     <div className="relative flex items-center justify-center">
                         <button
-                            ref={prevSlideRef}
+                            ref={setPrevEl}
                             className={`absolute -left-2 z-20 p-2  rounded-lg shadow-lg hover:scale-105 transition-transform ${data?.class_button || "bg-white"}`}
                             aria-label="Previous brand"
                         >
@@ -68,8 +74,8 @@ const SliderImagen = ({ items, data }) => {
                         <Swiper
                             modules={data?.autoplay ? [Navigation, Autoplay] : [Navigation]}
                             navigation={{
-                                prevEl: prevSlideRef.current,
-                                nextEl: nextSlideRef.current,
+                                prevEl: prevEl,
+                                nextEl: nextEl,
                             }}
                             autoplay={data?.autoplay ? {
                                 delay: 3000,
@@ -121,7 +127,7 @@ const SliderImagen = ({ items, data }) => {
                         </Swiper>
 
                         <button
-                            ref={nextSlideRef}
+                            ref={setNextEl}
                             className={`absolute -right-2 z-20 p-2  rounded-lg shadow-lg hover:scale-105 transition-transform ${data?.class_button || "bg-white customtext-neutral-dark"}`}
                             aria-label="Next brand"
                         >
