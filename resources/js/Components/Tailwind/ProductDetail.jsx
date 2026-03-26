@@ -118,7 +118,7 @@ const ProductDetail = ({
                         setCart={setCart}
                         data={data}
                         textstatic={textstatic}
-                        contacts={contacts}
+                        contacts={generals}
                         onViewUpdate={handleViewUpdate}
                     />
                 );
