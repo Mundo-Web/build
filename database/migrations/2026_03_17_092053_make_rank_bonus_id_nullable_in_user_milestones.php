@@ -3,17 +3,38 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
+        $fkName = 'user_milestones_rank_bonus_id_foreign';
+
+        // Improved raw SQL for safety
+        DB::statement("SET FOREIGN_KEY_CHECKS=0;");
+        
+        try {
+            // Drop foreign key if it exists
+            DB::statement("ALTER TABLE user_milestones DROP FOREIGN KEY IF EXISTS `$fkName` ");
+        } catch (\Exception $e) {}
+        
+        try {
+            // Drop index if it exists
+            DB::statement("ALTER TABLE user_milestones DROP INDEX IF EXISTS `$fkName` ");
+        } catch (\Exception $e) {}
+
         Schema::table('user_milestones', function (Blueprint $table) {
-            $table->foreignUuid('rank_bonus_id')->nullable()->change();
+            // Change the column type to match rank_bonuses.id (bigint unsigned) and make it nullable
+            $table->unsignedBigInteger('rank_bonus_id')->nullable()->change();
         });
+
+        Schema::table('user_milestones', function (Blueprint $table) use ($fkName) {
+            // Re-add the foreign key constraint correctly
+            $table->foreign('rank_bonus_id', $fkName)->references('id')->on('rank_bonuses')->onDelete('cascade');
+        });
+
+        DB::statement("SET FOREIGN_KEY_CHECKS=1;");
     }
 
     /**
@@ -21,8 +42,14 @@ return new class extends Migration
      */
     public function down(): void
     {
+        DB::statement("SET FOREIGN_KEY_CHECKS=0;");
+        
         Schema::table('user_milestones', function (Blueprint $table) {
-            $table->foreignUuid('rank_bonus_id')->nullable(false)->change();
+            $table->dropForeign(['rank_bonus_id']);
+            $table->unsignedBigInteger('rank_bonus_id')->nullable(false)->change();
+            $table->foreign('rank_bonus_id')->references('id')->on('rank_bonuses')->onDelete('cascade');
         });
+
+        DB::statement("SET FOREIGN_KEY_CHECKS=1;");
     }
 };
