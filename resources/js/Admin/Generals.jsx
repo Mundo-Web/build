@@ -99,6 +99,7 @@ const Generals = ({
             "invite_seller_email",
             "welcome_seller_email",
             "invite_provider_email",
+            "welcome_provider_email",
         ],
         contact: [
             "phone_contact",
