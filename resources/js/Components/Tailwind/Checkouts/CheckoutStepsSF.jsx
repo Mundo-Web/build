@@ -312,7 +312,7 @@ export default function CheckoutStepsSF({
                         totalFinal={totalFinal}
                         user={user}
                         prefixes={prefixes}
-                        contacts={contacts}
+                        contacts={generals}
                         ubigeos={ubigeos}
                         items={items}
                         descuentofinal={descuentofinal}

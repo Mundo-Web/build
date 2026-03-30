@@ -3753,7 +3753,12 @@
                     "privacy_policy",
                     "delivery_policy",
                     "saleback_policy",
-                    "additional_shipping_costs"
+                    "additional_shipping_costs",
+                    "checkout_mercadopago",
+                    "checkout_openpay",
+                    "shipping_free"
+        
+       
                 ]
             },
             {
