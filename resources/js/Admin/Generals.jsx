@@ -100,6 +100,8 @@ const Generals = ({
             "welcome_seller_email",
             "invite_provider_email",
             "welcome_provider_email",
+            "item_status_changed_email",
+            "admin_new_item_email",
         ],
         contact: [
             "phone_contact",
