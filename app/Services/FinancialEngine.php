@@ -8,7 +8,7 @@ use App\Models\Rank;
 use App\Models\Commission;
 use App\Models\RankBonus;
 use App\Models\UserMilestone;
-use Illuminate\Support\Carbon;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -156,22 +156,31 @@ class FinancialEngine
             $personalValue = ($rank->requirement_type === 'items') ? $user->total_items : $user->total_points;
             $groupValue = ($rank->requirement_type === 'items') ? $user->group_items : $user->group_points;
 
-            $achieved = false;
+            // 1. Verificar Metas de Volumen (Items/Ventas)
+            $achievedVolume = false;
             if ($rank->requirement_logic === 'AND') {
-                $achieved = ($personalValue >= $rank->min_personal_items) && ($groupValue >= $rank->min_group_items);
+                $achievedVolume = ($personalValue >= $rank->min_personal_items) && ($groupValue >= $rank->min_group_items);
             } else {
-                // Lógica OR: Debe cumplir al menos uno de los requisitos definidos (> 0)
                 $pOk = ($rank->min_personal_items > 0) ? ($personalValue >= $rank->min_personal_items) : false;
                 $gOk = ($rank->min_group_items > 0) ? ($groupValue >= $rank->min_group_items) : false;
-                
-                if ($rank->min_personal_items <= 0 && $rank->min_group_items <= 0) {
-                    $achieved = true; // Rango inicial
-                } else {
-                    $achieved = $pOk || $gOk;
-                }
+                $achievedVolume = ($rank->min_personal_items <= 0 && $rank->min_group_items <= 0) ? true : ($pOk || $gOk);
             }
 
-            if ($achieved) {
+            // 2. Verificar Reclutas Activos
+            $activeRecruits = $this->countActiveRecruits($user, $rank->min_active_seller_amount);
+            $achievedRecruits = ($activeRecruits >= $rank->min_active_recruits);
+
+            // 3. Verificar Líderes (Equipos)
+            $leadersCount = $this->countLeaders($user, $rank->recruits_per_leader);
+            $achievedLeaders = ($leadersCount >= $rank->min_leaders);
+
+            // 4. Verificar Meses de Mantenimiento (si aplica)
+            $achievedMaintenance = true;
+            if ($rank->maintenance_months > 0) {
+                $achievedMaintenance = $this->checkMaintenanceMonths($user, $rank);
+            }
+
+            if ($achievedVolume && $achievedRecruits && $achievedLeaders && $achievedMaintenance) {
                 // Si el rango es mayor en orden o es el primero que cumple
                 if (!$bestRank || $rank->order_index > $bestRank->order_index) {
                     $bestRank = $rank;
@@ -292,9 +301,184 @@ class FinancialEngine
             'user_id' => $user->id,
             'rank_bonus_id' => $bonus->id,
             'commission_id' => $commission->id,
+            'description' => "Bono alcanzado: " . $bonus->name,
             'achieved_at' => now(),
         ]);
 
         Log::info("¡Bono extra otorgado! Usuario {$user->name} ganó S/ {$bonus->bonus_amount} por {$bonus->name}");
+    }
+
+    /**
+     * Cuenta cuántos reclutas directos del usuario tienen compras mayores a $minAmount en un periodo dado.
+     */
+    public function countActiveRecruits(User $user, float $minAmount, Carbon $date = null): int
+    {
+        if ($minAmount <= 0) return 0;
+
+        $date = $date ?? Carbon::now();
+        $startOfMonth = $date->copy()->startOfMonth();
+        $endOfMonth = $date->copy()->endOfMonth();
+
+        // Obtener referidos directos
+        $referralIds = User::where('referred_by', $user->id)->pluck('id');
+
+        if ($referralIds->isEmpty()) {
+            return 0;
+        }
+
+        // Contar cuántos de esos referidos tienen ventas mayores a $minAmount en el periodo.
+        return Sale::whereIn('referrer_id', $referralIds)
+            ->whereBetween('created_at', [$startOfMonth, $endOfMonth])
+            ->whereHas('status', function($q) {
+                $q->where('name', 'like', '%Pagado%');
+            })
+            ->select('referrer_id')
+            ->groupBy('referrer_id')
+            ->havingRaw('SUM(total_amount) >= ?', [$minAmount])
+            ->get()
+            ->count();
+    }
+
+    /**
+     * Cuenta cuántos líderes (referidos directos) tienen al menos $minTeamSize reclutas en su equipo (recursivo).
+     */
+    public function countLeaders(User $user, int $minTeamSize): int
+    {
+        if ($minTeamSize <= 0) return 0;
+
+        $referralIds = User::where('referred_by', $user->id)->pluck('id');
+        
+        if ($referralIds->isEmpty()) {
+            return 0;
+        }
+
+        $leadersCount = 0;
+        foreach ($referralIds as $referralId) {
+            // Contar todo el equipo del referido (recursivo)
+            $teamSize = $this->getTeamSizeRecursive($referralId);
+            if ($teamSize >= $minTeamSize) {
+                $leadersCount++;
+            }
+        }
+
+        return $leadersCount;
+    }
+
+    /**
+     * Obtiene el tamaño total del equipo (descendientes) de un usuario.
+     */
+    public function getTeamSizeRecursive($userId): int
+    {
+        $count = 0;
+        $childrenIds = User::where('referred_by', $userId)->pluck('id');
+        
+        $count += $childrenIds->count();
+        
+        foreach ($childrenIds as $childId) {
+            $count += $this->getTeamSizeRecursive($childId);
+        }
+        
+        return $count;
+    }
+
+    /**
+     * Verifica si el usuario ha mantenido los requisitos base de un rango durante $maintenanceMonths meses.
+     */
+    private function checkMaintenanceMonths(User $user, Rank $rank): bool
+    {
+        if ($rank->maintenance_months <= 0) return true;
+
+        // Debemos verificar los últimos N meses (incluyendo el actual ya verificado en el loop principal)
+        // Empezamos desde el mes pasado y vamos hacia atrás
+        for ($i = 1; $i < $rank->maintenance_months; $i++) {
+            $checkDate = Carbon::now()->subMonths($i);
+            if (!$this->checkRequirementsForMonth($user, $rank, $checkDate)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * Verifica si el usuario cumplió los requisitos de un rango en un mes específico.
+     */
+    public function checkRequirementsForMonth(User $user, Rank $rank, Carbon $date): bool
+    {
+        $start = $date->copy()->startOfMonth();
+        $end = $date->copy()->endOfMonth();
+
+        // 1. Calcular Volumen del mes
+        $personalPoints = Sale::where('referrer_id', $user->id)
+            ->whereBetween('created_at', [$start, $end])
+            ->whereHas('status', fn($q) => $q->where('name', 'like', '%Pagado%'))
+            ->sum('total_amount');
+
+        $personalItems = DB::table('sales')
+            ->join('sale_details', 'sales.id', '=', 'sale_details.sale_id')
+            ->join('sale_statuses', 'sales.status_id', '=', 'sale_statuses.id')
+            ->where('sales.referrer_id', $user->id)
+            ->whereBetween('sales.created_at', [$start, $end])
+            ->where('sale_statuses.name', 'like', '%Pagado%')
+            ->sum('sale_details.quantity');
+
+        // Para volumen de grupo en el pasado, necesitamos sumar ventas de descendientes en ese periodo
+        $descendantIds = $this->getAllDescendantIds($user->id);
+        
+        $groupPoints = Sale::whereIn('referrer_id', $descendantIds)
+            ->whereBetween('created_at', [$start, $end])
+            ->whereHas('status', fn($q) => $q->where('name', 'like', '%Pagado%'))
+            ->sum('total_amount') + $personalPoints;
+
+        $groupItems = DB::table('sales')
+            ->join('sale_details', 'sales.id', '=', 'sale_details.sale_id')
+            ->join('sale_statuses', 'sales.status_id', '=', 'sale_statuses.id')
+            ->whereIn('sales.referrer_id', $descendantIds)
+            ->whereBetween('sales.created_at', [$start, $end])
+            ->where('sale_statuses.name', 'like', '%Pagado%')
+            ->sum('sale_details.quantity') + $personalItems;
+
+        $personalValue = ($rank->requirement_type === 'items') ? $personalItems : $personalPoints;
+        $groupValue = ($rank->requirement_type === 'items') ? $groupItems : $groupPoints;
+
+        // Validar Volumen
+        $achievedVolume = false;
+        if ($rank->requirement_logic === 'AND') {
+            $achievedVolume = ($personalValue >= $rank->min_personal_items) && ($groupValue >= $rank->min_group_items);
+        } else {
+            $pOk = ($rank->min_personal_items > 0) ? ($personalValue >= $rank->min_personal_items) : false;
+            $gOk = ($rank->min_group_items > 0) ? ($groupValue >= $rank->min_group_items) : false;
+            $achievedVolume = ($rank->min_personal_items <= 0 && $rank->min_group_items <= 0) ? true : ($pOk || $gOk);
+        }
+
+        if (!$achievedVolume) return false;
+
+        // 2. Validar Reclutas Activos en ese mes
+        $activeRecruits = $this->countActiveRecruits($user, $rank->min_active_seller_amount, $date);
+        if ($activeRecruits < $rank->min_active_recruits) return false;
+
+        // 3. Validar Líderes
+        // El tamaño del equipo lo tomamos como el actual (o podríamos filtrarlo por fecha de creación si quisiéramos ser exactos)
+        $leadersCount = $this->countLeaders($user, $rank->recruits_per_leader);
+        if ($leadersCount < $rank->min_leaders) return false;
+
+        return true;
+    }
+
+    /**
+     * Obtiene todos los IDs de los descendientes en el árbol.
+     */
+    private function getAllDescendantIds(int $userId): array
+    {
+        $ids = [];
+        $childrenIds = User::where('referred_by', $userId)->pluck('id')->toArray();
+        
+        $ids = array_merge($ids, $childrenIds);
+        
+        foreach ($childrenIds as $childId) {
+            $ids = array_merge($ids, $this->getAllDescendantIds($childId));
+        }
+        
+        return array_unique($ids);
     }
 }

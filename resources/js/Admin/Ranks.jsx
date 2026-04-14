@@ -33,6 +33,13 @@ const Ranks = ({}) => {
     const bonusAmountRef = useRef();
     const benefitsRef = useRef();
     const colorRef = useRef();
+    const minActiveRecruitsRef = useRef();
+    const minActiveSellerAmountRef = useRef();
+    const maintenanceMonthsRef = useRef();
+    const lossConditionMonthsRef = useRef();
+    const fixedSalaryRef = useRef();
+    const minLeadersRef = useRef();
+    const recruitsPerLeaderRef = useRef();
 
     const onModalOpen = (data) => {
         setIsEditing(!!data?.id);
@@ -50,6 +57,13 @@ const Ranks = ({}) => {
         if (bonusAmountRef.current) bonusAmountRef.current.value = data?.bonus_amount || 0;
         if (benefitsRef.current) benefitsRef.current.value = Array.isArray(data?.benefits) ? data.benefits.join("\n") : "";
         if (colorRef.current) colorRef.current.value = data?.color || "#3bafda";
+        if (minActiveRecruitsRef.current) minActiveRecruitsRef.current.value = data?.min_active_recruits || 0;
+        if (minActiveSellerAmountRef.current) minActiveSellerAmountRef.current.value = data?.min_active_seller_amount || 300;
+        if (maintenanceMonthsRef.current) maintenanceMonthsRef.current.value = data?.maintenance_months || 0;
+        if (lossConditionMonthsRef.current) lossConditionMonthsRef.current.value = data?.loss_condition_months || 0;
+        if (fixedSalaryRef.current) fixedSalaryRef.current.value = data?.fixed_salary || 0;
+        if (minLeadersRef.current) minLeadersRef.current.value = data?.min_leaders || 0;
+        if (recruitsPerLeaderRef.current) recruitsPerLeaderRef.current.value = data?.recruits_per_leader || 0;
 
         $(modalRef.current).modal("show");
     };
@@ -70,6 +84,13 @@ const Ranks = ({}) => {
             bonus_amount: bonusAmountRef.current?.value,
             benefits: benefitsRef.current?.value.split("\n").filter(b => b.trim() !== ""),
             color: colorRef.current?.value,
+            min_active_recruits: minActiveRecruitsRef.current?.value,
+            min_active_seller_amount: minActiveSellerAmountRef.current?.value,
+            maintenance_months: maintenanceMonthsRef.current?.value,
+            loss_condition_months: lossConditionMonthsRef.current?.value,
+            fixed_salary: fixedSalaryRef.current?.value,
+            min_leaders: minLeadersRef.current?.value,
+            recruits_per_leader: recruitsPerLeaderRef.current?.value,
         };
 
         const result = await ranksRest.save(request);
@@ -208,6 +229,21 @@ const Ranks = ({}) => {
                         },
                     },
                     {
+                        caption: "Condiciones Especiales",
+                        width: 220,
+                        cellTemplate: (container, { data }) => {
+                            const details = [];
+                            if (data.min_active_recruits > 0) details.push(`<i class="fa fa-users text-primary me-1"></i> ${data.min_active_recruits} Reclutas`);
+                            if (data.min_leaders > 0) details.push(`<i class="fa fa-star text-warning me-1"></i> ${data.min_leaders} Líderes (${data.recruits_per_leader} rec. c/u)`);
+                            if (data.fixed_salary > 0) details.push(`<i class="fa fa-money-bill text-success me-1"></i> Sueldo: S/ ${data.fixed_salary}`);
+                            if (data.maintenance_months > 0) details.push(`<i class="fa fa-calendar-check text-info me-1"></i> Mantener: ${data.maintenance_months} meses`);
+                            if (data.loss_condition_months > 0) details.push(`<i class="fa fa-calendar-times text-danger me-1"></i> Pérdida: ${data.loss_condition_months} meses`);
+                            
+                            if (details.length === 0) return container.text('-');
+                            $(container).html(`<div style="font-size: 11px; line-height: 1.4;">${details.join('<br>')}</div>`);
+                        }
+                    },
+                    {
                         caption: "Acciones",
                         width: 100,
                         cellTemplate: (container, { data }) => {
@@ -284,6 +320,34 @@ const Ranks = ({}) => {
                             refreshable={isEditing}
                         />
                     </div>
+
+                    <hr className="my-2" />
+                    <h5 className="mb-0 text-primary">Requisitos de Red y Mantenimiento</h5>
+
+                    <div className="col-md-4">
+                        <InputFormGroup eRef={minActiveRecruitsRef} label="Reclutas Activos" type="number" />
+                    </div>
+                    <div className="col-md-4">
+                        <InputFormGroup eRef={minActiveSellerAmountRef} label="Mín. Venta Activo (S/.)" type="number" step="0.01" />
+                    </div>
+                    <div className="col-md-4">
+                        <InputFormGroup eRef={fixedSalaryRef} label="Sueldo Fijo (S/.)" type="number" step="0.01" />
+                    </div>
+
+                    <div className="col-md-3">
+                        <InputFormGroup eRef={minLeadersRef} label="Cant. Líderes" type="number" />
+                    </div>
+                    <div className="col-md-3">
+                        <InputFormGroup eRef={recruitsPerLeaderRef} label="Reclutas x Líder" type="number" />
+                    </div>
+                    <div className="col-md-3">
+                        <InputFormGroup eRef={maintenanceMonthsRef} label="Meses Mantención" type="number" />
+                    </div>
+                    <div className="col-md-3">
+                        <InputFormGroup eRef={lossConditionMonthsRef} label="Meses Pérdida" type="number" />
+                    </div>
+
+                    <hr className="my-2" />
 
                     <div className="col-12">
                         <TextareaFormGroup eRef={benefitsRef} label="Beneficios Extra (Uno por línea)" rows={3} />

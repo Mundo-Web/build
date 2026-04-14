@@ -111,6 +111,68 @@ class SellerController extends BasicController
                 ->orderBy('order_index', 'asc')
                 ->first();
 
+            // Datos detallados para el progreso de rango
+            $activeRecruitsCount = 0;
+            $leadersCount = 0;
+            $maintenanceMonthsMet = 0;
+
+            if ($nextRank) {
+                // Instanciar motor para reusar lógica de conteo
+                /** @var \App\Services\FinancialEngine $engine */
+                $engine = app(\App\Services\FinancialEngine::class);
+
+                // Usar reflexión para acceder a los métodos de conteo si son privados o simplemente replicar la lógica
+                // Para evitar Reflection en el controlador, replicaremos la esencia de la lógica
+                
+                // 1. Reclutas Activos (Mes actual)
+                $minActiveAmount = $nextRank->min_active_seller_amount ?? 300;
+                $activeRecruitsCount = User::where('referred_by', $user->id)
+                    ->whereHas('roles', fn($q) => $q->where('name', 'Seller'))
+                    ->whereHas('commissions', function ($q) use ($minActiveAmount) {
+                        $q->whereBetween('created_at', [Carbon::now()->startOfMonth(), Carbon::now()])
+                          ->selectRaw('SUM(amount) as total')
+                          ->havingRaw('SUM(amount) >= ?', [$minActiveAmount]);
+                    })->count();
+
+                // 2. Líderes (Equipos recursivos)
+                $recruitsPerLeader = $nextRank->recruits_per_leader ?? 10;
+                $directSellers = User::where('referred_by', $user->id)
+                    ->whereHas('roles', fn($q) => $q->where('name', 'Seller'))
+                    ->get();
+
+                foreach ($directSellers as $ds) {
+                    // Contar equipo recursivo
+                    $teamSize = $engine->getTeamSizeRecursive($ds);
+                    if ($teamSize >= $recruitsPerLeader) {
+                        $leadersCount++;
+                    }
+                }
+
+                // 3. Meses de Mantenimiento (Simulado o real si hay historial)
+                // Por ahora, evaluamos si el mes actual cumple para empezar el conteo
+                $metThisMonth = $engine->checkRequirementsForMonth($user, $nextRank, Carbon::now());
+                if ($metThisMonth) {
+                    $maintenanceMonthsMet = 1; // Simplificación para la UI
+                }
+            }
+
+            // Historial de ganancias para el gráfico (últimos 15 días)
+            $earningsHistory = Commission::where('user_id', $user->id)
+                ->where('created_at', '>=', Carbon::now()->subDays(15))
+                ->selectRaw('DATE(created_at) as date, SUM(amount) as total')
+                ->groupBy('date')
+                ->orderBy('date', 'asc')
+                ->get();
+
+            // Comparativa mes anterior
+            $lastMonthStart = Carbon::now()->subMonth()->startOfMonth();
+            $lastMonthEnd = Carbon::now()->subMonth()->endOfMonth();
+            $commissionsLastMonth = Commission::where('user_id', $user->id)
+                ->whereBetween('created_at', [$lastMonthStart, $lastMonthEnd])
+                ->sum('amount') ?: 1; // Evitar división por cero
+
+            $growthPercentage = (($commissionsMonth - $commissionsLastMonth) / $commissionsLastMonth) * 100;
+
             /** @var User $user */
             return [
                 'storeUrl' => $referralUrl,
@@ -119,6 +181,17 @@ class SellerController extends BasicController
                 'directReferrals' => $directReferrals,
                 'user' => $user->load('rank'),
                 'nextRank' => $nextRank,
+                'requirementsProgress' => [
+                    'activeRecruits' => $activeRecruitsCount,
+                    'leaders' => $leadersCount,
+                    'maintenanceMonths' => $maintenanceMonthsMet,
+                    'personalItems' => (float)$user->total_items,
+                    'groupItems' => (float)$user->group_items,
+                    'personalPoints' => (float)$user->total_points,
+                    'groupPoints' => (float)$user->group_points,
+                ],
+                'earningsHistory' => $earningsHistory,
+                'growthPercentage' => $growthPercentage,
                 'totalCommissions' => $totalCommissions,
                 'commissionsToday' => $commissionsToday,
                 'commissionsMonth' => $commissionsMonth,
