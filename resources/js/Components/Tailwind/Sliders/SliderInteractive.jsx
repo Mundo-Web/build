@@ -454,8 +454,10 @@ const SliderInteractive = ({ items, data, generals = [] }) => {
                                             animate="animate"
                                             exit="exit"
                                             onClick={(e) =>
-                                                (window.location =
-                                                    item?.button_link)
+                                                window.open(
+                                                    item?.button_link,
+                                                    item?.button_new_tab ? "_blank" : "_self"
+                                                )
                                             }
                                         />
                                         {/* Mobile Image */}
@@ -470,8 +472,10 @@ const SliderInteractive = ({ items, data, generals = [] }) => {
                                             animate="animate"
                                             exit="exit"
                                             onClick={(e) =>
-                                                (window.location =
-                                                    item?.button_link)
+                                                window.open(
+                                                    item?.button_link,
+                                                    item?.button_new_tab ? "_blank" : "_self"
+                                                )
                                             }
                                         />
                                     </>
@@ -609,6 +613,16 @@ const SliderInteractive = ({ items, data, generals = [] }) => {
                                                             <a
                                                                 href={
                                                                     item.button_link
+                                                                }
+                                                                target={
+                                                                    item?.button_new_tab
+                                                                        ? "_blank"
+                                                                        : "_self"
+                                                                }
+                                                                rel={
+                                                                    item?.button_new_tab
+                                                                        ? "noopener noreferrer"
+                                                                        : undefined
                                                                 }
                                                                 ref={(el) =>
                                                                     (buttonsRef.current[
