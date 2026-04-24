@@ -1395,25 +1395,30 @@ const Sales = ({ statuses = [], hasRootRole = false }) => {
         return element;
     };
 
-    const subtotalReal =
-        Number(saleLoaded?.subtotal) ||
-        saleLoaded?.details?.reduce(
-            (sum, detail) => sum + detail.price * detail.quantity,
-            0,
-        ) || 0;
-    const totalAmount =
-        subtotalReal +
-        Number(saleLoaded?.delivery || 0) +
-        Number(saleLoaded?.additional_shipping_cost || 0) +
-        Number(saleLoaded?.packaging_amount || 0) +
-        Number(saleLoaded?.perception_amount || 0) +
-        Number(saleLoaded?.seguro_importacion_total || 0) +
-        Number(saleLoaded?.derecho_arancelario_total || 0) +
-        Number(saleLoaded?.flete_total || 0) -
-        Number(saleLoaded?.promotion_discount || 0) -
-        Number(saleLoaded?.coupon_discount || 0) -
-        Number(saleLoaded?.bundle_discount || 0) -
-        Number(saleLoaded?.renewal_discount || 0);
+    const totalFinal = parseFloat(saleLoaded?.amount || saleLoaded?.total_amount || 0);
+    const igv = parseFloat(saleLoaded?.igv_amount || saleLoaded?.igv || 0);
+    const perception = parseFloat(saleLoaded?.perception_amount || saleLoaded?.perception || 0);
+    const packaging = parseFloat(saleLoaded?.packaging_amount || saleLoaded?.packaging || 0);
+    const deliveryCost = parseFloat(saleLoaded?.delivery || 0);
+    const additionalShippingCost = parseFloat(saleLoaded?.additional_shipping_cost || 0);
+    const couponDiscountAmount = parseFloat(saleLoaded?.coupon_discount || 0);
+    const automaticDiscount = parseFloat(saleLoaded?.promotion_discount || saleLoaded?.automatic_discount_total || 0);
+    const bundleDiscount = parseFloat(saleLoaded?.bundle_discount || 0);
+    const renewalDiscount = parseFloat(saleLoaded?.renewal_discount || 0);
+
+    const totalProductsGross =
+        totalFinal -
+        perception -
+        packaging -
+        deliveryCost -
+        additionalShippingCost +
+        couponDiscountAmount +
+        automaticDiscount +
+        bundleDiscount +
+        renewalDiscount;
+
+    const subtotalReal = totalProductsGross - igv;
+    const totalAmount = totalFinal;
 
     return (
         <>
@@ -1547,29 +1552,7 @@ const Sales = ({ statuses = [], hasRootRole = false }) => {
                                 return Number(data?.amount || 0);
                             }
 
-                            // Calcular subtotal real desde los detalles o DB
-                            const subtotalReal = Number(data?.subtotal) || data.details.reduce(
-                                (sum, detail) =>
-                                    sum + detail.price * detail.quantity,
-                                0,
-                            );
-
-                            // Calcular total con todos los cargos y descuentos
-                            const totalAmount =
-                                subtotalReal +
-                                Number(data?.delivery || 0) +
-                                Number(data?.additional_shipping_cost || 0) +
-                                Number(data?.perception_amount || 0) +
-                                Number(data?.packaging_amount || 0) +
-                                Number(data?.seguro_importacion_total || 0) +
-                                Number(data?.derecho_arancelario_total || 0) +
-                                Number(data?.flete_total || 0) -
-                                Number(data?.promotion_discount || 0) -
-                                Number(data?.coupon_discount || 0) -
-                                Number(data?.bundle_discount || 0) -
-                                Number(data?.renewal_discount || 0);
-
-                            return totalAmount;
+                            return Number(data?.amount || 0);
                         },
                         cellTemplate: (container, { data }) => {
                             // Si no hay detalles cargados, usar el campo amount directamente
@@ -1580,30 +1563,8 @@ const Sales = ({ statuses = [], hasRootRole = false }) => {
                                 return;
                             }
 
-                            // Calcular subtotal real desde los detalles o DB
-                            const subtotalReal = Number(data?.subtotal) || data.details.reduce(
-                                (sum, detail) =>
-                                    sum + detail.price * detail.quantity,
-                                0,
-                            );
-
-                            // Calcular total con todos los cargos y descuentos
-                            const totalAmount =
-                                subtotalReal +
-                                Number(data?.delivery || 0) +
-                                Number(data?.additional_shipping_cost || 0) +
-                                Number(data?.perception_amount || 0) +
-                                Number(data?.packaging_amount || 0) +
-                                Number(data?.seguro_importacion_total || 0) +
-                                Number(data?.derecho_arancelario_total || 0) +
-                                Number(data?.flete_total || 0) -
-                                Number(data?.promotion_discount || 0) -
-                                Number(data?.coupon_discount || 0) -
-                                Number(data?.bundle_discount || 0) -
-                                Number(data?.renewal_discount || 0);
-
                             container.text(
-                                `${CurrencySymbol()} ${Number2Currency(totalAmount)}`,
+                                `${CurrencySymbol()} ${Number2Currency(data?.amount || 0)}`,
                             );
                         },
                     },
