@@ -60,6 +60,7 @@ use App\Http\Controllers\Admin\ClientController as AdminClientController;
 use App\Http\Controllers\Admin\SellerController as AdminSellerController;
 use App\Http\Controllers\Admin\ProviderController as AdminProviderController;
 use App\Http\Controllers\Admin\JobApplicationController as AdminJobApplicationController;
+use App\Http\Controllers\Admin\PackagingController as AdminPackagingController;
 use App\Http\Controllers\Admin\RoleHasMenuController;
 // Public 
 use App\Http\Controllers\AuthController;
@@ -128,6 +129,7 @@ Route::middleware(['can:Admin', 'auth'])->prefix('admin')->group(function () {
     Route::get('/items', [AdminItemController::class, 'reactView'])->name('Admin/Items.jsx');
     Route::get('/coupons', [AdminCouponController::class, 'reactView'])->name('Admin/Coupons.jsx');
     Route::get('/discount-rules', [AdminDiscountRulesController::class, 'reactView'])->name('Admin/DiscountRules.jsx');
+    Route::get('/packaging', [AdminPackagingController::class, 'reactView'])->name('Admin/Packaging.jsx');
     Route::get('/ads', [AdminAdController::class, 'reactView'])->name('Admin/Ads.jsx');
     Route::get('/job-applications', [AdminJobApplicationController::class, 'reactView'])->name('Admin/JobApplications.jsx');
     Route::get('/role-has-menus', [RoleHasMenuController::class, 'reactView'])->name('Admin/RoleHasMenu.jsx');

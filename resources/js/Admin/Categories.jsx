@@ -33,6 +33,8 @@ const Categories = () => {
     const imageRef = useRef();
     const bannersJsonRef = useRef();
     const storesRef = useRef();
+    const isPerceptionTaxableRef = useRef();
+    const perceptionPercentageRef = useRef();
 
     const [isEditing, setIsEditing] = useState(false);
 
@@ -141,6 +143,15 @@ const Categories = () => {
             SetSelectValue(storesRef.current, data?.stores ?? [], "id", "name");
         }
 
+        if (isPerceptionTaxableRef.current)
+            isPerceptionTaxableRef.current.checked = Boolean(
+                data?.is_perception_taxable,
+            );
+
+        if (perceptionPercentageRef.current)
+            perceptionPercentageRef.current.value =
+                data?.perception_percentage ?? 2.0;
+
         $(modalRef.current).modal("show");
     };
 
@@ -152,6 +163,10 @@ const Categories = () => {
             name: nameRef.current.value,
             alias: aliasRef.current.value,
             description: descriptionRef.current.value,
+            is_perception_taxable:
+                isPerceptionTaxableRef.current?.checked || false,
+            perception_percentage:
+                perceptionPercentageRef.current?.value || 2.0,
         };
 
         const formData = new FormData();
@@ -269,6 +284,12 @@ const Categories = () => {
             field: "visible",
             value,
         });
+        if (!result) return;
+        $(gridRef.current).dxDataGrid("instance").refresh();
+    };
+
+    const onBooleanChange = async ({ id, field, value }) => {
+        const result = await categoriesRest.boolean({ id, field, value });
         if (!result) return;
         $(gridRef.current).dxDataGrid("instance").refresh();
     };
@@ -487,6 +508,27 @@ const Categories = () => {
                             );
                         },
                     },
+                    Fillable.has("categories", "is_perception_taxable") && {
+                        dataField: "is_perception_taxable",
+                        caption: "Sujeto a Percepción",
+                        dataType: "boolean",
+                        cellTemplate: (container, { data }) => {
+                            $(container).empty();
+                            ReactAppend(
+                                container,
+                                <SwitchFormGroup
+                                    checked={data.is_perception_taxable == 1}
+                                    onChange={() =>
+                                        onBooleanChange({
+                                            id: data.id,
+                                            field: "is_perception_taxable",
+                                            value: !data.is_perception_taxable,
+                                        })
+                                    }
+                                />,
+                            );
+                        },
+                    },
                     {
                         caption: "Acciones",
                         cellTemplate: (container, { data }) => {
@@ -676,6 +718,32 @@ const Categories = () => {
                                                             )
                                                         }
                                                     />
+                                                </div>
+                                                <div className="col-12 mt-2">
+                                                    <div className="row align-items-end">
+                                                        <div className="col-md-6">
+                                                            <SwitchFormGroup
+                                                                eRef={
+                                                                    isPerceptionTaxableRef
+                                                                }
+                                                                label="Sujeto a Percepción"
+                                                            />
+                                                        </div>
+                                                        <div className="col-md-6">
+                                                            <InputFormGroup
+                                                                eRef={perceptionPercentageRef}
+                                                                label="Porcentaje de Percepción (%)"
+                                                                type="number"
+                                                                step="0.01"
+                                                                min="0"
+                                                                placeholder="Ej: 2.00"
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                    <small className="text-muted d-block mt-1">
+                                                        <i className="fas fa-info-circle me-1"></i>
+                                                        Si se activa, se aplicará el porcentaje configurado cuando el subtotal de productos sujetos a percepción supere los S/ 100.
+                                                    </small>
                                                 </div>
                                             </div>
                                         </div>

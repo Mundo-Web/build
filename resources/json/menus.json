@@ -39,6 +39,7 @@
       },
       { "label": "Sucursales", "href": "/admin/stores", "icon": "mdi mdi-office-building-marker" },
       { "label": "Costos de envío", "href": "/admin/prices", "icon": "mdi mdi-moped" },
+      { "label": "Empaques", "href": "/admin/packaging", "icon": "mdi mdi-package-variant" },
       { "label": "Mensajes", "href": "/admin/messages", "icon": "mdi mdi-message-text" },
       { "label": "Reclamos", "href": "/admin/complaints", "icon": "mdi mdi-alert-circle-outline" },
       { "label": "Denuncias", "href": "/admin/whistleblowings", "icon": "mdi mdi-alert" },

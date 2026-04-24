@@ -198,6 +198,54 @@ const System = ({
         Local.set(`${Global.APP_CORRELATIVE}_favorites`, favorites);
     }, [favorites]);
 
+    // Variables de totales del carrito global
+    const [cartTotals, setCartTotals] = useState({
+        subTotal: 0,
+        igv: 0,
+        perception: 0,
+        total: 0
+    });
+
+    useEffect(() => {
+        // Obtener la tasa de IGV desde la configuración general (correlative: igv_checkout)
+        const igvGeneral = generals.find(g => g.correlative === "igv_checkout");
+        const igvRate = parseFloat(igvGeneral?.description) || 18;
+        
+        // Actualizar Global para que otros componentes lo tengan
+        Global.IGV_RATE = igvRate;
+
+        let currentSubTotal = 0;
+        let currentIgv = 0;
+        let perceptionBasis = 0;
+
+        cart.forEach((cartItem) => {
+            const finalPrice = cartItem.final_price || cartItem.price || 0;
+            const lineTotal = finalPrice * cartItem.quantity;
+
+            currentSubTotal += lineTotal;
+
+            // Lógica inclusiva: extraemos el IGV del precio
+            const isTaxable = cartItem.is_taxable !== false; // Por defecto es true
+            if (isTaxable) {
+                currentIgv += lineTotal - lineTotal / (1 + (igvRate / 100));
+            }
+
+            // Nota: La percepción depende de la categoría, tal como indica el doc de implementación
+            if (cartItem.is_perception_taxable || cartItem.category?.is_perception_taxable) {
+                perceptionBasis += lineTotal;
+            }
+        });
+
+        const currentPerception = perceptionBasis > 100 ? perceptionBasis * (Global.PERCEPTION_RATE / 100) : 0;
+        
+        setCartTotals({
+            subTotal: currentSubTotal,
+            igv: currentIgv,
+            perception: currentPerception,
+            total: currentSubTotal + currentPerception
+        });
+    }, [cart]);
+
     useEffect(() => {
         // Separar combos de productos normales
         const regularItems = cart.filter((x) => x.type !== "combo");
@@ -286,6 +334,11 @@ const System = ({
             items: getItems(itemsId),
             cart,
             setCart,
+            cartTotals, // Nuevas variables globales de totales
+            subTotal: cartTotals.subTotal - cartTotals.igv, // Subtotal neto para el desglose
+            igv: cartTotals.igv,
+            perception: cartTotals.perception,
+            totalPrice: cartTotals.total,
             pages,
             isUser: session,
             generals,

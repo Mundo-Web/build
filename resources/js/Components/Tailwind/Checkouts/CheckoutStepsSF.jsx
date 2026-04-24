@@ -25,17 +25,10 @@ export default function CheckoutStepsSF({
 }) {
     const [currentStep, setCurrentStep] = useState(1);
     const [descuentofinal, setDescuentoFinal] = useState(0);
+    const [packagingOptions, setPackagingOptions] = useState([]);
+    const [selectedPackaging, setSelectedPackaging] = useState(null);
 
-    // Calcular el precio total incluyendo IGV
-    const totalPrice = cart.reduce((acc, item) => {
-        // Use the correct price based on item type
-        const finalPrice =
-            item.type === "combo"
-                ? item.final_price || item.price
-                : item.final_price;
-        return acc + finalPrice * item.quantity; // Sumar el precio total por cantidad
-    }, 0);
-
+    // Estado para el costo de envío
     // Estado para el costo de envío
     const [envio, setEnvio] = useState(0);
     // Estado para costos adicionales de envío (embalaje, traslado, etc.)
@@ -45,21 +38,58 @@ export default function CheckoutStepsSF({
     // Estado para el método de envío seleccionado
     const [selectedDeliveryMethod, setSelectedDeliveryMethod] = useState(null);
 
-    // Obtener configuración de IGV desde General (correlativo: igv_checkout)
-    const igvRate = parseFloat(General.igv_checkout || 0);
+    // Fetch packaging options
+    useEffect(() => {
+        fetch("/api/packaging")
+            .then((res) => res.json())
+            .then((data) => {
+                setPackagingOptions(data);
+                if (data && data.length > 0 && !selectedPackaging) {
+                    // Seleccionar automáticamente el de menor precio
+                    const cheapest = [...data].sort((a, b) => a.price - b.price)[0];
+                    setSelectedPackaging(cheapest);
+                }
+            })
+            .catch((err) => console.error("Error fetching packaging:", err));
+    }, []);
 
-    // Calcular IGV y subtotal según configuración
-    // SIEMPRE mostramos el IGV, solo cambia cómo se calcula
-    let subTotal, igv;
-    if (igvRate > 0) {
-        // IGV NO incluido en el precio - ADICIONAR el IGV
-        subTotal = totalPrice; // El precio es el subtotal
-        igv = parseFloat((totalPrice * (igvRate / 100)).toFixed(2)); // Adicionar IGV
-    } else {
-        // IGV YA incluido en el precio - SEPARAR el IGV
-        subTotal = parseFloat((totalPrice / 1.18).toFixed(2)); // Sacar el IGV
-        igv = parseFloat((totalPrice - subTotal).toFixed(2)); // El IGV que ya estaba incluido
-    }
+    // Calcular IGV y Percepción según la configuración de productos y categorías
+    const igvGeneral = generals.find(g => g.correlative === "igv_checkout");
+    const igvRate = parseFloat(igvGeneral?.description) || 18;
+    
+    let subTotal = 0;
+    let igv = 0;
+    let perceptionBasis = 0;
+    let potentialPerception = 0;
+
+    cart.forEach((cartItem) => {
+        const product = items.find(
+            (i) => i.id === (cartItem.id || cartItem.item_id),
+        ) || cartItem;
+        
+        // Usar final_price (con descuento) si existe, sino price
+        const finalPrice = cartItem.final_price || cartItem.price || 0;
+        const lineTotal = finalPrice * cartItem.quantity;
+
+        subTotal += lineTotal;
+
+        // Lógica inclusiva: extraemos el IGV del precio que ya lo tiene
+        const isTaxable = cartItem.is_taxable !== undefined ? cartItem.is_taxable : product?.is_taxable;
+        const lineIgv = isTaxable ? lineTotal - lineTotal / (1 + (igvRate / 100)) : 0;
+        igv += lineIgv;
+
+        if (product?.category?.is_perception_taxable) {
+            perceptionBasis += lineTotal;
+            const rate = parseFloat(product?.category?.perception_percentage) || 2.0;
+            potentialPerception += lineTotal * (rate / 100);
+        }
+    });
+
+    const perception = Number(perceptionBasis > 100 ? potentialPerception : 0);
+    const packagingAmount = Number(selectedPackaging?.price || 0);
+    
+    // El total ya incluye el IGV (lógica inclusiva)
+    const totalPrice = Number(subTotal) + perception + packagingAmount;
 
     // Estados para cupones y descuentos automáticos
     const [couponDiscount, setCouponDiscount] = useState(0);
@@ -156,9 +186,13 @@ export default function CheckoutStepsSF({
         return { cost: 0, description: "" };
     };
 
-    // Calcular total final con todos los descuentos
+    // Calcular total final con todos los descuentos (Lógica Inclusiva)
     const totalWithoutDiscounts =
-        subTotal + igv + parseFloat(envio) + parseFloat(additionalShippingCost);
+        Number(subTotal) +
+        Number(perception) +
+        Number(packagingAmount) +
+        parseFloat(envio) +
+        parseFloat(additionalShippingCost);
     const totalAllDiscounts =
         couponDiscount + automaticDiscountTotal + descuentofinal;
     const totalFinal = Math.max(0, totalWithoutDiscounts - totalAllDiscounts);
@@ -179,6 +213,18 @@ export default function CheckoutStepsSF({
             setCurrentStep(3);
         }
     }, [window.location.search]);
+
+    // Actualizar el estado de la venta cuando cambien los totales para que el mail sea correcto
+    useEffect(() => {
+        setSale((prev) => ({
+            ...prev,
+            subtotal: subTotal - igv,
+            igv: igv,
+            perception: perception,
+            packaging: packagingAmount,
+            total: totalPrice,
+        }));
+    }, [subTotal, igv, perception, packagingAmount, totalPrice]);
 
     useEffect(() => {
         if (code) {
@@ -276,10 +322,14 @@ export default function CheckoutStepsSF({
                         setCart={setCart}
                         user={user}
                         onContinue={() => handleStepChange(2)}
-                        subTotal={subTotal}
+                        subTotal={subTotal - igv}
                         totalPrice={totalPrice}
                         envio={envio}
                         igv={igv}
+                        perception={perception}
+                        packagingOptions={packagingOptions}
+                        selectedPackaging={selectedPackaging}
+                        setSelectedPackaging={setSelectedPackaging}
                         totalFinal={totalFinal}
                         openModal={openModal}
                         automaticDiscounts={automaticDiscounts}
@@ -304,11 +354,14 @@ export default function CheckoutStepsSF({
                         setCart={setCart}
                         onContinue={() => handleStepChange(3)}
                         noContinue={() => handleStepChange(1)}
-                        subTotal={subTotal}
+                        subTotal={subTotal - igv}
                         totalPrice={totalPrice}
                         envio={envio}
                         setEnvio={setEnvio}
                         igv={igv}
+                        perception={perception}
+                        packagingAmount={packagingAmount}
+                        selectedPackaging={selectedPackaging}
                         totalFinal={totalFinal}
                         user={user}
                         prefixes={prefixes}
@@ -350,7 +403,7 @@ export default function CheckoutStepsSF({
                         setCart={setCart}
                         delivery={delivery}
                         cart={sale}
-                        subTotal={subTotal}
+                        subTotal={subTotal - igv}
                         totalPrice={totalPrice}
                         envio={envio}
                         igv={igv}
@@ -367,6 +420,7 @@ export default function CheckoutStepsSF({
                             additionalShippingDescription
                         }
                         conversionScripts={conversionScripts}
+                        generals={generals}
                     />
                 )}
             </div>

@@ -40,6 +40,8 @@ class CategoryController extends BasicController
             $body['stores'] = is_string($storesData) ? json_decode($storesData, true) : $storesData;
         }
 
+        $body['is_perception_taxable'] = $request->boolean('is_perception_taxable');
+
         return $body;
     }
 

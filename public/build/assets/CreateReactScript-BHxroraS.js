@@ -1,0 +1,1 @@
+import"./MenuItem-Bj7QDHiW.js";import"./SelectAPIFormGroup-fG2PH0ve.js";import"./Footer-BYWqj3S7.js";import"./vendor-swiper-DUKK6iF5.js";import"./TippyButton-DEbHX0-h.js";import"./Menu-BnMVSdjK.js";import"./vendor-react-DGtfu94Q.js";import"./index-DZIQhO2a.js";import"./___vite-browser-external_commonjs-proxy-B62enZY2.js";

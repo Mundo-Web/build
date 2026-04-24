@@ -549,7 +549,7 @@ const Items = ({
                 descriptionRef.editor?.root?.innerHTML ||
                 "",
             stock: stockRef.current?.value || 0,
-            agrupador: agrupadorRef.current?.value || null,
+            agrupador: agrupadorRef.current?.value || "",
             features: cleanFeatures,
             specifications: cleanSpecs,
             weight: weightRef.current?.value || 0,
@@ -565,6 +565,7 @@ const Items = ({
                     id: a.attribute_id,
                     value: a.value,
                 })),
+
             is_master: isMaster,
             // Campos para clonación de imágenes
             clone_from_id: itemData?.clone_from_id || null,
@@ -1622,6 +1623,32 @@ const Items = ({
                                         onVisibleChange({
                                             id: data.id,
                                             value: e.target.checked,
+                                        })
+                                    }
+                                />,
+                            );
+                        },
+                    },
+                    Fillable.has("items", "is_taxable") && {
+                        dataField: "is_taxable",
+                        caption: "Afecto a IGV (18%)",
+                        dataType: "boolean",
+                        width: "100px",
+                        cellTemplate: (container, { data }) => {
+                            const isTaxableValue =
+                                data.is_taxable === 1 ||
+                                data.is_taxable === "1" ||
+                                data.is_taxable === true;
+
+                            ReactAppend(
+                                container,
+                                <SwitchFormGroup
+                                    checked={isTaxableValue}
+                                    onChange={(e) =>
+                                        onBooleanChange({
+                                            id: data.id,
+                                            field: "is_taxable",
+                                            value: e.target.checked ? 1 : 0,
                                         })
                                     }
                                 />,

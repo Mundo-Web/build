@@ -7,6 +7,7 @@ import DiscountRulesRest from "../../../../Actions/DiscountRulesRest";
 import FreeItemsDisplay from "./FreeItemsDisplay";
 import PromotionSuggestion from "./PromotionSuggestion";
 import PromotionModal from "./PromotionModal";
+import SelectForm from "./SelectForm";
 
 export default function CartStepSF({
     data,
@@ -23,7 +24,11 @@ export default function CartStepSF({
     setAutomaticDiscounts,
     automaticDiscountTotal,
     setAutomaticDiscountTotal,
-    totalWithoutDiscounts
+    totalWithoutDiscounts,
+    perception,
+    packagingOptions,
+    selectedPackaging,
+    setSelectedPackaging
 }) {
     const [appliedDiscounts, setAppliedDiscounts] = useState(automaticDiscounts || []);
     const [totalDiscount, setTotalDiscount] = useState(automaticDiscountTotal || 0);
@@ -273,9 +278,15 @@ export default function CartStepSF({
                         <span className="font-semibold">{CurrencySymbol()} {Number2Currency(subTotal)}</span>
                     </div>
                     <div className="flex justify-between">
-                        <span className="customtext-neutral-dark">IGV</span>
+                        <span className="customtext-neutral-dark">IGV (18%)</span>
                         <span className="font-semibold">{CurrencySymbol()} {Number2Currency(igv)}</span>
                     </div>
+                    {perception > 0 && (
+                        <div className="flex justify-between">
+                            <span className="customtext-neutral-dark">Percepción</span>
+                            <span className="font-semibold">{CurrencySymbol()} {Number2Currency(perception)}</span>
+                        </div>
+                    )}
                     <div className="flex justify-between">
                         <span className="customtext-neutral-dark">Envío</span>
                         <span className="font-semibold">
@@ -284,6 +295,31 @@ export default function CartStepSF({
                                 : 'Por calcular'}
                         </span>
                     </div>
+
+                    {/* Selección de Empaque */}
+                    {packagingOptions && packagingOptions.length > 0 && (
+                        <div className="pt-4 border-t border-gray-200 mt-4">
+                            <SelectForm
+                                label="Tipo de Empaque"
+                                placeholder="Selecciona un tipo de empaque"
+                                options={packagingOptions.map(option => ({
+                                    ...option,
+                                    id: option.id,
+                                    name: `${option.name} (+ ${CurrencySymbol()} ${Number2Currency(option.price)})`,
+                                }))}
+                                valueKey="id"
+                                labelKey="name"
+                                value={selectedPackaging?.id}
+                                onChange={(val) => {
+                                    const selected = packagingOptions.find(p => p.id == val);
+                                    setSelectedPackaging(selected || null);
+                                }}
+                            />
+                            {selectedPackaging?.description && (
+                                <p className="text-xs text-gray-500 mt-1">{selectedPackaging.description}</p>
+                            )}
+                        </div>
+                    )}
 
                     {/* Descuentos Automáticos */}
                     {isLoadingDiscounts && (

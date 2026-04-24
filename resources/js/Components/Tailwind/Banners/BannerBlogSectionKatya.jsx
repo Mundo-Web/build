@@ -22,9 +22,9 @@ const BannerBlogSectionKatya = ({ data, items }) => {
             opacity: 1,
             transition: {
                 staggerChildren: 0.1,
-                delayChildren: 0.2
-            }
-        }
+                delayChildren: 0.2,
+            },
+        },
     };
 
     const itemVariants = {
@@ -34,20 +34,20 @@ const BannerBlogSectionKatya = ({ data, items }) => {
             opacity: 1,
             transition: {
                 duration: 0.5,
-                ease: "easeOut"
-            }
-        }
+                ease: "easeOut",
+            },
+        },
     };
 
     const hoverCard = {
         boxShadow: "0px 10px 30px rgba(0, 0, 0, 0.15)",
         y: -5,
-        transition: { duration: 0.3 }
+        transition: { duration: 0.3 },
     };
 
     const hoverImage = {
         scale: 1.1,
-        transition: { duration: 0.4, ease: "easeOut" }
+        transition: { duration: 0.4, ease: "easeOut" },
     };
 
     const subscriptionsRest = new SubscriptionsRest();
@@ -87,7 +87,7 @@ const BannerBlogSectionKatya = ({ data, items }) => {
                 whileInView="visible"
                 viewport={{ once: true, margin: "-100px" }}
                 variants={containerVariants}
-                className="w-full px-[5%] 2xl:px-0 2xl:max-w-7xl mx-auto font-title customtext-neutral-dark py-12 lg:py-20"
+                className="w-full px-[5%] 2xl:px-0 2xl:max-w-7xl mx-auto font-title text-neutral-dark py-12 lg:py-20"
             >
                 {/* Layout principal: Lado izquierdo (título + swiper) + Lado derecho (suscripción) */}
                 <motion.div
@@ -97,18 +97,27 @@ const BannerBlogSectionKatya = ({ data, items }) => {
                     {/* Lado izquierdo: Título, descripción y swiper */}
                     <div className="col-span-1 lg:col-span-2 space-y-8">
                         {/* Título y descripción */}
-                        <motion.div variants={itemVariants} className="space-y-4 flex flex-col lg:flex-row justify-between lg:items-center">
+                        <motion.div
+                            variants={itemVariants}
+                            className="space-y-4 flex flex-col lg:flex-row justify-between lg:items-center"
+                        >
                             <h2 className="text-4xl  lg:text-4xl 2xl:text-5xl font-bold tracking-normal max-w-lg  text-white leading-tight font-title">
                                 Nuestro Blog
                             </h2>
-                            <a href="/blog" className="text-lg lg:text-lg font-bold  hover:opacity-80 transition-opacity text-white lg:self-center">
+                            <a
+                                href="/blog"
+                                className="text-lg lg:text-lg font-bold  hover:opacity-80 transition-opacity text-white lg:self-center"
+                            >
                                 Más publicaciones
                                 <ChevronRight className="inline-block ml-1 h-6 w-6" />
                             </a>
                         </motion.div>
 
                         {/* Swiper de blogs */}
-                        <motion.div variants={itemVariants} className="bg-primary rounded-3xl p-4">
+                        <motion.div
+                            variants={itemVariants}
+                            className="bg-primary rounded-3xl p-4"
+                        >
                             <Swiper
                                 modules={[Navigation]}
                                 loop={true}
@@ -117,40 +126,51 @@ const BannerBlogSectionKatya = ({ data, items }) => {
                                     nextEl: navigationNextRef.current,
                                 }}
                                 onBeforeInit={(swiper) => {
-                                    swiper.params.navigation.prevEl = navigationPrevRef.current;
-                                    swiper.params.navigation.nextEl = navigationNextRef.current;
+                                    swiper.params.navigation.prevEl =
+                                        navigationPrevRef.current;
+                                    swiper.params.navigation.nextEl =
+                                        navigationNextRef.current;
                                 }}
                                 slidesPerView={1}
                                 spaceBetween={20}
                                 breakpoints={{
                                     768: {
                                         slidesPerView: 2,
-                                        spaceBetween: 30
-                                    }
+                                        spaceBetween: 30,
+                                    },
                                 }}
                                 className="mySwiper"
                             >
                                 {items && items.length > 0 ? (
                                     items.map((item, index) => {
-                                        const content = document.createElement("div");
+                                        const content =
+                                            document.createElement("div");
                                         content.innerHTML = item?.description;
-                                        const text = content.textContent || content.innerText || "";
+                                        const text =
+                                            content.textContent ||
+                                            content.innerText ||
+                                            "";
 
                                         return (
                                             <SwiperSlide key={index}>
                                                 <motion.div
                                                     variants={itemVariants}
-
                                                     className="block group hover:scale-105 transform "
                                                 >
-                                                    <a href={`/post/${item.slug}`} className="rounded-lg shadow-sm h-auto cursor-pointer block">
+                                                    <a
+                                                        href={`/post/${item.slug}`}
+                                                        className="rounded-lg shadow-sm h-auto cursor-pointer block"
+                                                    >
                                                         <div className="overflow-hidden rounded-xl">
                                                             <motion.img
                                                                 src={`/storage/images/post/${item?.image}`}
-                                                                alt={item?.title}
+                                                                alt={
+                                                                    item?.title
+                                                                }
                                                                 className="inset-0 w-full object-cover aspect-[1] transition-transform duration-500 ease-out group-hover:scale-110"
                                                                 onError={(e) =>
-                                                                    (e.target.src = "/api/cover/thumbnail/null")
+                                                                    (e.target.src =
+                                                                        "/api/cover/thumbnail/null")
                                                                 }
                                                             />
                                                         </div>
@@ -171,13 +191,14 @@ const BannerBlogSectionKatya = ({ data, items }) => {
                                     <SwiperSlide>
                                         <div className="bg-white rounded-lg p-8 text-center text-gray-500">
                                             <i className="mdi mdi-information-outline text-3xl d-block mb-2"></i>
-                                            <p className="text-sm">Agrega posts para mostrar en el slider</p>
+                                            <p className="text-sm">
+                                                Agrega posts para mostrar en el
+                                                slider
+                                            </p>
                                         </div>
                                     </SwiperSlide>
                                 )}
                             </Swiper>
-
-
                         </motion.div>
                     </div>
 
@@ -187,7 +208,7 @@ const BannerBlogSectionKatya = ({ data, items }) => {
                         whileHover={{
                             scale: 1.02,
                             rotate: 0.5,
-                            transition: { type: "spring", damping: 10 }
+                            transition: { type: "spring", damping: 10 },
                         }}
                         className="col-span-1 rounded-2xl"
                     >
@@ -195,9 +216,9 @@ const BannerBlogSectionKatya = ({ data, items }) => {
                             className="rounded-2xl overflow-hidden shadow-sm h-full min-h-[500px] lg:min-h-[690px] relative flex flex-col items-center justify-end"
                             style={{
                                 backgroundImage: `url(${backgroundUrl})`,
-                                backgroundSize: 'cover',
-                                backgroundPosition: 'center',
-                                backgroundRepeat: 'no-repeat'
+                                backgroundSize: "cover",
+                                backgroundPosition: "center",
+                                backgroundRepeat: "no-repeat",
                             }}
                         >
                             {/* Overlay */}
@@ -226,22 +247,21 @@ const BannerBlogSectionKatya = ({ data, items }) => {
                                     transition={{ duration: 0.6, delay: 1.4 }}
                                     whileHover={{
                                         scale: 1.1,
-                                        boxShadow: "0 10px 20px rgba(0,0,0,0.2)"
+                                        boxShadow:
+                                            "0 10px 20px rgba(0,0,0,0.2)",
                                     }}
                                     whileTap={{ scale: 0.9 }}
-                                    href={data?.button_link || Global.APP_DOMAIN}
-                                    className={` mx-auto cursor-pointer text-base w-full font-bold customtext-neutral-dark px-10 rounded-full py-4 hover:opacity-90 transition-all duration-300 flex items-center gap-2 justify-center ${data?.class_button || 'bg-secondary text-white uppercase'}`}
+                                    href={
+                                        data?.button_link || Global.APP_DOMAIN
+                                    }
+                                    className={` mx-auto cursor-pointer text-base w-full font-bold text-neutral-dark px-10 rounded-full py-4 hover:opacity-90 transition-all duration-300 flex items-center gap-2 justify-center ${data?.class_button || "bg-secondary text-white uppercase"}`}
                                 >
                                     {data?.button_text}
-
                                 </motion.a>
-
                             </div>
                         </div>
                     </motion.div>
                 </motion.div>
-
-
             </motion.div>
         </div>
     );

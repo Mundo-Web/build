@@ -16,6 +16,10 @@ const HeaderSearchMenuSF = ({
     headerPosts,
     contacts,
     generals = [],
+    subTotal,
+    igv,
+    perception,
+    totalPrice,
 }) => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [modalOpen, setModalOpen] = useState(false);
@@ -224,6 +228,10 @@ const HeaderSearchMenuSF = ({
                 items={generals}
                 cart={cart}
                 setCart={setCart}
+                subTotal={subTotal}
+                igv={igv}
+                perception={perception}
+                totalPrice={totalPrice}
                 isUser={isUser}
                 pages={pages}
             />

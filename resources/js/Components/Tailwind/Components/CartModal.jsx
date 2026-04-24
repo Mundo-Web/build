@@ -9,7 +9,17 @@ import { X } from "lucide-react";
 
 ReactModal.setAppElement("#app");
 
-const CartModal = ({ data, cart, setCart, modalOpen, setModalOpen }) => {
+const CartModal = ({
+    data,
+    cart,
+    setCart,
+    subTotal,
+    igv,
+    perception,
+    totalPrice,
+    modalOpen,
+    setModalOpen,
+}) => {
     useEffect(() => {
         if (modalOpen) {
             document.body.classList.add("overflow-hidden");
@@ -20,10 +30,6 @@ const CartModal = ({ data, cart, setCart, modalOpen, setModalOpen }) => {
         }
     }, [modalOpen]);
 
-    const totalPrice = cart.reduce(
-        (acc, item) => acc + item.final_price * item.quantity,
-        0,
-    );
     const isEmpty = cart.length === 0;
 
     return (

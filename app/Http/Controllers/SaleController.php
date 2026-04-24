@@ -18,6 +18,7 @@ use App\Models\General;
 use App\Notifications\PurchaseSummaryNotification;
 use App\Helpers\NotificationHelper;
 use App\Models\InventoryVault;
+use App\Helpers\TaxHelper;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -357,9 +358,20 @@ class SaleController extends BasicController
             $saleJpa->delivery = $sale['delivery'] ?? 0;
             $saleJpa->additional_shipping_cost = $sale['additional_shipping_cost'] ?? 0;
             $saleJpa->additional_shipping_description = $sale['additional_shipping_description'] ?? null;
-            $saleJpa->seguro_importacion_total = $sale['seguro_importacion_total'] ?? 0;
             $saleJpa->derecho_arancelario_total = $sale['derecho_arancelario_total'] ?? 0;
             $saleJpa->flete_total = $sale['flete_total'] ?? 0;
+
+            // Calcular impuestos y empaque usando TaxHelper
+            $taxBreakdown = TaxHelper::calculate($details, $sale['packaging_id'] ?? null);
+            $saleJpa->igv_amount = $taxBreakdown['igv_amount'];
+            $saleJpa->perception_amount = $taxBreakdown['perception_amount'];
+            $saleJpa->packaging_amount = $taxBreakdown['packaging_amount'];
+            $saleJpa->packaging_id = $sale['packaging_id'] ?? null;
+            
+            // El total final incluye productos, impuestos, empaque, envío y resta descuentos
+            $saleJpa->amount = $taxBreakdown['total'] + $saleJpa->delivery + $saleJpa->additional_shipping_cost - ($saleJpa->coupon_discount ?? 0) - ($saleJpa->promotion_discount ?? 0);
+            $saleJpa->amount = max(0, $saleJpa->amount);
+
             $saleJpa->save();
 
             $detailsJpa = array();
@@ -507,12 +519,16 @@ class SaleController extends BasicController
             $body['coupon_discount'] = 0;
         }
 
-        $freeShippingThreshold = General::where('correlative', 'shipping_free')->first();
-        $minFreeShipping = $freeShippingThreshold ? (float)$freeShippingThreshold->description : 0;
+        // El envío gratuito se calcula en el backend solo como respaldo, 
+        // pero respetamos lo que el frontend calculó si viene presente.
         $deliveryPrice = $request->delivery;
 
-        if ($minFreeShipping > 0 && $tempTotal >= $minFreeShipping) {
-            $deliveryPrice = 0;
+        if (!isset($deliveryPrice)) {
+            $freeShippingThreshold = General::where('correlative', 'shipping_free')->first();
+            $minFreeShipping = $freeShippingThreshold ? (float)$freeShippingThreshold->description : 0;
+            if ($minFreeShipping > 0 && $tempTotal >= $minFreeShipping) {
+                $deliveryPrice = 0;
+            }
         }
         // Fin de calculo de envio gratuito 
 
@@ -734,7 +750,19 @@ class SaleController extends BasicController
             $totalPrice -= $request->automatic_discount_total;
         }
 
-        $jpa->amount = $totalPrice;
+        // Calcular impuestos y empaque usando TaxHelper (como respaldo o recalculo)
+        $taxBreakdown = TaxHelper::calculate($details, $request->packaging_id);
+        
+        // Si el frontend envió el IGV calculado, lo respetamos para evitar discrepancias de redondeo
+        $jpa->igv_amount = $request->igv_amount ?? $taxBreakdown['igv_amount'];
+        $jpa->perception_amount = $request->perception_amount ?? $taxBreakdown['perception_amount'];
+        $jpa->packaging_amount = $request->packaging_amount ?? $taxBreakdown['packaging_amount'];
+        $jpa->packaging_id = $request->packaging_id;
+        
+        // Total final: Productos + Impuestos + Empaque + Envío - Descuentos
+        $jpa->amount = $taxBreakdown['total'] + ($jpa->delivery ?? 0) + ($jpa->additional_shipping_cost ?? 0) - ($jpa->coupon_discount ?? 0) - ($jpa->promotion_discount ?? 0);
+        $jpa->amount = max(0, $jpa->amount);
+
         $jpa->save();
 
         // Registrar ganancias de proveedores

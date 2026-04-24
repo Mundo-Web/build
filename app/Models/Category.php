@@ -27,9 +27,13 @@ class Category extends Model
         'featured',
         'visible',
         'status',
+        'is_perception_taxable',
+        'perception_percentage',
     ];
 
     protected $casts = [
+        'is_perception_taxable' => 'boolean',
+        'perception_percentage' => 'float',
         'banners' => 'array',
         'stores' => 'array',
         'featured' => 'boolean',

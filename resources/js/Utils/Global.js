@@ -23,6 +23,8 @@ class Global {
     static GOOGLE_CLIENT_ID = null;
     static GOOGLE_OAUTH_ENABLED = null;
     static API_KEY_TINYMCE = null;
+    static IGV_RATE = 18;
+    static PERCEPTION_RATE = 2;
 
     static set = (name, value) => {
         Global[name] = value;

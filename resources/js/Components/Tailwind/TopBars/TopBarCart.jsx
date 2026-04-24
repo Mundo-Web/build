@@ -8,7 +8,17 @@ import { hasRole } from "../../../Utils/CreateReactScript";
 import AnimatedCintillo from "../Components/AnimatedCintillo";
 import useCintillos from "../../../Hooks/useCintillos";
 
-const TopBarCart = ({ data, cart, setCart, isUser, items }) => {
+const TopBarCart = ({
+    data,
+    cart,
+    setCart,
+    subTotal,
+    igv,
+    perception,
+    totalPrice,
+    isUser,
+    items,
+}) => {
     const sectionRef = useRef(null);
     const { hasActiveCintillos } = useCintillos();
 
@@ -199,6 +209,10 @@ const TopBarCart = ({ data, cart, setCart, isUser, items }) => {
                 data={data}
                 cart={cart}
                 setCart={setCart}
+                subTotal={subTotal}
+                igv={igv}
+                perception={perception}
+                totalPrice={totalPrice}
                 modalOpen={modalOpen}
                 setModalOpen={setModalOpen}
             />

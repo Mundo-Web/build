@@ -14,6 +14,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Http;
+use App\Helpers\TaxHelper;
 
 class OpenPayController extends Controller
 {
@@ -81,7 +82,13 @@ class OpenPayController extends Controller
             
             // Crear registro de venta con estado "pendiente"
             $saleStatusPendiente = SaleStatus::getByName('Pendiente');
-           
+
+            // Calcular impuestos y empaque usando TaxHelper
+            $taxBreakdown = TaxHelper::calculate($request->cart, $request->packaging_id);
+            
+            // Usar el total calculado que ya incluye impuestos y empaque
+            $finalAmount = $taxBreakdown['total'] - $discountAmount;
+
             $sale = Sale::create([
                 'code' => $orderNumber,
                 'user_id' => $request->user_id,
@@ -99,7 +106,7 @@ class OpenPayController extends Controller
                 'number' => $request->number,
                 'reference' => $request->reference,
                 'comment' => $request->comment,
-                'amount' => $requestAmount,  // Usar directamente el amount del frontend
+                'amount' => $finalAmount,
                 'delivery' => $requestDelivery,
                 'delivery_type' => $request->delivery_type ?? 'domicilio',
                 'additional_shipping_cost' => round((float)($request->additional_shipping_cost ?? 0), 2),
@@ -114,7 +121,11 @@ class OpenPayController extends Controller
                 'coupon_id' => $request->coupon_id ?? null,
                 'coupon_discount' => $discountAmount,
                 'promotion_discount' => round((float)($request->promotion_discount ?? 0), 2),
-                'total_amount' => $requestAmount,  // Usar directamente el amount del frontend
+                'total_amount' => $finalAmount,
+                'igv_amount' => $taxBreakdown['igv_amount'],
+                'perception_amount' => $taxBreakdown['perception_amount'],
+                'packaging_amount' => $taxBreakdown['packaging_amount'],
+                'packaging_id' => $request->packaging_id,
             ]);
            
             // Registrar detalles de la venta
@@ -152,15 +163,12 @@ class OpenPayController extends Controller
             }
 
             // Preparar datos para OpenPay
-            // Usar directamente el amount que viene del frontend (ya calculado y formateado)
-            // Aplicar round() una vez más para garantizar precisión antes de enviar a la API
-            $amount = round($requestAmount, 2);
+            // Usar el total calculado internamente para mayor seguridad
+            $amount = round($finalAmount, 2);
             
             Log::info('OpenPay - Amount a enviar', [
-                'request_amount_original' => $request->amount,
-                'request_amount_cleaned' => $requestAmount,
-                'request_delivery_original' => $request->delivery,
-                'request_delivery_cleaned' => $requestDelivery,
+                'request_amount_frontend' => $request->amount,
+                'tax_breakdown_total' => $taxBreakdown['total'],
                 'discountAmount' => $discountAmount,
                 'final_amount' => $amount,
                 'amount_type' => gettype($amount)

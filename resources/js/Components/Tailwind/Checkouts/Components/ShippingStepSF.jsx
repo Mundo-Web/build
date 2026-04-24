@@ -67,6 +67,9 @@ export default function ShippingStepSF({
     automaticDiscounts = [], // Se usará como reglas, no como descuentos ya calculados
     automaticDiscountTotal = 0,
     totalWithoutDiscounts,
+    perception = 0,
+    packagingAmount = 0,
+    selectedPackaging = null,
     conversionScripts,
     setConversionScripts,
     onPurchaseComplete,
@@ -453,9 +456,9 @@ export default function ShippingStepSF({
                     "ubigeo-select-container",
                 );
             } else if (firstErrorKey === "phone_prefix") {
-                targetElement = document.querySelector(
-                    '[name="phone_prefix"]',
-                )?.closest('.flex');
+                targetElement = document
+                    .querySelector('[name="phone_prefix"]')
+                    ?.closest(".flex");
             } else {
                 targetElement = document.querySelector(
                     `[name="${firstErrorKey}"]`,
@@ -906,8 +909,6 @@ export default function ShippingStepSF({
         }
     };
 
-
-
     const [showPaymentModal, setShowPaymentModal] = useState(false);
     const [showOpenPayModal, setShowOpenPayModal] = useState(false);
     const [openPayTokenData, setOpenPayTokenData] = useState(null);
@@ -1019,9 +1020,9 @@ export default function ShippingStepSF({
                         "ubigeo-select-container",
                     );
                 } else if (firstErrorKey === "phone_prefix") {
-                    targetElement = document.querySelector(
-                        '[name="phone_prefix"]',
-                    )?.closest('.flex');
+                    targetElement = document
+                        .querySelector('[name="phone_prefix"]')
+                        ?.closest(".flex");
                 } else {
                     targetElement = document.querySelector(
                         `[name="${firstErrorKey}"]`,
@@ -1145,6 +1146,9 @@ export default function ShippingStepSF({
                     comment: formData?.comment || "",
                     reference: formData?.reference || "",
                     amount: formatAmountForAPI(finalTotalWithCommission),
+                    perception_amount: formatAmountForAPI(perception),
+                    packaging_amount: formatAmountForAPI(packagingAmount),
+                    packaging_id: selectedPackaging?.id || null,
                     delivery: formatAmountForAPI(envio),
                     delivery_type: deliveryType, // Agregar delivery_type
                     // Costos adicionales de envío
@@ -1176,6 +1180,9 @@ export default function ShippingStepSF({
                     applied_promotions: autoDiscounts,
                     promotion_discount: formatAmountForAPI(autoDiscountTotal),
                     total_amount: formatAmountForAPI(finalTotalWithCommission),
+                    perception_amount: formatAmountForAPI(perception),
+                    packaging_amount: formatAmountForAPI(packagingAmount),
+                    packaging_id: selectedPackaging?.id || null,
                 };
 
                 try {
@@ -1303,7 +1310,13 @@ export default function ShippingStepSF({
                         comment: formData?.comment || "",
                         reference: formData?.reference || "",
                         amount: formatAmountForAPI(finalTotalWithCommission),
+                        perception_amount: formatAmountForAPI(perception),
+                        packaging_amount: formatAmountForAPI(packagingAmount),
+                        packaging_id: selectedPackaging?.id || null,
                         delivery: formatAmountForAPI(envio),
+                        perception_amount: formatAmountForAPI(perception),
+                        packaging_amount: formatAmountForAPI(packagingAmount),
+                        packaging_id: selectedPackaging?.id || null,
                         delivery_type: deliveryType,
                         // Costos adicionales de envío
                         additional_shipping_cost: formatAmountForAPI(
@@ -1441,6 +1454,9 @@ export default function ShippingStepSF({
                     comment: formData?.comment || "",
                     reference: formData?.reference || "",
                     amount: formatAmountForAPI(finalTotalWithCommission),
+                    perception_amount: formatAmountForAPI(perception),
+                    packaging_amount: formatAmountForAPI(packagingAmount),
+                    packaging_id: selectedPackaging?.id || null,
                     delivery: formatAmountForAPI(envio),
                     delivery_type: deliveryType, // Agregar delivery_type
                     // Costos adicionales de envío
@@ -1451,8 +1467,10 @@ export default function ShippingStepSF({
                         additionalShippingDescription || "",
                     details: JSON.stringify(
                         cart.map((item) => ({
-                            id: item.id,
+                            id: item.id || item.item_id,
                             quantity: item.quantity,
+                            price: item.final_price || item.price,
+                            type: item.type || 'item'
                         })),
                     ),
                     invoiceType: formData.invoiceType || "",
@@ -1477,6 +1495,10 @@ export default function ShippingStepSF({
                     applied_promotions: autoDiscounts,
                     promotion_discount: formatAmountForAPI(autoDiscountTotal),
                     total_amount: formatAmountForAPI(finalTotalWithCommission),
+                    igv_amount: formatAmountForAPI(igv), // ENVIAR EL IGV CALCULADO
+                    perception_amount: formatAmountForAPI(perception),
+                    packaging_amount: formatAmountForAPI(packagingAmount),
+                    packaging_id: selectedPackaging?.id || null,
                 };
 
                 setPaymentRequest(request);
@@ -1529,6 +1551,9 @@ export default function ShippingStepSF({
                     comment: formData?.comment || "",
                     reference: formData?.reference || "",
                     amount: formatAmountForAPI(finalTotalWithCommission),
+                    perception_amount: formatAmountForAPI(perception),
+                    packaging_amount: formatAmountForAPI(packagingAmount),
+                    packaging_id: selectedPackaging?.id || null,
                     delivery: formatAmountForAPI(envio),
                     delivery_type: deliveryType, // Agregar delivery_type
                     // Costos adicionales de envío
@@ -1539,8 +1564,10 @@ export default function ShippingStepSF({
                         additionalShippingDescription || "",
                     details: JSON.stringify(
                         cart.map((item) => ({
-                            id: item.id,
+                            id: item.id || item.item_id,
                             quantity: item.quantity,
+                            price: item.final_price || item.price,
+                            type: item.type || 'item'
                         })),
                     ),
                     invoiceType: formData.invoiceType || "",
@@ -1566,6 +1593,10 @@ export default function ShippingStepSF({
                     applied_promotions: autoDiscounts,
                     promotion_discount: formatAmountForAPI(autoDiscountTotal),
                     total_amount: formatAmountForAPI(finalTotalWithCommission),
+                    igv_amount: formatAmountForAPI(igv), // ENVIAR EL IGV CALCULADO
+                    perception_amount: formatAmountForAPI(perception),
+                    packaging_amount: formatAmountForAPI(packagingAmount),
+                    packaging_id: selectedPackaging?.id || null,
                 };
                 setPaymentRequest(request);
                 setShowVoucherModalBancs(true);
@@ -1667,7 +1698,13 @@ export default function ShippingStepSF({
                 comment: formData?.comment || "",
                 reference: formData?.reference || "",
                 amount: formatAmountForAPI(finalTotalWithCommission),
+                perception_amount: formatAmountForAPI(perception),
+                packaging_amount: formatAmountForAPI(packagingAmount),
+                packaging_id: selectedPackaging?.id || null,
                 delivery: formatAmountForAPI(envio),
+                perception_amount: formatAmountForAPI(perception),
+                packaging_amount: formatAmountForAPI(packagingAmount),
+                packaging_id: selectedPackaging?.id || null,
                 delivery_type: deliveryType,
                 // Costos adicionales de envío
                 additional_shipping_cost: formatAmountForAPI(
@@ -1696,6 +1733,9 @@ export default function ShippingStepSF({
                 applied_promotions: autoDiscounts,
                 promotion_discount: formatAmountForAPI(autoDiscountTotal),
                 total_amount: formatAmountForAPI(finalTotalWithCommission),
+                perception_amount: formatAmountForAPI(perception),
+                packaging_amount: formatAmountForAPI(packagingAmount),
+                packaging_id: selectedPackaging?.id || null,
             };
 
             console.log("📤 [OpenPay] Valores antes de enviar:");
@@ -1939,6 +1979,8 @@ export default function ShippingStepSF({
     const totalBase = roundToTwoDecimals(
         roundToTwoDecimals(subTotal) +
             roundToTwoDecimals(igv) +
+            roundToTwoDecimals(perception) +
+            roundToTwoDecimals(packagingAmount) +
             roundToTwoDecimals(envio) +
             roundToTwoDecimals(additionalShippingCost) -
             roundToTwoDecimals(autoDiscountTotal),
@@ -3033,11 +3075,35 @@ export default function ShippingStepSF({
                                 {CurrencySymbol()} {Number2Currency(subTotal)}
                             </span>
                         </div>
-                        <div className="flex justify-between">
-                            <span className="customtext-neutral-dark">IGV</span>
-                            <span className="font-semibold">
-                                {CurrencySymbol()} {Number2Currency(igv)}
-                            </span>
+                        <div className="flex flex-col gap-2">
+                            <div className="flex justify-between items-center">
+                                <span className="text-gray-600">IGV (18%)</span>
+                                <span className="font-semibold">
+                                    {CurrencySymbol()} {Number2Currency(igv)}
+                                </span>
+                            </div>
+                            {perception > 0 && (
+                                <div className="flex justify-between items-center">
+                                    <span className="text-gray-600">
+                                        Percepción
+                                    </span>
+                                    <span className="font-semibold">
+                                        {CurrencySymbol()}{" "}
+                                        {Number2Currency(perception)}
+                                    </span>
+                                </div>
+                            )}
+                            {packagingAmount > 0 && (
+                                <div className="flex justify-between items-center">
+                                    <span className="text-gray-600">
+                                        Empaque ({selectedPackaging?.name})
+                                    </span>
+                                    <span className="font-semibold">
+                                        {CurrencySymbol()}{" "}
+                                        {Number2Currency(packagingAmount)}
+                                    </span>
+                                </div>
+                            )}
                         </div>
 
                         {/* Mostrar descuentos automáticos en el resumen */}
@@ -3249,6 +3315,8 @@ export default function ShippingStepSF({
                 descuentofinal={calculatedCouponDiscount}
                 autoDiscounts={autoDiscounts}
                 autoDiscountTotal={autoDiscountTotal}
+                packagingAmount={packagingAmount}
+                selectedPackaging={selectedPackaging}
             />
 
             <UploadVoucherModalBancs
@@ -3266,6 +3334,8 @@ export default function ShippingStepSF({
                 descuentofinal={calculatedCouponDiscount}
                 autoDiscounts={autoDiscounts}
                 autoDiscountTotal={autoDiscountTotal}
+                packagingAmount={packagingAmount}
+                selectedPackaging={selectedPackaging}
             />
 
             <LoginModal />

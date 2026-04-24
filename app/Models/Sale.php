@@ -69,9 +69,16 @@ class Sale extends Model
         'renewal_discount',
         'zip_code',
         'referrer_id',
+        'igv_amount',
+        'perception_amount',
+        'packaging_amount',
+        'packaging_id',
     ];
 
     protected $casts = [
+        'igv_amount' => 'decimal:2',
+        'perception_amount' => 'decimal:2',
+        'packaging_amount' => 'decimal:2',
         'applied_promotions' => 'array',
         'promotion_discount' => 'decimal:2',
         'coupon_discount' => 'decimal:2',
@@ -151,6 +158,11 @@ class Sale extends Model
     public function bookings()
     {
         return $this->hasMany(Booking::class);
+    }
+
+    public function packaging()
+    {
+        return $this->belongsTo(Packaging::class, 'packaging_id');
     }
 
     public function scopeWithUser($query)

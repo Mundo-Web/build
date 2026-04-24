@@ -19,6 +19,10 @@ const TopBar = ({
     generals,
     setCart,
     cart,
+    subTotal,
+    igv,
+    perception,
+    totalPrice,
     isUser,
     pages,
 }) => {
@@ -41,6 +45,10 @@ const TopBar = ({
                         items={items}
                         cart={cart}
                         setCart={setCart}
+                        subTotal={subTotal}
+                        igv={igv}
+                        perception={perception}
+                        totalPrice={totalPrice}
                         isUser={isUser}
                     />
                 );
@@ -51,6 +59,10 @@ const TopBar = ({
                         items={items}
                         cart={cart}
                         setCart={setCart}
+                        subTotal={subTotal}
+                        igv={igv}
+                        perception={perception}
+                        totalPrice={totalPrice}
                         isUser={isUser}
                         generals={generals}
                     />
@@ -72,6 +84,10 @@ const TopBar = ({
                         items={items}
                         cart={cart}
                         setCart={setCart}
+                        subTotal={subTotal}
+                        igv={igv}
+                        perception={perception}
+                        totalPrice={totalPrice}
                         isUser={isUser}
                     />
                 );

@@ -80,9 +80,11 @@ class Item extends Model
         // Campos virtuales para importación y manejo dinámico
         'atributo',
         'valor',
+        'is_taxable',
     ];
 
     protected $casts = [
+        'is_taxable' => 'boolean',
         'is_new' => 'boolean',
         'offering' => 'boolean',
         'recommended' => 'boolean',

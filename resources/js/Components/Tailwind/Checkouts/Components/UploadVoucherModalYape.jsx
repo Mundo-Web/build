@@ -28,7 +28,9 @@ export default function UploadVoucherModalYape({
     coupon = null,
     descuentofinal = 0,
     autoDiscounts = [],
-    autoDiscountTotal = 0
+    autoDiscountTotal = 0,
+    packagingAmount = 0,
+    selectedPackaging = null
 }) {
     const [file, setFile] = useState(null);
     const [saving, setSaving] = useState(false);
@@ -88,8 +90,13 @@ export default function UploadVoucherModalYape({
             
             const formData = new FormData();
             Object.keys(updatedRequest).forEach(key => {
-                if (updatedRequest[key] !== null && updatedRequest[key] !== undefined) {
-                    formData.append(key, updatedRequest[key]);
+                const value = updatedRequest[key];
+                if (value !== null && value !== undefined) {
+                    if (Array.isArray(value) || (typeof value === 'object' && !(value instanceof File))) {
+                        formData.append(key, JSON.stringify(value));
+                    } else {
+                        formData.append(key, value);
+                    }
                 }
             });
     
@@ -313,6 +320,16 @@ export default function UploadVoucherModalYape({
                                 {CurrencySymbol()} {Number2Currency(envio)}
                             </span>
                         </div>
+                        {packagingAmount > 0 && (
+                            <div className="flex justify-between text-sm 2xl:text-base">
+                                <span className="customtext-neutral-dark">
+                                    Empaque {selectedPackaging?.name ? `(${selectedPackaging.name})` : ''}
+                                </span>
+                                <span className="font-semibold">
+                                    {CurrencySymbol()} {Number2Currency(packagingAmount)}
+                                </span>
+                            </div>
+                        )}
                         <div className="py-1 border-y">
                             <div className="flex justify-between font-bold text-lg 2xl:text-xl items-center">
                                 <span>Total</span>

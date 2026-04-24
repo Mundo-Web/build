@@ -40,6 +40,7 @@ use App\Http\Controllers\Admin\DiscountRulesController as AdminDiscountRulesCont
 use App\Http\Controllers\Admin\AmenityController as AdminAmenityController;
 use App\Http\Controllers\Admin\BookingController as AdminBookingController;
 use App\Http\Controllers\Admin\RoomAvailabilityController as AdminRoomAvailabilityController;
+use App\Http\Controllers\Admin\PackagingController as AdminPackagingController;
 
 use App\Http\Controllers\Admin\DeliveryPriceController as AdminDeliveryPriceController;
 use App\Http\Controllers\Admin\TypesDeliveryController as AdminTypesDeliveryController;
@@ -108,6 +109,7 @@ use App\Http\Controllers\ApplicationController;
 use App\Http\Controllers\SocialController;
 use App\Http\Controllers\TemporalyImageController;
 use App\Http\Controllers\UnifiedImportController;
+use App\Http\Controllers\PackagingController;
 
 /*
 |--------------------------------------------------------------------------
@@ -299,6 +301,9 @@ Route::post('/pago/charge-completed', [PaymentController::class, 'chargeComplete
 Route::post('/pago/3ds', [PaymentController::class, 'charge3DS']);
 Route::get('/pago/{sale_id}', [PaymentController::class, 'getPaymentStatus']);
 
+// Rutas para Empaques
+Route::get('/packaging', [PackagingController::class, 'index']);
+
 // Ruta para crear orden de Culqi (habilita Yape, bancaMovil, etc.)
 Route::post('/culqi/checkout-order', [\App\Http\Controllers\CulqiController::class, 'createCheckoutOrder']);
 
@@ -401,6 +406,12 @@ Route::middleware('auth')->group(function () {
     Route::post('/discount-rules/categories/by-ids', [AdminDiscountRulesController::class, 'getCategoriesByIds']);
     Route::get('/discount-rules/rule-types', [AdminDiscountRulesController::class, 'getRuleTypes']);
     Route::get('/discount-rules/{id}/usage-stats', [AdminDiscountRulesController::class, 'getUsageStats']);
+    
+    Route::post('/packaging', [AdminPackagingController::class, 'save']);
+    Route::post('/packaging/paginate', [AdminPackagingController::class, 'paginate']);
+    Route::patch('/packaging/status', [AdminPackagingController::class, 'status']);
+    Route::patch('/packaging/{field}', [AdminPackagingController::class, 'boolean']);
+    Route::delete('/packaging/{id}', [AdminPackagingController::class, 'delete']);
 
     Route::post('/ads', [AdminAdController::class, 'save']);
     Route::post('/ads/paginate', [AdminAdController::class, 'paginate']);

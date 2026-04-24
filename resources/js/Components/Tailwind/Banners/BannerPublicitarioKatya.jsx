@@ -7,14 +7,15 @@ const BannerPublicitarioKatya = ({ data }) => {
     const backgroundUrl = resolveSystemAsset(data?.background);
     const imageUrl = resolveSystemAsset(data?.image);
     return (
-        <div id={data?.element_id || null} className={`${data?.class_content || ''} overflow-hidden`}
+        <div
+            id={data?.element_id || null}
+            className={`${data?.class_content || ""} overflow-hidden`}
             style={{
                 backgroundImage: `url(${backgroundUrl})`,
                 backgroundSize: "cover",
                 backgroundPosition: "center",
                 backgroundRepeat: "no-repeat",
             }}
-
         >
             <AnimatePresence>
                 <motion.div
@@ -29,17 +30,16 @@ const BannerPublicitarioKatya = ({ data }) => {
                         animate={{ scale: 1, opacity: 1 }}
                         transition={{ duration: 0.8, delay: 0.3 }}
                         className="relative rounded-3xl md:rounded-2xl h-[600px] md:h-[450px] p-4 md:p-0"
-
                     >
                         <div className="flex flex-col md:flex-row items-center justify-between h-full lg:gap-20">
                             {/* Left side - Image */}
                             <motion.div
-                                className={`order-1 relative md:order-none w-full md:w-6/12  z-10 flex items-center justify-center h-full ${data?.class_image || ''}`}
+                                className={`order-1 relative md:order-none w-full md:w-6/12  z-10 flex items-center justify-center h-full ${data?.class_image || ""}`}
                             >
                                 <motion.img
                                     whileHover={{
                                         scale: 1.5,
-                                        transition: { duration: 0.4 }
+                                        transition: { duration: 0.4 },
                                     }}
                                     initial={{ scale: 1.5, rotate: -10 }}
                                     animate={{ scale: 1.5, rotate: 0 }}
@@ -48,7 +48,7 @@ const BannerPublicitarioKatya = ({ data }) => {
                                     className="absolute top-28 left-10"
                                     alt={data?.name}
                                 />
-                                
+
                                 {/* Button positioned over the image */}
                                 <motion.a
                                     initial={{ scale: 0, opacity: 0 }}
@@ -56,14 +56,16 @@ const BannerPublicitarioKatya = ({ data }) => {
                                     transition={{ duration: 0.6, delay: 1.4 }}
                                     whileHover={{
                                         scale: 1.1,
-                                        boxShadow: "0 10px 20px rgba(0,0,0,0.2)"
+                                        boxShadow:
+                                            "0 10px 20px rgba(0,0,0,0.2)",
                                     }}
                                     whileTap={{ scale: 0.9 }}
-                                    href={data?.button_link || Global.APP_DOMAIN}
-                                    className={`absolute bottom-20 left-10 right-10  mx-auto cursor-pointer text-base w-max font-bold customtext-neutral-dark px-10 rounded-full py-4 hover:opacity-90 transition-all duration-300 flex items-center gap-2 justify-center ${data?.class_button || 'bg-white'}`}
+                                    href={
+                                        data?.button_link || Global.APP_DOMAIN
+                                    }
+                                    className={`absolute bottom-20 left-10 right-10  mx-auto cursor-pointer text-base w-max font-bold text-neutral-dark px-10 rounded-full py-4 hover:opacity-90 transition-all duration-300 flex items-center gap-2 justify-center ${data?.class_button || "bg-white"}`}
                                 >
                                     {data?.button_text}
-                                   
                                 </motion.a>
                             </motion.div>
 
@@ -72,9 +74,11 @@ const BannerPublicitarioKatya = ({ data }) => {
                                 initial={{ x: 200, opacity: 0 }}
                                 animate={{ x: 0, opacity: 1 }}
                                 transition={{ duration: 1, delay: 0.7 }}
-                                className={`md:order-1 md:w-6/12  z-10 ${data?.class_right || 'text-white'}`}
+                                className={`md:order-1 md:w-6/12  z-10 ${data?.class_right || "text-white"}`}
                             >
-                                <div className={` ${data?.class_content_right || ''}`}>
+                                <div
+                                    className={` ${data?.class_content_right || ""}`}
+                                >
                                     <motion.h1
                                         initial={{ y: 50, opacity: 0 }}
                                         animate={{ y: 0, opacity: 1 }}
@@ -86,7 +90,10 @@ const BannerPublicitarioKatya = ({ data }) => {
                                     <motion.p
                                         initial={{ y: 50, opacity: 0 }}
                                         animate={{ y: 0, opacity: 1 }}
-                                        transition={{ duration: 0.8, delay: 1.2 }}
+                                        transition={{
+                                            duration: 0.8,
+                                            delay: 1.2,
+                                        }}
                                         className="text-2xl mb-8 font-font-secondary"
                                     >
                                         {data?.description}

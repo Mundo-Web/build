@@ -16,7 +16,9 @@ import Logout from "../../../Actions/Logout";
 import MobileMenu from "./Components/MobileMenu";
 import ProfileImage from "./Components/ProfileImage";
 import { motion, AnimatePresence } from "framer-motion";
-import Number2Currency, { CurrencySymbol } from "../../../Utils/Number2Currency";
+import Number2Currency, {
+    CurrencySymbol,
+} from "../../../Utils/Number2Currency";
 import MobileMenuKatya from "./Components/MobileMenuKatya";
 
 const HeaderSearchKatya = ({
@@ -24,15 +26,19 @@ const HeaderSearchKatya = ({
     data,
     cart,
     setCart,
+    subTotal,
+    igv,
+    perception,
+    totalPrice,
     isUser,
     pages,
     generals = [],
 }) => {
     const phoneWhatsappObj = generals.find(
-        (item) => item.correlative === "phone_whatsapp"
+        (item) => item.correlative === "phone_whatsapp",
     );
     const messageWhatsappObj = generals.find(
-        (item) => item.correlative === "message_whatsapp"
+        (item) => item.correlative === "message_whatsapp",
     );
 
     const phoneWhatsapp = phoneWhatsappObj?.description ?? null;
@@ -54,7 +60,10 @@ const HeaderSearchKatya = ({
 
     // Estados para dropdown de categorías
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-    const [selectedCategory, setSelectedCategory] = useState({ slug: "", name: "Categorías" });
+    const [selectedCategory, setSelectedCategory] = useState({
+        slug: "",
+        name: "Categorías",
+    });
 
     const menuRef = useRef(null);
     const dropdownRef = useRef(null);
@@ -67,20 +76,23 @@ const HeaderSearchKatya = ({
     // refs para scroll automático en sugerencias
     const suggestionRefs = useRef([]);
 
-    const totalCount = cart.reduce((acc, item) => Number(acc) + Number(item.quantity), 0);
-    const totalPrice = cart.reduce((acc, item) => acc + (item.final_price * item.quantity), 0);
+    const totalCount = cart.reduce(
+        (acc, item) => Number(acc) + Number(item.quantity),
+        0,
+    );
+    // Usamos totalPrice recibido por props (calculado en System.jsx)
 
     const [searchView, setSearchView] = useState(false);
     // Función para verificar si estamos en rutas donde no queremos mostrar la búsqueda móvil
     // Usando window.location directamente para máxima compatibilidad
     const shouldHideMobileSearch = () => {
         try {
-            const currentPath = window.location.pathname || '';
-            const hiddenRoutes = ['/cart', '/checkout'];
-            return hiddenRoutes.some(route => currentPath.includes(route));
+            const currentPath = window.location.pathname || "";
+            const hiddenRoutes = ["/cart", "/checkout"];
+            return hiddenRoutes.some((route) => currentPath.includes(route));
         } catch (error) {
             // En caso de error, mostrar la búsqueda móvil por defecto
-            console.warn('Error checking path:', error);
+            console.warn("Error checking path:", error);
             return false;
         }
     };
@@ -98,11 +110,11 @@ const HeaderSearchKatya = ({
         try {
             // Construir filtros dinámicamente
             let filters = [
-                ['name', 'contains', query],
-                'or',
-                ['summary', 'contains', query],
-                'or',
-                ['description', 'contains', query]
+                ["name", "contains", query],
+                "or",
+                ["summary", "contains", query],
+                "or",
+                ["description", "contains", query],
             ];
 
             // Si hay una categoría seleccionada, hacer dos búsquedas:
@@ -111,34 +123,42 @@ const HeaderSearchKatya = ({
             let searchResults = [];
 
             if (selectedCategory.slug) {
-                const category = items?.find(cat => cat.slug === selectedCategory.slug);
+                const category = items?.find(
+                    (cat) => cat.slug === selectedCategory.slug,
+                );
                 if (category) {
                     // Primera búsqueda: con filtro de categoría
                     const categoryFilters = [
                         ...filters,
-                        'and',
-                        ['category_id', '=', category.id]
+                        "and",
+                        ["category_id", "=", category.id],
                     ];
 
-                    const categoryResponse = await fetch('/api/items/paginate', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-Requested-With': 'XMLHttpRequest',
+                    const categoryResponse = await fetch(
+                        "/api/items/paginate",
+                        {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json",
+                                "X-Requested-With": "XMLHttpRequest",
+                            },
+                            body: JSON.stringify({
+                                take: 8,
+                                skip: 0,
+                                filter: categoryFilters,
+                                sort: [{ selector: "name", desc: false }],
+                                requireTotalCount: false,
+                                with: "category,brand",
+                            }),
                         },
-                        body: JSON.stringify({
-                            take: 8,
-                            skip: 0,
-                            filter: categoryFilters,
-                            sort: [{ selector: 'name', desc: false }],
-                            requireTotalCount: false,
-                            with: 'category,brand'
-                        })
-                    });
+                    );
 
                     if (categoryResponse.ok) {
                         const categoryData = await categoryResponse.json();
-                        if (categoryData.status === 200 && Array.isArray(categoryData.data)) {
+                        if (
+                            categoryData.status === 200 &&
+                            Array.isArray(categoryData.data)
+                        ) {
                             searchResults = categoryData.data;
                         }
                     }
@@ -146,45 +166,48 @@ const HeaderSearchKatya = ({
 
                 // Si no encontramos resultados en la categoría específica, buscar en todas
                 if (searchResults.length === 0) {
-                    const generalResponse = await fetch('/api/items/paginate', {
-                        method: 'POST',
+                    const generalResponse = await fetch("/api/items/paginate", {
+                        method: "POST",
                         headers: {
-                            'Content-Type': 'application/json',
-                            'X-Requested-With': 'XMLHttpRequest',
+                            "Content-Type": "application/json",
+                            "X-Requested-With": "XMLHttpRequest",
                         },
                         body: JSON.stringify({
                             take: 8,
                             skip: 0,
                             filter: filters, // Sin filtro de categoría
-                            sort: [{ selector: 'name', desc: false }],
+                            sort: [{ selector: "name", desc: false }],
                             requireTotalCount: false,
-                            with: 'category,brand'
-                        })
+                            with: "category,brand",
+                        }),
                     });
 
                     if (generalResponse.ok) {
                         const generalData = await generalResponse.json();
-                        if (generalData.status === 200 && Array.isArray(generalData.data)) {
+                        if (
+                            generalData.status === 200 &&
+                            Array.isArray(generalData.data)
+                        ) {
                             searchResults = generalData.data;
                         }
                     }
                 }
             } else {
                 // Sin categoría seleccionada, buscar en todo
-                const response = await fetch('/api/items/paginate', {
-                    method: 'POST',
+                const response = await fetch("/api/items/paginate", {
+                    method: "POST",
                     headers: {
-                        'Content-Type': 'application/json',
-                        'X-Requested-With': 'XMLHttpRequest',
+                        "Content-Type": "application/json",
+                        "X-Requested-With": "XMLHttpRequest",
                     },
                     body: JSON.stringify({
                         take: 8,
                         skip: 0,
                         filter: filters,
-                        sort: [{ selector: 'name', desc: false }],
+                        sort: [{ selector: "name", desc: false }],
                         requireTotalCount: false,
-                        with: 'category,brand'
-                    })
+                        with: "category,brand",
+                    }),
                 });
 
                 if (response.ok) {
@@ -197,9 +220,8 @@ const HeaderSearchKatya = ({
 
             setSearchSuggestions(searchResults);
             setShowSuggestions(searchResults.length > 0);
-
         } catch (error) {
-            console.error('Error fetching search suggestions:', error);
+            console.error("Error fetching search suggestions:", error);
             setSearchSuggestions([]);
             setShowSuggestions(false);
         } finally {
@@ -251,13 +273,21 @@ const HeaderSearchKatya = ({
             }
 
             // Manejo para dropdown de categorías
-            if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+            if (
+                dropdownRef.current &&
+                !dropdownRef.current.contains(event.target)
+            ) {
                 setIsDropdownOpen(false);
             }
 
             // Manejo para búsqueda
-            if (searchRef.current && !searchRef.current.contains(event.target)) {
-                const isSuggestionButton = event.target.closest('[data-suggestion-button]');
+            if (
+                searchRef.current &&
+                !searchRef.current.contains(event.target)
+            ) {
+                const isSuggestionButton = event.target.closest(
+                    "[data-suggestion-button]",
+                );
                 if (!isSuggestionButton) {
                     clearSuggestions();
                 }
@@ -287,7 +317,7 @@ const HeaderSearchKatya = ({
     // useEffect para manejar el escape en la búsqueda móvil
     useEffect(() => {
         const handleKeyPress = (event) => {
-            if (event.key === 'Escape') {
+            if (event.key === "Escape") {
                 if (showSuggestions) {
                     clearSuggestions();
                 } else if (searchMobile) {
@@ -324,8 +354,8 @@ const HeaderSearchKatya = ({
         ) {
             // Usar scrollIntoView para asegurar que la sugerencia seleccionada esté visible
             suggestionRefs.current[selectedSuggestionIndex].scrollIntoView({
-                block: 'nearest',
-                behavior: 'smooth',
+                block: "nearest",
+                behavior: "smooth",
             });
         }
     }, [selectedSuggestionIndex]);
@@ -348,7 +378,7 @@ const HeaderSearchKatya = ({
         hidden: {
             opacity: 0,
             y: -10,
-            scale: 0.95
+            scale: 0.95,
         },
         visible: {
             opacity: 1,
@@ -357,40 +387,40 @@ const HeaderSearchKatya = ({
             transition: {
                 type: "spring",
                 stiffness: 400,
-                damping: 25
-            }
+                damping: 25,
+            },
         },
         exit: {
             opacity: 0,
             y: -10,
             scale: 0.95,
             transition: {
-                duration: 0.15
-            }
-        }
+                duration: 0.15,
+            },
+        },
     };
 
     const menuItems = [
         {
             icon: <User size={16} />,
             label: "Mi Perfil",
-            href: "/profile"
+            href: "/profile",
         },
         {
             icon: <ShoppingCart size={16} />,
             label: "Mis Pedidos",
-            href: "/customer/dashboard"
+            href: "/er/dashboard",
         },
         {
             icon: <Settings size={16} />,
             label: "Configuración",
-            href: "/account"
+            href: "/account",
         },
         {
             icon: <DoorClosed size={16} />,
             label: "Cerrar Sesión",
-            onClick: Logout
-        }
+            onClick: Logout,
+        },
     ];
 
     // Función para manejar el submit del form (mejorada)
@@ -399,18 +429,18 @@ const HeaderSearchKatya = ({
         clearSuggestions();
 
         const formData = new FormData(event.target);
-        const searchTerm = formData.get('search')?.trim() || search.trim();
+        const searchTerm = formData.get("search")?.trim() || search.trim();
         const categorySlug = selectedCategory.slug;
 
         if (searchTerm || categorySlug) {
-            let url = '/catalogo?';
+            let url = "/catalogo?";
             const params = new URLSearchParams();
 
             if (searchTerm) {
-                params.append('search', searchTerm);
+                params.append("search", searchTerm);
             }
             if (categorySlug) {
-                params.append('category', categorySlug);
+                params.append("category", categorySlug);
             }
 
             window.location.href = `/catalogo?${params.toString()}`;
@@ -439,10 +469,10 @@ const HeaderSearchKatya = ({
         const elRect = el.getBoundingClientRect();
         if (elRect.top < containerRect.top) {
             // Scroll up
-            container.scrollTop -= (containerRect.top - elRect.top);
+            container.scrollTop -= containerRect.top - elRect.top;
         } else if (elRect.bottom > containerRect.bottom) {
             // Scroll down
-            container.scrollTop += (elRect.bottom - containerRect.bottom);
+            container.scrollTop += elRect.bottom - containerRect.bottom;
         }
     }
 
@@ -450,31 +480,37 @@ const HeaderSearchKatya = ({
     const handleKeyDown = (e) => {
         if (!showSuggestions || searchSuggestions.length === 0) return;
         switch (e.key) {
-            case 'ArrowDown':
+            case "ArrowDown":
                 e.preventDefault();
-                setSelectedSuggestionIndex(prev => {
-                    const next = prev < searchSuggestions.length - 1 ? prev + 1 : prev;
+                setSelectedSuggestionIndex((prev) => {
+                    const next =
+                        prev < searchSuggestions.length - 1 ? prev + 1 : prev;
                     setTimeout(() => scrollToSuggestion(next), 0);
                     return next;
                 });
                 break;
-            case 'ArrowUp':
+            case "ArrowUp":
                 e.preventDefault();
-                setSelectedSuggestionIndex(prev => {
+                setSelectedSuggestionIndex((prev) => {
                     const next = prev > 0 ? prev - 1 : 0;
                     setTimeout(() => scrollToSuggestion(next), 0);
                     return next;
                 });
                 break;
-            case 'Enter':
+            case "Enter":
                 e.preventDefault();
-                if (selectedSuggestionIndex >= 0 && selectedSuggestionIndex < searchSuggestions.length) {
-                    selectSuggestion(searchSuggestions[selectedSuggestionIndex]);
+                if (
+                    selectedSuggestionIndex >= 0 &&
+                    selectedSuggestionIndex < searchSuggestions.length
+                ) {
+                    selectSuggestion(
+                        searchSuggestions[selectedSuggestionIndex],
+                    );
                 } else if (search.trim()) {
                     handleFormSubmit(e);
                 }
                 break;
-            case 'Escape':
+            case "Escape":
                 setShowSuggestions(false);
                 break;
             default:
@@ -483,13 +519,24 @@ const HeaderSearchKatya = ({
     };
 
     // --- SUGERENCIAS DE BÚSQUEDA ---
-    const SearchSuggestions = ({ suggestions, isLoading, onSelect, selectedIndex }) => {
+    const SearchSuggestions = ({
+        suggestions,
+        isLoading,
+        onSelect,
+        selectedIndex,
+    }) => {
         if (!showSuggestions) return null;
 
         // Verificar si las sugerencias incluyen productos de la categoría seleccionada
-        const categoryId = selectedCategory.slug ? items?.find(cat => cat.slug === selectedCategory.slug)?.id : null;
-        const hasMatchingCategory = suggestions.some(s => s.category_id === categoryId);
-        const hasOtherCategories = suggestions.some(s => s.category_id !== categoryId);
+        const categoryId = selectedCategory.slug
+            ? items?.find((cat) => cat.slug === selectedCategory.slug)?.id
+            : null;
+        const hasMatchingCategory = suggestions.some(
+            (s) => s.category_id === categoryId,
+        );
+        const hasOtherCategories = suggestions.some(
+            (s) => s.category_id !== categoryId,
+        );
 
         return (
             <motion.div
@@ -500,7 +547,7 @@ const HeaderSearchKatya = ({
                 className="absolute top-full left-0 right-0 bg-white border border-gray-200 rounded-lg shadow-lg z-[60] max-h-80 overflow-y-auto mt-1"
             >
                 {isLoading ? (
-                    <div className="p-4 text-center customtext-neutral-dark">
+                    <div className="p-4 text-center text-neutral-dark">
                         <div className="flex items-center justify-center gap-2">
                             <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
                             Buscando...
@@ -509,34 +556,50 @@ const HeaderSearchKatya = ({
                 ) : suggestions.length > 0 ? (
                     <div>
                         {/* Mostrar aviso si hay resultados de otras categorías cuando se tiene una seleccionada */}
-                        {selectedCategory.slug && hasOtherCategories && !hasMatchingCategory && (
-                            <div className="px-4 py-3 bg-primary border-b customtext-neutral-light">
-                                <p className="text-xs customtext-neutral-dark">
-                                    <span className="font-medium">No se encontraron productos en "{selectedCategory.name}"</span>
-                                    <br />
-                                    Mostrando resultados de otras categorías
-                                </p>
-                            </div>
-                        )}
+                        {selectedCategory.slug &&
+                            hasOtherCategories &&
+                            !hasMatchingCategory && (
+                                <div className="px-4 py-3 bg-primary border-b text-neutral-light">
+                                    <p className="text-xs text-neutral-dark">
+                                        <span className="font-medium">
+                                            No se encontraron productos en "
+                                            {selectedCategory.name}"
+                                        </span>
+                                        <br />
+                                        Mostrando resultados de otras categorías
+                                    </p>
+                                </div>
+                            )}
 
                         <ul className="py-2">
                             {suggestions.map((suggestion, index) => {
-                                const isFromSelectedCategory = categoryId && suggestion.category_id === categoryId;
+                                const isFromSelectedCategory =
+                                    categoryId &&
+                                    suggestion.category_id === categoryId;
 
                                 return (
                                     <li
                                         key={suggestion.id}
-                                        ref={el => suggestionItemsRef.current[index] = el}
+                                        ref={(el) =>
+                                            (suggestionItemsRef.current[index] =
+                                                el)
+                                        }
                                     >
                                         <button
                                             data-suggestion-button
-                                            onMouseDown={e => {
+                                            onMouseDown={(e) => {
                                                 e.preventDefault();
                                                 e.stopPropagation();
-                                                setTimeout(() => onSelect(suggestion), 0);
+                                                setTimeout(
+                                                    () => onSelect(suggestion),
+                                                    0,
+                                                );
                                             }}
-                                            className={`w-full px-4 py-3 text-left hover:bg-gray-50 transition-colors duration-200 flex items-center gap-3 ${index === selectedIndex ? 'bg-primary/10 border-l-4 border-primary' : ''
-                                                } ${isFromSelectedCategory ? 'bg-green-50' : ''}`}
+                                            className={`w-full px-4 py-3 text-left hover:bg-gray-50 transition-colors duration-200 flex items-center gap-3 ${
+                                                index === selectedIndex
+                                                    ? "bg-primary/10 border-l-4 border-primary"
+                                                    : ""
+                                            } ${isFromSelectedCategory ? "bg-green-50" : ""}`}
                                             type="button"
                                         >
                                             <div className="flex-shrink-0 w-12 h-12 bg-gray-100 rounded-lg overflow-hidden">
@@ -545,34 +608,48 @@ const HeaderSearchKatya = ({
                                                         src={`/api/items/media/${suggestion.image}`}
                                                         alt={suggestion.name}
                                                         className="w-full h-full object-cover"
-                                                        onError={e => {
-                                                            e.target.style.display = 'none';
+                                                        onError={(e) => {
+                                                            e.target.style.display =
+                                                                "none";
                                                         }}
                                                     />
                                                 ) : (
                                                     <img
-                                                        src={suggestion?.image ? `/api/items/media/${suggestion.image}` : '/assets/img/noimage/no_img.jpg'}
-                                                        alt={suggestion?.name || 'Producto'}
+                                                        src={
+                                                            suggestion?.image
+                                                                ? `/api/items/media/${suggestion.image}`
+                                                                : "/assets/img/noimage/no_img.jpg"
+                                                        }
+                                                        alt={
+                                                            suggestion?.name ||
+                                                            "Producto"
+                                                        }
                                                         className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500"
                                                         onError={(e) => {
-                                                            e.target.src = '/assets/img/noimage/no_img.jpg';
+                                                            e.target.src =
+                                                                "/assets/img/noimage/no_img.jpg";
                                                         }}
                                                     />
                                                 )}
                                             </div>
                                             <div className="flex-1 min-w-0">
-                                                <div className="font-medium customtext-neutral-dark truncate flex items-center gap-2">
+                                                <div className="font-medium text-neutral-dark truncate flex items-center gap-2">
                                                     {suggestion.name}
-
                                                 </div>
                                                 {suggestion.category && (
-                                                    <div className="text-sm customtext-neutral-dark truncate">
-                                                        {suggestion.category.name}
+                                                    <div className="text-sm text-neutral-dark truncate">
+                                                        {
+                                                            suggestion.category
+                                                                .name
+                                                        }
                                                     </div>
                                                 )}
                                                 {suggestion.final_price && (
-                                                    <div className="text-sm font-semibold customtext-primary">
-                                                        {CurrencySymbol()} {parseFloat(suggestion.final_price).toFixed(2)}
+                                                    <div className="text-sm font-semibold text-primary">
+                                                        {CurrencySymbol()}{" "}
+                                                        {parseFloat(
+                                                            suggestion.final_price,
+                                                        ).toFixed(2)}
                                                     </div>
                                                 )}
                                             </div>
@@ -583,11 +660,16 @@ const HeaderSearchKatya = ({
                         </ul>
                     </div>
                 ) : (
-                    <div className="p-4 text-center customtext-neutral-dark">
+                    <div className="p-4 text-center text-neutral-dark">
                         {selectedCategory.slug ? (
                             <div>
-                                <p className="font-medium">No se encontraron productos en "{selectedCategory.name}"</p>
-                                <p className="text-sm customtext-neutral-dark mt-1">Intenta buscar en "Todas las categorías"</p>
+                                <p className="font-medium">
+                                    No se encontraron productos en "
+                                    {selectedCategory.name}"
+                                </p>
+                                <p className="text-sm text-neutral-dark mt-1">
+                                    Intenta buscar en "Todas las categorías"
+                                </p>
                             </div>
                         ) : (
                             "No se encontraron productos"
@@ -600,27 +682,33 @@ const HeaderSearchKatya = ({
 
     // --- DROPDOWN PERSONALIZADO DE CATEGORÍAS ---
     const CategoryDropdown = () => {
-        const sortedCategories = items && items.length > 0
-            ? [...items].sort((a, b) => a.name.localeCompare(b.name))
-            : [];
+        const sortedCategories =
+            items && items.length > 0
+                ? [...items].sort((a, b) => a.name.localeCompare(b.name))
+                : [];
 
         return (
             <div ref={dropdownRef} className="absolute right-0 flex-shrink-0">
                 <button
                     type="button"
                     onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                    className="flex items-center justify-between min-w-[150px] max-w-[150px] text-sm py-3.5 px-4 font-semibold focus:ring-0 customtext-neutral-dark bg-secondary focus:outline-none border-0  text-white rounded-full hover:bg-primary hover:customtext-neutral-dark transition-colors duration-500"
+                    className="flex items-center justify-between min-w-[150px] max-w-[150px] text-sm py-3.5 px-4 font-semibold focus:ring-0 text-neutral-dark bg-secondary focus:outline-none border-0  text-white rounded-full hover:bg-primary hover:text-neutral-dark transition-colors duration-500"
                     aria-label="Seleccionar categoría"
                     aria-expanded={isDropdownOpen}
                 >
-                    <span className="truncate">{selectedCategory.name}</span>
+                    <span className="truncate ">{selectedCategory.name}</span>
                     <svg
-                        className={`w-4 h-4 ml-2 transition-transform duration-200 ${isDropdownOpen ? 'rotate-180' : ''}`}
+                        className={`w-4 h-4 ml-2 transition-transform duration-200 ${isDropdownOpen ? "rotate-180" : ""}`}
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
                     >
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                        <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M19 9l-7 7-7-7"
+                        />
                     </svg>
                 </button>
 
@@ -637,7 +725,10 @@ const HeaderSearchKatya = ({
                                 <button
                                     type="button"
                                     onClick={() => {
-                                        setSelectedCategory({ slug: "", name: "Categorías" });
+                                        setSelectedCategory({
+                                            slug: "",
+                                            name: "Categorías",
+                                        });
                                         setIsDropdownOpen(false);
 
                                         // Si hay una búsqueda activa, actualizar inmediatamente las sugerencias
@@ -647,19 +738,40 @@ const HeaderSearchKatya = ({
                                             }, 150);
                                         }
                                     }}
-                                    className={`w-full px-4 py-3 text-left hover:bg-gray-50 transition-colors duration-200 flex items-center gap-3 ${selectedCategory.slug === "" ? 'bg-primary/10 text-primary font-medium' : 'customtext-neutral-dark'
-                                        }`}
+                                    className={`w-full px-4 py-3 text-left hover:bg-gray-50 transition-colors duration-200 flex items-center gap-3 ${
+                                        selectedCategory.slug === ""
+                                            ? "bg-primary/10 text-primary font-medium"
+                                            : "text-neutral-dark"
+                                    }`}
                                 >
                                     <div className="flex-shrink-0 w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center">
-                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                                        <svg
+                                            className="w-4 h-4"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            viewBox="0 0 24 24"
+                                        >
+                                            <path
+                                                strokeLinecap="round"
+                                                strokeLinejoin="round"
+                                                strokeWidth={2}
+                                                d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
+                                            />
                                         </svg>
                                     </div>
                                     <span className="truncate">Categorías</span>
                                     {selectedCategory.slug === "" && (
                                         <div className="ml-auto">
-                                            <svg className="w-4 h-4 text-primary" fill="currentColor" viewBox="0 0 20 20">
-                                                <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                                            <svg
+                                                className="w-4 h-4 text-primary"
+                                                fill="currentColor"
+                                                viewBox="0 0 20 20"
+                                            >
+                                                <path
+                                                    fillRule="evenodd"
+                                                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                                    clipRule="evenodd"
+                                                />
                                             </svg>
                                         </div>
                                     )}
@@ -670,18 +782,27 @@ const HeaderSearchKatya = ({
                                         key={category.id}
                                         type="button"
                                         onClick={() => {
-                                            setSelectedCategory({ slug: category.slug, name: category.name });
+                                            setSelectedCategory({
+                                                slug: category.slug,
+                                                name: category.name,
+                                            });
                                             setIsDropdownOpen(false);
 
                                             // Si hay una búsqueda activa, actualizar inmediatamente las sugerencias
                                             if (search.trim().length >= 2) {
                                                 setTimeout(() => {
-                                                    fetchSearchSuggestions(search);
+                                                    fetchSearchSuggestions(
+                                                        search,
+                                                    );
                                                 }, 150);
                                             }
                                         }}
-                                        className={`w-full px-4 py-3 text-left hover:bg-gray-50 transition-colors duration-200 flex items-center gap-3 ${selectedCategory.slug === category.slug ? 'bg-primary/10 text-primary font-medium' : 'customtext-neutral-dark'
-                                            }`}
+                                        className={`w-full px-4 py-3 text-left hover:bg-gray-50 transition-colors duration-200 flex items-center gap-3 ${
+                                            selectedCategory.slug ===
+                                            category.slug
+                                                ? "bg-primary/10 text-neutral-dark "
+                                                : "text-neutral-dark"
+                                        }`}
                                     >
                                         <div className="flex-shrink-0 w-8 h-8 bg-secondary p-2 rounded-full overflow-hidden">
                                             {category.image ? (
@@ -689,10 +810,11 @@ const HeaderSearchKatya = ({
                                                     src={`/api/categories/media/${category.image}`}
                                                     alt={category.name}
                                                     className="w-full h-full object-cover"
-                                                    onError={e => {
-                                                        e.target.style.display = 'none';
+                                                    onError={(e) => {
+                                                        e.target.style.display =
+                                                            "none";
                                                         e.target.parentNode.innerHTML = `
-                                                            <div class="w-full h-full flex items-center justify-center customtext-neutral-dark">
+                                                            <div class="w-full h-full flex items-center justify-center text-neutral-dark">
                                                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
                                                                 </svg>
@@ -701,18 +823,39 @@ const HeaderSearchKatya = ({
                                                     }}
                                                 />
                                             ) : (
-                                                <div className="w-full h-full flex items-center justify-center customtext-neutral-dark">
-                                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+                                                <div className="w-full h-full flex items-center justify-center text-neutral-dark">
+                                                    <svg
+                                                        className="w-4 h-4"
+                                                        fill="none"
+                                                        stroke="currentColor"
+                                                        viewBox="0 0 24 24"
+                                                    >
+                                                        <path
+                                                            strokeLinecap="round"
+                                                            strokeLinejoin="round"
+                                                            strokeWidth={2}
+                                                            d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"
+                                                        />
                                                     </svg>
                                                 </div>
                                             )}
                                         </div>
-                                        <span className="truncate">{category.name}</span>
-                                        {selectedCategory.slug === category.slug && (
+                                        <span className="truncate">
+                                            {category.name}
+                                        </span>
+                                        {selectedCategory.slug ===
+                                            category.slug && (
                                             <div className="ml-auto">
-                                                <svg className="w-4 h-4 text-primary" fill="currentColor" viewBox="0 0 20 20">
-                                                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                                                <svg
+                                                    className="w-4 h-4 text-primary"
+                                                    fill="currentColor"
+                                                    viewBox="0 0 20 20"
+                                                >
+                                                    <path
+                                                        fillRule="evenodd"
+                                                        d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                                        clipRule="evenodd"
+                                                    />
                                                 </svg>
                                             </div>
                                         )}
@@ -726,13 +869,16 @@ const HeaderSearchKatya = ({
         );
     };
     // Determinar si el usuario es cliente (no admin ni superadmin, usando roles array)
-    let isCustomer = false;
+    let iser = false;
     if (isUser && Array.isArray(isUser.roles)) {
-        const roleNames = isUser.roles.map(r => r.name?.toLowerCase());
-        isCustomer = !roleNames.includes('admin') && !roleNames.includes('root');
+        const roleNames = isUser.roles.map((r) => r.name?.toLowerCase());
+        iser = !roleNames.includes("admin") && !roleNames.includes("root");
     }
     return (
-        <header id={data?.element_id || null} className={`w-full top-0 left-0 z-50 transition-all duration-300 ${isFixed ? "fixed bg-primary shadow-lg" : "relative bg-primary"}`}>
+        <header
+            id={data?.element_id || null}
+            className={`w-full top-0 left-0 z-50 transition-all duration-300 ${isFixed ? "fixed bg-primary shadow-lg" : "relative bg-primary"}`}
+        >
             <div className="px-primary  bg-primary 2xl:px-0 2xl:max-w-7xl mx-auto py-4 font-font-secondary text-base font-semibold">
                 <div className="flex items-center justify-between gap-4">
                     {/* Logo */}
@@ -751,35 +897,67 @@ const HeaderSearchKatya = ({
                     {data?.showLoginCart && (
                         <div className="flex gap-3 justify-end lg:hidden">
                             <div className="flex items-center">
-                             <button onClick={() => setSearchView(!searchView)} >
-                                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M17 17L21 21" stroke="#0E1818" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-                                    <path d="M19 11C19 6.58172 15.4183 3 11 3C6.58172 3 3 6.58172 3 11C3 15.4183 6.58172 19 11 19C15.4183 19 19 15.4183 19 11Z" stroke="#0E1818" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-                                </svg>
-                             </button>
-
+                                <button
+                                    onClick={() => setSearchView(!searchView)}
+                                >
+                                    <svg
+                                        width="24"
+                                        height="24"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                    >
+                                        <path
+                                            d="M17 17L21 21"
+                                            stroke="#0E1818"
+                                            stroke-width="1.5"
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                        />
+                                        <path
+                                            d="M19 11C19 6.58172 15.4183 3 11 3C6.58172 3 3 6.58172 3 11C3 15.4183 6.58172 19 11 19C15.4183 19 19 15.4183 19 11Z"
+                                            stroke="#0E1818"
+                                            stroke-width="1.5"
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                        />
+                                    </svg>
+                                </button>
                             </div>
-                            <div className={`${searchMobile ? "hidden" : "flex"} items-center gap-4`}>
+                            <div
+                                className={`${searchMobile ? "hidden" : "flex"} items-center gap-4`}
+                            >
                                 {isUser ? (
                                     <div ref={menuRef} className="relative">
                                         <button
                                             aria-label="user"
-                                            className="flex items-center customtext-neutral-dark gap-2 hover:customtext-primary transition-all duration-300 relative group"
-                                            onClick={() => setIsMenuOpen(!isMenuOpen)}
+                                            className="flex items-center text-neutral-dark gap-2 hover:text-primary transition-all duration-300 relative group"
+                                            onClick={() =>
+                                                setIsMenuOpen(!isMenuOpen)
+                                            }
                                         >
                                             <div className="relative transform group-hover:scale-105 transition-transform duration-200">
                                                 {isUser.uuid ? (
                                                     <div className="relative">
-                                                         <ProfileImage
-                                                        uuid={isUser.uuid}
-                                                        name={isUser.name}
-                                                        lastname={isUser.lastname}
-                                                        classCircleUser={"customtext-neutral-dark stroke-[1.5] border-neutral-dark "}
-                                                        className="w-6 h-6 rounded-full object-cover   border-2 border-secondary ring-secondary transition-all duration-300"
-                                                    />
-                                                        <div className="relative" style={{ display: 'none' }}>
+                                                        <ProfileImage
+                                                            uuid={isUser.uuid}
+                                                            name={isUser.name}
+                                                            lastname={
+                                                                isUser.lastname
+                                                            }
+                                                            classCircleUser={
+                                                                "text-neutral-dark stroke-[1.5] border-neutral-dark "
+                                                            }
+                                                            className="w-6 h-6 rounded-full object-cover   border-2 border-secondary ring-secondary transition-all duration-300"
+                                                        />
+                                                        <div
+                                                            className="relative"
+                                                            style={{
+                                                                display: "none",
+                                                            }}
+                                                        >
                                                             <CircleUser
-                                                                className="customtext-neutral-dark  border-neutral-dark rounded-full   ring-neutral-dark transition-all duration-300"
+                                                                className="text-neutral-dark  border-neutral-dark rounded-full   ring-neutral-dark transition-all duration-300"
                                                                 width="1.5rem"
                                                             />
                                                         </div>
@@ -792,7 +970,7 @@ const HeaderSearchKatya = ({
                                                 ) : (
                                                     <div className="relative">
                                                         <CircleUser
-                                                            className="customtext-neutral-dark border-2 border-neutral-dark rounded-full  ring-neutral-dark  transition-all duration-300"
+                                                            className="text-neutral-dark border-2 border-neutral-dark rounded-full  ring-neutral-dark  transition-all duration-300"
                                                             width="1.5rem"
                                                         />
                                                         {/* Punto indicador online animado */}
@@ -816,71 +994,129 @@ const HeaderSearchKatya = ({
                                                 >
                                                     <div className="p-4">
                                                         <ul className="space-y-3">
-                                                            {isCustomer ? (
-                                                                menuItems.map((item, index) => (
-                                                                    <li key={index}>
-                                                                        {item.onClick ? (
-                                                                            <button
-                                                                                aria-label="menu-items"
-                                                                                onClick={(e) => {
-                                                                                    e.preventDefault();
-                                                                                    e.stopPropagation();
-                                                                                    setIsMenuOpen(false);
-                                                                                    // Pequeño delay para que la animación se complete
-                                                                                    setTimeout(() => {
-                                                                                        item.onClick();
-                                                                                    }, 150);
-                                                                                }}
-                                                                                className="flex w-full items-center gap-3 customtext-neutral-dark text-sm hover:customtext-primary hover:bg-gray-50 transition-all duration-300 p-2 rounded-lg"
-                                                                            >
-                                                                                {item.icon}
-                                                                                <span>{item.label}</span>
-                                                                            </button>
-                                                                        ) : (
-                                                                            <a
-                                                                                href={item.href}
-                                                                                onClick={(e) => {
-                                                                                    e.stopPropagation();
-                                                                                    setIsMenuOpen(false);
-                                                                                }}
-                                                                                className="flex items-center gap-3 customtext-neutral-dark text-sm hover:customtext-primary hover:bg-gray-50 transition-all duration-300 p-2 rounded-lg"
-                                                                            >
-                                                                                {item.icon}
-                                                                                <span>{item.label}</span>
-                                                                            </a>
-                                                                        )}
-                                                                    </li>
-                                                                ))
+                                                            {iser ? (
+                                                                menuItems.map(
+                                                                    (
+                                                                        item,
+                                                                        index,
+                                                                    ) => (
+                                                                        <li
+                                                                            key={
+                                                                                index
+                                                                            }
+                                                                        >
+                                                                            {item.onClick ? (
+                                                                                <button
+                                                                                    aria-label="menu-items"
+                                                                                    onClick={(
+                                                                                        e,
+                                                                                    ) => {
+                                                                                        e.preventDefault();
+                                                                                        e.stopPropagation();
+                                                                                        setIsMenuOpen(
+                                                                                            false,
+                                                                                        );
+                                                                                        // Pequeño delay para que la animación se complete
+                                                                                        setTimeout(
+                                                                                            () => {
+                                                                                                item.onClick();
+                                                                                            },
+                                                                                            150,
+                                                                                        );
+                                                                                    }}
+                                                                                    className="flex w-full items-center gap-3 text-neutral-dark text-sm hover:text-primary hover:bg-gray-50 transition-all duration-300 p-2 rounded-lg"
+                                                                                >
+                                                                                    {
+                                                                                        item.icon
+                                                                                    }
+                                                                                    <span>
+                                                                                        {
+                                                                                            item.label
+                                                                                        }
+                                                                                    </span>
+                                                                                </button>
+                                                                            ) : (
+                                                                                <a
+                                                                                    href={
+                                                                                        item.href
+                                                                                    }
+                                                                                    onClick={(
+                                                                                        e,
+                                                                                    ) => {
+                                                                                        e.stopPropagation();
+                                                                                        setIsMenuOpen(
+                                                                                            false,
+                                                                                        );
+                                                                                    }}
+                                                                                    className="flex items-center gap-3 text-neutral-dark text-sm hover:text-primary hover:bg-gray-50 transition-all duration-300 p-2 rounded-lg"
+                                                                                >
+                                                                                    {
+                                                                                        item.icon
+                                                                                    }
+                                                                                    <span>
+                                                                                        {
+                                                                                            item.label
+                                                                                        }
+                                                                                    </span>
+                                                                                </a>
+                                                                            )}
+                                                                        </li>
+                                                                    ),
+                                                                )
                                                             ) : (
                                                                 <>
                                                                     <li>
                                                                         <a
                                                                             href="/admin/home"
-                                                                            onClick={(e) => {
+                                                                            onClick={(
+                                                                                e,
+                                                                            ) => {
                                                                                 e.stopPropagation();
-                                                                                setIsMenuOpen(false);
+                                                                                setIsMenuOpen(
+                                                                                    false,
+                                                                                );
                                                                             }}
-                                                                            className="flex items-center gap-3 customtext-neutral-dark text-sm hover:customtext-primary hover:bg-gray-50 transition-all duration-300 p-2 rounded-lg"
+                                                                            className="flex items-center gap-3 text-neutral-dark text-sm hover:text-primary hover:bg-gray-50 transition-all duration-300 p-2 rounded-lg"
                                                                         >
-                                                                            <Home size={16} />
-                                                                            <span>Dashboard</span>
+                                                                            <Home
+                                                                                size={
+                                                                                    16
+                                                                                }
+                                                                            />
+                                                                            <span>
+                                                                                Dashboard
+                                                                            </span>
                                                                         </a>
                                                                     </li>
                                                                     <li>
                                                                         <button
-                                                                            onClick={(e) => {
+                                                                            onClick={(
+                                                                                e,
+                                                                            ) => {
                                                                                 e.preventDefault();
                                                                                 e.stopPropagation();
-                                                                                setIsMenuOpen(false);
+                                                                                setIsMenuOpen(
+                                                                                    false,
+                                                                                );
                                                                                 // Pequeño delay para que la animación se complete
-                                                                                setTimeout(() => {
-                                                                                    Logout();
-                                                                                }, 150);
+                                                                                setTimeout(
+                                                                                    () => {
+                                                                                        Logout();
+                                                                                    },
+                                                                                    150,
+                                                                                );
                                                                             }}
-                                                                            className="flex w-full items-center gap-3 customtext-neutral-dark text-sm hover:customtext-primary hover:bg-gray-50 transition-all duration-300 p-2 rounded-lg"
+                                                                            className="flex w-full items-center gap-3 text-neutral-dark text-sm hover:text-primary hover:bg-gray-50 transition-all duration-300 p-2 rounded-lg"
                                                                         >
-                                                                            <DoorClosed size={16} />
-                                                                            <span>Cerrar Sesión</span>
+                                                                            <DoorClosed
+                                                                                size={
+                                                                                    16
+                                                                                }
+                                                                            />
+                                                                            <span>
+                                                                                Cerrar
+                                                                                Sesión
+                                                                            </span>
                                                                         </button>
                                                                     </li>
                                                                 </>
@@ -892,39 +1128,88 @@ const HeaderSearchKatya = ({
                                         </AnimatePresence>
                                     </div>
                                 ) : (
-                                    <a href="/iniciar-sesion" className="flex items-center customtext-neutral-dark hover:customtext-primary transition-all duration-300">
-                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                            <path d="M17 8.5C17 5.73858 14.7614 3.5 12 3.5C9.23858 3.5 7 5.73858 7 8.5C7 11.2614 9.23858 13.5 12 13.5C14.7614 13.5 17 11.2614 17 8.5Z" stroke="#0E1818" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-                                            <path d="M19 20.5C19 16.634 15.866 13.5 12 13.5C8.13401 13.5 5 16.634 5 20.5" stroke="#0E1818" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                                    <a
+                                        href="/iniciar-sesion"
+                                        className="flex items-center text-neutral-dark hover:text-primary transition-all duration-300"
+                                    >
+                                        <svg
+                                            width="24"
+                                            height="24"
+                                            viewBox="0 0 24 24"
+                                            fill="none"
+                                            xmlns="http://www.w3.org/2000/svg"
+                                        >
+                                            <path
+                                                d="M17 8.5C17 5.73858 14.7614 3.5 12 3.5C9.23858 3.5 7 5.73858 7 8.5C7 11.2614 9.23858 13.5 12 13.5C14.7614 13.5 17 11.2614 17 8.5Z"
+                                                stroke="#0E1818"
+                                                stroke-width="1.5"
+                                                stroke-linecap="round"
+                                                stroke-linejoin="round"
+                                            />
+                                            <path
+                                                d="M19 20.5C19 16.634 15.866 13.5 12 13.5C8.13401 13.5 5 16.634 5 20.5"
+                                                stroke="#0E1818"
+                                                stroke-width="1.5"
+                                                stroke-linecap="round"
+                                                stroke-linejoin="round"
+                                            />
                                         </svg>
-
                                     </a>
                                 )}
-
-
-
                             </div>
                             <button
                                 aria-label="cart"
                                 onClick={() => setModalOpen(true)}
-                                className="flex min-w-max items-center gap-2 font-medium text-sm relative hover:customtext-secondary transition-colors duration-300"
+                                className="flex min-w-max items-center gap-2 font-medium text-sm relative hover:text-secondary transition-colors duration-300"
                             >
-
                                 <div className=" text-sm leading-4 text-end inline">
-                                    <span className="block" >Carrito</span>
+                                    <span className="block">Carrito</span>
 
                                     <strong>{`S/ ${Number2Currency(totalPrice)}`}</strong>
                                 </div>
-                                <div >
-                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                        <path d="M8 16L16.7201 15.2733C19.4486 15.046 20.0611 14.45 20.3635 11.7289L21 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
-                                        <path d="M6 6H22" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
-                                        <path d="M6 22C7.10457 22 8 21.1046 8 20C8 18.8954 7.10457 18 6 18C4.89543 18 4 18.8954 4 20C4 21.1046 4.89543 22 6 22Z" stroke="currentColor" stroke-width="1.5" />
-                                        <path d="M17 22C18.1046 22 19 21.1046 19 20C19 18.8954 18.1046 18 17 18C15.8954 18 15 18.8954 15 20C15 21.1046 15.8954 22 17 22Z" stroke="currentColor" stroke-width="1.5" />
-                                        <path d="M8 20H15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
-                                        <path d="M2 2H2.966C3.91068 2 4.73414 2.62459 4.96326 3.51493L7.93852 15.0765C8.08887 15.6608 7.9602 16.2797 7.58824 16.7616L6.63213 18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                                <div>
+                                    <svg
+                                        width="24"
+                                        height="24"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                    >
+                                        <path
+                                            d="M8 16L16.7201 15.2733C19.4486 15.046 20.0611 14.45 20.3635 11.7289L21 6"
+                                            stroke="currentColor"
+                                            stroke-width="1.5"
+                                            stroke-linecap="round"
+                                        />
+                                        <path
+                                            d="M6 6H22"
+                                            stroke="currentColor"
+                                            stroke-width="1.5"
+                                            stroke-linecap="round"
+                                        />
+                                        <path
+                                            d="M6 22C7.10457 22 8 21.1046 8 20C8 18.8954 7.10457 18 6 18C4.89543 18 4 18.8954 4 20C4 21.1046 4.89543 22 6 22Z"
+                                            stroke="currentColor"
+                                            stroke-width="1.5"
+                                        />
+                                        <path
+                                            d="M17 22C18.1046 22 19 21.1046 19 20C19 18.8954 18.1046 18 17 18C15.8954 18 15 18.8954 15 20C15 21.1046 15.8954 22 17 22Z"
+                                            stroke="currentColor"
+                                            stroke-width="1.5"
+                                        />
+                                        <path
+                                            d="M8 20H15"
+                                            stroke="currentColor"
+                                            stroke-width="1.5"
+                                            stroke-linecap="round"
+                                        />
+                                        <path
+                                            d="M2 2H2.966C3.91068 2 4.73414 2.62459 4.96326 3.51493L7.93852 15.0765C8.08887 15.6608 7.9602 16.2797 7.58824 16.7616L6.63213 18"
+                                            stroke="currentColor"
+                                            stroke-width="1.5"
+                                            stroke-linecap="round"
+                                        />
                                     </svg>
-
                                 </div>
                                 <span className="absolute bg-secondary -right-2 -top-3 inline-flex items-center justify-center w-5 h-5 text-xs  text-white rounded-md">
                                     {totalCount}
@@ -933,16 +1218,38 @@ const HeaderSearchKatya = ({
                             <button
                                 aria-label="Menú"
                                 onClick={() => setOpenMenu(!openMenu)}
-
-                                className="flex md:hidden items-center justify-center bg-primary rounded-lg w-auto h-auto  customtext-neutral-dark fill-neutral-dark transition-all duration-300 "
+                                className="flex md:hidden items-center justify-center bg-primary rounded-lg w-auto h-auto  text-neutral-dark fill-neutral-dark transition-all duration-300 "
                             >
                                 {!openMenu ? (
-                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                        <path d="M4 5H20" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-                                        <path d="M4 12H20" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-                                        <path d="M4 19H20" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                                    <svg
+                                        width="24"
+                                        height="24"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                    >
+                                        <path
+                                            d="M4 5H20"
+                                            stroke="currentColor"
+                                            stroke-width="1.5"
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                        />
+                                        <path
+                                            d="M4 12H20"
+                                            stroke="currentColor"
+                                            stroke-width="1.5"
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                        />
+                                        <path
+                                            d="M4 19H20"
+                                            stroke="currentColor"
+                                            stroke-width="1.5"
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                        />
                                     </svg>
-
                                 ) : (
                                     <XIcon />
                                 )}
@@ -951,12 +1258,19 @@ const HeaderSearchKatya = ({
                     )}
 
                     {/* Search Bar - Desktop */}
-                    <div className="hidden md:block relative w-full max-w-sm " ref={searchRef}>
-                        <form onSubmit={handleFormSubmit} role="search" className="flex items-center gap-0 bg-white rounded-full border ">
+                    <div
+                        className="hidden md:block relative w-full max-w-sm "
+                        ref={searchRef}
+                    >
+                        <form
+                            onSubmit={handleFormSubmit}
+                            role="search"
+                            className="flex items-center gap-0 bg-white rounded-full border "
+                        >
                             {/* Botón de búsqueda */}
                             <button
                                 type="submit"
-                                className={`pl-3  customtext-neutral-dark rounded-full  hover:scale-105 transition-all duration-300 flex-shrink-0`}
+                                className={`pl-3  text-neutral-dark rounded-full  hover:scale-105 transition-all duration-300 flex-shrink-0`}
                                 aria-label="Buscar"
                             >
                                 <Search size={20} />
@@ -969,14 +1283,16 @@ const HeaderSearchKatya = ({
                                 name="search"
                                 placeholder="Buscar"
                                 value={search}
-                                onChange={(e) => handleSearchChange(e.target.value)}
+                                onChange={(e) =>
+                                    handleSearchChange(e.target.value)
+                                }
                                 onKeyDown={handleKeyDown}
                                 onFocus={() => {
                                     if (search.trim().length >= 2) {
                                         fetchSearchSuggestions(search);
                                     }
                                 }}
-                                className="flex-1 py-3 pl-2 pr-4 font-medium text-sm focus:ring-0 customtext-neutral-dark placeholder:text-gray-500 focus:outline-none bg-transparent border-0"
+                                className="flex-1 py-3 pl-2 pr-4 font-medium text-sm focus:ring-0 text-neutral-dark placeholder:text-gray-500 focus:outline-none bg-transparent border-0"
                                 enterKeyHint="search"
                                 inputMode="search"
                                 autoComplete="on"
@@ -1000,22 +1316,42 @@ const HeaderSearchKatya = ({
                     {/* Account and Cart */}
                     {data?.showLoginCart ? (
                         <div className="hidden md:flex items-center  gap-8 relative text-sm">
-                            <p className={`cursor-pointer leading-4 text-sm customtext-neutral-dark whitespace-pre-line hover:customtext-secondary font-medium  transition-all duration-500 `}>
+                            <p
+                                className={`cursor-pointer leading-4 text-sm text-neutral-dark whitespace-pre-line hover:text-secondary font-medium  transition-all duration-500 `}
+                            >
                                 {(() => {
-                                    const text = generals.find((contact) => contact.correlative === "opening_hours")?.description || "";
-                                    const [first, ...rest] = text.split('\n');
+                                    const text =
+                                        generals.find(
+                                            (contact) =>
+                                                contact.correlative ===
+                                                "opening_hours",
+                                        )?.description || "";
+                                    const [first, ...rest] = text.split("\n");
                                     return (
                                         <>
                                             <strong>{first}</strong>
-                                            {rest.length > 0 ? <><br />{rest.join('\n')}</> : null}
+                                            {rest.length > 0 ? (
+                                                <>
+                                                    <br />
+                                                    {rest.join("\n")}
+                                                </>
+                                            ) : null}
                                         </>
                                     );
                                 })()}
                             </p>
-                            <p className={`cursor-pointer leading-4  text-end text-sm customtext-neutral-dark font-medium whitespace-pre-line hover:customtext-secondary transition-all duration-500`}>
-                                <span>Soporte 24/7</span><br />
-                                <strong>  {generals.find((contact) => contact.correlative === "support_phone")
-                                    ?.description || ""}
+                            <p
+                                className={`cursor-pointer leading-4  text-end text-sm text-neutral-dark font-medium whitespace-pre-line hover:text-secondary transition-all duration-500`}
+                            >
+                                <span>Soporte 24/7</span>
+                                <br />
+                                <strong>
+                                    {" "}
+                                    {generals.find(
+                                        (contact) =>
+                                            contact.correlative ===
+                                            "support_phone",
+                                    )?.description || ""}
                                 </strong>
                             </p>
 
@@ -1023,10 +1359,14 @@ const HeaderSearchKatya = ({
                                 {isUser ? (
                                     <button
                                         aria-label="user"
-                                        className="customtext-neutral-dark flex items-center gap-2 hover:customtext-secondary pr-6 transition-all duration-300 relative group"
-                                        onClick={() => setIsMenuOpen(!isMenuOpen)}
+                                        className="text-neutral-dark flex items-center gap-2 hover:text-secondary pr-6 transition-all duration-300 relative group"
+                                        onClick={() =>
+                                            setIsMenuOpen(!isMenuOpen)
+                                        }
                                     >
-                                        <span className="hidden md:inline">{isUser.name}</span>
+                                        <span className="hidden md:inline">
+                                            {isUser.name}
+                                        </span>
 
                                         <div className="relative transform group-hover:scale-105 transition-transform duration-200">
                                             {isUser.uuid ? (
@@ -1034,8 +1374,12 @@ const HeaderSearchKatya = ({
                                                     <ProfileImage
                                                         uuid={isUser.uuid}
                                                         name={isUser.name}
-                                                        lastname={isUser.lastname}
-                                                        classCircleUser={"customtext-neutral-dark stroke-[1.5] border-neutral-dark "}
+                                                        lastname={
+                                                            isUser.lastname
+                                                        }
+                                                        classCircleUser={
+                                                            "text-neutral-dark stroke-[1.5] border-neutral-dark "
+                                                        }
                                                         className="w-8 h-8 rounded-full object-cover   border-2 border-secondary ring-secondary transition-all duration-300"
                                                     />
                                                     {/* Punto indicador online animado */}
@@ -1046,9 +1390,7 @@ const HeaderSearchKatya = ({
                                                 </div>
                                             ) : (
                                                 <div className="relative">
-                                                    <CircleUser
-                                                        className="customtext-primary border-2 border-primary rounded-full  ring-secondary group-hover:ring-green-300 transition-all duration-300"
-                                                    />
+                                                    <CircleUser className="text-primary border-2 border-primary rounded-full  ring-secondary group-hover:ring-green-300 transition-all duration-300" />
                                                     {/* Punto indicador online animado */}
                                                     <div className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-primary border-2 border-white rounded-full animate-pulse">
                                                         <div className="w-full h-full bg-primary rounded-full animate-ping opacity-75 absolute"></div>
@@ -1059,14 +1401,36 @@ const HeaderSearchKatya = ({
                                         </div>
                                     </button>
                                 ) : (
-                                    <a href="/iniciar-sesion" className="flex customtext-neutral-dark font-medium leading-4 items-center gap-2 text-sm hover:customtext-secondary transition-colors duration-300">
-                                        <span className="hidden md:inline">Iniciar <br /> <strong>Sesión</strong></span>
-                                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                            <path d="M17 8.5C17 5.73858 14.7614 3.5 12 3.5C9.23858 3.5 7 5.73858 7 8.5C7 11.2614 9.23858 13.5 12 13.5C14.7614 13.5 17 11.2614 17 8.5Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-                                            <path d="M19 20.5C19 16.634 15.866 13.5 12 13.5C8.13401 13.5 5 16.634 5 20.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                                    <a
+                                        href="/iniciar-sesion"
+                                        className="flex text-neutral-dark font-medium leading-4 items-center gap-2 text-sm hover:text-secondary transition-colors duration-300"
+                                    >
+                                        <span className="hidden md:inline">
+                                            Iniciar <br />{" "}
+                                            <strong>Sesión</strong>
+                                        </span>
+                                        <svg
+                                            width="24"
+                                            height="24"
+                                            viewBox="0 0 24 24"
+                                            fill="none"
+                                            xmlns="http://www.w3.org/2000/svg"
+                                        >
+                                            <path
+                                                d="M17 8.5C17 5.73858 14.7614 3.5 12 3.5C9.23858 3.5 7 5.73858 7 8.5C7 11.2614 9.23858 13.5 12 13.5C14.7614 13.5 17 11.2614 17 8.5Z"
+                                                stroke="currentColor"
+                                                stroke-width="1.5"
+                                                stroke-linecap="round"
+                                                stroke-linejoin="round"
+                                            />
+                                            <path
+                                                d="M19 20.5C19 16.634 15.866 13.5 12 13.5C8.13401 13.5 5 16.634 5 20.5"
+                                                stroke="currentColor"
+                                                stroke-width="1.5"
+                                                stroke-linecap="round"
+                                                stroke-linejoin="round"
+                                            />
                                         </svg>
-
-
                                     </a>
                                 )}
 
@@ -1081,71 +1445,122 @@ const HeaderSearchKatya = ({
                                         >
                                             <div className="p-4">
                                                 <ul className="space-y-4">
-                                                    {isCustomer ? (
-                                                        menuItems.map((item, index) => (
-                                                            <li key={index}>
-                                                                {item.onClick ? (
-                                                                    <button
-                                                                        aria-label="menu-items"
-                                                                        onClick={(e) => {
-                                                                            e.preventDefault();
-                                                                            e.stopPropagation();
-                                                                            setIsMenuOpen(false);
-                                                                            // Pequeño delay para que la animación se complete
-                                                                            setTimeout(() => {
-                                                                                item.onClick();
-                                                                            }, 150);
-                                                                        }}
-                                                                        className="flex w-full items-center gap-3 customtext-neutral-dark text-sm hover:customtext-secondary hover:bg-gray-50 transition-all duration-300 p-2 rounded-lg"
-                                                                    >
-                                                                        {item.icon}
-                                                                        <span>{item.label}</span>
-                                                                    </button>
-                                                                ) : (
-                                                                    <a
-                                                                        href={item.href}
-                                                                        onClick={(e) => {
-                                                                            e.stopPropagation();
-                                                                            setIsMenuOpen(false);
-                                                                        }}
-                                                                        className="flex items-center gap-3 customtext-neutral-dark text-sm hover:customtext-secondary hover:bg-gray-50 transition-all duration-300 p-2 rounded-lg"
-                                                                    >
-                                                                        {item.icon}
-                                                                        <span>{item.label}</span>
-                                                                    </a>
-                                                                )}
-                                                            </li>
-                                                        ))
+                                                    {iser ? (
+                                                        menuItems.map(
+                                                            (item, index) => (
+                                                                <li key={index}>
+                                                                    {item.onClick ? (
+                                                                        <button
+                                                                            aria-label="menu-items"
+                                                                            onClick={(
+                                                                                e,
+                                                                            ) => {
+                                                                                e.preventDefault();
+                                                                                e.stopPropagation();
+                                                                                setIsMenuOpen(
+                                                                                    false,
+                                                                                );
+                                                                                // Pequeño delay para que la animación se complete
+                                                                                setTimeout(
+                                                                                    () => {
+                                                                                        item.onClick();
+                                                                                    },
+                                                                                    150,
+                                                                                );
+                                                                            }}
+                                                                            className="flex w-full items-center gap-3 text-neutral-dark text-sm hover:text-secondary hover:bg-gray-50 transition-all duration-300 p-2 rounded-lg"
+                                                                        >
+                                                                            {
+                                                                                item.icon
+                                                                            }
+                                                                            <span>
+                                                                                {
+                                                                                    item.label
+                                                                                }
+                                                                            </span>
+                                                                        </button>
+                                                                    ) : (
+                                                                        <a
+                                                                            href={
+                                                                                item.href
+                                                                            }
+                                                                            onClick={(
+                                                                                e,
+                                                                            ) => {
+                                                                                e.stopPropagation();
+                                                                                setIsMenuOpen(
+                                                                                    false,
+                                                                                );
+                                                                            }}
+                                                                            className="flex items-center gap-3 text-neutral-dark text-sm hover:text-secondary hover:bg-gray-50 transition-all duration-300 p-2 rounded-lg"
+                                                                        >
+                                                                            {
+                                                                                item.icon
+                                                                            }
+                                                                            <span>
+                                                                                {
+                                                                                    item.label
+                                                                                }
+                                                                            </span>
+                                                                        </a>
+                                                                    )}
+                                                                </li>
+                                                            ),
+                                                        )
                                                     ) : (
                                                         <>
                                                             <li>
                                                                 <a
                                                                     href="/admin/home"
-                                                                    onClick={(e) => {
+                                                                    onClick={(
+                                                                        e,
+                                                                    ) => {
                                                                         e.stopPropagation();
-                                                                        setIsMenuOpen(false);
+                                                                        setIsMenuOpen(
+                                                                            false,
+                                                                        );
                                                                     }}
-                                                                    className="flex items-center gap-3 customtext-neutral-dark text-sm hover:customtext-secondary hover:bg-gray-50 transition-all duration-300 p-2 rounded-lg"
+                                                                    className="flex items-center gap-3 text-neutral-dark text-sm hover:text-secondary hover:bg-gray-50 transition-all duration-300 p-2 rounded-lg"
                                                                 >
-                                                                    <Home size={16} />
-                                                                    <span>Dashboard</span>
+                                                                    <Home
+                                                                        size={
+                                                                            16
+                                                                        }
+                                                                    />
+                                                                    <span>
+                                                                        Dashboard
+                                                                    </span>
                                                                 </a>
                                                             </li>
                                                             <li>
                                                                 <button
-                                                                    onClick={(e) => {
+                                                                    onClick={(
+                                                                        e,
+                                                                    ) => {
                                                                         e.preventDefault();
                                                                         e.stopPropagation();
-                                                                        setIsMenuOpen(false);
+                                                                        setIsMenuOpen(
+                                                                            false,
+                                                                        );
                                                                         // Pequeño delay para que la animación se complete
-                                                                        setTimeout(() => {
-                                                                            Logout();
-                                                                        }, 150);
+                                                                        setTimeout(
+                                                                            () => {
+                                                                                Logout();
+                                                                            },
+                                                                            150,
+                                                                        );
                                                                     }}
-                                                                    className="flex w-full items-center gap-3 customtext-neutral-dark text-sm hover:customtext-secondary hover:bg-gray-50 transition-all duration-300 p-2 rounded-lg"
+                                                                    className="flex w-full items-center gap-3 text-neutral-dark text-sm hover:text-secondary hover:bg-gray-50 transition-all duration-300 p-2 rounded-lg"
                                                                 >
-                                                                    <DoorClosed size={16} />
-                                                                    <span>Cerrar Sesión</span>
+                                                                    <DoorClosed
+                                                                        size={
+                                                                            16
+                                                                        }
+                                                                    />
+                                                                    <span>
+                                                                        Cerrar
+                                                                        Sesión
+                                                                    </span>
                                                                 </button>
                                                             </li>
                                                         </>
@@ -1160,24 +1575,56 @@ const HeaderSearchKatya = ({
                             <button
                                 aria-label="cart"
                                 onClick={() => setModalOpen(true)}
-                                className="flex items-center gap-2 font-medium text-sm relative hover:customtext-secondary transition-colors duration-300"
+                                className="flex items-center gap-2 font-medium text-sm relative hover:text-secondary transition-colors duration-300"
                             >
-
                                 <div className="hidden text-sm leading-4 text-end md:inline">
-                                    <span className="block" >Mi Carrito</span>
+                                    <span className="block">Mi Carrito</span>
 
                                     <strong>{`S/ ${Number2Currency(totalPrice)}`}</strong>
                                 </div>
-                                <div >
-                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                        <path d="M8 16L16.7201 15.2733C19.4486 15.046 20.0611 14.45 20.3635 11.7289L21 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
-                                        <path d="M6 6H22" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
-                                        <path d="M6 22C7.10457 22 8 21.1046 8 20C8 18.8954 7.10457 18 6 18C4.89543 18 4 18.8954 4 20C4 21.1046 4.89543 22 6 22Z" stroke="currentColor" stroke-width="1.5" />
-                                        <path d="M17 22C18.1046 22 19 21.1046 19 20C19 18.8954 18.1046 18 17 18C15.8954 18 15 18.8954 15 20C15 21.1046 15.8954 22 17 22Z" stroke="currentColor" stroke-width="1.5" />
-                                        <path d="M8 20H15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
-                                        <path d="M2 2H2.966C3.91068 2 4.73414 2.62459 4.96326 3.51493L7.93852 15.0765C8.08887 15.6608 7.9602 16.2797 7.58824 16.7616L6.63213 18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                                <div>
+                                    <svg
+                                        width="24"
+                                        height="24"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                    >
+                                        <path
+                                            d="M8 16L16.7201 15.2733C19.4486 15.046 20.0611 14.45 20.3635 11.7289L21 6"
+                                            stroke="currentColor"
+                                            stroke-width="1.5"
+                                            stroke-linecap="round"
+                                        />
+                                        <path
+                                            d="M6 6H22"
+                                            stroke="currentColor"
+                                            stroke-width="1.5"
+                                            stroke-linecap="round"
+                                        />
+                                        <path
+                                            d="M6 22C7.10457 22 8 21.1046 8 20C8 18.8954 7.10457 18 6 18C4.89543 18 4 18.8954 4 20C4 21.1046 4.89543 22 6 22Z"
+                                            stroke="currentColor"
+                                            stroke-width="1.5"
+                                        />
+                                        <path
+                                            d="M17 22C18.1046 22 19 21.1046 19 20C19 18.8954 18.1046 18 17 18C15.8954 18 15 18.8954 15 20C15 21.1046 15.8954 22 17 22Z"
+                                            stroke="currentColor"
+                                            stroke-width="1.5"
+                                        />
+                                        <path
+                                            d="M8 20H15"
+                                            stroke="currentColor"
+                                            stroke-width="1.5"
+                                            stroke-linecap="round"
+                                        />
+                                        <path
+                                            d="M2 2H2.966C3.91068 2 4.73414 2.62459 4.96326 3.51493L7.93852 15.0765C8.08887 15.6608 7.9602 16.2797 7.58824 16.7616L6.63213 18"
+                                            stroke="currentColor"
+                                            stroke-width="1.5"
+                                            stroke-linecap="round"
+                                        />
                                     </svg>
-
                                 </div>
                                 <span className="absolute bg-secondary -right-5 -top-2 inline-flex items-center justify-center w-5 h-5 text-xs  text-white rounded-lg">
                                     {totalCount}
@@ -1187,27 +1634,47 @@ const HeaderSearchKatya = ({
                     ) : (
                         <>
                             {/* Desktop: botón "Haz tu Pedido" */}
-                            <p className={`cursor-pointer text-sm customtext-neutral-dark whitespace-pre-line hover:customtext-secondary font-normal  transition-all duration-500 `}>
+                            <p
+                                className={`cursor-pointer text-sm text-neutral-dark whitespace-pre-line hover:text-secondary font-normal  transition-all duration-500 `}
+                            >
                                 {(() => {
-                                    const text = generals.find((contact) => contact.correlative === "opening_hours")?.description || "";
-                                    const [first, ...rest] = text.split('\n');
+                                    const text =
+                                        generals.find(
+                                            (contact) =>
+                                                contact.correlative ===
+                                                "opening_hours",
+                                        )?.description || "";
+                                    const [first, ...rest] = text.split("\n");
                                     return (
                                         <>
                                             <strong>{first}</strong>
-                                            {rest.length > 0 ? <><br />{rest.join('\n')}</> : null}
+                                            {rest.length > 0 ? (
+                                                <>
+                                                    <br />
+                                                    {rest.join("\n")}
+                                                </>
+                                            ) : null}
                                         </>
                                     );
                                 })()}
                             </p>
-                            <p className={`cursor-pointer text-sm customtext-neutral-dark font-normal whitespace-pre-line hover:customtext-secondary transition-all duration-500`}>
-                                <span>Soporte 24/7</span><br />
-                                <strong>  {generals.find((contact) => contact.correlative === "support_phone")
-                                    ?.description || ""}
+                            <p
+                                className={`cursor-pointer text-sm text-neutral-dark font-normal whitespace-pre-line hover:text-secondary transition-all duration-500`}
+                            >
+                                <span>Soporte 24/7</span>
+                                <br />
+                                <strong>
+                                    {" "}
+                                    {generals.find(
+                                        (contact) =>
+                                            contact.correlative ===
+                                            "support_phone",
+                                    )?.description || ""}
                                 </strong>
                             </p>
                             <a
                                 aria-label="primary-button"
-                                className={`${data.class ? data.class : 'bg-secondary'} hidden lg:block px-6 py-2.5 text-white font-medium rounded-3xl hover:brightness-125 transition-colors duration-300`}
+                                className={`${data.class ? data.class : "bg-secondary"} hidden lg:block px-6 py-2.5 text-white font-medium rounded-3xl hover:brightness-125 transition-colors duration-300`}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 href={
@@ -1227,29 +1694,46 @@ const HeaderSearchKatya = ({
                                             setSearchMobile(true);
                                             // Pequeño delay para asegurar que el input se renderice antes del focus
                                             setTimeout(() => {
-                                                if (mobileSearchInputRef.current) {
+                                                if (
+                                                    mobileSearchInputRef.current
+                                                ) {
                                                     mobileSearchInputRef.current.focus();
                                                 }
                                             }, 100);
                                         }}
                                         className="flex items-center justify-end w-full px-0 py-3"
                                     >
-                                        <Search className="customtext-primary" size={28} />
+                                        <Search
+                                            className="text-primary"
+                                            size={28}
+                                        />
                                     </button>
                                 ) : (
                                     <div className="relative w-full">
-                                        <form onSubmit={handleMobileSearch} role="search">
+                                        <form
+                                            onSubmit={handleMobileSearch}
+                                            role="search"
+                                        >
                                             <input
                                                 ref={mobileSearchInputRef}
                                                 type="search"
                                                 name="search"
                                                 placeholder="Buscar productos"
                                                 value={search}
-                                                onChange={(e) => handleSearchChange(e.target.value)}
+                                                onChange={(e) =>
+                                                    handleSearchChange(
+                                                        e.target.value,
+                                                    )
+                                                }
                                                 onKeyDown={handleKeyDown}
                                                 onFocus={() => {
-                                                    if (search.trim().length >= 2) {
-                                                        fetchSearchSuggestions(search);
+                                                    if (
+                                                        search.trim().length >=
+                                                        2
+                                                    ) {
+                                                        fetchSearchSuggestions(
+                                                            search,
+                                                        );
                                                     }
                                                 }}
                                                 className="w-full pr-14 py-4 pl-4 border rounded-full focus:ring-0 focus:outline-none"
@@ -1262,8 +1746,13 @@ const HeaderSearchKatya = ({
                                                 onBlur={() => {
                                                     // Solo cerrar si no hay búsqueda activa y no hay sugerencias
                                                     setTimeout(() => {
-                                                        if (!search.trim() && !showSuggestions) {
-                                                            setSearchMobile(false);
+                                                        if (
+                                                            !search.trim() &&
+                                                            !showSuggestions
+                                                        ) {
+                                                            setSearchMobile(
+                                                                false,
+                                                            );
                                                         }
                                                     }, 200);
                                                 }}
@@ -1296,7 +1785,9 @@ const HeaderSearchKatya = ({
                                                 suggestions={searchSuggestions}
                                                 isLoading={isLoadingSuggestions}
                                                 onSelect={selectSuggestion}
-                                                selectedIndex={selectedSuggestionIndex}
+                                                selectedIndex={
+                                                    selectedSuggestionIndex
+                                                }
                                             />
                                         </AnimatePresence>
                                     </div>
@@ -1310,13 +1801,19 @@ const HeaderSearchKatya = ({
                 {searchView && !shouldHideMobileSearch() && (
                     <div className="block md:hidden mt-6 space-y-4">
                         <div className="w-full relative">
-                            <form onSubmit={handleMobileSearch} role="search" className="relative w-full">
+                            <form
+                                onSubmit={handleMobileSearch}
+                                role="search"
+                                className="relative w-full"
+                            >
                                 <input
                                     type="search"
                                     name="search"
                                     placeholder="Buscar"
                                     value={search}
-                                    onChange={(e) => handleSearchChange(e.target.value)}
+                                    onChange={(e) =>
+                                        handleSearchChange(e.target.value)
+                                    }
                                     onKeyDown={handleKeyDown}
                                     onFocus={() => {
                                         if (search.trim().length >= 2) {
@@ -1376,14 +1873,15 @@ const HeaderSearchKatya = ({
                 data={data}
                 cart={cart}
                 setCart={setCart}
+                subTotal={subTotal}
+                igv={igv}
+                perception={perception}
+                totalPrice={totalPrice}
                 modalOpen={modalOpen}
                 setModalOpen={setModalOpen}
             />
-
-         
         </header>
     );
 };
-
 
 export default HeaderSearchKatya;

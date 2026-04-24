@@ -25,8 +25,9 @@ return new class extends Migration
         } catch (\Exception $e) {}
 
         Schema::table('user_milestones', function (Blueprint $table) {
-            // Change the column type to match rank_bonuses.id (bigint unsigned) and make it nullable
-            $table->unsignedBigInteger('rank_bonus_id')->nullable()->change();
+            // Change the column type to match rank_bonuses.id (char 36) and make it nullable
+            //     $table->unsignedBigInteger('rank_bonus_id')->nullable()->change();
+            $table->char('rank_bonus_id', 36)->nullable()->change();
         });
 
         Schema::table('user_milestones', function (Blueprint $table) use ($fkName) {
@@ -46,7 +47,7 @@ return new class extends Migration
         
         Schema::table('user_milestones', function (Blueprint $table) {
             $table->dropForeign(['rank_bonus_id']);
-            $table->unsignedBigInteger('rank_bonus_id')->nullable(false)->change();
+            $table->char('rank_bonus_id', 36)->nullable(false)->change();
             $table->foreign('rank_bonus_id')->references('id')->on('rank_bonuses')->onDelete('cascade');
         });
 

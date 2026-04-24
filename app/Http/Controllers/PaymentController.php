@@ -12,6 +12,7 @@ use App\Models\Coupon;
 use App\Notifications\PurchaseSummaryNotification;
 use App\Helpers\PixelHelper;
 use App\Helpers\NotificationHelper;
+use App\Helpers\TaxHelper;
 use App\Helpers\CulqiConfig;
 use Culqi\Culqi;
 use Illuminate\Http\Request;
@@ -184,7 +185,11 @@ class PaymentController extends Controller
                 'documentType' => $request->documentType,
                 'document' => $request->document,
                 'businessName' => $request->businessName,
-                'total_amount' => $request->amount
+                'igv_amount' => TaxHelper::calculate($request->cart, $request->packaging_id)['igv_amount'],
+                'perception_amount' => TaxHelper::calculate($request->cart, $request->packaging_id)['perception_amount'],
+                'packaging_amount' => TaxHelper::calculate($request->cart, $request->packaging_id)['packaging_amount'],
+                'packaging_id' => $request->packaging_id,
+                'total_amount' => TaxHelper::calculate($request->cart, $request->packaging_id)['total']
             ]);
 
             Log::info('PaymentController - Venta creada exitosamente', ['sale_id' => $sale->id]);
@@ -445,7 +450,11 @@ class PaymentController extends Controller
                 'documentType' => $request->documentType,
                 'document' => $request->document,
                 'businessName' => $request->businessName,
-                'total_amount' => $request->amount
+                'igv_amount' => TaxHelper::calculate($request->cart, $request->packaging_id)['igv_amount'],
+                'perception_amount' => TaxHelper::calculate($request->cart, $request->packaging_id)['perception_amount'],
+                'packaging_amount' => TaxHelper::calculate($request->cart, $request->packaging_id)['packaging_amount'],
+                'packaging_id' => $request->packaging_id,
+                'total_amount' => TaxHelper::calculate($request->cart, $request->packaging_id)['total']
             ]);
 
             Log::info('PaymentController::chargeCompleted - Venta creada:', ['sale_id' => $sale->id]);
@@ -675,7 +684,11 @@ class PaymentController extends Controller
                 'documentType' => $request->documentType,
                 'document' => $request->document,
                 'businessName' => $request->businessName,
-                'total_amount' => $request->amount
+                'igv_amount' => TaxHelper::calculate($request->cart, $request->packaging_id)['igv_amount'],
+                'perception_amount' => TaxHelper::calculate($request->cart, $request->packaging_id)['perception_amount'],
+                'packaging_amount' => TaxHelper::calculate($request->cart, $request->packaging_id)['packaging_amount'],
+                'packaging_id' => $request->packaging_id,
+                'total_amount' => TaxHelper::calculate($request->cart, $request->packaging_id)['total']
             ]);
 
             Log::info('PaymentController::charge3DS - Venta creada', ['sale_id' => $sale->id]);

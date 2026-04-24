@@ -39,6 +39,8 @@ class OrderStatusChangedNotification extends Notification implements ShouldQueue
             'email'        => 'Correo electrónico del cliente',
             'telefono'     => 'Teléfono del cliente',
             'year'         => 'Año actual',
+            'empaque'        => 'Monto del empaque seleccionado',
+            'tiene_empaque'   => 'Indica si se aplicó costo por empaque (true/false)',
             
             // Variables de productos (para ecommerce)
             'productos'    => 'Bloque repetible de productos: {{#productos}}...{{/productos}}. Variables: nombre, cantidad, precio, categoria, imagen',
@@ -142,6 +144,8 @@ class OrderStatusChangedNotification extends Notification implements ShouldQueue
                 'habitaciones'       => $habitaciones,
                 'total_habitaciones' => $totalHabitaciones,
                 'total_noches'       => $totalNoches,
+                'empaque'            => number_format($this->sale->packaging_amount ?? 0, 2),
+                'tiene_empaque'      => ($this->sale->packaging_amount ?? 0) > 0,
             ])
             : 'Plantilla no encontrada';
 

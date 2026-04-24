@@ -40,6 +40,10 @@ class AdminPurchaseNotification extends Notification implements ShouldQueue
             'total'           => 'Total de la compra',
             'subtotal'        => 'Subtotal de la compra (sin IGV)',
             'igv'             => 'Impuesto General a las Ventas (18%)',
+            'percepcion'      => 'Monto de la Percepción (2%)',
+            'tiene_percepcion' => 'Indica si se aplicó percepción (true/false)',
+            'empaque'        => 'Monto del empaque seleccionado',
+            'tiene_empaque'   => 'Indica si se aplicó costo por empaque (true/false)',
             'costo_envio'     => 'Costo de envío',
             'costo_adicional_envio' => 'Costo adicional de envío aplicado',
             'descripcion_costo_adicional' => 'Descripción del costo adicional (ej: "Envío por agencia a provincia")',
@@ -123,26 +127,32 @@ class AdminPurchaseNotification extends Notification implements ShouldQueue
             'details_count' => count($this->details)
         ]);
         
-        // Aplicar descuentos (cupón y promociones) al subtotal de productos
-        $subtotalConDescuentos = $subtotalProductos - $couponDiscount - $promotionDiscount;
+        // Usar los valores guardados en la venta para evitar discrepancias por recalculo
+        $deliveryCost = $this->sale->delivery ?? 0;
+        $additionalShippingCost = $this->sale->additional_shipping_cost ?? 0;
+        $additionalShippingDescription = $this->sale->additional_shipping_description ?? '';
+        $couponDiscount = $this->sale->coupon_discount ?? 0;
+        $promotionDiscount = $this->sale->promotion_discount ?? 0;
+        $igvAmount = $this->sale->igv_amount ?? 0;
+        $perceptionAmount = $this->sale->perception_amount ?? 0;
+        $packagingAmount = $this->sale->packaging_amount ?? 0;
         
-        // Separar el subtotal (sin IGV) y el IGV (18%)
-        // $subtotalConDescuentos ya incluye el IGV, entonces:
-        $subtotalAmount = $subtotalConDescuentos / 1.18;  // Subtotal sin IGV (base imponible)
-        $igvAmount = $subtotalConDescuentos - $subtotalAmount;  // IGV (18%)
+        // El total final ya viene calculado en la base de datos
+        $totalAmount = $this->sale->amount ?? 0;
         
-        // Total final = subtotal con descuentos + envío + costo adicional de envío
-        $totalAmount = $subtotalConDescuentos + $deliveryCost + $additionalShippingCost;
+        // Calcular el subtotal de productos (neto de impuestos y envíos)
+        $subtotalConDescuentos = $totalAmount - $deliveryCost - $additionalShippingCost - $igvAmount - $perceptionAmount - $packagingAmount;
+        $subtotalAmount = $subtotalConDescuentos + $couponDiscount + $promotionDiscount;
         
-        // Log de valores finales
-        Log::info('AdminPurchaseNotification - Valores calculados para admin:', [
-            'subtotal_sin_igv' => $subtotalAmount,
+        // Log de valores finales para verificación
+        Log::info('AdminPurchaseNotification - Valores finales para admin:', [
+            'total' => $totalAmount,
             'igv' => $igvAmount,
-            'subtotal_con_igv' => $subtotalConDescuentos,
+            'percepcion' => $perceptionAmount,
+            'empaque' => $packagingAmount,
             'envio' => $deliveryCost,
-            'costo_adicional_envio' => $additionalShippingCost,
-            'total_calculado' => $totalAmount,
-            'total_esperado' => $this->sale->amount
+            'subtotal_productos' => $subtotalAmount,
+            'descuentos' => $couponDiscount + $promotionDiscount
         ]);
 
         // Crear dirección completa
@@ -203,6 +213,10 @@ class AdminPurchaseNotification extends Notification implements ShouldQueue
                 'total'           => number_format($totalAmount, 2),
                 'subtotal'        => number_format($subtotalAmount, 2),
                 'igv'             => number_format($igvAmount, 2),
+                'percepcion'      => number_format($perceptionAmount, 2),
+                'tiene_percepcion' => $perceptionAmount > 0,
+                'empaque'         => number_format($packagingAmount, 2),
+                'tiene_empaque'   => $packagingAmount > 0,
                 'costo_envio'     => number_format($deliveryCost, 2),
                 'costo_adicional_envio' => number_format($additionalShippingCost, 2),
                 'descripcion_costo_adicional' => $additionalShippingDescription,

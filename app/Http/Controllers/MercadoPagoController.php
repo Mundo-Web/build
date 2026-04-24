@@ -12,12 +12,12 @@ use App\Notifications\PurchaseSummaryNotification;
 use App\Helpers\NotificationHelper;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
 use MercadoPago\MercadoPagoConfig;
 use MercadoPago\Exceptions\MPApiException;
 use MercadoPago\Client\Preference\PreferenceClient;
 use MercadoPago\Resources\Preference\Item as MPItem;
 use MercadoPago\Client\Payment\PaymentClient;
+use App\Helpers\TaxHelper;
 
 class MercadoPagoController extends Controller
 {
@@ -41,6 +41,9 @@ class MercadoPagoController extends Controller
             // Crear registro de venta con estado "pendiente" ANTES de crear la preferencia
             $saleStatusPendiente = SaleStatus::getByName('Pendiente');
 
+            // Calcular impuestos y empaque usando TaxHelper
+            $taxBreakdown = TaxHelper::calculate($request->cart, $request->packaging_id);
+
             $sale = Sale::create([
                 'code' => $orderNumber,
                 'user_id' => $request->user_id,
@@ -58,7 +61,7 @@ class MercadoPagoController extends Controller
                 'number' => $request->number,
                 'reference' => $request->reference,
                 'comment' => $request->comment,
-                'amount' => $request->amount + $request->delivery - $discountAmount,
+                'amount' => $taxBreakdown['total'] - $discountAmount,
                 'delivery' => $request->delivery,
                 'payment_status' => 'pendiente',
                 'status_id' => $saleStatusPendiente ? $saleStatusPendiente->id : null,
@@ -69,7 +72,11 @@ class MercadoPagoController extends Controller
                 'payment_method' => $request->payment_method,
                 'coupon_id' => $request->coupon_id != 'null' ? $request->coupon_id : null,
                 'coupon_discount' => $discountAmount,
-                'total_amount' => $request->amount + $request->delivery - $discountAmount,
+                'total_amount' => $taxBreakdown['total'] - $discountAmount,
+                'igv_amount' => $taxBreakdown['igv_amount'],
+                'perception_amount' => $taxBreakdown['perception_amount'],
+                'packaging_amount' => $taxBreakdown['packaging_amount'],
+                'packaging_id' => $request->packaging_id,
             ]);
 
             // Registrar detalles de la venta (sin afectar stock aún)
@@ -109,7 +116,29 @@ class MercadoPagoController extends Controller
                     'id' => 'delivery',
                     'title' => 'Costo de envío',
                     'quantity' => 1,
-                    'unit_price' => round(max((float) $request->delivery, 0.1), 2),
+                    'unit_price' => round(max((float) $request->delivery, 0), 2),
+                    'currency_id' => 'PEN',
+                ];
+            }
+
+            // Agregar Percepción si existe
+            if ($taxBreakdown['perception_amount'] > 0) {
+                $items[] = [
+                    'id' => 'perception',
+                    'title' => 'Percepción (2%)',
+                    'quantity' => 1,
+                    'unit_price' => (float) $taxBreakdown['perception_amount'],
+                    'currency_id' => 'PEN',
+                ];
+            }
+
+            // Agregar Empaque si existe
+            if ($taxBreakdown['packaging_amount'] > 0) {
+                $items[] = [
+                    'id' => 'packaging',
+                    'title' => 'Empaque especial',
+                    'quantity' => 1,
+                    'unit_price' => (float) $taxBreakdown['packaging_amount'],
                     'currency_id' => 'PEN',
                 ];
             }
@@ -386,6 +415,9 @@ class MercadoPagoController extends Controller
                     'coupon_id' => $order->coupon_id,
                     'coupon_discount' => $order->coupon_discount,
                     'total_amount' => $order->total_amount,
+                    'igv_amount' => $order->igv_amount ?? 0,
+                    'perception_amount' => $order->perception_amount ?? 0,
+                    'packaging_amount' => $order->packaging_amount ?? 0,
                     // Direccion aplanada para el frontend
                     'address' => $order->address,
                     'department' => $order->department,
