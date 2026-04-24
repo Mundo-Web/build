@@ -143,10 +143,14 @@ const Categories = () => {
             SetSelectValue(storesRef.current, data?.stores ?? [], "id", "name");
         }
 
-        if (isPerceptionTaxableRef.current)
-            isPerceptionTaxableRef.current.checked = Boolean(
-                data?.is_perception_taxable,
-            );
+        if (isPerceptionTaxableRef.current) {
+            isPerceptionTaxableRef.current.checked = data?.is_perception_taxable == 1;
+            $(isPerceptionTaxableRef.current).next(".switchery").remove();
+            new Switchery(isPerceptionTaxableRef.current, {
+                size: "small",
+                color: "#64b0f2",
+            });
+        }
 
         if (perceptionPercentageRef.current)
             perceptionPercentageRef.current.value =
