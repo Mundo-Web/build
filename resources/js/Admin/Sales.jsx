@@ -1396,6 +1396,7 @@ const Sales = ({ statuses = [], hasRootRole = false }) => {
     };
 
     const subtotalReal =
+        Number(saleLoaded?.subtotal) ||
         saleLoaded?.details?.reduce(
             (sum, detail) => sum + detail.price * detail.quantity,
             0,
@@ -1546,8 +1547,8 @@ const Sales = ({ statuses = [], hasRootRole = false }) => {
                                 return Number(data?.amount || 0);
                             }
 
-                            // Calcular subtotal real desde los detalles
-                            const subtotalReal = data.details.reduce(
+                            // Calcular subtotal real desde los detalles o DB
+                            const subtotalReal = Number(data?.subtotal) || data.details.reduce(
                                 (sum, detail) =>
                                     sum + detail.price * detail.quantity,
                                 0,
@@ -1579,8 +1580,8 @@ const Sales = ({ statuses = [], hasRootRole = false }) => {
                                 return;
                             }
 
-                            // Calcular subtotal real desde los detalles
-                            const subtotalReal = data.details.reduce(
+                            // Calcular subtotal real desde los detalles o DB
+                            const subtotalReal = Number(data?.subtotal) || data.details.reduce(
                                 (sum, detail) =>
                                     sum + detail.price * detail.quantity,
                                 0,
@@ -2196,15 +2197,7 @@ const Sales = ({ statuses = [], hasRootRole = false }) => {
                                     <b>Subtotal:</b>
                                     <span>
                                         {CurrencySymbol()}{" "}
-                                        {Number2Currency(
-                                            saleLoaded?.details?.reduce(
-                                                (sum, detail) =>
-                                                    sum +
-                                                    detail.price *
-                                                        detail.quantity,
-                                                0,
-                                            ) || 0,
-                                        )}
+                                        {Number2Currency(subtotalReal)}
                                     </span>
                                 </div>
 
