@@ -2177,7 +2177,7 @@ const Items = ({
                                             <div className="card-body">
                                                 <InputFormGroup
                                                     eRef={priceRef}
-                                                    label="Precio de Venta (Público)"
+                                                    label="Precio de Venta"
                                                     type="number"
                                                     step="0.01"
                                                     required
