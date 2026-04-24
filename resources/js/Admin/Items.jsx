@@ -1816,7 +1816,17 @@ const Items = ({
                                 Multimedia
                             </button>
                         </li>
-                        <li className="nav-item" role="presentation">
+                        <li
+                            className="nav-item"
+                            role="presentation"
+                            hidden={
+                                !Fillable.has("items", "is_features") &&
+                                !Fillable.has("items", "is_specifications") &&
+                                !Fillable.has("items", "is_attributes") &&
+                                !Fillable.has("items", "is_applications") &&
+                                !Fillable.has("items", "is_amenities")
+                            }
+                        >
                             <button
                                 className="nav-link"
                                 id="features-tab"
