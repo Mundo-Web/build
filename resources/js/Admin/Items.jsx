@@ -1631,7 +1631,7 @@ const Items = ({
                     },
                     Fillable.has("items", "is_taxable") && {
                         dataField: "is_taxable",
-                        caption: "Afecto a IGV (18%)",
+                        caption: "¿Incluye IGV?",
                         dataType: "boolean",
                         width: "100px",
                         cellTemplate: (container, { data }) => {
@@ -2182,12 +2182,17 @@ const Items = ({
                                                     step="0.01"
                                                     required
                                                 />
-                                                <InputFormGroup
-                                                    eRef={providerPriceRef}
-                                                    label="Precio del Proveedor (Sugerido)"
-                                                    type="number"
-                                                    step="0.01"
-                                                />
+                                                {Fillable.has(
+                                                    "items",
+                                                    "provider_price",
+                                                ) && (
+                                                    <InputFormGroup
+                                                        eRef={providerPriceRef}
+                                                        label="Precio del Proveedor (Sugerido)"
+                                                        type="number"
+                                                        step="0.01"
+                                                    />
+                                                )}
                                                 <InputFormGroup
                                                     eRef={discountRef}
                                                     label="Precio con Descuento"
