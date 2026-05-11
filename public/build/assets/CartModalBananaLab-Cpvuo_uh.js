@@ -1,1 +1,0 @@
-import"./vendor-react-DGtfu94Q.js";import{R as r}from"./AdModal-CxtOdScC.js";import"./CartKuchara-DWtirZBy.js";import"./SelectAPIFormGroup-fG2PH0ve.js";import"./TippyButton-DEbHX0-h.js";import"./index-Bx5UHif0.js";import"./vendor-swiper-DUKK6iF5.js";import"./___vite-browser-external_commonjs-proxy-B62enZY2.js";r.setAppElement("#app");

@@ -20,7 +20,7 @@ export default function PostDetailSimple({ item, data }) {
 
     const handleShare = (platform) => {
         let url = "";
-        const text = encodeURIComponent(item.title + " " + shareUrl);
+        const text = encodeURIComponent((item?.name || item?.title || "") + " " + shareUrl);
         switch (platform) {
             case "facebook":
                 url = `https://www.facebook.com/sharer/sharer.php?u=${shareUrl}`;

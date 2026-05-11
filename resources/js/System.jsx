@@ -579,7 +579,16 @@ const System = ({
                     <ThankSimple
                         which={value}
                         data={dataWithElementId}
-                        item={filteredData.Sale}
+                        item={
+                            filteredData.Sale ||
+                            Object.values(filteredData).find(
+                                (x) =>
+                                    x &&
+                                    typeof x === "object" &&
+                                    !Array.isArray(x) &&
+                                    (x.id || x.slug),
+                            )
+                        }
                     />,
                 );
             case "track":
@@ -620,7 +629,17 @@ const System = ({
                         which={value}
                         data={dataWithElementId}
                         items={getItems(itemsId)}
-                        currentService={filteredData.Service ?? null}
+                        currentService={
+                            filteredData.Service ||
+                            Object.values(filteredData).find(
+                                (x) =>
+                                    x &&
+                                    typeof x === "object" &&
+                                    !Array.isArray(x) &&
+                                    (x.id || x.slug),
+                            ) ||
+                            null
+                        }
                     />,
                 );
             case "post-detail":
@@ -628,7 +647,16 @@ const System = ({
                     <PostDetail
                         which={value}
                         data={dataWithElementId}
-                        item={filteredData.Post}
+                        item={
+                            filteredData.Post ||
+                            Object.values(filteredData).find(
+                                (x) =>
+                                    x &&
+                                    typeof x === "object" &&
+                                    !Array.isArray(x) &&
+                                    (x.id || x.slug),
+                            )
+                        }
                     />,
                 );
             case "about":
