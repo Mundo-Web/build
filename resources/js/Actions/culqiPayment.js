@@ -458,6 +458,38 @@ function validateRSAConfiguration() {
  * @param {boolean} options.skipOrderCreation - Si es true, no intentará crear orden (solo tarjeta)
  * @returns {Promise} - Promesa que resuelve con el resultado del pago
  */
+/**
+ * Carga un script dinámicamente si no existe
+ */
+const loadScript = (src) => {
+    return new Promise((resolve) => {
+        if (document.querySelector(`script[src="${src}"]`)) return resolve(true);
+        const script = document.createElement('script');
+        script.src = src;
+        script.async = true;
+        script.onload = () => resolve(true);
+        script.onerror = () => resolve(false);
+        document.head.appendChild(script);
+    });
+};
+
+/**
+ * Asegura que los SDKs de Culqi estén cargados antes de proceder
+ */
+const ensureCulqiSDK = async () => {
+    if (typeof window.CulqiCheckout !== 'undefined') return true;
+    
+    console.log("📡 Cargando SDK de Culqi dinámicamente...");
+    await loadScript('https://js.culqi.com/3ds-js');
+    const success = await loadScript('https://js.culqi.com/checkout-js');
+    
+    if (success && typeof window.CulqiCheckout === 'undefined') {
+        // Pequeña espera para inicialización global
+        await new Promise(r => setTimeout(r, 500));
+    }
+    return typeof window.CulqiCheckout !== 'undefined';
+};
+
 export const processCulqiPayment = async (request, options = {}) => {
     // Si no hay orderId y no se especifica skipOrderCreation, intentar crear orden primero
     if (!options.orderId && !options.skipOrderCreation) {
@@ -494,7 +526,7 @@ export const processCulqiPayment = async (request, options = {}) => {
         }
     }
 
-    return new Promise((resolve, reject) => {
+    return new Promise(async (resolve, reject) => {
         try {
             console.log("🔄 Iniciando proceso de pago con Culqi Custom Checkout...", request);
             console.log("📋 Opciones recibidas:", options);
@@ -517,9 +549,11 @@ export const processCulqiPayment = async (request, options = {}) => {
                 return;
             }
             
-            // ✅ Verificar que CulqiCheckout esté disponible (nuevo SDK)
-            if (typeof window.CulqiCheckout === 'undefined') {
-                console.error("❌ Error: CulqiCheckout no está definido. Verifique que el script de Culqi esté cargado.");
+            // ✅ Asegurar que el SDK esté cargado
+            const isLoaded = await ensureCulqiSDK();
+            
+            if (!isLoaded || typeof window.CulqiCheckout === 'undefined') {
+                console.error("❌ Error: CulqiCheckout no está definido incluso tras intento de carga.");
                 console.error("   Script esperado: https://js.culqi.com/checkout-js");
                 reject("Error en la integración con Culqi: Script no cargado");
                 return;
@@ -773,7 +807,8 @@ export const processCulqiPayment = async (request, options = {}) => {
                         
                         console.log("📤 Enviando cargo completado al backend:", paymentRequest);
 
-                        const { status, result } = await Fetch("./api/pago/charge-completed", {
+                        const apiPath = `${window.APP_URL || ''}/api/pago/charge-completed`.replace(/\/+/g, '/').replace(':/', '://');
+                        const { status, result } = await Fetch(apiPath, {
                             method: "POST",
                             body: JSON.stringify(paymentRequest),
                         });
@@ -841,7 +876,8 @@ export const processCulqiPayment = async (request, options = {}) => {
                         
                         console.log("📤 Enviando pago al backend:", paymentRequest);
 
-                        let { status, result } = await Fetch("./api/pago", {
+                        const apiPath = `${window.APP_URL || ''}/api/pago`.replace(/\/+/g, '/').replace(':/', '://');
+                        let { status, result } = await Fetch(apiPath, {
                             method: "POST",
                             body: JSON.stringify(paymentRequest),
                         });
@@ -897,7 +933,8 @@ export const processCulqiPayment = async (request, options = {}) => {
                                     
                                     console.log("📤 Enviando cargo con autenticación 3DS:", paymentRequest3DS);
                                     
-                                    const response3DS = await Fetch("./api/pago/3ds", {
+                                    const apiPath3DS = `${window.APP_URL || ''}/api/pago/3ds`.replace(/\/+/g, '/').replace(':/', '://');
+                                    const response3DS = await Fetch(apiPath3DS, {
                                         method: "POST",
                                         body: JSON.stringify(paymentRequest3DS),
                                     });
@@ -969,7 +1006,8 @@ export const processCulqiPayment = async (request, options = {}) => {
 
                         console.log("📤 Enviando orden al backend:", paymentRequest);
 
-                        const { status, result } = await Fetch("./api/pago/order", {
+                        const apiPathOrder = `${window.APP_URL || ''}/api/pago/order`.replace(/\/+/g, '/').replace(':/', '://');
+                        const { status, result } = await Fetch(apiPathOrder, {
                             method: "POST",
                             body: JSON.stringify(paymentRequest),
                         });

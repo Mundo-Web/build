@@ -731,16 +731,20 @@ export default function ShippingStep({
             }
         } catch (error) {
             console.error('💥 Error completo en handlePayment:', error);
-            console.error('💥 Stack trace:', error.stack);
-            console.error('💥 Error name:', error.name);
-            console.error('💥 Error message:', error.message);
             
-            toast.error("Lo sentimos, no puede continuar con la compra", {
-                description: `Ocurrió un error al procesar el pedido: ${error.message}`,
-                icon: <XOctagonIcon className="h-5 w-5 text-red-500" />,
-                duration: 3000,
-                position: "bottom-center",
-            });
+            // No mostrar error si el usuario canceló el pago o cerró el modal
+            const isCancelled = error === "Pago cancelado por el usuario" || 
+                              error?.message === "Pago cancelado por el usuario" || 
+                              error?.cancelled === true;
+
+            if (!isCancelled) {
+                toast.error("Lo sentimos, no puede continuar con la compra", {
+                    description: `Ocurrió un error al procesar el pedido: ${error.message || error || "Error desconocido"}`,
+                    icon: <XOctagonIcon className="h-5 w-5 text-red-500" />,
+                    duration: 5000,
+                    position: "bottom-center",
+                });
+            }
         } finally {
             setPaymentLoading(false);
         }

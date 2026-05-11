@@ -368,7 +368,10 @@ $component = Route::currentRouteName();
     </script>
 
     @php
-    $isCheckout = ($page->correlative ?? '') === 'checkout' || ($page->component ?? '') === 'checkout';
+    $currentUrl = request()->url();
+    $isCheckout = ($page->correlative ?? '') === 'checkout' || 
+                  ($page->component ?? '') === 'checkout' || 
+                  (str_contains($currentUrl, '/checkout') && !str_contains($currentUrl, '/admin'));
     @endphp
 
     @if($isCheckout)

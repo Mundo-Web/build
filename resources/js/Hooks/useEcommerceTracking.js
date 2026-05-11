@@ -227,10 +227,27 @@ export const useEcommerceTracking = () => {
         const scriptTags = tempDiv.querySelectorAll('script');
         scriptTags.forEach((script, index) => {
             try {
+                const content = script.textContent.trim();
+                if (!content) return;
+
+                // Verificar si el script usa fbq o ttq y si están definidos
+                if (content.includes('fbq(') && typeof window.fbq === 'undefined') {
+                    console.warn(`⚠️ Omitiendo script ${index + 1}: fbq no está definido`);
+                    return;
+                }
+                if (content.includes('ttq.') && typeof window.ttq === 'undefined') {
+                    console.warn(`⚠️ Omitiendo script ${index + 1}: ttq no está definido`);
+                    return;
+                }
+                if (content.includes('gtag(') && typeof window.gtag === 'undefined') {
+                    console.warn(`⚠️ Omitiendo script ${index + 1}: gtag no está definido`);
+                    return;
+                }
+
                 const newScript = document.createElement('script');
-                newScript.textContent = script.textContent;
+                newScript.textContent = content;
                 
-                console.log(`📊 Ejecutando script de tracking ${index + 1}:`, script.textContent.trim());
+                console.log(`📊 Ejecutando script de tracking ${index + 1}:`, content);
                 
                 document.head.appendChild(newScript);
                 
@@ -244,8 +261,6 @@ export const useEcommerceTracking = () => {
                 console.log(`✅ Script de tracking ${index + 1} ejecutado exitosamente`);
             } catch (error) {
                 console.error(`❌ Error ejecutando script de tracking ${index + 1}:`, error);
-                console.error('Script content:', script.textContent);
-                // No lanzar el error para que no afecte el flujo de compra
             }
         });
         

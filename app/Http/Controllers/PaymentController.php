@@ -29,6 +29,11 @@ class PaymentController extends Controller
 
     public function charge(Request $request)
     {
+        Log::info('🔥 PaymentController::charge - Inicio de proceso', [
+            'url' => $request->fullUrl(),
+            'method' => $request->method(),
+            'ip' => $request->ip()
+        ]);
         try {
             // Debug: Log de todos los datos recibidos
             Log::info('PaymentController - Datos recibidos:', $request->all());
@@ -376,6 +381,7 @@ class PaymentController extends Controller
      */
     public function chargeCompleted(Request $request)
     {
+        Log::info('🔥 PaymentController::chargeCompleted - Inicio de proceso (3DS)');
         try {
             Log::info('PaymentController::chargeCompleted - Datos recibidos:', $request->all());
 
