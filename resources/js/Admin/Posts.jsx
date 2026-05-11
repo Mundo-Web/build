@@ -36,6 +36,7 @@ const Posts = ({ details }) => {
   const tagsRef = useRef()
   const imageRef = useRef()
   const postDateRef = useRef()
+  const authorRef = useRef()
   // SEO fields refs
   const slugRef = useRef()
   const metaTitleRef = useRef()
@@ -65,6 +66,7 @@ const Posts = ({ details }) => {
     imageRef.current.value = null
     SetSelectValue(tagsRef.current, data?.tags ?? [], 'id', 'name')
     postDateRef.current.value = data?.post_date ?? moment().format('YYYY-MM-DD')
+    authorRef.current.value = data?.author ?? Global.APP_NAME
 
     // SEO fields
     slugRef.current.value = data?.slug ?? ''
@@ -92,6 +94,7 @@ const Posts = ({ details }) => {
       description: descriptionRef.current.value,
       tags: $(tagsRef.current).val(),
       post_date: postDateRef.current.value,
+      author: authorRef.current.value,
       // SEO fields
       slug: slugRef.current.value,
       meta_title: metaTitleRef.current.value,
@@ -290,6 +293,9 @@ const Posts = ({ details }) => {
                             <InputFormGroup eRef={postDateRef} label='Fecha de publicación' type='date' required={isRequired('post_date')} />
                           </div>
                         )}
+                        <div className="col-md-6">
+                          <InputFormGroup eRef={authorRef} label='Autor' placeholder='Nombre del autor' />
+                        </div>
                         {Fillable.has('posts','category_id') && (
                           <div className="col-md-6">
                             <SelectAPIFormGroup eRef={categoryRef} searchAPI='/api/admin/blog-categories/paginate' searchBy='name' label='Categoría' required={isRequired('category_id')} dropdownParent='#posts-container' />

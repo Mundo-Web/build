@@ -920,8 +920,8 @@
     "file": "assets/index-ei4kQ0Q2.js",
     "name": "index"
   },
-  "_index.es-Bpx7bz2R.js": {
-    "file": "assets/index.es-Bpx7bz2R.js",
+  "_index.es-Ox5RqK9G.js": {
+    "file": "assets/index.es-Ox5RqK9G.js",
     "name": "index.es",
     "imports": [
       "_vendor-react-DGtfu94Q.js",
@@ -2078,7 +2078,7 @@
     ]
   },
   "resources/js/Admin/Generals.jsx": {
-    "file": "assets/Generals-Df4kR2DI.js",
+    "file": "assets/Generals-j3ajVCQK.js",
     "name": "Generals",
     "src": "resources/js/Admin/Generals.jsx",
     "isEntry": true,
@@ -2116,13 +2116,13 @@
     ]
   },
   "resources/js/Admin/Home.jsx": {
-    "file": "assets/Home-C34U5lfH.js",
+    "file": "assets/Home-CFvn5D99.js",
     "name": "Home",
     "src": "resources/js/Admin/Home.jsx",
     "isEntry": true,
     "imports": [
       "_vendor-react-DGtfu94Q.js",
-      "_index.es-Bpx7bz2R.js",
+      "_index.es-Ox5RqK9G.js",
       "resources/js/Components/Tailwind/Hotel/SearchWidget.jsx",
       "_CreateReactScript-sJ8JIedO.js",
       "_Base-B0syPqmj.js",
@@ -2500,7 +2500,7 @@
     ]
   },
   "resources/js/Admin/Posts.jsx": {
-    "file": "assets/Posts-D8cEhch-.js",
+    "file": "assets/Posts-BJ_LxPXA.js",
     "name": "Posts",
     "src": "resources/js/Admin/Posts.jsx",
     "isEntry": true,
@@ -2707,7 +2707,7 @@
     ]
   },
   "resources/js/Admin/RoomAvailability.jsx": {
-    "file": "assets/RoomAvailability-DshDbXzY.js",
+    "file": "assets/RoomAvailability-D3CAIpdx.js",
     "name": "RoomAvailability",
     "src": "resources/js/Admin/RoomAvailability.jsx",
     "isEntry": true,
@@ -2719,7 +2719,7 @@
       "resources/js/Components/Tailwind/Carts/CartKuchara.jsx",
       "_Number2Currency-BX4epFEo.js",
       "_Modal-Bg7-5x60.js",
-      "_index.es-Bpx7bz2R.js",
+      "_index.es-Ox5RqK9G.js",
       "resources/js/Components/Tailwind/Hotel/SearchWidget.jsx",
       "_tippy-react.esm-SPbs-ND8.js",
       "resources/js/Components/Adminto/form/TippyButton.jsx",
@@ -8958,7 +8958,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Hotel.jsx": {
-    "file": "assets/Hotel-C83co4o4.js",
+    "file": "assets/Hotel-ZeenPJKn.js",
     "name": "Hotel",
     "src": "resources/js/Components/Tailwind/Hotel.jsx",
     "isDynamicEntry": true,
@@ -9012,7 +9012,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Hotel/RoomDetail.jsx": {
-    "file": "assets/RoomDetail-B8-7hFrB.js",
+    "file": "assets/RoomDetail-Dh56UR6M.js",
     "name": "RoomDetail",
     "src": "resources/js/Components/Tailwind/Hotel/RoomDetail.jsx",
     "isDynamicEntry": true,
@@ -9020,7 +9020,7 @@
       "_vendor-react-DGtfu94Q.js",
       "resources/js/Components/MenuItem.jsx",
       "resources/js/Components/Tailwind/Carts/CartKuchara.jsx",
-      "_index.es-Bpx7bz2R.js",
+      "_index.es-Ox5RqK9G.js",
       "resources/js/Components/Tailwind/Hotel/SearchWidget.jsx",
       "_es-l8Wd9Mhe.js",
       "_index-ei4kQ0Q2.js",
@@ -9032,14 +9032,14 @@
     ]
   },
   "resources/js/Components/Tailwind/Hotel/RoomDetailLaPetaca.jsx": {
-    "file": "assets/RoomDetailLaPetaca-BIWUWSfS.js",
+    "file": "assets/RoomDetailLaPetaca-857shY10.js",
     "name": "RoomDetailLaPetaca",
     "src": "resources/js/Components/Tailwind/Hotel/RoomDetailLaPetaca.jsx",
     "isDynamicEntry": true,
     "imports": [
       "_vendor-react-DGtfu94Q.js",
       "_vendor-swiper-DUKK6iF5.js",
-      "_index.es-Bpx7bz2R.js",
+      "_index.es-Ox5RqK9G.js",
       "resources/js/Components/Tailwind/Hotel/SearchWidget.jsx",
       "resources/js/Components/Tailwind/Carts/CartKuchara.jsx",
       "_Number2Currency-BX4epFEo.js",
@@ -9490,7 +9490,7 @@
     ]
   },
   "resources/js/Components/Tailwind/PostDetail.jsx": {
-    "file": "assets/PostDetail-C4R2Fhlz.js",
+    "file": "assets/PostDetail-DgtgAc_5.js",
     "name": "PostDetail",
     "src": "resources/js/Components/Tailwind/PostDetail.jsx",
     "isDynamicEntry": true,
@@ -9504,7 +9504,7 @@
     ]
   },
   "resources/js/Components/Tailwind/PostDetails/PostDetailRainstar.jsx": {
-    "file": "assets/PostDetailRainstar-Chu-wFze.js",
+    "file": "assets/PostDetailRainstar-CvElp2B4.js",
     "name": "PostDetailRainstar",
     "src": "resources/js/Components/Tailwind/PostDetails/PostDetailRainstar.jsx",
     "isDynamicEntry": true,
@@ -12503,7 +12503,7 @@
     ]
   },
   "resources/js/System.jsx": {
-    "file": "assets/System-vDNvH7HC.js",
+    "file": "assets/System-DK_YFnw7.js",
     "name": "System",
     "src": "resources/js/System.jsx",
     "isEntry": true,

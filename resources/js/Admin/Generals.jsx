@@ -6270,21 +6270,66 @@ const Generals = ({
                                             <label className="form-label">
                                                 Imagen Open Graph
                                             </label>
-                                            <input
-                                                type="url"
-                                                className="form-control"
-                                                placeholder="https://midominio.com/imagen-compartir.jpg"
-                                                value={formData.ogImage}
-                                                onChange={(e) =>
-                                                    setFormData({
-                                                        ...formData,
-                                                        ogImage: e.target.value,
-                                                    })
-                                                }
-                                            />
+                                            {formData.ogImage ? (
+                                                <div className="position-relative mb-2">
+                                                    <Tippy content="Eliminar imagen">
+                                                        <button
+                                                            type="button"
+                                                            className="position-absolute btn btn-xs btn-danger"
+                                                            style={{
+                                                                top: "5px",
+                                                                left: "5px",
+                                                                zIndex: 10,
+                                                            }}
+                                                            onClick={() => {
+                                                                setFormData({
+                                                                    ...formData,
+                                                                    ogImage: null,
+                                                                });
+                                                            }}
+                                                        >
+                                                            <i className="mdi mdi-delete"></i>
+                                                        </button>
+                                                    </Tippy>
+                                                    <img
+                                                        src={`/assets/resources/${formData.ogImage}`}
+                                                        alt="Open Graph"
+                                                        className="img-thumbnail"
+                                                        style={{
+                                                            maxHeight: "150px",
+                                                            width: "auto",
+                                                            display: "block",
+                                                        }}
+                                                    />
+                                                </div>
+                                            ) : (
+                                                <input
+                                                    type="file"
+                                                    className="form-control"
+                                                    accept="image/*"
+                                                    onChange={async (e) => {
+                                                        const file = e.target.files[0];
+                                                        if (!file) return;
+                                                        
+                                                        const ext = file.name.split(".").pop();
+                                                        const imageName = `og-image-${Date.now()}.${ext}`;
+
+                                                        const request = new FormData();
+                                                        request.append("image", file);
+                                                        request.append("name", imageName);
+
+                                                        const result = await galleryRest.save(request);
+                                                        if (!result) return;
+
+                                                        setFormData({
+                                                            ...formData,
+                                                            ogImage: imageName,
+                                                        });
+                                                    }}
+                                                />
+                                            )}
                                             <small className="text-muted">
-                                                URL de la imagen para compartir
-                                                (recomendado: 1200x630px)
+                                                Imagen para compartir en redes sociales (recomendado: 1200x630px)
                                             </small>
                                         </div>
                                     </ConditionalSeoField>
@@ -6406,22 +6451,66 @@ const Generals = ({
                                             <label className="form-label">
                                                 Imagen Twitter
                                             </label>
-                                            <input
-                                                type="url"
-                                                className="form-control"
-                                                placeholder="https://midominio.com/imagen-twitter.jpg"
-                                                value={formData.twitterImage}
-                                                onChange={(e) =>
-                                                    setFormData({
-                                                        ...formData,
-                                                        twitterImage:
-                                                            e.target.value,
-                                                    })
-                                                }
-                                            />
+                                            {formData.twitterImage ? (
+                                                <div className="position-relative mb-2">
+                                                    <Tippy content="Eliminar imagen">
+                                                        <button
+                                                            type="button"
+                                                            className="position-absolute btn btn-xs btn-danger"
+                                                            style={{
+                                                                top: "5px",
+                                                                left: "5px",
+                                                                zIndex: 10,
+                                                            }}
+                                                            onClick={() => {
+                                                                setFormData({
+                                                                    ...formData,
+                                                                    twitterImage: null,
+                                                                });
+                                                            }}
+                                                        >
+                                                            <i className="mdi mdi-delete"></i>
+                                                        </button>
+                                                    </Tippy>
+                                                    <img
+                                                        src={`/assets/resources/${formData.twitterImage}`}
+                                                        alt="Twitter Card"
+                                                        className="img-thumbnail"
+                                                        style={{
+                                                            maxHeight: "150px",
+                                                            width: "auto",
+                                                            display: "block",
+                                                        }}
+                                                    />
+                                                </div>
+                                            ) : (
+                                                <input
+                                                    type="file"
+                                                    className="form-control"
+                                                    accept="image/*"
+                                                    onChange={async (e) => {
+                                                        const file = e.target.files[0];
+                                                        if (!file) return;
+                                                        
+                                                        const ext = file.name.split(".").pop();
+                                                        const imageName = `twitter-image-${Date.now()}.${ext}`;
+
+                                                        const request = new FormData();
+                                                        request.append("image", file);
+                                                        request.append("name", imageName);
+
+                                                        const result = await galleryRest.save(request);
+                                                        if (!result) return;
+
+                                                        setFormData({
+                                                            ...formData,
+                                                            twitterImage: imageName,
+                                                        });
+                                                    }}
+                                                />
+                                            )}
                                             <small className="text-muted">
-                                                URL de la imagen para Twitter
-                                                Cards
+                                                Imagen para Twitter Cards (recomendado: 1200x600px)
                                             </small>
                                         </div>
                                     </ConditionalSeoField>

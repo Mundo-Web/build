@@ -28,6 +28,7 @@ class Post extends Model
         'meta_description',
         'meta_keywords',
         'canonical_url',
+        'author',
         // Campo booleano para control dinámico de tags en Fillable
         'is_tags',
     ];
