@@ -18,37 +18,49 @@ $component = Route::currentRouteName();
     if ($isDetailPage && isset($data[$modelName]) && $data[$modelName]) { $item = $data[$modelName]; }
 
     if ($item) {
-    $pageTitle = $item->meta_title ?? $item->name;
-    $pageDescription = $item->meta_description ?? strip_tags($item->summary ?? '');
-    $pageKeywords = $item->meta_keywords ?? '';
-    $modelClass = get_class($item);
-    $snake_case = Illuminate\Support\Str::snake(str_replace('App\\Models\\', '', $modelClass));
-    if ($snake_case === 'item_image') { $snake_case = 'item'; }
-    $pageImage = $item->image ? asset("storage/images/{$snake_case}/{$item->image}") : '';
-    $pageUrl = $item->canonical_url ?? url()->current();
+        $pageTitle = $item->meta_title ?? $item->name;
+        $pageDescription = $item->meta_description ?? strip_tags($item->summary ?? '');
+        $pageKeywords = $item->meta_keywords ?? '';
+        $modelClass = get_class($item);
+        $snake_case = Illuminate\Support\Str::snake(str_replace('App\\Models\\', '', $modelClass));
+        if ($snake_case === 'item_image') { $snake_case = 'item'; }
+        $pageImage = $item->image ? asset("storage/images/{$snake_case}/{$item->image}") : '';
+        $pageUrl = $item->canonical_url ?? url()->current();
 
-    $ogTitle = $pageTitle; $ogDescription = $pageDescription; $ogImage = $pageImage; $ogUrl = $pageUrl;
-    $twitterTitle = $pageTitle; $twitterDescription = $pageDescription; $twitterImage = $pageImage;
-    $twitterCard = 'summary_large_image'; $canonicalUrl = $pageUrl;
-    $siteTitle = $generals->where('correlative', 'site_title')->first()?->description ?? config('app.name', 'Mundo Web');
+        $ogTitle = $pageTitle;
+        $ogDescription = $pageDescription;
+        $ogImage = $pageImage;
+        $ogUrl = $pageUrl;
+        $twitterTitle = $pageTitle;
+        $twitterDescription = $pageDescription;
+        $twitterImage = $pageImage;
+        $twitterCard = 'summary_large_image';
+        $canonicalUrl = $pageUrl;
+        $siteTitle = $generals->where('correlative', 'site_title')->first()?->description ?? config('app.name', 'Mundo Web');
     } else {
-    $siteTitle = $generals->where('correlative', 'site_title')->first()?->description ?? config('app.name', 'Mundo Web');
-    $siteDescription = $generals->where('correlative', 'site_description')->first()?->description ?? '';
-    $siteKeywords = $generals->where('correlative', 'site_keywords')->first()?->description ?? '';
-    $pageTitle = $data['name'] ?? $siteTitle;
-    $pageDescription = $data['description'] ?? $siteDescription;
-    $pageKeywords = isset($data['keywords']) ? implode(', ', $data['keywords']) : $siteKeywords;
+        $siteTitle = $generals->where('correlative', 'site_title')->first()?->description ?? config('app.name', 'Mundo Web');
+        $siteDescription = $generals->where('correlative', 'site_description')->first()?->description ?? '';
+        $siteKeywords = $generals->where('correlative', 'site_keywords')->first()?->description ?? '';
+        $pageTitle = $data['name'] ?? $siteTitle;
+        $pageDescription = $data['description'] ?? $siteDescription;
+        $pageKeywords = isset($data['keywords']) ? implode(', ', $data['keywords']) : $siteKeywords;
 
-    $ogTitle = $generals->where('correlative', 'og_title')->first()?->description ?? $pageTitle;
-    $ogDescription = $generals->where('correlative', 'og_description')->first()?->description ?? $pageDescription;
-    $ogImage = $generals->where('correlative', 'og_image')->first()?->description ?? '';
-    $ogUrl = $generals->where('correlative', 'og_url')->first()?->description ?? url()->current();
+        $ogTitle = $generals->where('correlative', 'og_title')->first()?->description ?? $pageTitle;
+        $ogDescription = $generals->where('correlative', 'og_description')->first()?->description ?? $pageDescription;
+        
+        $ogImageRaw = $generals->where('correlative', 'og_image')->first()?->description;
+        $ogImage = $ogImageRaw ? (filter_var($ogImageRaw, FILTER_VALIDATE_URL) ? $ogImageRaw : asset('assets/resources/' . $ogImageRaw)) : '';
+        
+        $ogUrl = $generals->where('correlative', 'og_url')->first()?->description ?? url()->current();
 
-    $twitterTitle = $generals->where('correlative', 'twitter_title')->first()?->description ?? $ogTitle;
-    $twitterDescription = $generals->where('correlative', 'twitter_description')->first()?->description ?? $ogDescription;
-    $twitterImage = $generals->where('correlative', 'twitter_image')->first()?->description ?? $ogImage;
-    $twitterCard = $generals->where('correlative', 'twitter_card')->first()?->description ?? 'summary_large_image';
-    $canonicalUrl = $generals->where('correlative', 'canonical_url')->first()?->description ?? url()->current();
+        $twitterTitle = $generals->where('correlative', 'twitter_title')->first()?->description ?? $ogTitle;
+        $twitterDescription = $generals->where('correlative', 'twitter_description')->first()?->description ?? $ogDescription;
+        
+        $twitterImageRaw = $generals->where('correlative', 'twitter_image')->first()?->description;
+        $twitterImage = $twitterImageRaw ? (filter_var($twitterImageRaw, FILTER_VALIDATE_URL) ? $twitterImageRaw : asset('assets/resources/' . $twitterImageRaw)) : $ogImage;
+        
+        $twitterCard = $generals->where('correlative', 'twitter_card')->first()?->description ?? 'summary_large_image';
+        $canonicalUrl = $generals->where('correlative', 'canonical_url')->first()?->description ?? url()->current();
     }
     @endphp
 
@@ -71,7 +83,7 @@ $component = Route::currentRouteName();
     $graph = [
         [
             "@type" => "Organization",
-            "@id" => url('/#organization'),
+            "@id" => url('/'),
             "name" => $siteName,
             "url" => url('/'),
             "logo" => [
@@ -90,7 +102,7 @@ $component = Route::currentRouteName();
             "@id" => url('/#website'),
             "name" => $siteName,
             "url" => url('/'),
-            "publisher" => ["@id" => url('/#organization')]
+            "publisher" => ["@id" => url('/')]
         ]
     ];
 
@@ -107,22 +119,46 @@ $component = Route::currentRouteName();
         ];
     }
 
-    // Details/Article
+    // Details/Article/Product
     if ($isDetailPage && isset($item)) {
-        $graph[] = [
-            "@type" => "BlogPosting",
-            "headline" => $pageTitle,
-            "description" => $pageDescription,
-            "image" => $pageImage,
-            "datePublished" => $item->created_at ? $item->created_at->toIso8601String() : null,
-            "dateModified" => $item->updated_at ? $item->updated_at->toIso8601String() : null,
-            "author" => ["@id" => url('/#organization')],
-            "publisher" => ["@id" => url('/#organization')],
-            "mainEntityOfPage" => [
-                "@type" => "WebPage",
-                "@id" => url()->current()
-            ]
-        ];
+        if ($modelName === 'Post') {
+            $graph[] = [
+                "@type" => "NewsArticle",
+                "headline" => $pageTitle,
+                "description" => $pageDescription,
+                "image" => $pageImage,
+                "datePublished" => $item->created_at ? $item->created_at->toIso8601String() : null,
+                "dateModified" => $item->updated_at ? $item->updated_at->toIso8601String() : null,
+                "author" => [
+                    "@type" => "Organization",
+                    "name" => $item->author ?? $siteName
+                ],
+                "publisher" => ["@id" => url('/')],
+                "mainEntityOfPage" => [
+                    "@type" => "WebPage",
+                    "@id" => url()->current()
+                ]
+            ];
+        } elseif ($modelName === 'Item') {
+            $graph[] = [
+                "@type" => "Product",
+                "name" => $item->name,
+                "image" => $pageImage,
+                "description" => $pageDescription,
+                "sku" => $item->sku ?? $item->id,
+                "brand" => [
+                    "@type" => "Brand",
+                    "name" => $item->brand->name ?? $siteName
+                ],
+                "offers" => [
+                    "@type" => "Offer",
+                    "url" => url()->current(),
+                    "priceCurrency" => "PEN",
+                    "price" => $item->final_price ?? $item->price ?? 0,
+                    "availability" => ($item->stock > 0 || !$item->sold_out) ? "https://schema.org/InStock" : "https://schema.org/OutOfStock"
+                ]
+            ];
+        }
     }
     @endphp
 
@@ -137,21 +173,19 @@ $component = Route::currentRouteName();
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
+    <meta name="title" content="<?php echo $pageTitle; ?>">
     <meta name="description" content="<?php echo $pageDescription; ?>">
     @if($pageKeywords)
-    <meta name="keywords" content="<?php echo $pageKeywords; ?>"> @endif
+    <meta name="keywords" content="<?php echo $pageKeywords; ?>">
+    @endif
     <meta name="author" content="Powered by Mundo Web">
     <link rel="canonical" href="<?php echo $canonicalUrl; ?>">
 
-    <meta name="title" content="<?php echo $ogTitle ?? ($generals['meta_title']->description ?? 'Mundo Web'); ?>">
-    <meta name="description" content="<?php echo $ogDescription ?? ($generals['meta_description']->description ?? ''); ?>">
-    <meta name="keywords" content="<?php echo $generals['meta_keywords']->description ?? ''; ?>">
-
     <meta property="og:type" content="<?php echo $isDetailPage ? 'article' : 'website'; ?>">
     <meta property="og:url" content="<?php echo $ogUrl; ?>">
-    <meta property="og:title" content="<?php echo $ogTitle ?? ($generals['og_title']->description ?? 'Mundo Web'); ?>">
-    <meta property="og:description" content="<?php echo $ogDescription ?? ($generals['meta_description']->description ?? ''); ?>">
-    <meta property="og:image" content="<?php echo $ogImage ?? ($generals['og_image']->description ?? ''); ?>">
+    <meta property="og:title" content="<?php echo $ogTitle; ?>">
+    <meta property="og:description" content="<?php echo $ogDescription; ?>">
+    <meta property="og:image" content="<?php echo $ogImage; ?>">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
     <meta property="og:site_name" content="<?php echo $siteTitle; ?>">

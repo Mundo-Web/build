@@ -403,10 +403,7 @@ $component = Route::currentRouteName();
     </script>
 
     <?php
-    $currentUrl = request()->url();
-    $isCheckout = ($page->correlative ?? '') === 'checkout' || 
-                  ($page->component ?? '') === 'checkout' || 
-                  (str_contains($currentUrl, '/checkout') && !str_contains($currentUrl, '/admin'));
+    $isCheckout = ($page->correlative ?? '') === 'checkout' || ($page->component ?? '') === 'checkout';
     ?>
 
     <?php if($isCheckout): ?>
@@ -497,4 +494,4 @@ $component = Route::currentRouteName();
     </script>
 </body>
 
-</html><?php /**PATH C:\xampp\htdocs\projects\stechperu\resources\views/public.blade.php ENDPATH**/ ?>
+</html><?php /**PATH C:\xampp\htdocs\projects\rainstarstore\resources\views/public.blade.php ENDPATH**/ ?>
