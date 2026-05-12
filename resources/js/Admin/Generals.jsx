@@ -178,6 +178,8 @@ const Generals = ({
             "twitter_description",
             "twitter_image",
             "twitter_card",
+            "twitter_site",
+            "twitter_creator",
             "favicon",
             "canonical_url",
             "robots_additional_rules",
@@ -776,6 +778,12 @@ const Generals = ({
         twitterCard:
             generals.find((x) => x.correlative == "twitter_card")
                 ?.description ?? "summary_large_image",
+        twitterSite:
+            generals.find((x) => x.correlative == "twitter_site")
+                ?.description ?? "@rainstarstore",
+        twitterCreator:
+            generals.find((x) => x.correlative == "twitter_creator")
+                ?.description ?? "@rainstarstore",
         favicon:
             generals.find((x) => x.correlative == "favicon")?.description ?? "",
         canonicalUrl:
@@ -1879,6 +1887,16 @@ const Generals = ({
                 correlative: "twitter_card",
                 name: "Tipo Twitter Card",
                 description: formData.twitterCard || "summary_large_image",
+            },
+            {
+                correlative: "twitter_site",
+                name: "Twitter Site Handle",
+                description: formData.twitterSite || "",
+            },
+            {
+                correlative: "twitter_creator",
+                name: "Twitter Creator Handle",
+                description: formData.twitterCreator || "",
             },
             {
                 correlative: "favicon",
@@ -6445,6 +6463,65 @@ const Generals = ({
                                             </small>
                                         </div>
                                     </ConditionalSeoField>
+
+                                    <div className="row">
+                                        <div className="col-md-6">
+                                            <ConditionalSeoField correlative="twitter_site">
+                                                <div className="mb-3">
+                                                    <label className="form-label">
+                                                        Twitter Site
+                                                    </label>
+                                                    <input
+                                                        type="text"
+                                                        className="form-control"
+                                                        placeholder="@usuario"
+                                                        value={
+                                                            formData.twitterSite
+                                                        }
+                                                        onChange={(e) =>
+                                                            setFormData({
+                                                                ...formData,
+                                                                twitterSite:
+                                                                    e.target.value,
+                                                            })
+                                                        }
+                                                    />
+                                                    <small className="text-muted">
+                                                        Handle de la cuenta del
+                                                        sitio (ej. @empresa)
+                                                    </small>
+                                                </div>
+                                            </ConditionalSeoField>
+                                        </div>
+                                        <div className="col-md-6">
+                                            <ConditionalSeoField correlative="twitter_creator">
+                                                <div className="mb-3">
+                                                    <label className="form-label">
+                                                        Twitter Creator
+                                                    </label>
+                                                    <input
+                                                        type="text"
+                                                        className="form-control"
+                                                        placeholder="@usuario"
+                                                        value={
+                                                            formData.twitterCreator
+                                                        }
+                                                        onChange={(e) =>
+                                                            setFormData({
+                                                                ...formData,
+                                                                twitterCreator:
+                                                                    e.target.value,
+                                                            })
+                                                        }
+                                                    />
+                                                    <small className="text-muted">
+                                                        Handle del creador del
+                                                        contenido
+                                                    </small>
+                                                </div>
+                                            </ConditionalSeoField>
+                                        </div>
+                                    </div>
 
                                     <ConditionalSeoField correlative="twitter_image">
                                         <div className="mb-3">

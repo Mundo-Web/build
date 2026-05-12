@@ -19,12 +19,15 @@ $component = Route::currentRouteName();
 
     if ($item) {
         $pageTitle = $item->meta_title ?? $item->name;
-        $pageDescription = $item->meta_description ?? strip_tags($item->summary ?? '');
+        $pageDescription = $item->meta_description ?? strip_tags($item->summary ?? $item->description ?? '');
+        if (empty($pageDescription)) { $pageDescription = $generals->where('correlative', 'site_description')->first()?->description ?? ''; }
         $pageKeywords = $item->meta_keywords ?? '';
         $modelClass = get_class($item);
-        $snake_case = Illuminate\Support\Str::snake(str_replace('App\\Models\\', '', $modelClass));
+        $modelSimpleName = str_replace('App\\Models\\', '', $modelClass);
+        $snake_case = Illuminate\Support\Str::snake($modelSimpleName);
         if ($snake_case === 'item_image') { $snake_case = 'item'; }
-        $pageImage = $item->image ? asset("storage/images/{$snake_case}/{$item->image}") : '';
+        $pageImageRaw = $item->image ? asset("storage/images/{$snake_case}/{$item->image}") : ($generals->where('correlative', 'og_image')->first()?->description ?? '');
+        $pageImage = $pageImageRaw ? (filter_var($pageImageRaw, FILTER_VALIDATE_URL) ? $pageImageRaw : asset('assets/resources/' . $pageImageRaw)) : '';
         $pageUrl = $item->canonical_url ?? url()->current();
 
         $ogTitle = $pageTitle;
@@ -62,13 +65,15 @@ $component = Route::currentRouteName();
         $twitterCard = $generals->where('correlative', 'twitter_card')->first()?->description ?? 'summary_large_image';
         $canonicalUrl = $generals->where('correlative', 'canonical_url')->first()?->description ?? url()->current();
     }
+    $twitterSite = $generals->where('correlative', 'twitter_site')->first()?->description ?? '@rainstarstore';
+    $twitterCreator = $generals->where('correlative', 'twitter_creator')->first()?->description ?? '@rainstarstore';
     @endphp
 
     @php
     $version = config('app.version', '1.0.1');
     @endphp
 
-    <title><?php echo $pageTitle; ?> | <?php echo config('app.name', 'Base Template'); ?></title>
+    <title><?php echo $pageTitle; ?> | <?php echo $siteTitle; ?></title>
 
     @php
     $siteName = config('app.name', 'Mundo Web');
@@ -160,6 +165,75 @@ $component = Route::currentRouteName();
             ];
         }
     }
+
+    // Breadcrumbs
+    $breadcrumbs = [
+        [
+            "@type" => "ListItem",
+            "position" => 1,
+            "name" => "Inicio",
+            "item" => url('/')
+        ]
+    ];
+
+    if ($isDetailPage && isset($item)) {
+        if ($modelName === 'Post') {
+            $breadcrumbs[] = [
+                "@type" => "ListItem",
+                "position" => 2,
+                "name" => "Blogs",
+                "item" => url('/blogs')
+            ];
+            $breadcrumbs[] = [
+                "@type" => "ListItem",
+                "position" => 3,
+                "name" => $item->name,
+                "item" => url()->current()
+            ];
+        } elseif ($modelName === 'Item') {
+            $breadcrumbs[] = [
+                "@type" => "ListItem",
+                "position" => 2,
+                "name" => "Catálogo",
+                "item" => url('/catalogo')
+            ];
+            if (isset($item->category) && $item->category) {
+                $breadcrumbs[] = [
+                    "@type" => "ListItem",
+                    "position" => 3,
+                    "name" => $item->category->name,
+                    "item" => url('/catalogo?category=' . $item->category->id)
+                ];
+                $breadcrumbs[] = [
+                    "@type" => "ListItem",
+                    "position" => 4,
+                    "name" => $item->name,
+                    "item" => url()->current()
+                ];
+            } else {
+                $breadcrumbs[] = [
+                    "@type" => "ListItem",
+                    "position" => 3,
+                    "name" => $item->name,
+                    "item" => url()->current()
+                ];
+            }
+        }
+    } elseif (isset($data['name']) && $data['name'] !== $siteTitle) {
+         $breadcrumbs[] = [
+            "@type" => "ListItem",
+            "position" => 2,
+            "name" => $data['name'],
+            "item" => url()->current()
+        ];
+    }
+
+    if (count($breadcrumbs) > 1) {
+        $graph[] = [
+            "@type" => "BreadcrumbList",
+            "itemListElement" => $breadcrumbs
+        ];
+    }
     @endphp
 
     <script type="application/ld+json">
@@ -180,6 +254,7 @@ $component = Route::currentRouteName();
     @endif
     <meta name="author" content="Powered by Mundo Web">
     <link rel="canonical" href="<?php echo $canonicalUrl; ?>">
+    <meta name="robots" content="index, follow">
 
     <meta property="og:type" content="<?php echo $isDetailPage ? 'article' : 'website'; ?>">
     <meta property="og:url" content="<?php echo $ogUrl; ?>">
@@ -203,12 +278,15 @@ $component = Route::currentRouteName();
     @endif
     @endif
 
-    <meta property="twitter:card" content="<?php echo $twitterCard; ?>">
-    <meta property="twitter:url" content="<?php echo $ogUrl; ?>">
-    <meta property="twitter:title" content="<?php echo $twitterTitle; ?>">
-    <meta property="twitter:description" content="<?php echo $twitterDescription; ?>">
+    <meta name="twitter:card" content="<?php echo $twitterCard; ?>">
+    <meta name="twitter:url" content="<?php echo $ogUrl; ?>">
+    <meta name="twitter:title" content="<?php echo $twitterTitle; ?>">
+    <meta name="twitter:description" content="<?php echo $twitterDescription; ?>">
     @if($twitterImage)
-    <meta property="twitter:image" content="<?php echo $twitterImage; ?>"> @endif
+    <meta name="twitter:image" content="<?php echo $twitterImage; ?>"> @endif
+    <meta name="twitter:site" content="<?php echo $twitterSite; ?>">
+    <meta name="twitter:creator" content="<?php echo $twitterCreator; ?>">
+    <meta name="twitter:domain" content="<?php echo request()->getHost(); ?>">
 
     <link rel="preload" href="/lte/assets/libs/select2/css/select2.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
     <noscript>

@@ -200,7 +200,6 @@ const ProductDetailRainstar = ({
         }
     }, [item]);
 
-
     const onAddClicked = (product) => {
         // Validation: The master item (container) should not be added to the cart
         if (product.is_master || (item.agrupador && product.id === item.id)) {
@@ -809,9 +808,9 @@ const ProductDetailRainstar = ({
                                     <Share2 className="w-5 h-5 stroke-[1.5]" />
                                 </button>
                             </div>
-                            <h1 className="text-3xl font-black tracking-tighter leading-[0.9] mb-6 text-neutral-dark">
+                            <h2 className="text-3xl font-black tracking-tighter leading-[0.9] mb-6 text-neutral-dark">
                                 {currentProduct?.name}
-                            </h1>
+                            </h2>
                             <div className="flex items-baseline gap-4">
                                 <span className="text-4xl font-black tracking-tighter text-neutral-dark">
                                     {CurrencySymbol()}{" "}

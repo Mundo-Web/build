@@ -45,6 +45,11 @@ composer.lock
 /public/assets/resources/qr-digital-wallet.*
 /public/assets/resources/whatsapp-advisor-*
 
+/public/assets/resources/og-image-*
+/public/assets/resources/twitter-image-*
+
+
+
 /public/assets/resources/transfer-account-*
 /vite.config.js.timestamp*
 /storage/app/*_backup.sql
