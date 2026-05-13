@@ -185,6 +185,8 @@ Route::middleware(['can:Admin', 'auth'])->prefix('admin')->group(function () {
     Route::get('/users', [AdminUserController::class, 'reactView'])->name('Admin/Users.jsx');
     Route::get('/clients', [AdminClientController::class, 'reactView'])->name('Admin/Clients.jsx');
     Route::get('/sellers', [AdminSellerController::class, 'reactView'])->name('Admin/Sellers.jsx');
+    Route::get('/withdrawals', [\App\Http\Controllers\Admin\WithdrawalController::class, 'reactView'])->name('Admin/Withdrawals.jsx');
+    Route::post('/withdrawals/{id}/process', [\App\Http\Controllers\Admin\WithdrawalController::class, 'process']);
     Route::get('/providers', [AdminProviderController::class, 'reactView'])->name('Admin/Providers.jsx');
 
 
@@ -213,6 +215,8 @@ Route::middleware(['auth', 'can:Seller'])->prefix('seller')->group(function () {
     Route::get('/profile', [AdminSellerController::class, 'profile'])->name('Seller/Profile.jsx');
     Route::get('/job-applications', [AdminSellerController::class, 'jobApplications'])->name('Seller/JobApplications.jsx');
     Route::get('/referrals', [AdminSellerController::class, 'referrals'])->name('Seller/Referrals.jsx');
+    Route::get('/wallet', [\App\Http\Controllers\Admin\WithdrawalController::class, 'wallet'])->name('Seller/Wallet.jsx');
+    Route::post('/wallet/withdraw', [\App\Http\Controllers\Admin\WithdrawalController::class, 'storeRequest']);
 });
 
 // Email verification route

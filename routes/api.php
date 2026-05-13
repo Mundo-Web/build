@@ -351,6 +351,9 @@ Route::middleware('auth')->group(function () {
   Route::post('/profile', [AdminProfileController::class, 'saveProfile']);
   Route::patch('/profile', [AdminProfileController::class, 'save']);
 
+  Route::post('/seller/wallet/withdraw', [\App\Http\Controllers\Admin\WithdrawalController::class, 'storeRequest']);
+  Route::get('/withdrawal/media/{uuid}', [\App\Http\Controllers\Admin\WithdrawalController::class, 'media']);
+
   // Ruta de exportación sin middleware de permisos
   Route::get('/admin/sales/export-data', [AdminSaleExportController::class, 'exportData']);
 
@@ -738,6 +741,9 @@ Route::middleware('auth')->group(function () {
     Route::patch('/providers/{field}', [AdminProviderController::class, 'boolean']);
     Route::delete('/providers/{id}', [AdminProviderController::class, 'delete']);
     Route::post('/providers/invite', [AdminProviderController::class, 'invite']);
+    Route::post('/withdrawals/paginate', [\App\Http\Controllers\Admin\WithdrawalController::class, 'paginate']);
+    Route::post('/withdrawals/{id}/process', [\App\Http\Controllers\Admin\WithdrawalController::class, 'process']);
+    Route::get('/withdrawals/media/{uuid}', [\App\Http\Controllers\Admin\WithdrawalController::class, 'media']);
   });
 
   Route::middleware('can:Admin')->prefix('admin')->group(function () {

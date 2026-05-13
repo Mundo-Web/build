@@ -14,6 +14,10 @@ const Profile = (props) => {
     const phoneRef = useRef();
     const whatsappNumberRef = useRef();
     const whatsappMessageRef = useRef();
+    const bankNameRef = useRef();
+    const accountNumberRef = useRef();
+    const cciNumberRef = useRef();
+    const yapeNumberRef = useRef();
 
     const [session, setSession] = useState(props.session);
 
@@ -26,6 +30,10 @@ const Profile = (props) => {
             phone: phoneRef.current.value,
             whatsapp_number: whatsappNumberRef.current.value,
             whatsapp_message: whatsappMessageRef.current.value,
+            bank_name: bankNameRef.current.value,
+            account_number: accountNumberRef.current.value,
+            cci_number: cciNumberRef.current.value,
+            yape_plin_number: yapeNumberRef.current.value,
         };
 
         const result = await ProfileRest.save(request);
@@ -38,6 +46,10 @@ const Profile = (props) => {
         newSession.phone = request.phone;
         newSession.whatsapp_number = request.whatsapp_number;
         newSession.whatsapp_message = request.whatsapp_message;
+        newSession.bank_name = request.bank_name;
+        newSession.account_number = request.account_number;
+        newSession.cci_number = request.cci_number;
+        newSession.yape_plin_number = request.yape_plin_number;
         setSession(newSession);
 
         // Recargar la página para reflejar los cambios en todos los componentes
@@ -230,6 +242,46 @@ const Profile = (props) => {
                                                 col="col-md-7"
                                                 value={session.whatsapp_message}
                                                 placeholder="Ej: ¡Hola Asesor! vengo de tu enlace..."
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="card border-info mt-4 bg-light shadow-sm">
+                                    <div className="card-body p-3">
+                                        <h5 className="text-info mb-2 fw-bold">
+                                            <i className="mdi mdi-bank me-1"></i>{" "}
+                                            Datos de Cobro (Financiero)
+                                        </h5>
+                                        <p className="text-muted small mb-3">
+                                            Ingresa los datos de la cuenta donde
+                                            deseas recibir tus ganancias.
+                                        </p>
+                                        <div className="row">
+                                            <InputFormGroup
+                                                eRef={bankNameRef}
+                                                label="Banco"
+                                                col="col-md-6"
+                                                value={session.bank_name}
+                                                placeholder="Ej: BCP, BBVA, Interbank"
+                                            />
+                                            <InputFormGroup
+                                                eRef={accountNumberRef}
+                                                label="Número de Cuenta"
+                                                col="col-md-6"
+                                                value={session.account_number}
+                                            />
+                                            <InputFormGroup
+                                                eRef={cciNumberRef}
+                                                label="CCI (Opcional)"
+                                                col="col-md-6"
+                                                value={session.cci_number}
+                                            />
+                                            <InputFormGroup
+                                                eRef={yapeNumberRef}
+                                                label="Celular Yape / Plin"
+                                                col="col-md-6"
+                                                value={session.yape_plin_number}
                                             />
                                         </div>
                                     </div>

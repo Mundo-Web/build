@@ -123,6 +123,10 @@ class User extends Authenticatable
         'total_items',
         'group_points',
         'group_items',
+        'bank_name',
+        'account_number',
+        'cci_number',
+        'yape_plin_number',
     ];
 
 

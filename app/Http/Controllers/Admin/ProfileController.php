@@ -91,12 +91,18 @@ class ProfileController extends BasicController
         try {
 
             $body = $request->all();
+            \Illuminate\Support\Facades\Log::info('Profile Update Request:', $body);
 
             $jpa = User::find(Auth::user()->id);
-            $jpa->update($body);
+            $result = $jpa->update($body);
+            
+            if (!$result) {
+                throw new Exception('No se pudo actualizar el registro en la base de datos');
+            }
 
             $response->status = 200;
             $response->message = 'Operacion correcta';
+            $response->data = $jpa;
         } catch (\Throwable $th) {
             $response->status = 400;
             $response->message = $th->getMessage();

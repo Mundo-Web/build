@@ -463,6 +463,12 @@ const Menu = ({ session, hasRole }) => {
                             >
                                 Mis Solicitudes
                             </MenuItem>
+                            <MenuItem
+                                href="/seller/wallet"
+                                icon="mdi mdi-wallet-outline"
+                            >
+                                Mi Billetera
+                            </MenuItem>
 
                             <li className="menu-title">Configuración</li>
                             <MenuItem

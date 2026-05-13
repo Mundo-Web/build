@@ -72,9 +72,32 @@ class FinancialEngine
                 'percent' => $percent,
                 'type' => $isPrize ? 'prize' : 'normal',
                 'description' => "Comisión por " . ($detail->item->name ?? $detail->combo->name ?? "Producto"),
-                'status' => 'pending'
+                'status' => $this->isFinalStatus($sale->status) ? 'approved' : 'pending'
             ]);
         }
+    }
+
+    /**
+     * Aprueba las comisiones de una venta si el estado es final.
+     */
+    public function approveCommissionsForSale(Sale $sale)
+    {
+        if ($this->isFinalStatus($sale->status)) {
+            Commission::where('sale_id', $sale->id)
+                ->where('status', 'pending')
+                ->update(['status' => 'approved']);
+            Log::info("Comisiones aprobadas para la venta: {$sale->code}");
+        }
+    }
+
+    /**
+     * Determina si un estado de venta permite liberar comisiones.
+     */
+    private function isFinalStatus($status): bool
+    {
+        if (!$status) return false;
+        $name = strtolower($status->name);
+        return in_array($name, ['entregado', 'culminado', 'completado']);
     }
 
     /**
@@ -231,7 +254,7 @@ class FinancialEngine
             'percent' => 0,
             'type' => 'bonus',
             'description' => "Bono por alcanzar el rango " . $rank->name,
-            'status' => 'pending'
+            'status' => 'approved'
         ]);
 
         UserMilestone::create([
@@ -293,8 +316,8 @@ class FinancialEngine
             'base_amount' => $bonus->min_value,
             'percent' => 0,
             'type' => 'bonus',
-            'description' => "Bono alcanzado: " . $bonus->name,
-            'status' => 'pending'
+            'description' => "Bono Extra: " . $bonus->name,
+            'status' => 'approved'
         ]);
 
         UserMilestone::create([

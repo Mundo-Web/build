@@ -1,0 +1,311 @@
+import React, { useState, useRef } from "react";
+import { createRoot } from "react-dom/client";
+import BaseAdminto from "@Adminto/Base";
+import CreateReactScript from "../Utils/CreateReactScript";
+import { CurrencySymbol } from "../Utils/Number2Currency";
+import Table from "../Components/Adminto/Table";
+import Modal from "../Components/Adminto/Modal";
+import InputFormGroup from "../Components/Adminto/form/InputFormGroup";
+import BasicRest from "../Actions/BasicRest";
+import Swal from "sweetalert2";
+import { toast, Toaster } from "sonner";
+
+const walletRest = new BasicRest();
+walletRest.path = "seller/wallet";
+
+const Wallet = ({ wallet, history, user_financial_details }) => {
+    const withdrawalModalRef = useRef();
+    const [loading, setLoading] = useState(false);
+    const [selectedMethod, setSelectedMethod] = useState("bank_transfer");
+
+    const amountRef = useRef();
+    const bankNameRef = useRef();
+    const accountNumberRef = useRef();
+    const cciNumberRef = useRef();
+    const yapeNumberRef = useRef();
+
+    const openWithdrawalModal = () => {
+        if (wallet.available < 50) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Saldo insuficiente',
+                text: 'El monto mínimo para solicitar un retiro es S/ 50.00',
+                confirmButtonColor: '#3bafda'
+            });
+            return;
+        }
+        $(withdrawalModalRef.current).modal("show");
+    };
+
+    const handleWithdrawalSubmit = async (e) => {
+        e.preventDefault();
+        const amount = parseFloat(amountRef.current.value);
+
+        if (amount > wallet.available) {
+            toast.error("No puedes retirar más de tu saldo disponible");
+            return;
+        }
+
+        setLoading(true);
+
+        const details = selectedMethod === 'bank_transfer' ? {
+            bank_name: bankNameRef.current?.value,
+            account_number: accountNumberRef.current?.value,
+            cci_number: cciNumberRef.current?.value
+        } : {
+            phone_number: yapeNumberRef.current?.value
+        };
+
+        const res = await walletRest.post('seller/wallet/withdraw', {
+            amount,
+            method: selectedMethod,
+            details
+        });
+
+        if (res) {
+            Swal.fire({
+                icon: 'success',
+                title: 'Solicitud enviada',
+                text: 'Tu solicitud de retiro ha sido enviada y será procesada pronto.',
+                confirmButtonColor: '#3bafda'
+            }).then(() => {
+                window.location.reload();
+            });
+        }
+        setLoading(false);
+    };
+
+    return (
+        <div className="container-fluid">
+            <Toaster position="top-right" richColors />
+            
+            {/* Header section with Balance Cards */}
+            <div className="row mb-4">
+                <div className="col-12">
+                    <div className="d-flex align-items-center justify-content-between mb-3">
+                        <h4 className="page-title mb-0">Mi Billetera Virtual</h4>
+                        <button 
+                            className="btn btn-primary rounded-pill px-4 shadow-sm"
+                            onClick={openWithdrawalModal}
+                        >
+                            <i className="mdi mdi-cash-minus me-1"></i> Solicitar Retiro
+                        </button>
+                    </div>
+                </div>
+
+                <div className="col-md-4">
+                    <div className="card border-0 shadow-sm overflow-hidden" style={{ borderRadius: '1rem' }}>
+                        <div className="card-body p-4 bg-primary text-white position-relative">
+                            <div className="position-relative z-1">
+                                <p className="text-white-50 small fw-bold text-uppercase mb-1">Saldo Disponible</p>
+                                <h2 className="fw-black mb-0 text-white">{CurrencySymbol()} {wallet.available.toLocaleString('es-PE', { minimumFractionDigits: 2 })}</h2>
+                                <p className="mt-2 mb-0 small opacity-75">Listo para ser transferido a tu cuenta.</p>
+                            </div>
+                            <i className="mdi mdi-wallet-outline position-absolute" style={{ fontSize: '100px', right: '-10px', bottom: '-20px', opacity: '0.1' }}></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="col-md-4">
+                    <div className="card border-0 shadow-sm" style={{ borderRadius: '1rem' }}>
+                        <div className="card-body p-4">
+                            <p className="text-muted small fw-bold text-uppercase mb-1">Comisiones en Proceso</p>
+                            <h2 className="fw-bold mb-0 text-dark">{CurrencySymbol()} {wallet.pending.toLocaleString('es-PE', { minimumFractionDigits: 2 })}</h2>
+                            <p className="mt-2 mb-0 small text-muted">Ventas que aún no han sido finalizadas.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="col-md-4">
+                    <div className="card border-0 shadow-sm" style={{ borderRadius: '1rem' }}>
+                        <div className="card-body p-4">
+                            <p className="text-muted small fw-bold text-uppercase mb-1">Ganancia Histórica</p>
+                            <h2 className="fw-bold mb-0 text-success">{CurrencySymbol()} {wallet.total_earned.toLocaleString('es-PE', { minimumFractionDigits: 2 })}</h2>
+                            <p className="mt-2 mb-0 small text-muted">Todo lo que has ganado hasta hoy.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div className="row">
+                <div className="col-lg-8">
+                    <div className="card border-0 shadow-sm" style={{ borderRadius: '1rem' }}>
+                        <div className="card-header bg-transparent border-0 pt-4 px-4">
+                            <h5 className="card-title mb-0">Historial de Transacciones</h5>
+                        </div>
+                        <div className="card-body p-0">
+                            <div className="table-responsive">
+                                <table className="table table-hover align-middle mb-0">
+                                    <thead className="bg-light">
+                                        <tr>
+                                            <th className="px-4 border-0">Fecha</th>
+                                            <th className="border-0">Concepto</th>
+                                            <th className="border-0">Tipo</th>
+                                            <th className="border-0">Monto</th>
+                                            <th className="px-4 border-0 text-end">Estado</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {history.map((item, index) => (
+                                            <tr key={index}>
+                                                <td className="px-4 text-muted small">
+                                                    {new Date(item.created_at).toLocaleDateString()}
+                                                </td>
+                                                <td>
+                                                    <span className="fw-medium text-dark">{item.description}</span>
+                                                </td>
+                                                <td>
+                                                    {item.type === 'commission' ? 
+                                                        <span className="badge badge-soft-info px-2">Comisión</span> : 
+                                                        <span className="badge badge-soft-warning px-2">Retiro</span>
+                                                    }
+                                                </td>
+                                                <td className={item.type === 'commission' ? 'text-success fw-bold' : 'text-danger fw-bold'}>
+                                                    {item.type === 'commission' ? '+' : '-'} {CurrencySymbol()} {parseFloat(item.amount).toLocaleString('es-PE', { minimumFractionDigits: 2 })}
+                                                </td>
+                                                <td className="px-4 text-end">
+                                                    <div className="d-flex align-items-center justify-content-end gap-2">
+                                                        {item.receipt_path && (
+                                                            <a 
+                                                                href={`/api/withdrawal/media/${item.receipt_path}`} 
+                                                                target="_blank" 
+                                                                rel="noopener noreferrer"
+                                                                className="btn btn-sm btn-soft-primary rounded-circle p-1 d-flex align-items-center justify-content-center"
+                                                                style={{ width: '28px', height: '28px' }}
+                                                                title="Ver Comprobante de Pago"
+                                                            >
+                                                                <i className="mdi mdi-eye fs-5"></i>
+                                                            </a>
+                                                        )}
+                                                        <span className={`badge rounded-pill px-3 ${
+                                                            item.status === 'completed' || item.status === 'paid' || item.status === 'approved' ? 'bg-success' : 
+                                                            item.status === 'pending' ? 'bg-warning text-dark' : 'bg-danger'
+                                                        }`}>
+                                                            {item.status.charAt(0).toUpperCase() + item.status.slice(1)}
+                                                        </span>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                        {history.length === 0 && (
+                                            <tr>
+                                                <td colSpan="5" className="text-center py-5 text-muted italic">
+                                                    No se encontraron movimientos en tu billetera.
+                                                </td>
+                                            </tr>
+                                        )}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="col-lg-4">
+                    <div className="card border-0 shadow-sm" style={{ borderRadius: '1rem' }}>
+                        <div className="card-body p-4 text-center">
+                            <div className="bg-soft-primary rounded-circle p-3 d-inline-flex mb-3">
+                                <i className="mdi mdi-bank fs-1 text-primary"></i>
+                            </div>
+                            <h5 className="fw-bold mb-1">Tus Datos de Cobro</h5>
+                            <p className="text-muted small mb-4">Asegúrate de que tus datos bancarios estén actualizados para evitar retrasos.</p>
+                            
+                            <div className="text-start space-y-3">
+                                <div className="p-3 bg-light rounded-3 mb-2">
+                                    <small className="text-muted d-block">Banco y Cuenta</small>
+                                    <span className="fw-bold text-dark">{user_financial_details.bank_name || 'No configurado'}</span>
+                                    <div className="small text-truncate">{user_financial_details.account_number || '-'}</div>
+                                </div>
+                                <div className="p-3 bg-light rounded-3">
+                                    <small className="text-muted d-block">CCI o Billetera Digital</small>
+                                    <span className="fw-bold text-dark">{user_financial_details.cci_number || user_financial_details.yape_plin_number || 'No configurado'}</span>
+                                </div>
+                            </div>
+
+                            <a href="/seller/profile" className="btn btn-outline-primary btn-sm rounded-pill mt-4 px-4 w-100">
+                                Editar Datos Financieros
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {/* Withdrawal Modal */}
+            <Modal
+                modalRef={withdrawalModalRef}
+                title="Solicitar Retiro de Efectivo"
+                size="md"
+                onSubmit={handleWithdrawalSubmit}
+                isSaving={loading}
+            >
+                <div className="p-2">
+                    <div className="alert alert-info border-0 bg-soft-info text-info small">
+                        <i className="mdi mdi-information-outline me-2"></i>
+                        Recuerda que el monto mínimo es <b>S/ 50.00</b> y el proceso de verificación puede tardar hasta 48 horas hábiles.
+                    </div>
+
+                    <div className="mb-4">
+                        <InputFormGroup 
+                            eRef={amountRef} 
+                            label="Monto a Retirar (S/.)" 
+                            type="number" 
+                            step="0.01" 
+                            required 
+                            placeholder={`Máx. ${wallet.available}`}
+                        />
+                        <div className="d-flex justify-content-between mt-1">
+                            <small className="text-muted">Disponible: {CurrencySymbol()} {wallet.available}</small>
+                            <button 
+                                type="button"
+                                className="btn btn-link btn-sm p-0 text-primary fw-bold"
+                                onClick={() => amountRef.current.value = wallet.available}
+                            >
+                                Retirar todo
+                            </button>
+                        </div>
+                    </div>
+
+                    <div className="mb-4">
+                        <label className="form-label fw-bold">Método de Pago</label>
+                        <div className="d-flex gap-2">
+                            <button 
+                                type="button" 
+                                className={`btn flex-fill py-3 border-2 ${selectedMethod === 'bank_transfer' ? 'btn-primary border-primary' : 'btn-outline-light text-dark'}`}
+                                onClick={() => setSelectedMethod('bank_transfer')}
+                            >
+                                <i className="mdi mdi-bank d-block fs-3"></i>
+                                <small>Banco</small>
+                            </button>
+                            <button 
+                                type="button" 
+                                className={`btn flex-fill py-3 border-2 ${selectedMethod === 'yape' ? 'btn-primary border-primary' : 'btn-outline-light text-dark'}`}
+                                onClick={() => setSelectedMethod('yape')}
+                            >
+                                <i className="mdi mdi-cellphone-check d-block fs-3"></i>
+                                <small>Yape / Plin</small>
+                            </button>
+                        </div>
+                    </div>
+
+                    {selectedMethod === 'bank_transfer' ? (
+                        <div className="space-y-3">
+                            <InputFormGroup eRef={bankNameRef} label="Nombre del Banco" value={user_financial_details.bank_name} required />
+                            <InputFormGroup eRef={accountNumberRef} label="Número de Cuenta" value={user_financial_details.account_number} required />
+                            <InputFormGroup eRef={cciNumberRef} label="Número de CCI (Opcional)" value={user_financial_details.cci_number} />
+                        </div>
+                    ) : (
+                        <InputFormGroup eRef={yapeNumberRef} label="Número de Teléfono" value={user_financial_details.yape_plin_number} required />
+                    )}
+                </div>
+            </Modal>
+        </div>
+    );
+};
+
+CreateReactScript((el, properties) => {
+    createRoot(el).render(
+        <BaseAdminto {...properties} title="Mi Billetera">
+            <Wallet {...properties} />
+        </BaseAdminto>,
+    );
+});

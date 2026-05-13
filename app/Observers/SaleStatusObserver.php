@@ -116,6 +116,7 @@ class SaleStatusObserver
         )) {
             Log::info("🔵 [Cerebro Financiero] Procesando venta: {$sale->code}");
             $this->financialEngine->processSale($sale);
+            $this->financialEngine->approveCommissionsForSale($sale);
         }
     }
 

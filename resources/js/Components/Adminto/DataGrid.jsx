@@ -184,7 +184,7 @@ const DataGrid = ({
                                     $(modalRef.current).modal("show"),
                             },
                         });
-                    toolBar(items);
+                    typeof toolBar === "function" && toolBar(items);
                 },
                 remoteOperations: true,
                 columnResizingMode: "widget",
