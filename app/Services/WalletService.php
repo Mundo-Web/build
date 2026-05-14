@@ -50,7 +50,7 @@ class WalletService
     public function getTransactionHistory(User $user)
     {
         $commissions = Commission::where('user_id', $user->id)
-            ->select('id', 'amount', 'description', 'created_at', DB::raw("'commission' as type"), 'status')
+            ->select('id', 'amount', 'description', 'created_at', 'type', 'status')
             ->get();
 
         $withdrawals = Withdrawal::where('user_id', $user->id)

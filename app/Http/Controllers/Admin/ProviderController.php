@@ -106,4 +106,10 @@ class ProviderController extends BasicController
             'data' => $invitation
         ], 200);
     }
+
+    public function profile(Request $request)
+    {
+        $this->reactView = 'Provider/Profile';
+        return $this->reactView($request);
+    }
 }

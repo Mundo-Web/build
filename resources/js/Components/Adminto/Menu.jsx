@@ -511,15 +511,15 @@ const Menu = ({ session, hasRole }) => {
                             </MenuItem>
 
                             <MenuItem
-                                href="/provider/earnings"
+                                href="/provider/wallet"
                                 icon="mdi mdi-wallet-outline"
                             >
-                                Mis Ganancias
+                                Mi Billetera
                             </MenuItem>
 
                             <li className="menu-title">Perfil</li>
                             <MenuItem
-                                href="/profile"
+                                href="/provider/profile"
                                 icon="mdi mdi-account-box-outline"
                             >
                                 Mi Perfil

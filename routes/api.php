@@ -844,6 +844,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/earnings/paginate', [\App\Http\Controllers\Provider\ProviderEarningController::class, 'paginate']);
     Route::get('/earnings/{id}', [\App\Http\Controllers\Provider\ProviderEarningController::class, 'get']);
     Route::get('/sale-statuses/by-sale/{id}', [\App\Http\Controllers\Admin\SaleStatusController::class, 'bySale']);
+    Route::post('/wallet/withdraw', [\App\Http\Controllers\Admin\WithdrawalController::class, 'storeRequest']);
   });
   Route::middleware('can:Seller')->prefix('seller')->group(function () {
     Route::post('/vault/paginate', [SellerController::class, 'paginateVault']);

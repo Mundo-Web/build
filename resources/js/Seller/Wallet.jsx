@@ -155,13 +155,13 @@ const Wallet = ({ wallet, history, user_financial_details }) => {
                                                     <span className="fw-medium text-dark">{item.description}</span>
                                                 </td>
                                                 <td>
-                                                    {item.type === 'commission' ? 
+                                                    {item.type !== 'withdrawal' ? 
                                                         <span className="badge badge-soft-info px-2">Comisión</span> : 
                                                         <span className="badge badge-soft-warning px-2">Retiro</span>
                                                     }
                                                 </td>
-                                                <td className={item.type === 'commission' ? 'text-success fw-bold' : 'text-danger fw-bold'}>
-                                                    {item.type === 'commission' ? '+' : '-'} {CurrencySymbol()} {parseFloat(item.amount).toLocaleString('es-PE', { minimumFractionDigits: 2 })}
+                                                <td className={item.type !== 'withdrawal' ? 'text-success fw-bold' : 'text-danger fw-bold'}>
+                                                    {item.type !== 'withdrawal' ? '+' : '-'} {CurrencySymbol()} {parseFloat(item.amount).toLocaleString('es-PE', { minimumFractionDigits: 2 })}
                                                 </td>
                                                 <td className="px-4 text-end">
                                                     <div className="d-flex align-items-center justify-content-end gap-2">

@@ -156,8 +156,8 @@ const ProductDetailRainstar = ({
                         );
                         setVariantsForSelectedGroup(uniqueVariants);
 
-                        // Select the first variant by default if it's a group as requested
-                        // Ensure we DON'T select the master item by default
+                        // Removed automatic selection of the first variant to force user selection
+                        /*
                         const sellableVariants = uniqueVariants.filter(
                             (v) => !v.is_master && v.id !== item.id,
                         );
@@ -185,6 +185,7 @@ const ProductDetailRainstar = ({
                             }
                             setSelectedAttributes(newAttrs);
                         }
+                        */
                     })
                     .catch((err) => {
                         console.error(
@@ -201,11 +202,22 @@ const ProductDetailRainstar = ({
     }, [item]);
 
     const onAddClicked = (product) => {
-        // Validation: The master item (container) should not be added to the cart
-        if (product.is_master || (item.agrupador && product.id === item.id)) {
+        // Only enforce variant selection if there are multiple variants to choose from
+        const hasMultipleVariants = variantsForSelectedGroup.length > 1;
+        const totalRequiredAttributes = group?.allAttributes?.length || 0;
+        const totalSelectedAttributes = Object.keys(selectedAttributes).length;
+
+        // Validation: If it's a group with multiple options, all attributes must be selected
+        // OR the resulting product must not be a master item
+        if (
+            (hasMultipleVariants &&
+                (totalSelectedAttributes < totalRequiredAttributes ||
+                    product.id === item.id)) ||
+            product.is_master
+        ) {
             Swal.fire({
-                title: "Seleccione una variante",
-                text: "Por favor, elija una de las opciones disponibles (color, talla, etc.) antes de agregar al carrito.",
+                title: "Seleccione las opciones",
+                text: "Por favor, seleccione todas las opciones disponibles (color, talla, etc.) antes de continuar.",
                 icon: "info",
                 confirmButtonColor: "#000000",
                 customClass: {
@@ -874,12 +886,47 @@ const ProductDetailRainstar = ({
                                         return (
                                             <button
                                                 key={idx}
-                                                onClick={() =>
-                                                    handleAttributeSelect(
-                                                        attrData.name,
-                                                        val,
-                                                    )
-                                                }
+                                                onClick={() => {
+                                                    const matching =
+                                                        findBestMatchingVariant(
+                                                            attrData.name,
+                                                            val,
+                                                            group,
+                                                        );
+                                                    if (matching) {
+                                                        setSelectedVariant(
+                                                            matching,
+                                                        );
+                                                        const newAttrs = {};
+                                                        const mAttrs = Array.isArray(
+                                                            matching.attributes,
+                                                        )
+                                                            ? matching.attributes
+                                                            : Object.values(
+                                                                  matching.attributes ||
+                                                                      {},
+                                                              );
+                                                        mAttrs.forEach((a) => {
+                                                            newAttrs[
+                                                                a.name || a.slug
+                                                            ] = {
+                                                                value:
+                                                                    a.pivot
+                                                                        ?.value ||
+                                                                    a.value,
+                                                                item: matching,
+                                                            };
+                                                        });
+                                                        setSelectedAttributes(
+                                                            newAttrs,
+                                                        );
+                                                    } else {
+                                                        handleAttributeSelect(
+                                                            attrData.name,
+                                                            val,
+                                                        );
+                                                    }
+                                                }}
                                                 className={`px-6 py-3 text-sm font-bold tracking-wider border transition-all ${isSelected ? "bg-primary text-white border-neutral-dark shadow-sm" : "bg-white text-neutral-dark border-gray-100"}`}
                                             >
                                                 {val.value}

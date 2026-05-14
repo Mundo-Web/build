@@ -14,28 +14,21 @@ use Illuminate\Support\Facades\Log;
 
 class FinancialEngine
 {
-    /**
-     * Procesa una venta para calcular comisiones y actualizar rangos
-     */
     public function processSale(Sale $sale)
     {
-        // Solo procesar si la venta tiene un referidor (promotor)
-        if (!$sale->referrer_id) {
-            return;
-        }
-
-        $promoter = User::find($sale->referrer_id);
-        if (!$promoter) {
-            return;
-        }
-
         DB::beginTransaction();
         try {
-            // 1. Calcular Comisiones por cada item de la venta
-            $this->calculateCommissions($sale, $promoter);
+            // 1. Calcular Comisiones para el Promotor (Vendedor) si existe
+            if ($sale->referrer_id) {
+                $promoter = User::find($sale->referrer_id);
+                if ($promoter) {
+                    $this->calculateCommissions($sale, $promoter);
+                    $this->evaluateUser($promoter);
+                }
+            }
 
-            // 2. Actualizar y evaluar todo el árbol de este usuario
-            $this->evaluateUser($promoter);
+            // 2. Calcular Ganancias para los Proveedores
+            $this->calculateProviderEarnings($sale);
 
             DB::commit();
         } catch (\Throwable $th) {
@@ -46,7 +39,37 @@ class FinancialEngine
     }
 
     /**
-     * Calcula las comisiones de la venta
+     * Calcula las ganancias para los proveedores involucrados en la venta
+     */
+    private function calculateProviderEarnings(Sale $sale)
+    {
+        foreach ($sale->details as $detail) {
+            if ($detail->provider_id && $detail->provider_price > 0) {
+                // Verificar si ya existe este registro para evitar duplicados
+                $exists = Commission::where('sale_detail_id', $detail->id)
+                    ->where('user_id', $detail->provider_id)
+                    ->where('type', 'provider_earning')
+                    ->exists();
+                
+                if ($exists) continue;
+
+                Commission::create([
+                    'user_id' => $detail->provider_id,
+                    'sale_id' => $sale->id,
+                    'sale_detail_id' => $detail->id,
+                    'amount' => $detail->provider_price * $detail->quantity,
+                    'base_amount' => $detail->price * $detail->quantity,
+                    'percent' => 0,
+                    'type' => 'provider_earning',
+                    'description' => "Pago por producto: " . ($detail->item->name ?? $detail->combo->name ?? "Producto"),
+                    'status' => $this->isFinalStatus($sale->status) ? 'approved' : 'pending'
+                ]);
+            }
+        }
+    }
+
+    /**
+     * Calcula las comisiones de la venta para el promotor
      */
     private function calculateCommissions(Sale $sale, User $promoter)
     {

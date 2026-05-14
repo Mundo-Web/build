@@ -207,6 +207,8 @@ Route::middleware(['auth', 'can:Provider'])->prefix('provider')->group(function 
     Route::get('/items', [\App\Http\Controllers\Provider\ItemController::class, 'reactView'])->name('Provider/Items.jsx');
     Route::get('/orders', [\App\Http\Controllers\Provider\ProviderOrderController::class, 'reactView'])->name('Provider/Orders.jsx');
     Route::get('/earnings', [\App\Http\Controllers\Provider\ProviderEarningController::class, 'reactView'])->name('Provider/Earnings.jsx');
+    Route::get('/wallet', [\App\Http\Controllers\Admin\WithdrawalController::class, 'wallet'])->name('Provider/Wallet.jsx');
+    Route::get('/profile', [\App\Http\Controllers\Admin\ProviderController::class, 'profile'])->name('Provider/Profile.jsx');
 });
 
 Route::middleware(['auth', 'can:Seller'])->prefix('seller')->group(function () {

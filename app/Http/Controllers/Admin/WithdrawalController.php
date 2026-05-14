@@ -28,7 +28,11 @@ class WithdrawalController extends BasicController
      */
     public function wallet(Request $request)
     {
-        $this->reactView = 'Seller/Wallet';
+        if (Auth::user()->hasRole('Provider')) {
+            $this->reactView = 'Provider/Wallet';
+        } else {
+            $this->reactView = 'Seller/Wallet';
+        }
         return $this->reactView($request);
     }
 
@@ -39,7 +43,7 @@ class WithdrawalController extends BasicController
     {
         $user = Auth::user();
 
-        if (str_starts_with($this->reactView, 'Seller/')) {
+        if (str_starts_with($this->reactView, 'Seller/') || str_starts_with($this->reactView, 'Provider/')) {
             return [
                 'wallet' => [
                     'available' => $this->walletService->getAvailableBalance($user),
