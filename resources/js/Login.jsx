@@ -1,5 +1,5 @@
 import { Link } from '@inertiajs/react'
-import JSEncrypt from 'jsencrypt'
+import { JSEncrypt } from 'jsencrypt'
 import React, { useEffect, useRef, useState } from 'react'
 import { createRoot } from 'react-dom/client'
 import { GET } from 'sode-extend-react'
