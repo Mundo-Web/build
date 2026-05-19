@@ -132,14 +132,10 @@ export default function BookingStepRooms({
 
     // Verificar si hay métodos de pago disponibles
     const hasPaymentMethods = (() => {
-        const ischeckmpobject = contacts?.find(x => x.correlative === 'checkout_mercadopago');
-        const ischeckopenpayobject = contacts?.find(x => x.correlative === 'checkout_openpay');
-        const ischeckculqiobject = contacts?.find(x => x.correlative === 'checkout_culqi');
-
         return (
-            ischeckmpobject?.description === "true" ||
-            ischeckopenpayobject?.description === "true" ||
-            ischeckculqiobject?.description === "true" ||
+            General.get("checkout_mercadopago") === "true" ||
+            General.get("checkout_openpay") === "true" ||
+            General.get("checkout_culqi") === "true" ||
             General.get("checkout_dwallet") === "true" ||
             General.get("checkout_transfer") === "true"
         );

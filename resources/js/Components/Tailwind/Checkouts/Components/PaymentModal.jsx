@@ -28,9 +28,9 @@ export default function PaymentModal({ isOpen, onClose, onPaymentComplete, conta
     };
     
     const isButtonDisabled = saving || !paymentMethod;
-    const ischeckmpobject = contacts?.find(x => x.correlative === 'checkout_mercadopago');
-    const ischeckopenpayobject = contacts?.find(x => x.correlative === 'checkout_openpay');
-    const ischeckculqiobject = contacts?.find(x => x.correlative === 'checkout_culqi');
+    const ischeckmp = General.get("checkout_mercadopago");
+    const ischeckopenpay = General.get("checkout_openpay");
+    const ischeckculqi = General.get("checkout_culqi");
 
     return (
         <ReactModal
@@ -69,9 +69,9 @@ export default function PaymentModal({ isOpen, onClose, onPaymentComplete, conta
 
                     {
                         // General.get("checkout_mercadopago") !== "true" &&
-                        ischeckmpobject?.description !== "true" &&
-                        ischeckopenpayobject?.description !== "true" &&
-                        ischeckculqiobject?.description !== "true" &&
+                        ischeckmp !== "true" &&
+                        ischeckopenpay !== "true" &&
+                        ischeckculqi !== "true" &&
                         General.get("checkout_dwallet") !== "true" &&
                         General.get("checkout_transfer") !== "true" ? (
                             <div className="text-gray-500 text-center py-4">Sin opciones de pago</div>
@@ -81,7 +81,7 @@ export default function PaymentModal({ isOpen, onClose, onPaymentComplete, conta
                                 {/* Opción Tarjeta - Mercado Pago */}
                                 {
                                 // General.get("checkout_mercadopago") == "true" &&
-                                ischeckmpobject?.description == "true" &&
+                                ischeckmp == "true" &&
                                     <div
                                         className={`border-2 rounded-lg p-3 cursor-pointer transition-colors ${
                                             paymentMethod === "tarjeta"
@@ -132,7 +132,7 @@ export default function PaymentModal({ isOpen, onClose, onPaymentComplete, conta
                                 }
                                 {/* Opción Tarjeta - OpenPay */}
                                 {
-                                ischeckopenpayobject?.description == "true" &&
+                                ischeckopenpay == "true" &&
                                     <div
                                         className={`border-2 rounded-lg p-3 cursor-pointer transition-colors ${
                                             paymentMethod === "openpay"
@@ -183,7 +183,7 @@ export default function PaymentModal({ isOpen, onClose, onPaymentComplete, conta
                                 }
                                 {/* Opción Tarjeta - Culqi */}
                                 {
-                                ischeckculqiobject?.description == "true" &&
+                                ischeckculqi == "true" &&
                                     <div
                                         className={`border-2 rounded-lg p-3 cursor-pointer transition-colors ${
                                             paymentMethod === "culqi"
@@ -343,9 +343,9 @@ export default function PaymentModal({ isOpen, onClose, onPaymentComplete, conta
 
                     <div className="mt-4 space-y-3">
                     {/* {(General.get("checkout_mercadopago") === "true" || */}
-                    {(ischeckmpobject?.description === "true" ||
-                      ischeckopenpayobject?.description === "true" ||
-                      ischeckculqiobject?.description === "true" ||
+                    {(ischeckmp === "true" ||
+                      ischeckopenpay === "true" ||
+                      ischeckculqi === "true" ||
                       General.get("checkout_dwallet") === "true" ||
                       General.get("checkout_transfer") === "true") && (
                         <button
