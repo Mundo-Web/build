@@ -3792,7 +3792,8 @@
                     "privacy_policy",
                     "delivery_policy",
                     "saleback_policy",
-                    "additional_shipping_costs"
+                    "additional_shipping_costs",
+                    "transfer_accounts"
                 ]
             },
             {
@@ -3822,7 +3823,8 @@
                     "checkout_mercadopago_commission",
                     "checkout_openpay_commission",
                     "checkout_dwallet_commission",
-                    "checkout_dwallet_commission"
+                    "checkout_dwallet_commission",
+                    "transfer_accounts"
                 ]
             },
             {
@@ -3852,7 +3854,10 @@
                     "checkout_mercadopago_commission",
                     "checkout_openpay_commission",
                     "checkout_dwallet_commission",
-                    "checkout_transfer_commission"
+                    "checkout_transfer_commission",
+                    "transfer_accounts",
+                    "checkout_mercadopago",
+                    "checkout_openpay"
                 ]
             }
         ]

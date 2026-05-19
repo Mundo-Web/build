@@ -7,6 +7,7 @@ import BookingsRest from "../../../../Actions/BookingsRest";
 import { Local } from "sode-extend-react";
 import { toast } from "sonner";
 import { CircleX, Upload, X, Calendar, Building2, Copy, Check } from "lucide-react";
+import BancDropdown from "./BancDropDown";
 
 const bookingsRest = new BookingsRest();
 
@@ -113,19 +114,9 @@ export default function UploadVoucherModalBancsBooking({
         }
     };
 
-    // Obtener datos bancarios de contacts
-    const getBankData = (correlative) => {
-        return contacts.find(c => c.correlative === correlative)?.description || '';
-    };
-
     // Calcular resumen
     const totalNights = cart.reduce((acc, room) => acc + (room.nights || 1), 0);
     const totalGuests = cart.reduce((acc, room) => acc + (room.guests || 2), 0);
-
-    const bankName = getBankData('checkout_bank_name') || 'Banco';
-    const accountNumber = getBankData('checkout_account_number');
-    const cciNumber = getBankData('checkout_cci_number');
-    const accountHolder = getBankData('checkout_account_holder');
 
     return (
         <ReactModal
@@ -179,67 +170,12 @@ export default function UploadVoucherModalBancsBooking({
 
                 {/* Datos bancarios */}
                 <div className="bg-white rounded-xl p-4 space-y-3">
-                    <h3 className="font-semibold text-gray-800 flex items-center gap-2">
+                    <h3 className="font-semibold text-gray-800 flex items-center gap-2 mb-2">
                         <Building2 size={18} />
-                        Datos para transferencia
+                        Cuentas disponibles
                     </h3>
-                    
-                    <div className="space-y-2">
-                        {bankName && (
-                            <div className="flex justify-between items-center p-2 bg-gray-50 rounded-lg">
-                                <div>
-                                    <p className="text-xs text-gray-500">Banco</p>
-                                    <p className="font-medium text-gray-800">{bankName}</p>
-                                </div>
-                            </div>
-                        )}
-
-                        {accountNumber && (
-                            <div className="flex justify-between items-center p-2 bg-gray-50 rounded-lg">
-                                <div>
-                                    <p className="text-xs text-gray-500">Número de cuenta</p>
-                                    <p className="font-medium text-gray-800">{accountNumber}</p>
-                                </div>
-                                <button
-                                    onClick={() => copyToClipboard(accountNumber, 'account')}
-                                    className="p-2 hover:bg-gray-200 rounded-lg transition-colors"
-                                >
-                                    {copiedField === 'account' ? (
-                                        <Check size={18} className="text-green-500" />
-                                    ) : (
-                                        <Copy size={18} className="text-gray-400" />
-                                    )}
-                                </button>
-                            </div>
-                        )}
-
-                        {cciNumber && (
-                            <div className="flex justify-between items-center p-2 bg-gray-50 rounded-lg">
-                                <div>
-                                    <p className="text-xs text-gray-500">CCI (Interbancario)</p>
-                                    <p className="font-medium text-gray-800">{cciNumber}</p>
-                                </div>
-                                <button
-                                    onClick={() => copyToClipboard(cciNumber, 'cci')}
-                                    className="p-2 hover:bg-gray-200 rounded-lg transition-colors"
-                                >
-                                    {copiedField === 'cci' ? (
-                                        <Check size={18} className="text-green-500" />
-                                    ) : (
-                                        <Copy size={18} className="text-gray-400" />
-                                    )}
-                                </button>
-                            </div>
-                        )}
-
-                        {accountHolder && (
-                            <div className="flex justify-between items-center p-2 bg-gray-50 rounded-lg">
-                                <div>
-                                    <p className="text-xs text-gray-500">Titular</p>
-                                    <p className="font-medium text-gray-800">{accountHolder}</p>
-                                </div>
-                            </div>
-                        )}
+                    <div className="w-full">
+                        <BancDropdown contacts={contacts} />
                     </div>
                 </div>
 
