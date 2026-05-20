@@ -10,6 +10,7 @@ use App\Http\Controllers\Admin\SliderController as AdminSliderController;
 use App\Http\Controllers\Admin\TestimonyController as AdminTestimonyController;
 use App\Http\Controllers\Admin\CaseStudyController as AdminCaseStudyController;
 use App\Http\Controllers\Admin\SubscriptionController as AdminSubscriptionController;
+use App\Http\Controllers\Admin\MessageController as AdminMessageController;
 use App\Http\Controllers\Admin\CategoryController as AdminCategoryController;
 use App\Http\Controllers\Admin\BlogCategoryController as AdminBlogCategoryController;
 use App\Http\Controllers\Admin\CollectionController as AdminCollectionController;
@@ -150,7 +151,7 @@ Route::middleware(['can:Admin', 'auth'])->prefix('admin')->group(function () {
     Route::get('/room-availability', [App\Http\Controllers\Admin\RoomAvailabilityController::class, 'reactView'])->name('Admin/RoomAvailability.jsx');
     Route::get('/prices', [AdminDeliveryPriceController::class, 'reactView'])->name('Admin/DeliveryPricesType.jsx');
     Route::get('/stores', [AdminStoreController::class, 'reactView'])->name('Admin/Stores.jsx');
-    Route::get('/messages', [AdminSubscriptionController::class, 'reactView'])->name('Admin/Messages.jsx');
+    Route::get('/messages', [AdminMessageController::class, 'reactView'])->name('Admin/Messages.jsx');
     Route::get('/complaints', [AdminComplaintController::class, 'reactView'])->name('Admin/Complaints.jsx');
     Route::get('/whistleblowings', [AdminWhistleblowingController::class, 'reactView'])->name('Admin/Whistleblowings.jsx');
     Route::get('/whistleblowings/{id}/file', [AdminWhistleblowingController::class, 'downloadFile'])->name('admin.whistleblowings.file');

@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Route;
 // Rutas públicas para servicios
 Route::get('/services/categories', [ServiceRestController::class, 'categoriesWithServices']);
 Route::post('/services/paginate', [ServiceRestController::class, 'paginate']);
+Route::get('/contact-options', [ServiceRestController::class, 'contactOptions']);
 
 // Rutas de desuscripción
 //Route::get('/desuscribirse', [UnsubscribeController::class, 'showUnsubscribeForm'])->name('unsubscribe.form');

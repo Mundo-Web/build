@@ -9,7 +9,7 @@ use Illuminate\Notifications\Notifiable;
 
 class Message extends Model
 {
-    use HasFactory, HasUuids, Notifiable;
+    use HasFactory, HasUuids, Notifiable, HasDynamic;
 
     public $incrementing = false;
     protected $keyType = 'string';

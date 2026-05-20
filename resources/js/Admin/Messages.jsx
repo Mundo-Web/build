@@ -8,6 +8,7 @@ import ReactAppend from '@Utils/ReactAppend';
 import MessagesRest from '@Rest/Admin/MessagesRest';
 import Modal from '@Adminto/Modal';
 import Swal from 'sweetalert2';
+import Fillable from '../Utils/Fillable';
 
 const messagesRest = new MessagesRest()
 
@@ -76,9 +77,29 @@ const Messages = () => {
             </span>)
           }
         },
-        {
+        Fillable.has("messages", "email") && {
           dataField: 'email',
           caption: 'Correo',
+        },
+        Fillable.has("messages", "phone") && {
+          dataField: 'phone',
+          caption: 'Teléfono',
+        },
+        Fillable.has("messages", "company") && {
+          dataField: 'company',
+          caption: 'Empresa',
+        },
+        Fillable.has("messages", "ruc") && {
+          dataField: 'ruc',
+          caption: 'RUC',
+        },
+        Fillable.has("messages", "subject") && {
+          dataField: 'subject',
+          caption: 'Asunto',
+        },
+        Fillable.has("messages", "category") && {
+          dataField: 'category',
+          caption: 'Categoría',
         },
         {
           dataField: 'created_at',
@@ -108,12 +129,6 @@ const Messages = () => {
               icon: 'fa fa-eye',
               onClick: () => onModalOpen(data)
             }))
-            // container.append(DxButton({
-            //   className: 'btn btn-xs btn-light',
-            //   title: data.status === null ? 'Restaurar' : 'Cambiar estado',
-            //   icon: data.status === 1 ? 'fa fa-toggle-on text-success' : data.status === 0 ? 'fa fa-toggle-off text-danger' : 'fas fa-trash-restore',
-            //   onClick: () => onStatusChange(data)
-            // }))
             container.append(DxButton({
               className: 'btn btn-xs btn-soft-danger',
               title: 'Eliminar',
@@ -124,60 +139,63 @@ const Messages = () => {
           allowFiltering: false,
           allowExporting: false
         }
-      ]} />
+      ].filter(Boolean)} />
     <Modal modalRef={modalRef} title='Mensaje' hideFooter >
       <p>
         <b>Nombre</b>:
         <span className='ms-1'>{dataLoaded?.name}</span>
       </p>
-      <p>
-        <b>Correo</b>:
-        <span className='ms-1'>{dataLoaded?.email || <i className='text-muted'>- Sin correo -</i>}</span>
-      </p>
       {
-        dataLoaded?.phone &&
+        dataLoaded?.email && Fillable.has("messages", "email") &&
+        <p>
+          <b>Correo</b>:
+          <span className='ms-1'>{dataLoaded?.email}</span>
+        </p>
+      }
+      {
+        dataLoaded?.phone && Fillable.has("messages", "phone") &&
         <p>
           <b>Teléfono</b>:
           <span className='ms-1'>{dataLoaded?.phone}</span>
         </p>
       }
       {
-        dataLoaded?.company &&
+        dataLoaded?.company && Fillable.has("messages", "company") &&
         <p>
           <b>Empresa</b>:
           <span className='ms-1'>{dataLoaded?.company}</span>
         </p>
       }
       {
-        dataLoaded?.ruc &&
+        dataLoaded?.ruc && Fillable.has("messages", "ruc") &&
         <p>
           <b>RUC</b>:
           <span className='ms-1'>{dataLoaded?.ruc}</span>
         </p>
       }
       {
-        dataLoaded?.subject &&
-      <p>
-        <b>Asunto</b>:
-        <span className='ms-1'>{dataLoaded?.subject}</span>
-      </p>
+        dataLoaded?.subject && Fillable.has("messages", "subject") &&
+        <p>
+          <b>Asunto</b>:
+          <span className='ms-1'>{dataLoaded?.subject}</span>
+        </p>
       }
       {
-        dataLoaded?.category &&
+        dataLoaded?.category && Fillable.has("messages", "category") &&
         <p>
           <b>Categoría</b>:
           <span className='ms-1'>{dataLoaded?.category}</span>
         </p>
       }
       {
-        dataLoaded?.subcategory &&
+        dataLoaded?.subcategory && Fillable.has("messages", "subcategory") &&
         <p>
           <b>Subcategoría</b>:
           <span className='ms-1'>{dataLoaded?.subcategory}</span>
         </p>
       }
       {
-        dataLoaded?.machinery &&
+        dataLoaded?.machinery && Fillable.has("messages", "machinery") &&
         <p>
           <b>Maquinaria</b>:
           <span className='ms-1'>{dataLoaded?.machinery}</span>

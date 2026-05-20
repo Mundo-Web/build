@@ -1088,6 +1088,38 @@
                 "generals": []
             },
             {
+                "id": "SliderLaPetacaContact",
+                "name": "Slider con Contacto - La Petaca Hotel",
+                "image": "slider-lapetaca.png",
+                "data": [
+                    "animation_slider",
+                    "autoplayDelay",
+                    "showNavigation",
+                    "showIndicators",
+                    "class_slider",
+                    "class_slider_section",
+                    "class_content_slider",
+                    "class_title",
+                    "class_description",
+                    "class_buttons_container",
+                    "class_button",
+                    "class_secondary_button",
+                    "class_overlay",
+                    "overlayMobile",
+                    "overlayMobileDark",
+                    "overlayDesktop",
+                    "imageBgPosition",
+                    "title",
+                    "description"
+                ],
+                "using": {
+                    "model": "Slider"
+                },
+                "generals": [
+                    "atalaya_leads_api_key"
+                ]
+            },
+            {
                 "id": "SliderHostinfinity",
                 "name": "Slider - Hostinfinity (SaaS)",
                 "image": "slider-hostinfinity.png",

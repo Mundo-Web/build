@@ -33,4 +33,28 @@ class ServiceRestController extends BasicController
         
         return response($response->toArray(), $response->status);
     }
+
+    /**
+     * Obtener categorías y servicios activos para el selector de contacto
+     */
+    public function contactOptions()
+    {
+        $response = Response::simpleTryCatch(function () {
+            $categories = \App\Models\Category::where('status', true)
+                ->where('visible', true)
+                ->orderBy('name')
+                ->get(['id', 'name']);
+                
+            $services = \App\Models\Service::where('status', true)
+                ->where('visible', true)
+                ->orderBy('name')
+                ->get(['id', 'name']);
+
+            return [
+                'categories' => $categories,
+                'services' => $services
+            ];
+        });
+        return response($response->toArray(), $response->status);
+    }
 }
