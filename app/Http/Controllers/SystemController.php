@@ -300,8 +300,13 @@ class SystemController extends BasicController
                         ->where($field, $value)
                         ->first();
                     $props['filteredData'][$key] = $result;
-                    if ($key === 'slug' && $result) {
-                        $props['reactData'][$model] = $result;
+                    if ($result) {
+                        // Espejamos también bajo la clave del modelo (ej: 'Item')
+                        // para que el frontend pueda leerlo desde filteredData.Item
+                        $props['filteredData'][$model] = $result;
+                        if ($key === 'slug') {
+                            $props['reactData'][$model] = $result;
+                        }
                     }
                 } elseif ($model) {
                     // Cargar todos los registros

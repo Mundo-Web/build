@@ -110,7 +110,7 @@ const Profile = (props) => {
     return (
         <div
             className="row justify-content-center align-items-center"
-            style={{ height: "calc(100vh - 135px)" }}
+            style={{ minHeight: "calc(100vh - 135px)" }}
         >
             <div className="col-xl-3 col-lg-4 col-md-6 col-sm-8 col-xs-12">
                 <form className="card" onSubmit={onFormSubmit}>
