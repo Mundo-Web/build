@@ -933,7 +933,7 @@ const SliderLaPetacaContact = ({ items, data, generals = [] }) => {
                                                 exit={{ opacity: 0 }}
                                                 className="flex items-center gap-2 text-lg tracking-wider"
                                             >
-                                                Cotiza con PanelPro
+                                              Inicia tu pedido
                                             </motion.div>
                                         )}
                                     </AnimatePresence>
