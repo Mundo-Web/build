@@ -190,6 +190,15 @@ const SliderLaPetacaContact = ({ items, data, generals = [] }) => {
         }
     };
 
+    const handleDotClick = (index) => {
+        if (
+            swiperInstance &&
+            typeof swiperInstance.slideToLoop === "function"
+        ) {
+            swiperInstance.slideToLoop(index);
+        }
+    };
+
     // --- Lógica del Formulario ---
     const messagesRest = new MessagesRest();
     messagesRest.enableNotifications = false;
@@ -394,298 +403,362 @@ const SliderLaPetacaContact = ({ items, data, generals = [] }) => {
     };
 
     return (
-        <section
-            id={data?.element_id || null}
-            className={`relative h-screen w-full overflow-hidden ${sliderClass}`}
-        >
-            {/* Slider de Fondo */}
-            <Swiper
-                modules={[EffectFade, Autoplay, A11y, Keyboard]}
-                effect="fade"
-                fadeEffect={{ crossFade: true }}
-                speed={3200}
-                autoplay={{
-                    delay: autoplayDelay < 3500 ? 3500 : autoplayDelay,
-                    disableOnInteraction: false,
-                    enabled: pageReady,
-                }}
-                a11y={{ enabled: true }}
-                loop
-                keyboard={{ enabled: true }}
-                className="h-full w-full"
-                onSwiper={(swiper) => {
-                    swiperRef.current = swiper;
-                    setSwiperInstance(swiper);
-                }}
-                onSlideChange={(swiper) => setActiveIndex(swiper.realIndex)}
+        <div id={data?.element_id || null} className="relative w-full">
+            {/* SLIDER - Full height on both mobile (100dvh) and desktop (h-screen) */}
+            <section
+                className={`relative h-[100dvh] lg:h-screen w-full overflow-hidden ${sliderClass}`}
             >
-                {sortedSlides.map((slide, index) => (
-                    <SwiperSlide
-                        key={index}
-                        data-swiper-autoplay={slide.duration || undefined}
-                    >
-                        <div className="absolute inset-0 w-full h-full">
-                            <img
-                                src={`/storage/images/slider/${slide.bg_image}`}
-                                alt={slide.name}
-                                className="w-full h-full object-cover"
-                                loading={index === 0 ? "eager" : "lazy"}
-                            />
+                {/* Slider de Fondo */}
+                <Swiper
+                    modules={[EffectFade, Autoplay, A11y, Keyboard]}
+                    effect="fade"
+                    fadeEffect={{ crossFade: true }}
+                    speed={3200}
+                    autoplay={{
+                        delay: autoplayDelay < 3500 ? 3500 : autoplayDelay,
+                        disableOnInteraction: false,
+                        enabled: pageReady,
+                    }}
+                    a11y={{ enabled: true }}
+                    loop
+                    keyboard={{ enabled: true }}
+                    className="h-full w-full"
+                    onSwiper={(swiper) => {
+                        swiperRef.current = swiper;
+                        setSwiperInstance(swiper);
+                    }}
+                    onSlideChange={(swiper) => setActiveIndex(swiper.realIndex)}
+                >
+                    {sortedSlides.map((slide, index) => (
+                        <SwiperSlide
+                            key={index}
+                            data-swiper-autoplay={slide.duration || undefined}
+                        >
+                            <div className="absolute inset-0 w-full h-full">
+                                <img
+                                    src={`/storage/images/slider/${slide.bg_image}`}
+                                    alt={slide.name}
+                                    className="w-full h-full object-cover"
+                                    loading={index === 0 ? "eager" : "lazy"}
+                                />
 
-                            {/* Overlay Logic from SliderLaPetaca */}
-                            {slide?.show_overlay !== false &&
-                                slide?.show_overlay !== 0 && (
-                                    <div
-                                        className="absolute inset-0 z-10"
-                                        style={{
-                                            background:
-                                                slide?.overlay_type === "solid"
-                                                    ? `${slide?.overlay_color || "#281409"}${Math.round(
-                                                          (slide?.overlay_opacity ??
-                                                              70) * 2.55,
-                                                      )
-                                                          .toString(16)
-                                                          .padStart(2, "0")}`
-                                                    : `linear-gradient(${
-                                                          slide?.overlay_direction ===
-                                                          "to-r"
-                                                              ? "to right"
-                                                              : slide?.overlay_direction ===
-                                                                  "to-l"
-                                                                ? "to left"
-                                                                : slide?.overlay_direction ===
-                                                                    "to-t"
-                                                                  ? "to top"
-                                                                  : slide?.overlay_direction ===
-                                                                      "to-b"
-                                                                    ? "to bottom"
-                                                                    : slide?.overlay_direction ===
-                                                                        "to-tr"
-                                                                      ? "to top right"
-                                                                      : slide?.overlay_direction ===
-                                                                          "to-tl"
-                                                                        ? "to top left"
-                                                                        : slide?.overlay_direction ===
-                                                                            "to-br"
-                                                                          ? "to bottom right"
-                                                                          : slide?.overlay_direction ===
-                                                                              "to-bl"
-                                                                            ? "to bottom left"
-                                                                            : "to bottom"
-                                                      }, ${slide?.overlay_color || "#281409"}${Math.round(
-                                                          (slide?.overlay_opacity ??
-                                                              70) * 2.55,
-                                                      )
-                                                          .toString(16)
-                                                          .padStart(
-                                                              2,
-                                                              "0",
-                                                          )}, transparent)`,
-                                        }}
-                                    ></div>
-                                )}
-                            {(slide?.show_overlay === false ||
-                                slide?.show_overlay === 0) && (
-                                <>
-                                    {data?.class_overlay && (
+                                {/* Overlay Logic from SliderLaPetaca */}
+                                {slide?.show_overlay !== false &&
+                                    slide?.show_overlay !== 0 && (
                                         <div
-                                            className={`absolute inset-0 z-10 ${data?.class_overlay}`}
+                                            className="absolute inset-0 z-10"
+                                            style={{
+                                                background:
+                                                    slide?.overlay_type === "solid"
+                                                        ? `${slide?.overlay_color || "#281409"}${Math.round(
+                                                              (slide?.overlay_opacity ??
+                                                                  70) * 2.55,
+                                                          )
+                                                              .toString(16)
+                                                              .padStart(2, "0")}`
+                                                        : `linear-gradient(${
+                                                              slide?.overlay_direction ===
+                                                              "to-r"
+                                                                  ? "to right"
+                                                                  : slide?.overlay_direction ===
+                                                                      "to-l"
+                                                                    ? "to left"
+                                                                    : slide?.overlay_direction ===
+                                                                        "to-t"
+                                                                      ? "to top"
+                                                                      : slide?.overlay_direction ===
+                                                                          "to-b"
+                                                                        ? "to bottom"
+                                                                        : slide?.overlay_direction ===
+                                                                            "to-tr"
+                                                                          ? "to top right"
+                                                                          : slide?.overlay_direction ===
+                                                                              "to-tl"
+                                                                            ? "to top left"
+                                                                            : slide?.overlay_direction ===
+                                                                                "to-br"
+                                                                              ? "to bottom right"
+                                                                              : slide?.overlay_direction ===
+                                                                                  "to-bl"
+                                                                                ? "to bottom left"
+                                                                                : "to bottom"
+                                                          }, ${slide?.overlay_color || "#281409"}${Math.round(
+                                                              (slide?.overlay_opacity ??
+                                                                  70) * 2.55,
+                                                          )
+                                                              .toString(16)
+                                                              .padStart(
+                                                                  2,
+                                                                  "0",
+                                                              )}, transparent)`,
+                                            }}
                                         ></div>
                                     )}
-                                    {!data?.class_overlay && (
-                                        <div className="absolute inset-0 bg-gradient-to-b from-[#281409]/70 via-[#281409]/40 to-[#0a0604]/90 z-10"></div>
-                                    )}
-                                </>
-                            )}
+                                {(slide?.show_overlay === false ||
+                                    slide?.show_overlay === 0) && (
+                                    <>
+                                        {data?.class_overlay && (
+                                            <div
+                                                className={`absolute inset-0 z-10 ${data?.class_overlay}`}
+                                            ></div>
+                                        )}
+                                        {!data?.class_overlay && (
+                                            <div className="absolute inset-0 bg-gradient-to-b from-[#281409]/70 via-[#281409]/40 to-[#0a0604]/90 z-10"></div>
+                                        )}
+                                    </>
+                                )}
 
-                            {/* Contenido del Slider (Texto a la izquierda) */}
-                            <div
-                                className={`absolute inset-0 z-20 flex items-center ${data?.class_content_slider || ""}`}
-                            >
-                                <div className="w-full px-primary 2xl:px-0 2xl:max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-10">
-                                    <div className="lg:col-span-7 flex flex-col justify-center text-left">
-                                        <AnimatePresence mode="wait">
-                                            {activeIndex === index && (
-                                                <motion.div
-                                                    key={`content-${activeIndex}`}
-                                                    initial="initial"
-                                                    animate="animate"
-                                                    exit="exit"
-                                                    className="space-y-6"
-                                                >
-                                                    <motion.h2
-                                                        variants={titleVariants}
-                                                        className={`text-5xl md:text-7xl font-bold text-white tracking-tight drop-shadow-2xl ${data?.class_title || ""}`}
-                                                        style={{
-                                                            color:
-                                                                slide.title_color ||
-                                                                "#FFFFFF",
-                                                        }}
-                                                    >
-                                                        <TextWithHighlight
-                                                            text={slide.name}
-                                                            color="bg-secondary"
-                                                        />
-                                                    </motion.h2>
-
-                                                    <motion.p
-                                                        variants={
-                                                            descriptionVariants
-                                                        }
-                                                        className={`text-xl md:text-2xl text-white/90 font-light tracking-wide drop-shadow-lg max-w-2xl ${data?.class_description || ""}`}
-                                                    >
-                                                        {slide.description}
-                                                    </motion.p>
-
+                                {/* Contenido del Slider (Texto a la izquierda) */}
+                                <div
+                                    className={`absolute inset-0 z-20 flex items-center ${data?.class_content_slider || ""}`}
+                                >
+                                    <div className="w-full px-primary 2xl:px-0 2xl:max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-10">
+                                        <div className="lg:col-span-7 flex flex-col justify-center text-left">
+                                            <AnimatePresence mode="wait">
+                                                {activeIndex === index && (
                                                     <motion.div
-                                                        variants={
-                                                            buttonsVariants
-                                                        }
-                                                        className={`flex flex-row flex-wrap gap-4 ${data?.class_buttons_container || ""}`}
+                                                        key={`content-${activeIndex}`}
+                                                        initial="initial"
+                                                        animate="animate"
+                                                        exit="exit"
+                                                        className="space-y-6"
                                                     >
-                                                        {slide.button_link &&
-                                                            slide.button_text && (
-                                                                <a
-                                                                    href={
-                                                                        slide.button_link
-                                                                    }
-                                                                    onClick={(
-                                                                        e,
-                                                                    ) => {
-                                                                        const href =
-                                                                            slide.button_link;
-                                                                        if (
-                                                                            href &&
-                                                                            href.includes(
-                                                                                "#",
-                                                                            )
-                                                                        ) {
-                                                                            e.preventDefault();
-                                                                            e.stopPropagation();
-                                                                            const hashIndex =
-                                                                                href.indexOf(
-                                                                                    "#",
-                                                                                );
-                                                                            const targetId =
-                                                                                href.substring(
-                                                                                    hashIndex +
-                                                                                        1,
-                                                                                );
-                                                                            const targetElement =
-                                                                                document.getElementById(
-                                                                                    targetId,
-                                                                                );
-                                                                            if (
-                                                                                targetElement
-                                                                            ) {
-                                                                                smoothScrollTo(
-                                                                                    targetElement,
-                                                                                    1200,
-                                                                                );
-                                                                                setTimeout(
-                                                                                    () => {
-                                                                                        window.history.pushState(
-                                                                                            null,
-                                                                                            "",
-                                                                                            href,
-                                                                                        );
-                                                                                    },
-                                                                                    100,
-                                                                                );
-                                                                            }
-                                                                        }
-                                                                    }}
-                                                                    className={`px-8 py-4 text-lg font-semibold bg-secondary text-white rounded-full transform hover:scale-105 transition-all duration-300 shadow-xl hover:shadow-2xl ${data?.class_button || ""}`}
-                                                                >
-                                                                    {
-                                                                        slide.button_text
-                                                                    }
-                                                                </a>
-                                                            )}
-                                                        {slide.secondary_button_link &&
-                                                            slide.secondary_button_text && (
-                                                                <a
-                                                                    href={
-                                                                        slide.secondary_button_link
-                                                                    }
-                                                                    onClick={(
-                                                                        e,
-                                                                    ) => {
-                                                                        const href =
-                                                                            slide.secondary_button_link;
-                                                                        if (
-                                                                            href &&
-                                                                            href.includes(
-                                                                                "#",
-                                                                            )
-                                                                        ) {
-                                                                            e.preventDefault();
-                                                                            e.stopPropagation();
-                                                                            const hashIndex =
-                                                                                href.indexOf(
-                                                                                    "#",
-                                                                                );
-                                                                            const targetId =
-                                                                                href.substring(
-                                                                                    hashIndex +
-                                                                                        1,
-                                                                                );
-                                                                            const targetElement =
-                                                                                document.getElementById(
-                                                                                    targetId,
-                                                                                );
-                                                                            if (
-                                                                                targetElement
-                                                                            ) {
-                                                                                smoothScrollTo(
-                                                                                    targetElement,
-                                                                                    1200,
-                                                                                );
-                                                                                setTimeout(
-                                                                                    () => {
-                                                                                        window.history.pushState(
-                                                                                            null,
-                                                                                            "",
-                                                                                            href,
-                                                                                        );
-                                                                                    },
-                                                                                    100,
-                                                                                );
-                                                                            }
-                                                                        }
-                                                                    }}
-                                                                    className={`px-8 py-4 text-lg border-2 font-semibold rounded-full transform hover:scale-105 transition-all duration-300 bg-white/10 border-white text-white hover:bg-white hover:text-black ${data?.class_secondary_button || ""}`}
-                                                                >
-                                                                    {
-                                                                        slide.secondary_button_text
-                                                                    }
-                                                                </a>
-                                                            )}
-                                                    </motion.div>
-                                                </motion.div>
-                                            )}
-                                        </AnimatePresence>
-                                    </div>
+                                                        <motion.h2
+                                                            variants={titleVariants}
+                                                            className={`text-5xl md:text-7xl font-bold text-white tracking-tight drop-shadow-2xl ${data?.class_title || ""}`}
+                                                            style={{
+                                                                color:
+                                                                    slide.title_color ||
+                                                                    "#FFFFFF",
+                                                            }}
+                                                        >
+                                                            <TextWithHighlight
+                                                                text={slide.name}
+                                                                color="bg-secondary"
+                                                            />
+                                                        </motion.h2>
 
-                                    {/* Espacio reservado para el formulario en desktop */}
-                                    <div className="lg:col-span-5 hidden lg:block"></div>
+                                                        <motion.p
+                                                            variants={
+                                                                descriptionVariants
+                                                            }
+                                                            className={`text-xl md:text-2xl text-white/90 font-light tracking-wide drop-shadow-lg max-w-2xl ${data?.class_description || ""}`}
+                                                        >
+                                                            {slide.description}
+                                                        </motion.p>
+
+                                                        <motion.div
+                                                            variants={
+                                                                buttonsVariants
+                                                            }
+                                                            className={`flex flex-row flex-wrap gap-4 ${data?.class_buttons_container || ""}`}
+                                                        >
+                                                            {slide.button_link &&
+                                                                slide.button_text && (
+                                                                    <a
+                                                                        href={
+                                                                            slide.button_link
+                                                                        }
+                                                                        onClick={(
+                                                                            e,
+                                                                        ) => {
+                                                                            const href =
+                                                                                slide.button_link;
+                                                                            if (
+                                                                                href &&
+                                                                                href.includes(
+                                                                                    "#",
+                                                                                )
+                                                                            ) {
+                                                                                e.preventDefault();
+                                                                                e.stopPropagation();
+                                                                                const hashIndex =
+                                                                                    href.indexOf(
+                                                                                        "#",
+                                                                                    );
+                                                                                const targetId =
+                                                                                    href.substring(
+                                                                                        hashIndex +
+                                                                                            1,
+                                                                                    );
+                                                                                const targetElement =
+                                                                                    document.getElementById(
+                                                                                        targetId,
+                                                                                    );
+                                                                                if (
+                                                                                    targetElement
+                                                                                ) {
+                                                                                    smoothScrollTo(
+                                                                                        targetElement,
+                                                                                        1200,
+                                                                                    );
+                                                                                    setTimeout(
+                                                                                        () => {
+                                                                                            window.history.pushState(
+                                                                                                null,
+                                                                                                "",
+                                                                                                href,
+                                                                                            );
+                                                                                        },
+                                                                                        100,
+                                                                                    );
+                                                                                }
+                                                                            }
+                                                                        }}
+                                                                        className={`px-8 py-4 text-lg font-semibold bg-secondary text-white rounded-full transform hover:scale-105 transition-all duration-300 shadow-xl hover:shadow-2xl ${data?.class_button || ""}`}
+                                                                    >
+                                                                        {
+                                                                            slide.button_text
+                                                                        }
+                                                                    </a>
+                                                                )}
+                                                            {slide.secondary_button_link &&
+                                                                slide.secondary_button_text && (
+                                                                    <a
+                                                                        href={
+                                                                            slide.secondary_button_link
+                                                                        }
+                                                                        onClick={(
+                                                                            e,
+                                                                        ) => {
+                                                                            const href =
+                                                                                slide.secondary_button_link;
+                                                                            if (
+                                                                                href &&
+                                                                                href.includes(
+                                                                                    "#",
+                                                                                )
+                                                                            ) {
+                                                                                e.preventDefault();
+                                                                                e.stopPropagation();
+                                                                                const hashIndex =
+                                                                                    href.indexOf(
+                                                                                        "#",
+                                                                                    );
+                                                                                const targetId =
+                                                                                    href.substring(
+                                                                                        hashIndex +
+                                                                                            1,
+                                                                                    );
+                                                                                const targetElement =
+                                                                                    document.getElementById(
+                                                                                        targetId,
+                                                                                    );
+                                                                                if (
+                                                                                    targetElement
+                                                                                ) {
+                                                                                    smoothScrollTo(
+                                                                                        targetElement,
+                                                                                        1200,
+                                                                                    );
+                                                                                    setTimeout(
+                                                                                        () => {
+                                                                                            window.history.pushState(
+                                                                                                null,
+                                                                                                "",
+                                                                                                href,
+                                                                                            );
+                                                                                        },
+                                                                                        100,
+                                                                                    );
+                                                                                }
+                                                                            }
+                                                                        }}
+                                                                        className={`px-8 py-4 text-lg border-2 font-semibold rounded-full transform hover:scale-105 transition-all duration-300 bg-white/10 border-white text-white hover:bg-white hover:text-black ${data?.class_secondary_button || ""}`}
+                                                                    >
+                                                                        {
+                                                                            slide.secondary_button_text
+                                                                        }
+                                                                    </a>
+                                                                )}
+                                                        </motion.div>
+                                                    </motion.div>
+                                                )}
+                                            </AnimatePresence>
+                                        </div>
+
+                                        {/* Espacio reservado para el formulario en desktop */}
+                                        <div className="lg:col-span-5 hidden lg:block"></div>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    </SwiperSlide>
-                ))}
-            </Swiper>
+                        </SwiperSlide>
+                    ))}
+                </Swiper>
 
-            {/* Capa de Formulario Flotante (Efecto Glassmorphism) */}
-            <div className="absolute inset-0 z-30 pointer-events-none flex items-center">
+                {/* Flechas de Navegación del Slider */}
+                {sortedSlides.length > 1 && (
+                    <>
+                        <button
+                            onClick={handlePrev}
+                            aria-label="Anterior"
+                            className="hidden lg:block absolute left-4 top-1/2 -translate-y-1/2 z-40 p-3 rounded-full bg-black/20 hover:bg-black/50 text-white transition-all duration-300 hover:scale-110"
+                        >
+                            <svg
+                                className="w-6 h-6"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                            >
+                                <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={2}
+                                    d="M15 19l-7-7 7-7"
+                                />
+                            </svg>
+                        </button>
+                        <button
+                            onClick={handleNext}
+                            aria-label="Siguiente"
+                            className="hidden lg:block absolute right-4 top-1/2 -translate-y-1/2 z-40 p-3 rounded-full bg-black/20 hover:bg-black/50 text-white transition-all duration-300 hover:scale-110"
+                        >
+                            <svg
+                                className="w-6 h-6"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                            >
+                                <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={2}
+                                    d="M9 5l7 7-7 7"
+                                />
+                            </svg>
+                        </button>
+                    </>
+                )}
+
+                {/* Indicadores de paginación para mobile */}
+                {sortedSlides.length > 1 && (
+                    <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-40 flex items-center gap-2 lg:hidden">
+                        {sortedSlides.map((_, index) => (
+                            <button
+                                key={index}
+                                onClick={() => handleDotClick(index)}
+                                className={`h-2 rounded-full transition-all duration-300 ${
+                                    activeIndex === index
+                                        ? "w-8 bg-secondary"
+                                        : "w-2 bg-white/40 hover:bg-white/70"
+                                }`}
+                                aria-label={`Ir al slide ${index + 1}`}
+                            />
+                        ))}
+                    </div>
+                )}
+            </section>
+
+            {/* Capa de Formulario Flotante en Desktop / Debajo del Slider en Mobile */}
+            <div className="relative w-full bg-primary/80 py-12 px-4 flex items-center lg:absolute lg:inset-0 lg:z-30 lg:pointer-events-none lg:bg-transparent lg:py-0 lg:px-0">
                 <div className="w-full px-primary 2xl:px-0 2xl:max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-10">
-                    {/* Espacio para el texto del slider */}
+                    {/* Espacio para el texto del slider en desktop */}
                     <div className="lg:col-span-7 hidden lg:block"></div>
 
                     {/* Formulario a la derecha */}
-                    <div className="col-span-1 lg:col-span-5 pointer-events-auto">
+                    <div className="col-span-1 lg:col-span-5 pointer-events-auto w-full">
                         <motion.div
-                            className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-6 shadow-2xl flex flex-col gap-3 overflow-y-auto max-h-[92vh]"
+                            className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-6 shadow-2xl flex flex-col gap-3 lg:max-h-[85vh] lg:overflow-y-auto"
                             initial={{ opacity: 0, x: 50 }}
                             animate={{ opacity: 1, x: 0 }}
                             transition={{
@@ -695,13 +768,13 @@ const SliderLaPetacaContact = ({ items, data, generals = [] }) => {
                             }}
                         >
                             <div>
-                                <h2 className="text-2xl lg:text-3xl font-bold mb-1 text-white leading-tight">
+                                <h2 className="text-2xl lg:text-4xl font-bold mb-1 text-white leading-tight">
                                     {data?.title ||
-                                        "Necesita ayuda, contáctenos ahora"}
+                                        "Cotiza con Panel Pro"}
                                 </h2>
                                 <p className="text-sm text-white/75 mb-3">
                                     {data?.description ||
-                                        "Déjanos tus datos y nos pondremos en contacto contigo."}
+                                        ""}
                                 </p>
                             </div>
 
@@ -790,7 +863,7 @@ const SliderLaPetacaContact = ({ items, data, generals = [] }) => {
                                                 transition={{ duration: 0.15 }}
                                                 className="absolute z-50 w-full bottom-full mb-1 bg-white border border-white/20 rounded-md shadow-2xl"
                                             >
-                                                <div className="py-1">
+                                                <div className="py-1 max-h-72 overflow-y-auto">
                                                     {combinedOptions.map((option) => {
                                                         const isSelected = selectedCategories.includes(option.name);
                                                         const isDisabled = !isSelected && selectedCategories.length >= 2;
@@ -870,52 +943,7 @@ const SliderLaPetacaContact = ({ items, data, generals = [] }) => {
                     </div>
                 </div>
             </div>
-
-
-            {/* Flechas de Navegación del Slider */}
-            {sortedSlides.length > 1 && (
-                <>
-                    <button
-                        onClick={handlePrev}
-                        aria-label="Anterior"
-                        className="absolute left-4 top-1/2 -translate-y-1/2 z-40 p-3 rounded-full bg-black/20 hover:bg-black/50 text-white transition-all duration-300 hover:scale-110"
-                    >
-                        <svg
-                            className="w-6 h-6"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                        >
-                            <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M15 19l-7-7 7-7"
-                            />
-                        </svg>
-                    </button>
-                    <button
-                        onClick={handleNext}
-                        aria-label="Siguiente"
-                        className="absolute right-4 top-1/2 -translate-y-1/2 z-40 p-3 rounded-full bg-black/20 hover:bg-black/50 text-white transition-all duration-300 hover:scale-110"
-                    >
-                        <svg
-                            className="w-6 h-6"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                        >
-                            <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M9 5l7 7-7 7"
-                            />
-                        </svg>
-                    </button>
-                </>
-            )}
-        </section>
+        </div>
     );
 };
 
