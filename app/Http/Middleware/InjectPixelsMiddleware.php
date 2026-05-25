@@ -26,8 +26,8 @@ class InjectPixelsMiddleware
 
         $content = $response->getContent();
         
-        // Solo aplicar si es una página completa con <head> y <body>
-        if (!str_contains($content, '<head>') || !str_contains($content, '<body>')) {
+        // Solo aplicar si es una página completa con </head> y </body>
+        if (!str_contains($content, '</head>') || !str_contains($content, '</body>')) {
             return $response;
         }
 
