@@ -549,6 +549,7 @@ const ProductListCardPanelPro = ({
                                     {/* Imagen principal */}
                                     <div className="flex-1 min-h-full relative flex items-center justify-center w-full ">
                                         <Swiper
+                                            key={`${selectedVariant?.id || selectedImage?.id}-${getItemGallery(selectedImage).length}`}
                                             modules={[Navigation]}
                                             navigation={{
                                                 prevEl: ".custom-main-prev",
@@ -620,10 +621,21 @@ const ProductListCardPanelPro = ({
                                         </Swiper>
 
                                         {/* Botones de navegación - Solo si hay más de una imagen */}
+                                        {(() => {
+                                            const gallery = getItemGallery(selectedImage);
+                                           
+                                            return null;
+                                        })()}
                                         {getItemGallery(selectedImage).length >
                                             1 && (
                                             <>
-                                                <button className="custom-main-prev absolute left-4 top-1/2 -translate-y-1/2 z-20 w-12 h-12 bg-white rounded-full shadow-lg flex items-center justify-center hover:bg-primary hover:text-white transition-all duration-300 border border-neutral-200">
+                                                <button
+                                                    className="custom-main-prev absolute left-4 top-1/2 -translate-y-1/2 z-20 w-12 h-12 bg-white rounded-full shadow-lg flex items-center justify-center hover:bg-primary hover:text-white transition-all duration-300 border border-neutral-200"
+                                                    onClick={() => {
+                                                       
+                                                        mainSwiper?.slidePrev();
+                                                    }}
+                                                >
                                                     <svg
                                                         className="w-5 h-5"
                                                         fill="none"
@@ -639,7 +651,13 @@ const ProductListCardPanelPro = ({
                                                     </svg>
                                                 </button>
 
-                                                <button className="custom-main-next absolute right-4 top-1/2 -translate-y-1/2 z-20 w-12 h-12 bg-white rounded-full shadow-lg flex items-center justify-center hover:bg-primary hover:text-white transition-all duration-300 border border-neutral-200">
+                                                <button
+                                                    className="custom-main-next absolute right-4 top-1/2 -translate-y-1/2 z-20 w-12 h-12 bg-white rounded-full shadow-lg flex items-center justify-center hover:bg-primary hover:text-white transition-all duration-300 border border-neutral-200"
+                                                    onClick={() => {
+                                                        
+                                                        mainSwiper?.slideNext();
+                                                    }}
+                                                >
                                                     <svg
                                                         className="w-5 h-5"
                                                         fill="none"
