@@ -615,6 +615,20 @@
                     "opening_hours"
                     
                 ]
+            },
+            {
+                "id": "HeaderMiBalon",
+                "name": "Header Mi Balón",
+                "image": "header-mibalon.png",
+                "data": [
+                    "class"
+                ],
+                "generals": [
+                    "whatsapp_advisors",
+                    "email_contact",
+                    "phone_contact",
+                    "opening_hours"
+                ]
             }
         ]
     },

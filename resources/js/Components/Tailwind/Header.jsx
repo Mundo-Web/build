@@ -12,6 +12,7 @@ const HeaderSearchDental = React.lazy(
     () => import("./Headers/HeaderSearchDental"),
 );
 const HeaderSticky = React.lazy(() => import("./Headers/HeaderSticky"));
+const HeaderMiBalon = React.lazy(() => import("./Headers/HeaderMiBalon"));
 
 const HeaderSearchPaani = React.lazy(
     () => import("./Headers/HeaderSearchPaani"),
@@ -354,6 +355,22 @@ const Header = ({
             case "HeaderSticky":
                 return (
                     <HeaderSticky
+                        data={data}
+                        items={items}
+                        cart={cart}
+                        setCart={setCart}
+                        subTotal={subTotal}
+                        igv={igv}
+                        perception={perception}
+                        totalPrice={totalPrice}
+                        pages={pages}
+                        isUser={isUser}
+                        generals={generals}
+                    />
+                );
+            case "HeaderMiBalon":
+                return (
+                    <HeaderMiBalon
                         data={data}
                         items={items}
                         cart={cart}
