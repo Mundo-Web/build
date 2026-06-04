@@ -100,7 +100,7 @@ const FooterDental = ({ pages, generals, data, socials = [] }) => {
                             <li>
                                 <a
                                     onClick={() => openModal(0)}
-                                    className={`cursor-pointer hover:text-primary hover:font-bold transition-all duration-300 ${data?.class_menu_item || ""}`}
+                                    className={`cursor-pointer hover:text-primary  transition-all duration-300 ${data?.class_menu_item || ""}`}
                                 >
                                     Políticas de privacidad
                                 </a>
@@ -110,7 +110,7 @@ const FooterDental = ({ pages, generals, data, socials = [] }) => {
                                     type="button"
                                     href="#"
                                     onClick={() => openModal(1)}
-                                    className={`cursor-pointer hover:text-primary hover:font-bold transition-all duration-300 ${data?.class_menu_item || ""}`}
+                                    className={`cursor-pointer hover:text-primary  transition-all duration-300 ${data?.class_menu_item || ""}`}
                                 >
                                     Términos y Condiciones
                                 </a>
@@ -120,7 +120,7 @@ const FooterDental = ({ pages, generals, data, socials = [] }) => {
                                     type="button"
                                     href="#"
                                     onClick={() => openModal(2)}
-                                    className={` cursor-pointer hover:text-primary hover:font-bold transition-all duration-300 ${data?.class_menu_item || ""}`}
+                                    className={` cursor-pointer hover:text-primary  transition-all duration-300 ${data?.class_menu_item || ""}`}
                                 >
                                     Políticas de cambio
                                 </a>
@@ -131,7 +131,7 @@ const FooterDental = ({ pages, generals, data, socials = [] }) => {
                                     className="cursor-pointer flex flex-col gap-2 items-start  "
                                 >
                                     <span
-                                        className={`hover:text-primary hover:font-bold transition-all duration-300 ${data?.class_menu_item || ""}`}
+                                        className={`hover:text-primary  transition-all duration-300 ${data?.class_menu_item || ""}`}
                                     >
                                         Libro de reclamaciones
                                     </span>
@@ -155,7 +155,7 @@ const FooterDental = ({ pages, generals, data, socials = [] }) => {
                                         className="cursor-pointer flex flex-col gap-2 items-start  "
                                     >
                                         <span
-                                            className={`hover:font-bold transition-all duration-300 ${data?.class_menu_item || "hover:text-primary"}`}
+                                            className={` transition-all duration-300 ${data?.class_menu_item || "hover:text-primary"}`}
                                         >
                                             Denuncias
                                         </span>
@@ -174,7 +174,7 @@ const FooterDental = ({ pages, generals, data, socials = [] }) => {
                                         href={`/cloud/${generals.find((item) => item.correlative === "politica_sistema_gestion")?.description}`}
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className={`cursor-pointer hover:font-bold transition-all duration-300 ${data?.class_menu_item || "hover:text-primary"}`}
+                                        className={`cursor-pointer  transition-all duration-300 ${data?.class_menu_item || "hover:text-primary"}`}
                                     >
                                         Política del sistema de Gestión
                                     </a>
@@ -191,7 +191,7 @@ const FooterDental = ({ pages, generals, data, socials = [] }) => {
                                         href={`/cloud/${generals.find((item) => item.correlative === "alcance_sistema_gestion")?.description}`}
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className={`cursor-pointer hover:font-bold transition-all duration-300 ${data?.class_menu_item || "hover:text-primary"}`}
+                                        className={`cursor-pointer  transition-all duration-300 ${data?.class_menu_item || "hover:text-primary"}`}
                                     >
                                         Alcance del sistema de Gestión
                                     </a>
@@ -206,7 +206,7 @@ const FooterDental = ({ pages, generals, data, socials = [] }) => {
                         </h3>
 
                         <p
-                            className={`cursor-pointer whitespace-pre-line hover:font-bold transition-all duration-300 ${data?.class_menu_item || "text-white hover:text-primary"}`}
+                            className={`cursor-pointer whitespace-pre-line  transition-all duration-300 ${data?.class_menu_item || "text-white hover:text-primary"}`}
                         >
                             {" "}
                             {generals.find(
@@ -225,7 +225,7 @@ const FooterDental = ({ pages, generals, data, socials = [] }) => {
                         Únete a nuestro blog
                     </h3>
                     <p
-                        className={`mb-6  text-sm ${data?.class_menu_item || "text-white"}`}
+                        className={`mb-6  ${data?.class_menu_item || "text-white"}`}
                     >
                         Suscríbete y recibe todas nuestras novedades
                     </p>

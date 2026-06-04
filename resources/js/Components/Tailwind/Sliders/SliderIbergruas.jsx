@@ -88,16 +88,12 @@ const SliderIbergruas = ({ items, data, generals = [] }) => {
             if (part.startsWith("*") && part.endsWith("*")) {
                 const word = part.slice(1, -1);
                 return (
-                    <span key={index} className="customtext-primary">
+                    <span key={index} className="text-primary">
                         {word}
                     </span>
                 );
             }
-            return (
-                <span key={index} className="text-white">
-                    {part}
-                </span>
-            );
+            return <span key={index}>{part}</span>;
         });
     };
 
@@ -126,10 +122,11 @@ const SliderIbergruas = ({ items, data, generals = [] }) => {
         return null;
     }
 
+    console.log("sliders contect", items);
     return (
         <section
             id={data?.element_id || null}
-            className="relative h-[calc(100dvh-5rem)] lg:h-[700px] overflow-hidden"
+            className={`relative h-[calc(100dvh-5rem)] lg:h-[700px] overflow-hidden ${data.class_container} `}
         >
             {/* Slides Container */}
             <div
@@ -138,7 +135,7 @@ const SliderIbergruas = ({ items, data, generals = [] }) => {
                 onTouchMove={handleTouchMove}
                 onTouchEnd={handleTouchEnd}
             >
-                <AnimatePresence mode="wait">
+                <AnimatePresence>
                     {sortedItems.map((slide, index) => {
                         if (index !== currentSlide) return null;
 
@@ -150,11 +147,22 @@ const SliderIbergruas = ({ items, data, generals = [] }) => {
                                 animate="center"
                                 exit="exit"
                                 transition={{ duration: 0.7 }}
-                                className="absolute inset-0"
+                                className={`absolute inset-0 ${slide?.button_link ? "cursor-pointer" : ""}`}
+                                onClick={() => {
+                                    if (slide?.button_link) {
+                                        window.open(
+                                            slide.button_link,
+                                            slide?.button_new_tab
+                                                ? "_blank"
+                                                : "_self",
+                                        );
+                                    }
+                                }}
                             >
                                 {/* Background - Video has priority, then Image */}
                                 {slide?.bg_video &&
-                                slide.bg_video.trim() !== "" ? (
+                                slide.bg_video.trim() !== "" &&
+                                slide.bg_video.trim() !== "null" ? (
                                     // YouTube Video Background
                                     <div className="absolute inset-0 w-full h-full overflow-hidden">
                                         <iframe
@@ -203,53 +211,173 @@ const SliderIbergruas = ({ items, data, generals = [] }) => {
                                     </>
                                 )}
 
-                                {/* Dark Overlay */}
-                                <div className="absolute inset-0 bg-black/60"></div>
+                                {/* Dynamic Overlay */}
+                                {slide?.show_overlay !== false &&
+                                    slide?.show_overlay !== 0 &&
+                                    slide?.show_overlay !== "0" &&
+                                    slide?.show_overlay !== "false" && (
+                                        <div
+                                            className="absolute inset-0"
+                                            style={{
+                                                background:
+                                                    slide?.overlay_type ===
+                                                    "solid"
+                                                        ? `${slide?.overlay_color || "#000000"}${Math.round(
+                                                              (slide?.overlay_opacity ??
+                                                                  60) * 2.55,
+                                                          )
+                                                              .toString(16)
+                                                              .padStart(
+                                                                  2,
+                                                                  "0",
+                                                              )}`
+                                                        : slide?.overlay_type ===
+                                                            "gradient"
+                                                          ? `linear-gradient(${
+                                                                slide?.overlay_direction ===
+                                                                "to-r"
+                                                                    ? "to right"
+                                                                    : slide?.overlay_direction ===
+                                                                        "to-l"
+                                                                      ? "to left"
+                                                                      : slide?.overlay_direction ===
+                                                                          "to-t"
+                                                                        ? "to top"
+                                                                        : slide?.overlay_direction ===
+                                                                            "to-b"
+                                                                          ? "to bottom"
+                                                                          : slide?.overlay_direction ===
+                                                                              "to-tr"
+                                                                            ? "to top right"
+                                                                            : slide?.overlay_direction ===
+                                                                                "to-tl"
+                                                                              ? "to top left"
+                                                                              : slide?.overlay_direction ===
+                                                                                  "to-br"
+                                                                                ? "to bottom right"
+                                                                                : slide?.overlay_direction ===
+                                                                                    "to-bl"
+                                                                                  ? "to bottom left"
+                                                                                  : "to bottom"
+                                                            }, ${slide?.overlay_color || "#000000"}${Math.round(
+                                                                (slide?.overlay_opacity ??
+                                                                    60) * 2.55,
+                                                            )
+                                                                .toString(16)
+                                                                .padStart(
+                                                                    2,
+                                                                    "0",
+                                                                )}, transparent)`
+                                                          : "#00000099",
+                                            }}
+                                        ></div>
+                                    )}
 
-                                {/* Content */}
-                                <div className="relative h-full flex items-center justify-center">
-                                    <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
-                                        <AnimatePresence mode="wait">
-                                            <motion.div
-                                                key={`content-${currentSlide}`}
-                                                variants={contentVariants}
-                                                initial="initial"
-                                                animate="animate"
-                                                exit="exit"
-                                                className="max-w-3xl mx-auto text-center"
-                                            >
-                                                {/* Title */}
-                                                <h2 className="text-4xl md:text-5xl lg:text-6xl font-title max-w-lg mx-auto font-bold mb-6 leading-tight">
-                                                    {parseTitle(slide?.name)}
-                                                </h2>
-
-                                                {/* Description */}
-                                                {slide?.description && (
-                                                    <p className="text-lg md:text-xl lg:text-2xl text-white mb-8 max-w-2xl mx-auto">
-                                                        {slide.description}
-                                                    </p>
-                                                )}
-
-                                                {/* Button */}
-                                                {slide?.button_text &&
-                                                    slide?.button_link && (
-                                                        <a
-                                                            href={
-                                                                slide.button_link
-                                                            }
-                                                            className="inline-flex items-center gap-2 px-8 py-4 bg-transparent border-2 border-primary customtext-primary text-lg font-bold hover:bg-primary hover:text-white transition-all duration-300"
+                                {/* Conditionally Render Content */}
+                                {slide?.show_content !== false &&
+                                    slide?.show_content !== 0 &&
+                                    slide?.show_content !== "0" &&
+                                    slide?.show_content !== "false" && (
+                                        <div className="relative h-full flex items-center justify-center z-10">
+                                            <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
+                                                <AnimatePresence mode="wait">
+                                                    <motion.div
+                                                        key={`content-${currentSlide}`}
+                                                        variants={
+                                                            contentVariants
+                                                        }
+                                                        initial="initial"
+                                                        animate="animate"
+                                                        exit="exit"
+                                                        className="max-w-3xl mx-auto text-center"
+                                                    >
+                                                        {/* Title */}
+                                                        <h2
+                                                            className="text-4xl md:text-5xl lg:text-6xl font-title max-w-lg mx-auto font-bold mb-6 leading-tight"
+                                                            style={{
+                                                                color:
+                                                                    slide?.title_color ||
+                                                                    "#ffffff",
+                                                            }}
                                                         >
-                                                            <span>
+                                                            {parseTitle(
+                                                                slide?.name,
+                                                            )}
+                                                        </h2>
+
+                                                        {/* Description */}
+                                                        {slide?.description && (
+                                                            <p
+                                                                className="text-lg md:text-xl lg:text-2xl mb-8 max-w-2xl mx-auto"
+                                                                style={{
+                                                                    color:
+                                                                        slide?.description_color ||
+                                                                        "#ffffff",
+                                                                }}
+                                                            >
                                                                 {
-                                                                    slide.button_text
+                                                                    slide.description
                                                                 }
-                                                            </span>
-                                                        </a>
-                                                    )}
-                                            </motion.div>
-                                        </AnimatePresence>
-                                    </div>
-                                </div>
+                                                            </p>
+                                                        )}
+                                                        <div className="w-full flex flex-col md:flex-row justify-center gap-6">
+                                                            {/* Button */}
+                                                            {slide?.button_text &&
+                                                                slide?.button_link && (
+                                                                    <a
+                                                                        href={
+                                                                            slide.button_link
+                                                                        }
+                                                                        target={
+                                                                            slide?.button_new_tab
+                                                                                ? "_blank"
+                                                                                : "_self"
+                                                                        }
+                                                                        onClick={(
+                                                                            e,
+                                                                        ) =>
+                                                                            e.stopPropagation()
+                                                                        }
+                                                                        className={`inline-flex items-center gap-2 px-8 py-4 bg-transparent border-2 border-primary text-primary text-lg font-bold hover:bg-primary hover:text-white transition-all duration-300 ${data?.class_button_primary || ""}`}
+                                                                    >
+                                                                        <span>
+                                                                            {
+                                                                                slide.button_text
+                                                                            }
+                                                                        </span>
+                                                                    </a>
+                                                                )}
+                                                            {slide?.secondary_button_text &&
+                                                                slide?.secondary_button_link && (
+                                                                    <a
+                                                                        href={
+                                                                            slide.secondary_button_link
+                                                                        }
+                                                                        target={
+                                                                            slide?.button_new_tab
+                                                                                ? "_blank"
+                                                                                : "_self"
+                                                                        }
+                                                                        onClick={(
+                                                                            e,
+                                                                        ) =>
+                                                                            e.stopPropagation()
+                                                                        }
+                                                                        className={`inline-flex items-center gap-2 px-8 py-4 bg-transparent border-2 border-white text-white text-lg font-bold hover:bg-white hover:text-neutral-dark transition-all duration-300 ${data.class_button_secondary || ""}`}
+                                                                    >
+                                                                        <span>
+                                                                            {
+                                                                                slide.secondary_button_text
+                                                                            }
+                                                                        </span>
+                                                                    </a>
+                                                                )}
+                                                        </div>
+                                                    </motion.div>
+                                                </AnimatePresence>
+                                            </div>
+                                        </div>
+                                    )}
                             </motion.div>
                         );
                     })}

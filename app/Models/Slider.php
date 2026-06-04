@@ -17,6 +17,7 @@ class Slider extends Model
         'name',
         'subtitle',
         'description',
+        'show_content',
         'bg_type',
         'bg_image',
         'bg_image_mobile',
@@ -45,6 +46,7 @@ class Slider extends Model
         'visible' => 'boolean',
         'status' => 'boolean',
         'show_overlay' => 'boolean',
+        'show_content' => 'boolean',
         'button_new_tab' => 'boolean',
     ];
 }

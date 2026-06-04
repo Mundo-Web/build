@@ -48,6 +48,7 @@ const Sliders = () => {
     const [overlayColor, setOverlayColor] = useState("#000000");
     const [overlayType, setOverlayType] = useState("gradient");
     const [buttonNewTab, setButtonNewTab] = useState(false);
+    const [showContent, setShowContent] = useState(true);
 
     const onModalOpen = (data) => {
         if (data?.id) setIsEditing(true);
@@ -131,6 +132,7 @@ const Sliders = () => {
         setButtonNewTab(
             data?.button_new_tab === true || data?.button_new_tab === 1,
         );
+        setShowContent(data?.show_content !== false && data?.show_content !== 0);
 
         $(modalRef.current).modal("show");
     };
@@ -182,6 +184,7 @@ const Sliders = () => {
             request.duration = durationRef.current.value
                 ? durationRef.current.value * 1000
                 : null;
+        request.show_content = showContent ? 1 : 0;
 
         // Media fields
         request.bg_type = activeTab;
@@ -1139,20 +1142,42 @@ const Sliders = () => {
                     )}
 
                     {/* Config Tab */}
-                    {Fillable.has("sliders", "duration") && (
-                        <div
-                            className={`col-12 ${activeFormTab !== "config" ? "d-none" : ""}`}
-                        >
-                            <div className="row">
+                    <div
+                        className={`col-12 ${activeFormTab !== "config" ? "d-none" : ""}`}
+                    >
+                        <div className="row">
+                            {Fillable.has("sliders", "duration") && (
                                 <InputFormGroup
                                     eRef={durationRef}
                                     label="Duración en segundos (ej: 5 para 5 segundos). Dejar vacío para usar el valor por defecto."
                                     col="col-sm-6"
                                     type="number"
                                 />
+                            )}
+                            <div className="col-sm-6">
+                                <label className="form-label">
+                                    Mostrar Contenido (Título, descripción y botones)
+                                </label>
+                                <div className="form-check form-switch">
+                                    <input
+                                        className="form-check-input"
+                                        type="checkbox"
+                                        checked={showContent}
+                                        onChange={(e) =>
+                                            setShowContent(e.target.checked)
+                                        }
+                                        style={{
+                                            width: "50px",
+                                            height: "25px",
+                                        }}
+                                    />
+                                    <label className="form-check-label ms-2">
+                                        {showContent ? "Sí" : "No"}
+                                    </label>
+                                </div>
                             </div>
                         </div>
-                    )}
+                    </div>
                 </div>
             </Modal>
         </>
