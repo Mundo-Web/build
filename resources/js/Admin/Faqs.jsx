@@ -166,7 +166,7 @@ const Faqs = () => {
                     <InputFormGroup
                         eRef={questionRef}
                         label="Pregunta"
-                        col="col-sm-8"
+                        col="col-sm-12"
                         rows={3}
                         required
                     />

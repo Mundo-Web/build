@@ -48,6 +48,9 @@ const ProductDetailHuaillys = React.lazy(
 const ProductDetailRainstar = React.lazy(
     () => import("./ProductDetails/ProductDetailRainstar"),
 );
+const ProductDetailMiBalon = React.lazy(
+    () => import("./ProductDetails/ProductDetailMiBalon"),
+);
 const ProductDetail = ({
     which,
     item,
@@ -243,6 +246,18 @@ const ProductDetail = ({
             case "ProductDetailRainstar":
                 return (
                     <ProductDetailRainstar
+                        item={item}
+                        cart={cart}
+                        setCart={setCart}
+                        data={data}
+                        generals={generals}
+                        onViewUpdate={handleViewUpdate}
+                    />
+                );
+            case "ProductDetailMiBalon":
+            case "ProductDetailMibalon":
+                return (
+                    <ProductDetailMiBalon
                         item={item}
                         cart={cart}
                         setCart={setCart}
