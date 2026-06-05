@@ -28,6 +28,9 @@ const CatalagoFiltrosPaani = React.lazy(
 const CatalogoFiltrosDental = React.lazy(
     () => import("./Filters/CatalogoFiltrosDental"),
 );
+const CatalogoFiltrosMiBalon = React.lazy(
+    () => import("./Filters/CatalogoFiltrosMiBalon"),
+);
 const CatalogoFiltrosKatya = React.lazy(
     () => import("./Filters/CatalogoFiltrosKatya"),
 );
@@ -141,6 +144,19 @@ const Filter = ({
             case "CatalogoFiltrosDental":
                 return (
                     <CatalogoFiltrosDental
+                        data={data}
+                        items={items}
+                        cart={cart}
+                        setCart={setCart}
+                        filteredData={filteredData}
+                        setFavorites={setFavorites}
+                        favorites={favorites}
+                        onClickTracking={handleClickTracking}
+                    />
+                );
+            case "CatalogoFiltrosMiBalon":
+                return (
+                    <CatalogoFiltrosMiBalon
                         data={data}
                         items={items}
                         cart={cart}
