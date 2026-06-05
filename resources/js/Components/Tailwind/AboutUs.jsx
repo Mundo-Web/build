@@ -13,6 +13,8 @@ const AboutWebQuirurgica = React.lazy(
     () => import("./AboutUs/AboutWebQuirurgica"),
 );
 const AboutRainstar = React.lazy(() => import("./AboutUs/AboutRainstar"));
+const AboutMiBalon = React.lazy(() => import("./AboutUs/AboutMiBalon"));
+
 const AboutUs = ({ data, which, filteredData, items, generals }) => {
     const getAboutUs = () => {
         switch (which) {
@@ -99,6 +101,14 @@ const AboutUs = ({ data, which, filteredData, items, generals }) => {
                         filteredData={filteredData}
                         items={items}
                         generals={generals}
+                    />
+                );
+            case "AboutMiBalon":
+                return (
+                    <AboutMiBalon
+                        data={data}
+                        filteredData={filteredData}
+                        items={items}
                     />
                 );
             default:
