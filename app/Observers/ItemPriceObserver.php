@@ -13,7 +13,7 @@ class ItemPriceObserver
 
     if ($item->discount > 0) {
       $final_price = min($item->price, $item->discount);
-      $discount_percent = 100 - ($item->discount / $item->price * 100);
+      $discount_percent = $item->price > 0 ? 100 - ($item->discount / $item->price * 100) : 0;
     }
 
     Item::where('id', $item->id)->update([
@@ -30,7 +30,7 @@ class ItemPriceObserver
 
       if ($item->discount > 0) {
         $final_price = min($item->price, $item->discount);
-        $discount_percent = 100 - ($item->discount / $item->price * 100);
+        $discount_percent = $item->price > 0 ? 100 - ($item->discount / $item->price * 100) : 0;
       }
 
       Item::where('id', $item->id)->update([

@@ -33,6 +33,7 @@ class UnifiedImportController extends Controller
      */
     public function import(Request $request)
     {
+        set_time_limit(0); // Evitar timeout en importaciones largas
         $request->validate([
             'file' => 'required|file|mimes:xlsx,xls,csv|max:10240', // 10MB max
             'mode' => 'nullable|in:reset,add_update', // Validar modo

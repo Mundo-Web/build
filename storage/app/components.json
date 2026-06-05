@@ -2227,6 +2227,20 @@
                     "model": "Category",
                     "limit": 3
                 }
+            },
+            {
+                "id": "CategoryMosaicMiBalon",
+                "name": "Mosaico Deportivo Mi Balón (3 slots)",
+                "image": "category-mosaic.png",
+                "data": [
+                    "class_container",
+                    "class_title",
+                    "class_description"
+                ],
+                "using": {
+                    "model": "Category",
+                    "limit": 3
+                }
             }
         ]
     },

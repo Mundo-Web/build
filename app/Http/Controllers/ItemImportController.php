@@ -20,6 +20,7 @@ class ItemImportController extends Controller
 
     public function import(Request $request)
     {
+        set_time_limit(0); // Evitar timeout en importaciones largas
         try {
             $request->validate([
                 'file' => 'required|mimes:xlsx'
