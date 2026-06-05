@@ -56,6 +56,9 @@ const ProductListHostinfinityFilter = React.lazy(
 const ProductGridRainstar = React.lazy(
     () => import("./Products/ProductGridRainstar"),
 );
+const ProductSwiperMiBalon = React.lazy(
+    () => import("./Products/ProductSwiperMiBalon"),
+);
 
 const Product = ({
     which,
@@ -123,6 +126,15 @@ const Product = ({
             case "ProductInfinite":
                 return (
                     <ProductInfinite
+                        data={data}
+                        items={items}
+                        cart={cart}
+                        setCart={setCart}
+                    />
+                );
+            case "ProductSwiperMiBalon":
+                return (
+                    <ProductSwiperMiBalon
                         data={data}
                         items={items}
                         cart={cart}

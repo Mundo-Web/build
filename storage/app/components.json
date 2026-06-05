@@ -2551,6 +2551,27 @@
                 }
             },
             {
+                "id": "ProductSwiperMiBalon",
+                "name": "Carrusel de Productos Mi Balón",
+                "image": "product-infinite.png",
+                "data": [
+                    "title",
+                    "description",
+                    "link_catalog",
+                    "class_container",
+                    "class_title"
+                ],
+                "using": {
+                    "model": "Item",
+                    "with": [
+                        "category",
+                        "subcategory",
+                        "brand"
+                    ],
+                    "limit": 12
+                }
+            },
+            {
                 "id": "ProductIbergruas",
                 "name": "ProductIbergruas",
                 "image": "products-list.png",
