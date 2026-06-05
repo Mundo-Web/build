@@ -2652,6 +2652,15 @@
                 ],
                 "using": {
                     "model": "Item",
+                     "filters": [
+                        "featured",
+                        "recommended",
+                        "offering",
+                        "is_new",
+                        "views",
+                        "most_view",
+                        "is_master"
+                    ],
                     "with": [
                         "category",
                         "subcategory",
@@ -4428,6 +4437,21 @@
                     "name",
                     "description"
                 ],
+                "using": {
+                    "model": "Post",
+                    "header": 3,
+                    "latest": 20,
+                    "with": [
+                        "category"
+                    ]
+                }
+            },
+             
+            {
+                "id": "BlogMiBalon",
+                "name": "Blog Mi Balón",
+                "image": "blog-mibalon.png",
+               
                 "using": {
                     "model": "Post",
                     "header": 3,
@@ -6434,3 +6458,4 @@
     }
   
 ]
+
