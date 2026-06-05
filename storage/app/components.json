@@ -3321,6 +3321,19 @@
                 "data": [
                     "class"
                 ]
+            },
+            {
+                "id": "BannerMiBalon",
+                "name": "Banner Destacado Mi Balón",
+                "image": "banner-premium-campaign.png",
+                "data": [
+                    "name",
+                    "description",
+                    "button_text",
+                    "button_link",
+                    "background",
+                    "class"
+                ]
             }
           
         ]

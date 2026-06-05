@@ -661,6 +661,11 @@ const Banners = ({ pages, systems: systemsFromProps = [] }) => {
             name: "Premium Campaign Rainstar",
             icon: "mdi mdi-star-circle",
         },
+        {
+            id: "BannerMiBalon",
+            name: "Banner Mi Balón",
+            icon: "mdi mdi-star-circle",
+        },
     ];
 
     const normalizePageId = (value) =>

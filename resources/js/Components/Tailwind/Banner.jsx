@@ -35,12 +35,17 @@ const BannerAboutStatsPanelPro = lazy(
 const BannerPremiumCampaign = lazy(
     () => import("./Banners/BannerPremiumCampaign"),
 );
+const BannerMiBalon = lazy(
+    () => import("./Banners/BannerMiBalon"),
+);
 
 const Banner = ({ which, data, items, generals }) => {
     const getBanner = () => {
         switch (which) {
             case "BannerPremiumCampaign":
                 return <BannerPremiumCampaign data={data} />;
+            case "BannerMiBalon":
+                return <BannerMiBalon data={data} />;
 
             case "BannerSimple":
                 return <BannerSimple data={data} />;
