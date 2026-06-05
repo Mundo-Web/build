@@ -11,6 +11,8 @@ const ContactWebQuirurgica = React.lazy(
     () => import("./Contact/ContactWebQuirurgica"),
 );
 const ContactRainstar = React.lazy(() => import("./Contact/ContactRainstar"));
+const ContactMiBalon = React.lazy(() => import("./Contact/ContactMiBalon"));
+
 const Contact = ({
     which,
     data,
@@ -78,7 +80,14 @@ const Contact = ({
                 return (
                     <ContactRainstar
                         data={data}
-                        // contacts={contacts}
+                        generals={generals}
+                    />
+                );
+            case "ContactMiBalon":
+            case "ContactMibalon":
+                return (
+                    <ContactMiBalon
+                        data={data}
                         generals={generals}
                     />
                 );
