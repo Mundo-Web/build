@@ -1,1 +1,0 @@
-import{j as e}from"./vendor-react-DGtfu94Q.js";import{H as t}from"./HtmlContent-BgV1fuFe.js";const a=({data:a})=>e.jsx("div",{id:a?.element_id||null,className:"bg-white",children:e.jsx("div",{className:"px-[5%] replace-max-w-here w-full mx-auto py-[5%] md:py-[2.5%]",children:e.jsx(t,{html:a?.["code:html"]??""})})});export{a as default};

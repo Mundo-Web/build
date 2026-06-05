@@ -4224,6 +4224,21 @@
                     
                 
             },
+              {
+                "id": "FaqMiBalon",
+                "name": "MiBalon",
+                "data": [
+                    "title",
+                    "class_card_container",
+                    "class_faq_answer",
+                    "class_title"
+                ],
+                "using": {
+                    "model": "Faq"
+                }
+                    
+                
+            },
             {
                 "id": "FaqModern",
                 "name": "FAQ Modern - Accordion Moderno",
