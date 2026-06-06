@@ -23,7 +23,7 @@ const ProductSwiperMiBalon = ({ items, data, setCart, cart }) => {
                 <div className="flex flex-col md:flex-row justify-between items-end mb-10 gap-4">
                     <div className="text-left">
                         <h2
-                            className={`text-4xl md:text-6xl  font-title text-neutral-dark tracking-tight mb-2 ${data?.class_title || ""}`}
+                            className={`text-4xl md:text-7xl  font-title text-neutral-dark tracking-tight mb-2 ${data?.class_title || ""}`}
                         >
                             <TextWithHighlight
                                 text={data?.title}

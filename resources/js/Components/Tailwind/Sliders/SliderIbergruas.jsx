@@ -99,9 +99,9 @@ const SliderIbergruas = ({ items, data, generals = [] }) => {
 
     // Animation variants
     const slideVariants = {
-        enter: { opacity: 0, scale: 1.1 },
+        enter: { opacity: 0, scale: 0.95 },
         center: { opacity: 1, scale: 1 },
-        exit: { opacity: 0, scale: 0.95 },
+        exit: { opacity: 0, scale: 1.05 },
     };
 
     const contentVariants = {

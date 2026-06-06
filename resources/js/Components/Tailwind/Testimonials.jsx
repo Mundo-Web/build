@@ -8,6 +8,7 @@ const TestimonialsVideosWebQuirurgica = React.lazy(() => import('./Testimonials/
 const TestimonialsTextWebQuirurgica = React.lazy(() => import('./Testimonials/TestimonialsTextWebQuirurgica'))
 const TestimonialsSimple = React.lazy(() => import('./Testimonials/TestimonialsSimple'))
 const TestimonialsHostinfinity = React.lazy(() => import('./Testimonials/TestimonialsHostinfinity'))
+const TestimonialsMiBalon = React.lazy(() => import('./Testimonials/TestimonialsMiBalon'))
 
 const Testimonials = ({ which, items,  data }) => {
   const getTestimonials = () => {
@@ -28,6 +29,9 @@ const Testimonials = ({ which, items,  data }) => {
         return <TestimonialsSimple data={data} items={items} />
       case 'TestimonialsHostinfinity':
         return <TestimonialsHostinfinity data={data} items={items} />
+      case 'TestimonialsMiBalon':
+      case 'TestimonialsMibalon':
+        return <TestimonialsMiBalon data={data} items={items} />
       default:
         return <div id={data?.element_id || null} className="w-full px-[5%] replace-max-w-here p-4 mx-auto">- No Hay componente <b>{which}</b> -</div>
     }

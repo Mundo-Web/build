@@ -263,7 +263,7 @@ export default function BlogPostCardMiBalon({
             <a href={`/post/${post?.slug}`} className="block h-full">
                 <div className="bg-white shadow-sm hover:shadow-xl rounded-[2rem] overflow-hidden transform hover:-translate-y-2 transition-all duration-300 h-full flex flex-col min-h-[450px] border border-gray-100 ">
                     {/* Image */}
-                    <div className="relative overflow-hidden aspect-[16/10] bg-gray-100 rounded-l-[1.5rem]">
+                    <div className="relative overflow-hidden aspect-[16/10] bg-gray-100 rounded-t-[1.5rem]">
                         <img
                             src={
                                 post?.image

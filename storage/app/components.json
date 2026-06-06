@@ -4481,6 +4481,30 @@
                     ]
                 }
             },
+             {
+                "id": "BlogSectionMiBalon",
+                "name": "BlogSectionMiBalon",
+                "image": "blog-section-mibalon.png",
+                "data": [
+                    "title",
+                    "subtitle",
+                    "posts_per_page",
+                    "blog_url",
+                    "read_more_text",
+                    "view_all_text",
+                    "class_section",
+                    "class_card",
+                    "class_button",
+                    "class_badge_category"
+                ],
+                "using": {
+                    "model": "Post",
+                    "limit": 12,
+                    "with": [
+                        "category"
+                    ]
+                }
+            },
             {
                 "id": "BlogWebQuirurgica",
                 "name": "Blog WebQuirúrgica",
@@ -5431,6 +5455,21 @@
                 "id": "TestimonialsMultivet",
                 "name": "Multivet",
                 "image": "testimonials-multivet.png",
+                "data": [
+             
+                    "title",
+                    "subtitle",
+                    "star_color"
+                    
+                ],
+                "using": {
+                    "model": "Testimony"
+                }
+            },
+              {
+                "id": "TestimonialsMiBalon",
+                "name": "MiBalon",
+                "image": "testimonials-mibalon.png",
                 "data": [
              
                     "title",
