@@ -4,37 +4,14 @@ import Number2Currency, {
     CurrencySymbol,
 } from "../../../Utils/Number2Currency";
 import { Minus, Plus, Trash2, Package } from "lucide-react";
-import Swal from "sweetalert2";
 
 const CartItemRowMiBalon = ({ setCart, index, ...item }) => {
     const isCombo = item.type === "combo";
 
     const onDelete = () => {
-        Swal.fire({
-            title: "¿Quitar del carrito?",
-            text: item.name,
-            icon: "warning",
-            showCancelButton: true,
-            confirmButtonText: "SÍ, QUITAR",
-            cancelButtonText: "CANCELAR",
-            confirmButtonColor: "#e30613",
-            cancelButtonColor: "#f3f4f6",
-            customClass: {
-                popup: "rounded-3xl shadow-2xl border border-gray-100",
-                title: "font-bold text-neutral-dark text-xl",
-                confirmButton:
-                    "rounded-full bg-danger text-white px-8 py-3 hover:bg-red-700 transition-all text-xs font-bold tracking-widest shadow-lg shadow-danger/30",
-                cancelButton:
-                    "rounded-full bg-gray-100 text-neutral-dark px-8 py-3 hover:bg-gray-200 transition-all ml-4 text-xs font-bold tracking-widest",
-            },
-            buttonsStyling: false,
-        }).then((result) => {
-            if (result.isConfirmed) {
-                setCart((old) =>
-                    old.filter((x) => x.id !== item.id || x.type !== item.type),
-                );
-            }
-        });
+        setCart((old) =>
+            old.filter((x) => x.id !== item.id || x.type !== item.type),
+        );
     };
 
     const updateQuantity = (newQuantity) => {

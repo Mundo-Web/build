@@ -156,8 +156,6 @@ const ProductDetailMiBalon = ({
                         );
                         setVariantsForSelectedGroup(uniqueVariants);
 
-                        // Removed automatic selection of the first variant to force user selection
-                        /*
                         const sellableVariants = uniqueVariants.filter(
                             (v) => !v.is_master && v.id !== item.id,
                         );
@@ -185,7 +183,6 @@ const ProductDetailMiBalon = ({
                             }
                             setSelectedAttributes(newAttrs);
                         }
-                        */
                     })
                     .catch((err) => {
                         console.error(
@@ -319,17 +316,30 @@ const ProductDetailMiBalon = ({
         return scoredCandidates[0].variant;
     };
 
-    const handleZoomClick = () => {
+    const handleZoomClick = (e) => {
+        if (!isZoomEnabled && e && imageRef.current) {
+            const rect = imageRef.current.getBoundingClientRect();
+            const x = ((e.clientX - rect.left) / rect.width) * 100;
+            const y = ((e.clientY - rect.top) / rect.height) * 100;
+            setZoomPosition({
+                x: Math.max(0, Math.min(100, x)),
+                y: Math.max(0, Math.min(100, y)),
+            });
+        }
         setIsZoomEnabled(!isZoomEnabled);
     };
 
     const handleMouseMove = (e) => {
         if (!isZoomEnabled) return;
-        const { left, top, width, height } =
-            imageRef.current.getBoundingClientRect();
-        const x = ((e.pageX - left - window.scrollX) / width) * 100;
-        const y = ((e.pageY - top - window.scrollY) / height) * 100;
-        setZoomPosition({ x, y });
+        if (imageRef.current) {
+            const rect = imageRef.current.getBoundingClientRect();
+            const x = ((e.clientX - rect.left) / rect.width) * 100;
+            const y = ((e.clientY - rect.top) / rect.height) * 100;
+            setZoomPosition({
+                x: Math.max(0, Math.min(100, x)),
+                y: Math.max(0, Math.min(100, y)),
+            });
+        }
     };
 
     const handleMouseLeave = () => {
@@ -384,9 +394,9 @@ const ProductDetailMiBalon = ({
     const mibalonSectionTitleClass =
         "text-2xl font-title uppercase text-neutral-dark border-b border-gray-200 pb-4 mb-8 flex items-center justify-between";
     const mibalonButtonClass =
-        "w-full py-5 text-lg font-title   transition-all duration-300 rounded-full border border-neutral-dark active:scale-[0.98]";
+        "w-full py-5 text-lg font-title   transition-all duration-300 rounded-full  active:scale-[0.98]";
     const mibalonPrimaryBtn = `${mibalonButtonClass} bg-primary text-white hover:bg-neutral-dark hover:border-neutral-dark uppercase`;
-    const mibalonSecondaryBtn = `${mibalonButtonClass} bg-white text-neutral-dark hover:bg-gray-50 border-gray-200 uppercase`;
+    const mibalonSecondaryBtn = `${mibalonButtonClass} border border-neutral-dark bg-white text-neutral-dark hover:bg-gray-50 border-gray-200 uppercase`;
 
     const generalSpecifications = (
         Array.isArray(currentProduct?.specifications) &&
@@ -409,15 +419,12 @@ const ProductDetailMiBalon = ({
                         {/* Gallery Thumbnails on the side */}
                         <div className="w-24 space-y-4 shrink-0">
                             {[
-                                currentProduct?.image || item?.image,
+                                currentProduct?.image,
                                 ...(Array.isArray(currentProduct?.images)
                                     ? currentProduct.images
                                     : Object.values(
                                           currentProduct?.images || {},
                                       )),
-                                ...(Array.isArray(item?.images)
-                                    ? item.images
-                                    : Object.values(item?.images || {})),
                             ]
                                 .filter((img, idx, self) => {
                                     const url = img?.url || img;
@@ -439,11 +446,11 @@ const ProductDetailMiBalon = ({
                                             onClick={() =>
                                                 setActiveImage(imgUrl)
                                             }
-                                            className={`aspect-[3/4] border p-1 bg-white cursor-pointer transition-all rounded-xl ${isActive ? "border-primary ring-2 ring-primary" : "border-gray-100 hover:border-primary/50"}`}
+                                            className={`aspect-square border p-1 bg-white cursor-pointer transition-all rounded-xl ${isActive ? "border-primary ring-2 ring-primary" : "border-gray-100 hover:border-primary/50"}`}
                                         >
                                             <img
                                                 src={`/storage/images/item/${imgUrl}`}
-                                                className="w-full h-full object-cover object-top"
+                                                className="w-full h-full object-contain object-top"
                                                 onError={(e) =>
                                                     (e.target.src =
                                                         "/api/cover/thumbnail/null")
@@ -458,11 +465,11 @@ const ProductDetailMiBalon = ({
                         <motion.div
                             initial={{ opacity: 0, x: -50 }}
                             animate={{ opacity: 1, x: 0 }}
-                            className="flex-1 border border-gray-100 p-2 bg-white group overflow-hidden relative rounded-[2rem] shadow-sm"
+                            className="flex-1 border aspect-square max-h-min border-gray-100 p-2 bg-white group overflow-hidden relative rounded-[2rem] shadow-sm"
                         >
                             <div
                                 ref={imageRef}
-                                className="aspect-[3/4] bg-white cursor-zoom-in relative overflow-hidden rounded-[1.5rem]"
+                                className="aspect-square bg-white cursor-zoom-in relative overflow-hidden rounded-[1.5rem]"
                                 onClick={handleZoomClick}
                                 onMouseMove={handleMouseMove}
                                 onMouseLeave={handleMouseLeave}
@@ -475,7 +482,10 @@ const ProductDetailMiBalon = ({
                                             currentProduct?.image
                                         }
                                         initial={{ opacity: 0, scale: 1.1 }}
-                                        animate={{ opacity: 1, scale: 1 }}
+                                        animate={{
+                                            opacity: 1,
+                                            scale: isZoomEnabled ? 1.5 : 1,
+                                        }}
                                         exit={{ opacity: 0, scale: 0.95 }}
                                         transition={{
                                             duration: 0.4,
@@ -483,7 +493,7 @@ const ProductDetailMiBalon = ({
                                         }}
                                         src={`/storage/images/item/${activeImage?.url || activeImage || currentProduct?.image}`}
                                         alt={currentProduct?.name || item?.name}
-                                        className={`w-full h-full object-cover object-top transition-transform duration-300 ease-out ${isZoomEnabled ? "scale-150" : "scale-100"}`}
+                                        className="w-full h-full object-contain object-top"
                                         style={
                                             isZoomEnabled
                                                 ? {
@@ -511,7 +521,17 @@ const ProductDetailMiBalon = ({
                                         </button>
                                     )}
                                     {!isZoomEnabled && (
-                                        <div className="bg-primary text-white p-3 rounded-full opacity-0 group-hover:opacity-100 transition-opacity shadow-sm">
+                                        <div
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                setZoomPosition({
+                                                    x: 50,
+                                                    y: 50,
+                                                });
+                                                setIsZoomEnabled(true);
+                                            }}
+                                            className="bg-primary text-white p-3 rounded-full opacity-0 group-hover:opacity-100 transition-opacity shadow-sm cursor-pointer"
+                                        >
                                             <ZoomIn className="w-5 h-5 stroke-[1.5]" />
                                         </div>
                                     )}
@@ -533,7 +553,7 @@ const ProductDetailMiBalon = ({
                                         currentProduct?.category?.name ||
                                         "COLECCIÓN PREMIUM"}
                                 </span>
-                                <h1 className="text-4xl md:text-5xl lg:text-6xl font-title uppercase tracking-tight leading-[1] text-primary">
+                                <h1 className="text-4xl md:text-5xl lg:text-6xl font-title uppercase tracking-tight leading-[1] text-neutral-dark">
                                     <TextWithHighlight
                                         text={currentProduct?.name}
                                         className="font-title"
@@ -595,6 +615,9 @@ const ProductDetailMiBalon = ({
                                                                 ]?.value ===
                                                                 val.value;
                                                             const isAvailable =
+                                                                attrData
+                                                                    .attribute
+                                                                    ?.is_parent ||
                                                                 isValueAvailable(
                                                                     attrData.name,
                                                                     val.value,
@@ -678,7 +701,7 @@ const ProductDetailMiBalon = ({
                                                     Math.max(1, quantity - 1),
                                                 )
                                             }
-                                            className="text-2xl font-light hover:text-primary transition-colors"
+                                            className="text-2xl font-medium hover:text-primary   transition-colors"
                                         >
                                             -
                                         </button>
@@ -691,31 +714,57 @@ const ProductDetailMiBalon = ({
                                                     Math.min(10, quantity + 1),
                                                 )
                                             }
-                                            className="text-2xl font-light hover:text-primary transition-colors"
+                                            className="text-2xl font-medium hover:text-primary transition-colors"
                                         >
                                             +
                                         </button>
                                     </div>
                                 </div>
-                                <div className="grid grid-cols-2 gap-3">
-                                    <button
-                                        onClick={() => {
-                                            onAddClicked(currentProduct);
-                                            window.location.href = "/cart";
-                                        }}
-                                        className={mibalonPrimaryBtn}
-                                    >
-                                        Comprar ahora
-                                    </button>
-                                    <button
-                                        onClick={() =>
-                                            onAddClicked(currentProduct)
-                                        }
-                                        className={mibalonSecondaryBtn}
-                                    >
-                                        Al Carrito
-                                    </button>
-                                </div>
+                                {(() => {
+                                    const hasMultipleVariants =
+                                        variantsForSelectedGroup.length > 1;
+                                    const totalRequiredAttributes =
+                                        group?.allAttributes?.length || 0;
+                                    const totalSelectedAttributes =
+                                        Object.keys(selectedAttributes).length;
+                                    const isFullySelected = !(
+                                        (hasMultipleVariants &&
+                                            (totalSelectedAttributes <
+                                                totalRequiredAttributes ||
+                                                currentProduct.id ===
+                                                    item.id)) ||
+                                        currentProduct.is_master
+                                    );
+
+                                    return (
+                                        <div className="grid grid-cols-2 gap-3">
+                                            <button
+                                                disabled={!isFullySelected}
+                                                onClick={() => {
+                                                    onAddClicked(
+                                                        currentProduct,
+                                                    );
+                                                    if (isFullySelected) {
+                                                        window.location.href =
+                                                            "/cart";
+                                                    }
+                                                }}
+                                                className={`${mibalonPrimaryBtn} ${!isFullySelected ? "opacity-50 cursor-not-allowed hover:bg-primary hover:border-neutral-dark" : ""}`}
+                                            >
+                                                Comprar ahora
+                                            </button>
+                                            <button
+                                                disabled={!isFullySelected}
+                                                onClick={() =>
+                                                    onAddClicked(currentProduct)
+                                                }
+                                                className={`${mibalonSecondaryBtn} ${!isFullySelected ? "opacity-50 cursor-not-allowed hover:bg-white hover:border-gray-200" : ""}`}
+                                            >
+                                                Al Carrito
+                                            </button>
+                                        </div>
+                                    );
+                                })()}
                             </div>
                         </motion.div>
                     </div>
