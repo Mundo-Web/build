@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { ArrowUpRight, ShoppingCart } from "lucide-react";
 import CartModal from "../../Components/CartModal";
 import { CurrencySymbol } from "../../../../Utils/Number2Currency";
+import CartModalMiBalon from "../../Components/CartModalMiBalon";
 
 const CardProductMiBalon = ({ product, setCart, cart, data }) => {
     const [modalOpen, setModalOpen] = useState(false);
@@ -72,7 +73,8 @@ const CardProductMiBalon = ({ product, setCart, cart, data }) => {
 
                     {/* Price Section */}
                     <div className="flex flex-col items-center gap-1 mb-6 h-14 justify-end">
-                        {Number(product.final_price) > 0 || Number(product.price) > 0 ? (
+                        {Number(product.final_price) > 0 ||
+                        Number(product.price) > 0 ? (
                             Number(product.price) > 0 &&
                             Number(product.discount) > 0 &&
                             Number(product.discount) < Number(product.price) ? (
@@ -86,7 +88,8 @@ const CardProductMiBalon = ({ product, setCart, cart, data }) => {
                                 </>
                             ) : (
                                 <span className="text-neutral-dark text-2xl font-black">
-                                    {CurrencySymbol()} {product.final_price || product.price}
+                                    {CurrencySymbol()}{" "}
+                                    {product.final_price || product.price}
                                 </span>
                             )
                         ) : null}
@@ -95,16 +98,16 @@ const CardProductMiBalon = ({ product, setCart, cart, data }) => {
                     {/* Add to cart */}
                     <div className="mt-auto flex w-full">
                         <button
-                            onClick={(e) => onAddClicked(e, product)}
+                            onClick={goToDetail}
                             className="w-full inline-flex items-center justify-center gap-2 bg-primary text-white hover:bg-neutral-dark hover:text-white px-4 py-3 rounded-full text-sm font-bold tracking-wider transition-all shadow-md active:scale-95"
                         >
-                            Agregar <ShoppingCart size={18} />
+                            Ver detalle <ArrowUpRight size={18} />
                         </button>
                     </div>
                 </div>
             </div>
 
-            <CartModal
+            <CartModalMiBalon
                 data={data}
                 cart={cart}
                 setCart={setCart}
