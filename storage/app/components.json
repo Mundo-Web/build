@@ -5459,7 +5459,9 @@
              
                     "title",
                     "subtitle",
-                    "star_color"
+                    "star_color",
+                    "nav_button_bg",
+                    "nav_button_color"
                     
                 ],
                 "using": {

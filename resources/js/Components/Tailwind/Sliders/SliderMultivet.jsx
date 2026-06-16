@@ -253,11 +253,10 @@ const SliderMultivet = ({ items, data, generals = [] }) => {
                 {sortedItems.map((slide, index) => (
                     <div
                         key={slide?.id || index}
-                        className={`absolute inset-0 transition-all duration-1000 ease-in-out ${
-                            index === currentSlide
-                                ? "opacity-100 scale-100 pointer-events-auto"
-                                : "opacity-0 scale-105 pointer-events-none"
-                        }`}
+                        className={`absolute inset-0 transition-all duration-1000 ease-in-out ${index === currentSlide
+                            ? "opacity-100 scale-100 pointer-events-auto"
+                            : "opacity-0 scale-105 pointer-events-none"
+                            }`}
                     >
                         {/* Background Images - Optimized with <picture> to avoid double download */}
                         <AnimatePresence>
@@ -276,8 +275,8 @@ const SliderMultivet = ({ items, data, generals = [] }) => {
                                             media="(min-width: 768px)"
                                             srcSet={`/storage/images/slider/${slide?.bg_image}`}
                                             onError={(e) =>
-                                                (e.target.src =
-                                                    "/api/cover/thumbnail/null")
+                                            (e.target.src =
+                                                "/api/cover/thumbnail/null")
                                             }
                                         />
                                         {/* Mobile Image (also serves as fallback) */}
@@ -288,8 +287,8 @@ const SliderMultivet = ({ items, data, generals = [] }) => {
                                                 index === 0 ? "eager" : "lazy"
                                             }
                                             onError={(e) =>
-                                                (e.target.src =
-                                                    "/api/cover/thumbnail/null")
+                                            (e.target.src =
+                                                "/api/cover/thumbnail/null")
                                             }
                                             className={`h-full w-full object-cover ${data?.imageBgPosition || "object-center"}`}
                                         />
@@ -304,37 +303,36 @@ const SliderMultivet = ({ items, data, generals = [] }) => {
                                 <div
                                     className="absolute inset-0"
                                     style={{
-                                        background: `linear-gradient(${
-                                            slide?.overlay_direction === "to-r"
-                                                ? "to right"
+                                        background: `linear-gradient(${slide?.overlay_direction === "to-r"
+                                            ? "to right"
+                                            : slide?.overlay_direction ===
+                                                "to-l"
+                                                ? "to left"
                                                 : slide?.overlay_direction ===
-                                                    "to-l"
-                                                  ? "to left"
-                                                  : slide?.overlay_direction ===
-                                                      "to-t"
+                                                    "to-t"
                                                     ? "to top"
                                                     : slide?.overlay_direction ===
                                                         "to-b"
-                                                      ? "to bottom"
-                                                      : slide?.overlay_direction ===
-                                                          "to-tr"
-                                                        ? "to top right"
+                                                        ? "to bottom"
                                                         : slide?.overlay_direction ===
-                                                            "to-tl"
-                                                          ? "to top left"
-                                                          : slide?.overlay_direction ===
-                                                              "to-br"
-                                                            ? "to bottom right"
+                                                            "to-tr"
+                                                            ? "to top right"
                                                             : slide?.overlay_direction ===
-                                                                "to-bl"
-                                                              ? "to bottom left"
-                                                              : "to bottom"
-                                        }, ${slide?.overlay_color || "#000000"}${Math.round(
-                                            (slide?.overlay_opacity ?? 50) *
+                                                                "to-tl"
+                                                                ? "to top left"
+                                                                : slide?.overlay_direction ===
+                                                                    "to-br"
+                                                                    ? "to bottom right"
+                                                                    : slide?.overlay_direction ===
+                                                                        "to-bl"
+                                                                        ? "to bottom left"
+                                                                        : "to bottom"
+                                            }, ${slide?.overlay_color || "#000000"}${Math.round(
+                                                (slide?.overlay_opacity ?? 50) *
                                                 2.55,
-                                        )
-                                            .toString(16)
-                                            .padStart(2, "0")}, transparent)`,
+                                            )
+                                                .toString(16)
+                                                .padStart(2, "0")}, transparent)`,
                                     }}
                                 ></div>
                             )}
@@ -381,7 +379,8 @@ const SliderMultivet = ({ items, data, generals = [] }) => {
                                                 >
                                                     <TextWithHighlight
                                                         text={slide?.name}
-                                                        color=""
+                                                        color="bg-accent"
+                                                        className="font-title"
                                                     />
                                                 </motion.h1>
 
@@ -436,6 +435,31 @@ const SliderMultivet = ({ items, data, generals = [] }) => {
                                                                 </span>
                                                                 <ArrowRight className="w-5 h-5" />
                                                             </a>
+                                                            {slide?.secondary_button_text &&
+                                                                slide?.secondary_button_link && (
+
+                                                                    <a
+                                                                        href={
+                                                                            slide?.secondary_button_link
+                                                                        }
+                                                                        target={
+                                                                            "_blank"
+
+                                                                        }
+                                                                        rel={
+                                                                            "noopener noreferrer"
+
+                                                                        }
+                                                                        className={`bg-white/20 backdrop-blur-sm border-2 border-white/30 text-white flex items-center justify-center gap-2 py-3 lg:gap-3 px-6 lg:py-4 text-base rounded-xl tracking-wide font-bold hover:bg-white/30 transition-all duration-300 ${data?.class_button_primary || ""}`}
+                                                                    >
+                                                                        <span>
+                                                                            {
+                                                                                slide?.secondary_button_text
+                                                                            }
+                                                                        </span>
+                                                                        <ArrowRight className="w-5 h-5" />
+                                                                    </a>
+                                                                )}
 
                                                             {/* WhatsApp Button */}
                                                             {/*data?.whatsapp_info && phoneWhatsapp && (
@@ -489,11 +513,10 @@ const SliderMultivet = ({ items, data, generals = [] }) => {
                                 <button
                                     key={index}
                                     onClick={() => goToSlide(index)}
-                                    className={`transition-all duration-300 ${
-                                        index === currentSlide
-                                            ? "w-8 h-3 bg-accent rounded-full"
-                                            : "w-3 h-3 bg-white/50 rounded-full hover:bg-white/70"
-                                    }`}
+                                    className={`transition-all duration-300 ${index === currentSlide
+                                        ? "w-8 h-3 bg-accent rounded-full"
+                                        : "w-3 h-3 bg-white/50 rounded-full hover:bg-white/70"
+                                        }`}
                                 />
                             ))}
                         </div>

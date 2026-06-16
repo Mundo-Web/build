@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 
-const TextWithHighlight = ({ text = "", split = false, split_coma = false, split_dos_puntos = false, color = "bg-constrast", counter = false, className = "" }) => {
+const TextWithHighlight = ({ text = "", split = false, split_coma = false, split_dos_puntos = false, color = "bg-accent", counter = false, className = "" }) => {
     // Función para procesar el texto con resaltados
     const safeText = text || "";
     const [currentNumber, setCurrentNumber] = useState(0);
@@ -14,7 +14,7 @@ const TextWithHighlight = ({ text = "", split = false, split_coma = false, split
                 const targetNumber = parseFloat(numberMatch[0].replace(/,/g, ''));
                 const duration = 2000; // 2 segundos de animación
                 const increment = targetNumber / (duration / 16); // 60 FPS aproximadamente
-                
+
                 let current = 0;
                 const timer = setInterval(() => {
                     current += increment;
@@ -33,7 +33,7 @@ const TextWithHighlight = ({ text = "", split = false, split_coma = false, split
 
     const renderHighlightedText = (textToRender) => {
         let processedText = textToRender;
-        
+
         // Si counter está activado, reemplazar el número con el contador animado
         if (counter) {
             const numberMatch = textToRender.match(/(\d+(?:,\d{3})*(?:\.\d+)?)/);

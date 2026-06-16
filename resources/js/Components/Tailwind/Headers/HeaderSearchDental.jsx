@@ -40,7 +40,7 @@ const HeaderSearchDental = ({
     const messageWhatsappObj = generals.find(
         (item) => item.correlative === "message_whatsapp"
     );
-    
+
     const phoneWhatsapp = phoneWhatsappObj?.description ?? null;
     const messageWhatsapp = messageWhatsappObj?.description ?? null;
 
@@ -446,7 +446,7 @@ const HeaderSearchDental = ({
                                                 {suggestion.category.name}
                                             </div>
                                         )}
-                                        {suggestion.final_price && (
+                                        {suggestion.final_price && suggestion.final_price > 0 && (
                                             <div className="text-sm font-semibold customtext-primary">
                                                 {CurrencySymbol()} {parseFloat(suggestion.final_price).toFixed(2)}
                                             </div>
@@ -474,9 +474,9 @@ const HeaderSearchDental = ({
     // Función para renderizar el TopBar correcto según data.topBarType
     const renderTopBar = () => {
         if (!isFixed) return null;
-        
+
         const topBarType = data?.topBarType || 'TopBarPages'; // default a 'TopBarPages'
-        
+
         switch (topBarType) {
             case 'TopBarSimple':
                 return <TopBarSimple data={data} />;
@@ -498,7 +498,7 @@ const HeaderSearchDental = ({
 
     return (
         <header id={data?.element_id || null} className={`w-full top-0 left-0 z-50 transition-all duration-300 ${isFixed ? "fixed bg-white shadow-lg" : "relative bg-white"}`}>
-           {renderTopBar()}
+            {renderTopBar()}
             <div className="px-primary  bg-white 2xl:px-0 2xl:max-w-7xl mx-auto py-4 font-font-secondary text-base font-semibold">
                 <div className="flex items-center justify-between gap-4">
                     {/* Logo */}
@@ -641,7 +641,7 @@ const HeaderSearchDental = ({
                                         <div className="relative transform group-hover:scale-105 transition-transform duration-200">
                                             {isUser.uuid ? (
                                                 <div className="relative">
-                                                    <ProfileImage 
+                                                    <ProfileImage
                                                         uuid={isUser.uuid}
                                                         name={isUser.name}
                                                         lastname={isUser.lastname}
@@ -655,8 +655,8 @@ const HeaderSearchDental = ({
                                                 </div>
                                             ) : (
                                                 <div className="relative">
-                                                    <CircleUser 
-                                                        className="customtext-primary border-2 border-primary rounded-full  ring-secondary group-hover:ring-green-300 transition-all duration-300" 
+                                                    <CircleUser
+                                                        className="customtext-primary border-2 border-primary rounded-full  ring-secondary group-hover:ring-green-300 transition-all duration-300"
                                                     />
                                                     {/* Punto indicador online animado */}
                                                     <div className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-primary border-2 border-white rounded-full animate-pulse">
