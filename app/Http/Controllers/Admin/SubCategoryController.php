@@ -33,8 +33,25 @@ class SubCategoryController extends BasicController
                     }
                 }
             }
-            // Re-index array if needed
-            $filters = array_values(array_filter($filters));
+            
+            // Clean up dangling "and" / "or" operators left behind
+            $cleaned = [];
+            $lastWasOperator = true;
+            foreach ($filters as $f) {
+                if (is_string($f) && in_array(strtolower($f), ['and', 'or'])) {
+                    if (!$lastWasOperator) {
+                        $cleaned[] = $f;
+                        $lastWasOperator = true;
+                    }
+                } else {
+                    $cleaned[] = $f;
+                    $lastWasOperator = false;
+                }
+            }
+            if ($lastWasOperator && count($cleaned) > 0) {
+                array_pop($cleaned);
+            }
+            $filters = $cleaned;
         }
     }
 
