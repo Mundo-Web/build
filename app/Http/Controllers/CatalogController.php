@@ -31,22 +31,25 @@ class CatalogController extends Controller
 
         if ($subcategorySlug) {
             $subcategory = SubCategory::where('slug', $subcategorySlug)
-                ->with('category')
+                ->with('categories')
                 ->first();
 
             Log::info('CatalogController.context - Subcategory query result:', [
                 'found' => $subcategory ? true : false,
                 'subcategory_id' => $subcategory?->id,
-                'category_id' => $subcategory?->category_id
+                'category_ids' => $subcategory ? $subcategory->categories->pluck('id') : []
             ]);
 
             if ($subcategory) {
                 $response['current_subcategory'] = $subcategory;
-                $response['category'] = $subcategory->category;
+                $response['category'] = $subcategory->categories->first();
                 
                 // Get sibling subcategories
-                if ($subcategory->category) {
-                    $response['subcategories'] = SubCategory::where('category_id', $subcategory->category_id)
+                if ($subcategory->categories->isNotEmpty()) {
+                    $categoryIds = $subcategory->categories->pluck('id');
+                    $response['subcategories'] = SubCategory::whereHas('categories', function($q) use($categoryIds) {
+                            $q->whereIn('categories.id', $categoryIds);
+                        })
                         ->where('status', true)
                         ->get();
                     
@@ -57,11 +60,11 @@ class CatalogController extends Controller
                 }
 
                 // Banners priority: Subcategory > Category
-                $response['banners'] = $subcategory->banners ?? $subcategory->category->banners ?? [];
+                $response['banners'] = $subcategory->banners ?? ($response['category'] ? $response['category']->banners : []) ?? [];
 
                 // Stores from category
-                if ($subcategory->category && $subcategory->category->stores) {
-                    $storeIds = $subcategory->category->stores;
+                if ($response['category'] && $response['category']->stores) {
+                    $storeIds = $response['category']->stores;
                     $response['stores'] = Store::whereIn('id', $storeIds)
                         ->where('visible', true)
                         ->get();
@@ -78,7 +81,9 @@ class CatalogController extends Controller
 
             if ($category) {
                 $response['category'] = $category;
-                $response['subcategories'] = SubCategory::where('category_id', $category->id)
+                $response['subcategories'] = SubCategory::whereHas('categories', function($q) use($category) {
+                        $q->where('categories.id', $category->id);
+                    })
                     ->where('status', true)
                     ->get();
                 

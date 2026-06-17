@@ -55,9 +55,13 @@ class ItemImportPaani implements ToModel, WithHeadingRow, SkipsOnError, SkipsOnF
 
           // 2️⃣ Obtener o crear la subcategoría
              $subCategory = SubCategory::firstOrCreate(
-                ['name' => $row['subcategoria'], 'category_id' => $category->id],
+                ['name' => $row['subcategoria']],
                ['slug' => str()->slug($row['subcategoria'])]
           );
+
+          if (!$subCategory->categories()->where('categories.id', $category->id)->exists()) {
+              $subCategory->categories()->attach($category->id);
+          }
 
        //    3️⃣ Obtener o crear la marca
            $brand = Brand::firstOrCreate(

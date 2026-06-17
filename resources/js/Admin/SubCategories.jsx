@@ -40,8 +40,9 @@ const SubCategories = () => {
         idRef.current.value = data?.id ?? "";
         SetSelectValue(
             categoryRef.current,
-            data?.category?.id,
-            data?.category?.name
+            data?.categories,
+            'id',
+            'name'
         );
         nameRef.current.value = data?.name ?? "";
         descriptionRef.current.value = data?.description ?? "";
@@ -56,14 +57,18 @@ const SubCategories = () => {
 
         const request = {
             id: idRef.current.value || undefined,
-            category_id: categoryRef.current.value,
+            category_ids: $(categoryRef.current).val(),
             name: nameRef.current.value,
             description: descriptionRef.current.value,
         };
 
         const formData = new FormData();
         for (const key in request) {
-            formData.append(key, request[key]);
+            if (key === 'category_ids' && Array.isArray(request[key])) {
+                request[key].forEach(id => formData.append('category_ids[]', id));
+            } else if (request[key] !== undefined) {
+                formData.append(key, request[key]);
+            }
         }
         const file = imageRef.current.files[0];
         if (file) {
@@ -187,8 +192,11 @@ const SubCategories = () => {
                         sortIndex: 0
                     },
                     {
-                        dataField: "category.name",
-                        caption: "Categoría",
+                        dataField: "categories",
+                        caption: "Categorías",
+                        cellTemplate: (container, { data }) => {
+                            container.text(data.categories?.map(c => c.name).join(', ') || '');
+                        }
                     },
                     {
                         dataField: "name",
@@ -309,9 +317,10 @@ const SubCategories = () => {
                 <div className="row" id="modal-container">
                     <SelectAPIFormGroup
                         eRef={categoryRef}
-                        label="Categoría"
+                        label="Categorías"
                         searchAPI="/api/admin/categories/paginate"
                         searchBy="name"
+                        multiple
                         required
                         dropdownParent="#modal-container"
                     />

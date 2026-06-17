@@ -84,13 +84,16 @@ class ItemImport implements ToModel, WithHeadingRow, SkipsOnError, SkipsOnFailur
 
             $subCategory = SubCategory::firstOrCreate(
                 [
-                    'slug' => $subCategorySlug,
-                    'category_id' => $category->id
+                    'name' => $subcategoria
                 ],
                 [
-                    'name' => $subcategoria
+                    'slug' => $subCategorySlug
                 ]
             );
+
+            if (!$subCategory->categories()->where('categories.id', $category->id)->exists()) {
+                $subCategory->categories()->attach($category->id);
+            }
 
 
 

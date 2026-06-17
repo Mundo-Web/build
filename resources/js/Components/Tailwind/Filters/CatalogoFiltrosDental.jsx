@@ -105,11 +105,11 @@ const modernFilterStyles = {
     searchInput:
         "w-full pl-12 pr-4 py-3 bg-white/90 backdrop-blur-sm border border-gray-200/60 rounded-xl focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400 transition-all duration-300 placeholder:customtext-neutral-dark",
     checkbox:
-        "min-h-5 min-w-5 rounded-lg border-2 border-gray-300 text-blue-600 focus:ring-blue-500/30 focus:ring-2 transition-all duration-200 hover:border-blue-400",
-    label: "flex items-center gap-3 py-0 px-3 rounded-lg transition-all duration-200 hover:bg-gradient-to-r hover:from-blue-50/60 hover:to-indigo-50/40 cursor-pointer group",
+        "form-checkbox accent-primary min-h-5 min-w-5 rounded-md border-2 border-gray-300 text-primary focus:ring-primary/30 focus:ring-2 transition-all duration-200 hover:border-primary cursor-pointer",
+    label: "flex items-center gap-3 py-1 px-3 rounded-lg transition-all duration-200 hover:bg-gradient-to-r hover:from-primary/10 hover:to-primary/5 cursor-pointer group",
     activeFilter:
-        "bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-lg shadow-blue-500/25",
-    badge: "inline-flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-blue-100 to-indigo-100 border border-blue-200 rounded-full text-sm font-medium text-blue-700",
+        "bg-primary text-white shadow-lg shadow-primary/25",
+    badge: "inline-flex items-center gap-1.5 px-3 py-1.5 bg-primary/10 border border-primary/20 rounded-full text-sm font-medium text-primary",
     glowEffect: "shadow-lg shadow-blue-500/20 ring-1 ring-blue-500/20",
     pulseAnimation: "animate-pulse",
     shimmerEffect:
@@ -399,7 +399,11 @@ const CatalogoFiltrosDental = ({
                             : response.data.category_ids
                               ? [response.data.category_ids]
                               : [],
-                        brand_id: GET.brand ? [GET.brand] : [],
+                        brand_id: Array.isArray(response.data.brand_ids)
+                            ? response.data.brand_ids
+                            : response.data.brand_ids
+                              ? [response.data.brand_ids]
+                              : [],
                         subcategory_id: Array.isArray(
                             response.data.subcategory_ids,
                         )
@@ -471,10 +475,10 @@ const CatalogoFiltrosDental = ({
         }
 
         if (filters.collection_id.length > 0) {
-            const collectionConditions = filters.collection_id.map((slug) => [
-                "collection.id", // Cambiar a ID en lugar de slug
+            const collectionConditions = filters.collection_id.map((id) => [
+                "collection.id",
                 "=",
-                collections.find((c) => c.slug === slug)?.id || slug,
+                id,
             ]);
             const joined = ArrayJoin(collectionConditions, "or");
             transformedFilters.push(joined.length === 1 ? joined[0] : joined);
@@ -501,18 +505,11 @@ const CatalogoFiltrosDental = ({
         }
 
         if (filters.brand_id.length > 0) {
-            const brandConditions = filters.brand_id.map((slug) => {
-                // Buscar la marca en el array para obtener su ID
-                const brand = brands.find((b) => b.slug === slug);
-
-                if (brand) {
-                    // Si encontramos la marca, usar su ID
-                    return ["brand.slug", "=", brand.slug];
-                } else {
-                    // Si no la encontramos, usar slug
-                    return ["brand.slug", "=", slug];
-                }
-            });
+            const brandConditions = filters.brand_id.map((id) => [
+                "brand.id",
+                "=",
+                id,
+            ]);
             const joined = ArrayJoin(brandConditions, "or");
             transformedFilters.push(joined.length === 1 ? joined[0] : joined);
         }
@@ -589,9 +586,9 @@ const CatalogoFiltrosDental = ({
     };
 
     // Estado para controlar la búsqueda inteligente
-    const [intelligentSearchEnabled, setIntelligentSearchEnabled] =
-        useState(true);
+    const [intelligentSearchEnabled, setIntelligentSearchEnabled] = useState(true);
     const [lastIntelligentSearch, setLastIntelligentSearch] = useState(null);
+    const [validFilterCounts, setValidFilterCounts] = useState(null);
 
     // Función para detectar si el query coincide con marcas, categorías o subcategorías
     const detectIntelligentFilters = (query) => {
@@ -664,13 +661,13 @@ const CatalogoFiltrosDental = ({
             selectedFilters.category_id.includes(cat.id),
         );
         const hasMatchingBrands = detected.brands.some((brand) =>
-            selectedFilters.brand_id.includes(brand.slug),
+            selectedFilters.brand_id.includes(brand.id),
         );
         const hasMatchingSubcategories = detected.subcategories.some((subcat) =>
             selectedFilters.subcategory_id.includes(subcat.id),
         );
         const hasMatchingCollections = detected.collections.some((collection) =>
-            selectedFilters.collection_id.includes(collection.slug),
+            selectedFilters.collection_id.includes(collection.id),
         );
 
         return (
@@ -700,9 +697,9 @@ const CatalogoFiltrosDental = ({
 
             // Aplicar filtros de marcas detectadas
             if (detected.brands.length > 0) {
-                const brandSlugs = detected.brands.map((brand) => brand.slug);
+                const brandIds = detected.brands.map((brand) => brand.id);
                 newFilters.brand_id = [
-                    ...new Set([...newFilters.brand_id, ...brandSlugs]),
+                    ...new Set([...newFilters.brand_id, ...brandIds]),
                 ];
             }
 
@@ -721,13 +718,13 @@ const CatalogoFiltrosDental = ({
 
             // Aplicar filtros de colecciones detectadas
             if (detected.collections.length > 0) {
-                const collectionSlugs = detected.collections.map(
-                    (collection) => collection.slug,
+                const collectionIds = detected.collections.map(
+                    (collection) => collection.id,
                 );
                 newFilters.collection_id = [
                     ...new Set([
                         ...newFilters.collection_id,
-                        ...collectionSlugs,
+                        ...collectionIds,
                     ]),
                 ];
             }
@@ -761,11 +758,11 @@ const CatalogoFiltrosDental = ({
 
                 // Aplicar filtros de marcas detectadas
                 if (detected.brands.length > 0) {
-                    const brandSlugs = detected.brands.map(
-                        (brand) => brand.slug,
+                    const brandIds = detected.brands.map(
+                        (brand) => brand.id,
                     );
                     newFilters.brand_id = [
-                        ...new Set([...newFilters.brand_id, ...brandSlugs]),
+                        ...new Set([...newFilters.brand_id, ...brandIds]),
                     ];
                 }
 
@@ -784,13 +781,13 @@ const CatalogoFiltrosDental = ({
 
                 // Aplicar filtros de colecciones detectadas
                 if (detected.collections.length > 0) {
-                    const collectionSlugs = detected.collections.map(
-                        (collection) => collection.slug,
+                    const collectionIds = detected.collections.map(
+                        (collection) => collection.id,
                     );
                     newFilters.collection_id = [
                         ...new Set([
                             ...newFilters.collection_id,
-                            ...collectionSlugs,
+                            ...collectionIds,
                         ]),
                     ];
                 }
@@ -829,11 +826,11 @@ const CatalogoFiltrosDental = ({
 
                     // Remover marcas detectadas
                     if (detected.brands.length > 0) {
-                        const brandSlugs = detected.brands.map(
-                            (brand) => brand.slug,
+                        const brandIds = detected.brands.map(
+                            (brand) => brand.id,
                         );
                         newFilters.brand_id = newFilters.brand_id.filter(
-                            (slug) => !brandSlugs.includes(slug),
+                            (id) => !brandIds.includes(id),
                         );
                     }
 
@@ -850,12 +847,12 @@ const CatalogoFiltrosDental = ({
 
                     // Remover colecciones detectadas
                     if (detected.collections.length > 0) {
-                        const collectionSlugs = detected.collections.map(
-                            (collection) => collection.slug,
+                        const collectionIds = detected.collections.map(
+                            (collection) => collection.id,
                         );
                         newFilters.collection_id =
                             newFilters.collection_id.filter(
-                                (slug) => !collectionSlugs.includes(slug),
+                                (id) => !collectionIds.includes(id),
                             );
                     }
 
@@ -889,7 +886,7 @@ const CatalogoFiltrosDental = ({
                 enhancedFilters.brand_id = [
                     ...new Set([
                         ...enhancedFilters.brand_id,
-                        ...intelligentFilters.brands.map((brand) => brand.slug),
+                        ...intelligentFilters.brands.map((brand) => brand.id),
                     ]),
                 ];
             }
@@ -910,7 +907,7 @@ const CatalogoFiltrosDental = ({
                     ...new Set([
                         ...enhancedFilters.collection_id,
                         ...intelligentFilters.collections.map(
-                            (collection) => collection.slug,
+                            (collection) => collection.id,
                         ),
                     ]),
                 ];
@@ -1064,12 +1061,14 @@ const CatalogoFiltrosDental = ({
                 to: Math.min(page * itemsPerPage, totalCount),
             });
 
-            // Update all filter options from backend summary
-            setBrands(response?.summary?.brands || []);
-            setCategories(response?.summary?.categories || []);
-            setSubcategories(response?.summary?.subcategories || []);
-            setCollections(response?.summary?.collections || []);
-            setStores(response?.summary?.stores || []);
+            // Update valid filter counts for smart cross-filtering UI
+            setValidFilterCounts({
+                brands: response?.summary?.brands || [],
+                categories: response?.summary?.categories || [],
+                subcategories: response?.summary?.subcategories || [],
+                collections: response?.summary?.collections || [],
+                stores: response?.summary?.stores || [],
+            });
             
             // Only update price ranges if they are not fixed by dat_prices
             if (!data?.dat_prices) {
@@ -1477,47 +1476,91 @@ const CatalogoFiltrosDental = ({
 
     const activePriceRanges = getPriceRanges();
 
-    // Filtrar categorías según el input
-    const filteredCategories = categories.filter((category) =>
-        category.name.toLowerCase().includes(searchCategory.toLowerCase()),
-    );
-    const filteredSubcategories = subcategories.filter((subcategory) => {
-        // Si hay categorías seleccionadas en los filtros, solo mostrar subcategorías de esas categorías
-        let categoryIds;
-        if (
-            selectedFilters.category_id &&
-            selectedFilters.category_id.length > 0
-        ) {
-            // Hay categorías seleccionadas, solo mostrar subcategorías de esas categorías
-            categoryIds = categories
-                .filter((cat) => selectedFilters.category_id.includes(cat.id))
-                .map((cat) => cat.id);
-        } else {
-            // No hay categorías seleccionadas, mostrar subcategorías de todas las categorías disponibles
-            categoryIds = categories.map((cat) => cat.id);
+    // Filtrar categorías según el input y los filtros cruzados del backend
+    const filteredCategories = categories.filter((category) => {
+        const matchesSearch = category.name.toLowerCase().includes(searchCategory.toLowerCase());
+        if (!matchesSearch) return false;
+        
+        // Filtro cruzado inteligente
+        if (validFilterCounts && Array.isArray(validFilterCounts.categories)) {
+            const hasItems = validFilterCounts.categories.some(c => c.id === category.id);
+            // Mostrar si tiene items o si está actualmente seleccionada
+            return hasItems || selectedFilters.category_id?.includes(category.id) || selectedFilters.category_id?.includes(category.slug);
         }
-
-        return (
-            categoryIds.includes(subcategory.category_id) &&
-            subcategory.name
-                .toLowerCase()
-                .includes(searchSubcategory.toLowerCase())
-        );
+        return true;
     });
 
-    // Filtrar marcas según el input
-    const filteredBrands = brands.filter((brand) =>
-        brand.name.toLowerCase().includes(searchBrand.toLowerCase()),
-    );
+    const filteredSubcategories = subcategories.filter((subcategory) => {
+        const matchesSearch = subcategory.name.toLowerCase().includes(searchSubcategory.toLowerCase());
+        if (!matchesSearch) return false;
+        
+        // 1. Filtro cruzado inteligente del backend (prioridad principal)
+        // Esto asegura que al seleccionar una Marca, solo queden las Subcategorías que tienen productos de esa Marca
+        if (validFilterCounts && Array.isArray(validFilterCounts.subcategories)) {
+            const hasItems = validFilterCounts.subcategories.some(s => s.id === subcategory.id);
+            return hasItems || selectedFilters.subcategory_id?.includes(subcategory.id) || selectedFilters.subcategory_id?.includes(subcategory.slug);
+        }
+        
+        // 2. Fallback: Si no hay validFilterCounts, filtramos por las categorías seleccionadas
+        if (selectedFilters.category_id && selectedFilters.category_id.length > 0) {
+            // Verificar relación M:M (subcategory.categories)
+            if (subcategory.categories && Array.isArray(subcategory.categories)) {
+                const belongsToSelectedCategory = subcategory.categories.some(c => 
+                    selectedFilters.category_id.includes(c.id) || selectedFilters.category_id.includes(c.slug)
+                );
+                if (belongsToSelectedCategory) return true;
+            }
+            // Fallback legado
+            if (subcategory.category_id && (selectedFilters.category_id.includes(subcategory.category_id) || selectedFilters.category_id.includes(subcategory.slug))) {
+                return true;
+            }
+            
+            // Si la subcategoría está explícitamente seleccionada, mantenerla visible
+            if (selectedFilters.subcategory_id?.includes(subcategory.id) || selectedFilters.subcategory_id?.includes(subcategory.slug)) return true;
+            
+            return false;
+        }
+        
+        return true;
+    });
 
-    const filteredCollections = collections.filter((collection) =>
-        collection.name.toLowerCase().includes(searchCollection.toLowerCase()),
-    );
+    // Filtrar marcas según el input y los filtros cruzados
+    const filteredBrands = brands.filter((brand) => {
+        const matchesSearch = brand.name.toLowerCase().includes(searchBrand.toLowerCase());
+        if (!matchesSearch) return false;
+        
+        // Filtro cruzado inteligente
+        if (validFilterCounts && Array.isArray(validFilterCounts.brands)) {
+            const hasItems = validFilterCounts.brands.some(b => b.id === brand.id);
+            return hasItems || selectedFilters.brand_id?.includes(brand.id) || selectedFilters.brand_id?.includes(brand.slug);
+        }
+        return true;
+    });
 
-    // Filtrar tiendas según el input
-    const filteredStores = stores.filter((store) =>
-        store.name.toLowerCase().includes(searchStore.toLowerCase()),
-    );
+    const filteredCollections = collections.filter((collection) => {
+        const matchesSearch = collection.name.toLowerCase().includes(searchCollection.toLowerCase());
+        if (!matchesSearch) return false;
+        
+        // Filtro cruzado inteligente
+        if (validFilterCounts && Array.isArray(validFilterCounts.collections)) {
+            const hasItems = validFilterCounts.collections.some(c => c.id === collection.id);
+            return hasItems || selectedFilters.collection_id?.includes(collection.id) || selectedFilters.collection_id?.includes(collection.slug);
+        }
+        return true;
+    });
+
+    // Filtrar tiendas según el input y los filtros cruzados
+    const filteredStores = stores.filter((store) => {
+        const matchesSearch = store.name.toLowerCase().includes(searchStore.toLowerCase());
+        if (!matchesSearch) return false;
+        
+        // Filtro cruzado inteligente
+        if (validFilterCounts && Array.isArray(validFilterCounts.stores)) {
+            const hasItems = validFilterCounts.stores.some(s => s.id === store.id);
+            return hasItems || selectedFilters.store_id?.includes(store.id) || selectedFilters.store_id?.includes(store.slug);
+        }
+        return true;
+    });
 
     const [filtersOpen, setFiltersOpen] = useState(false);
 
@@ -2076,11 +2119,11 @@ const CatalogoFiltrosDental = ({
                                                                                 onChange={() =>
                                                                                     handleFilterChange(
                                                                                         "brand_id",
-                                                                                        brand.slug,
+                                                                                        brand.id,
                                                                                     )
                                                                                 }
                                                                                 checked={selectedFilters.brand_id?.includes(
-                                                                                    brand.slug,
+                                                                                    brand.id,
                                                                                 )}
                                                                             />
                                                                             <span className="text-sm font-medium line-clamp-1 customtext-neutral-dark  transition-colors duration-200">
@@ -2089,7 +2132,7 @@ const CatalogoFiltrosDental = ({
                                                                                 }
                                                                             </span>
                                                                             {selectedFilters.brand_id?.includes(
-                                                                                brand.slug,
+                                                                                brand.id,
                                                                             ) && (
                                                                                 <motion.div
                                                                                     className="ml-auto"
@@ -2410,7 +2453,7 @@ const CatalogoFiltrosDental = ({
                                                                                     }
                                                                                 </span>
                                                                                 {selectedFilters.category_id?.includes(
-                                                                                    category.slug,
+                                                                                    category.id,
                                                                                 ) && (
                                                                                     <motion.div
                                                                                         className="ml-auto"
@@ -2428,70 +2471,6 @@ const CatalogoFiltrosDental = ({
                                                                                     </motion.div>
                                                                                 )}
                                                                             </motion.label>
-
-                                                                            {/* Subcategorías expandibles */}
-                                                                            <AnimatePresence>
-                                                                                {selectedFilters.category_id?.includes(
-                                                                                    category.slug,
-                                                                                ) &&
-                                                                                    category.subcategories && (
-                                                                                        <motion.div
-                                                                                            className="bg-gradient-to-b from-purple-25 to-white/50 p-3"
-                                                                                            initial={{
-                                                                                                height: 0,
-                                                                                                opacity: 0,
-                                                                                            }}
-                                                                                            animate={{
-                                                                                                height: "auto",
-                                                                                                opacity: 1,
-                                                                                            }}
-                                                                                            exit={{
-                                                                                                height: 0,
-                                                                                                opacity: 0,
-                                                                                            }}
-                                                                                            transition={{
-                                                                                                duration: 0.3,
-                                                                                            }}
-                                                                                        >
-                                                                                            <div className="space-y-2 pl-4 border-l-2 border-purple-200">
-                                                                                                {category.subcategories.map(
-                                                                                                    (
-                                                                                                        sub,
-                                                                                                    ) => (
-                                                                                                        <motion.label
-                                                                                                            key={
-                                                                                                                sub.id
-                                                                                                            }
-                                                                                                            className="flex items-center gap-2 py-1.5 px-2 rounded-lg hover:bg-purple-50/60 transition-colors duration-200 cursor-pointer group"
-                                                                                                            whileHover={{
-                                                                                                                x: 3,
-                                                                                                            }}
-                                                                                                        >
-                                                                                                            <input
-                                                                                                                type="checkbox"
-                                                                                                                className="h-4 w-4 rounded border-2 border-purple-300 text-purple-600 focus:ring-purple-500/30"
-                                                                                                                onChange={() =>
-                                                                                                                    handleFilterChange(
-                                                                                                                        "subcategory_id",
-                                                                                                                        sub.slug,
-                                                                                                                    )
-                                                                                                                }
-                                                                                                                checked={selectedFilters.subcategory_id?.includes(
-                                                                                                                    sub.slug,
-                                                                                                                )}
-                                                                                                            />
-                                                                                                            <span className="text-sm line-clamp-1 customtext-neutral-dark group-hover:text-purple-600 transition-colors duration-200">
-                                                                                                                {
-                                                                                                                    sub.name
-                                                                                                                }
-                                                                                                            </span>
-                                                                                                        </motion.label>
-                                                                                                    ),
-                                                                                                )}
-                                                                                            </div>
-                                                                                        </motion.div>
-                                                                                    )}
-                                                                            </AnimatePresence>
                                                                         </motion.div>
                                                                     ),
                                                                 )}
@@ -3099,22 +3078,22 @@ const CatalogoFiltrosDental = ({
                                                     <div className="flex flex-wrap gap-2">
                                                         {/* Chips de marcas con AnimatedBadge */}
                                                         {selectedFilters.brand_id?.map(
-                                                            (brandSlug) => {
+                                                            (brandId) => {
                                                                 const brand =
                                                                     brands.find(
                                                                         (b) =>
-                                                                            b.slug ===
-                                                                            brandSlug,
+                                                                            b.id ===
+                                                                            brandId,
                                                                     );
                                                                 return brand ? (
                                                                     <AnimatedBadge
                                                                         key={
-                                                                            brandSlug
+                                                                            brandId
                                                                         }
                                                                         onClick={() =>
                                                                             handleFilterChange(
                                                                                 "brand_id",
-                                                                                brandSlug,
+                                                                                brandId,
                                                                             )
                                                                         }
                                                                         className="group"
@@ -3144,23 +3123,23 @@ const CatalogoFiltrosDental = ({
                                                         {/* Chips de colecciones con AnimatedBadge */}
                                                         {selectedFilters.collection_id?.map(
                                                             (
-                                                                collectionSlug,
+                                                                collectionId,
                                                             ) => {
                                                                 const collection =
                                                                     collections.find(
                                                                         (c) =>
-                                                                            c.slug ===
-                                                                            collectionSlug,
+                                                                            c.id ===
+                                                                            collectionId,
                                                                     );
                                                                 return collection ? (
                                                                     <AnimatedBadge
                                                                         key={
-                                                                            collectionSlug
+                                                                            collectionId
                                                                         }
                                                                         onClick={() =>
                                                                             handleFilterChange(
                                                                                 "collection_id",
-                                                                                collectionSlug,
+                                                                                collectionId,
                                                                             )
                                                                         }
                                                                         className="group"

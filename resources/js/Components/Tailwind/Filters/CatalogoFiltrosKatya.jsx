@@ -301,16 +301,7 @@ const CatalogoFiltrosKatya = ({ items, data, filteredData, cart, setCart, setFav
     const [subcategories, setSubcategories] = useState([]);
     const [categories, setCategories] = useState([]);
 
-    // Función para relacionar categorías con sus subcategorías
-    const getCategoriesWithSubcategories = () => {
-        return categories.map(category => ({
-            ...category,
-            subcategories: subcategories.filter(sub => sub.category_id === category.id)
-        }));
-    };
-
-    // Obtener categorías con subcategorías relacionadas
-    const categoriesWithSubs = getCategoriesWithSubcategories();
+    // Categories with subcategories will be computed dynamically below
     const [collections, setCollections] = useState([]);
     const [stores, setStores] = useState([]);
     const [priceRanges, setPriceRanges] = useState([]);
@@ -427,7 +418,7 @@ const CatalogoFiltrosKatya = ({ items, data, filteredData, cart, setCart, setFav
                     const newFilters = {
                         ...selectedFilters,
                         category_id: Array.isArray(response.data.category_ids) ? response.data.category_ids : (response.data.category_ids ? [response.data.category_ids] : []),
-                        brand_id: GET.brand ? [GET.brand] : [],
+                        brand_id: Array.isArray(response.data.brand_ids) ? response.data.brand_ids : (response.data.brand_ids ? [response.data.brand_ids] : []),
                         subcategory_id: Array.isArray(response.data.subcategory_ids) ? response.data.subcategory_ids : (response.data.subcategory_ids ? [response.data.subcategory_ids] : []),
                         collection_id: Array.isArray(response.data.collection_ids) ? response.data.collection_ids : (response.data.collection_ids ? [response.data.collection_ids] : []),
                         store_id: Array.isArray(response.data.store_ids) ? response.data.store_ids : (response.data.store_ids ? [response.data.store_ids] : []),
@@ -448,6 +439,8 @@ const CatalogoFiltrosKatya = ({ items, data, filteredData, cart, setCart, setFav
 
     // Track the order in which filters are activated
     const [filterSequence, setFilterSequence] = useState([]);
+
+    const [validFilterCounts, setValidFilterCounts] = useState(null);
 
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -510,26 +503,11 @@ const CatalogoFiltrosKatya = ({ items, data, filteredData, cart, setCart, setFav
         }
 
         if (filters.brand_id.length > 0) {
-            const brandConditions = filters.brand_id.map((slug) => {
-                // Buscar la marca en el array para obtener su ID
-                const brand = brands.find(b => b.slug === slug);
-
-                if (brand) {
-                    // Si encontramos la marca, usar su ID
-                    return [
-                        "brand.slug",
-                        "=",
-                        brand.slug,
-                    ];
-                } else {
-                    // Si no la encontramos, usar slug
-                    return [
-                        "brand.slug",
-                        "=",
-                        slug,
-                    ];
-                }
-            });
+            const brandConditions = filters.brand_id.map((id) => [
+                "brand.id",
+                "=",
+                id,
+            ]);
             transformedFilters.push(ArrayJoin(brandConditions, 'or'));
         }
 
@@ -668,7 +646,7 @@ const CatalogoFiltrosKatya = ({ items, data, filteredData, cart, setCart, setFav
             selectedFilters.category_id.includes(cat.id)
         );
         const hasMatchingBrands = detected.brands.some(brand =>
-            selectedFilters.brand_id.includes(brand.slug)
+            selectedFilters.brand_id.includes(brand.id)
         );
         const hasMatchingSubcategories = detected.subcategories.some(subcat =>
             selectedFilters.subcategory_id.includes(subcat.id)
@@ -698,8 +676,8 @@ const CatalogoFiltrosKatya = ({ items, data, filteredData, cart, setCart, setFav
 
             // Aplicar filtros de marcas detectadas
             if (detected.brands.length > 0) {
-                const brandSlugs = detected.brands.map(brand => brand.slug);
-                newFilters.brand_id = [...new Set([...newFilters.brand_id, ...brandSlugs])];
+                const brandIds = detected.brands.map(brand => brand.id);
+                newFilters.brand_id = [...new Set([...newFilters.brand_id, ...brandIds])];
             }
 
             // Aplicar filtros de subcategorías detectadas
@@ -739,8 +717,8 @@ const CatalogoFiltrosKatya = ({ items, data, filteredData, cart, setCart, setFav
 
                 // Aplicar filtros de marcas detectadas
                 if (detected.brands.length > 0) {
-                    const brandSlugs = detected.brands.map(brand => brand.slug);
-                    newFilters.brand_id = [...new Set([...newFilters.brand_id, ...brandSlugs])];
+                    const brandIds = detected.brands.map(brand => brand.id);
+                    newFilters.brand_id = [...new Set([...newFilters.brand_id, ...brandIds])];
                 }
 
                 // Aplicar filtros de subcategorías detectadas
@@ -785,8 +763,8 @@ const CatalogoFiltrosKatya = ({ items, data, filteredData, cart, setCart, setFav
 
                     // Remover marcas detectadas
                     if (detected.brands.length > 0) {
-                        const brandSlugs = detected.brands.map(brand => brand.slug);
-                        newFilters.brand_id = newFilters.brand_id.filter(slug => !brandSlugs.includes(slug));
+                        const brandIds = detected.brands.map(brand => brand.id);
+                        newFilters.brand_id = newFilters.brand_id.filter(id => !brandIds.includes(id));
                     }
 
                     // Remover subcategorías detectadas
@@ -830,7 +808,7 @@ const CatalogoFiltrosKatya = ({ items, data, filteredData, cart, setCart, setFav
             if (intelligentFilters.brands.length > 0) {
                 enhancedFilters.brand_id = [...new Set([
                     ...enhancedFilters.brand_id,
-                    ...intelligentFilters.brands.map(brand => brand.slug)
+                    ...intelligentFilters.brands.map(brand => brand.id)
                 ])];
             }
 
@@ -1012,13 +990,15 @@ const CatalogoFiltrosKatya = ({ items, data, filteredData, cart, setCart, setFav
             });
 
             // Update all filter options from backend summary
-            setBrands(response?.summary?.brands || []);
-            setCategories(response?.summary?.categories || []);
-            setSubcategories(response?.summary?.subcategories || []);
-            setCollections(response?.summary?.collections || []);
-            setStores(response?.summary?.stores || []);
-            setPriceRanges(response?.summary?.priceRanges || []);
-            setTags(response?.summary?.tags || []);
+            setValidFilterCounts({
+                categories: response?.summary?.categories || [],
+                brands: response?.summary?.brands || [],
+                subcategories: response?.summary?.subcategories || [],
+                collections: response?.summary?.collections || [],
+                stores: response?.summary?.stores || [],
+                priceRanges: response?.summary?.priceRanges || [],
+                tags: response?.summary?.tags || []
+            });
         } catch (error) {
             console.error("Error fetching products:", error);
 
@@ -1138,8 +1118,8 @@ const CatalogoFiltrosKatya = ({ items, data, filteredData, cart, setCart, setFav
 
                             // Aplicar filtros de marcas detectadas
                             if (detected.brands.length > 0) {
-                                const brandSlugs = detected.brands.map(brand => brand.slug);
-                                newFilters.brand_id = [...new Set([...newFilters.brand_id, ...brandSlugs])];
+                                const brandIds = detected.brands.map(brand => brand.id);
+                                newFilters.brand_id = [...new Set([...newFilters.brand_id, ...brandIds])];
                             }
 
                             // Aplicar filtros de categorías detectadas
@@ -1294,41 +1274,99 @@ const CatalogoFiltrosKatya = ({ items, data, filteredData, cart, setCart, setFav
     const [searchStore, setSearchStore] = useState("");
 
     // Filtrar categorías según el input
-    const filteredCategories = categories.filter((category) =>
-        category.name.toLowerCase().includes(searchCategory.toLowerCase())
-    );
-    const filteredSubcategories = subcategories.filter((subcategory) => {
-        // Si hay categorías seleccionadas en los filtros, solo mostrar subcategorías de esas categorías
-        let categoryIds;
-        if (selectedFilters.category_id && selectedFilters.category_id.length > 0) {
-            // Hay categorías seleccionadas, solo mostrar subcategorías de esas categorías
-            categoryIds = categories
-                .filter(cat => selectedFilters.category_id.includes(cat.id))
-                .map(cat => cat.id);
-        } else {
-            // No hay categorías seleccionadas, mostrar subcategorías de todas las categorías disponibles
-            categoryIds = categories.map(cat => cat.id);
+    const filteredCategories = categories.filter((category) => {
+        const matchesSearch = category.name.toLowerCase().includes(searchCategory.toLowerCase());
+        if (!matchesSearch) return false;
+        
+        // Filtro cruzado inteligente
+        if (validFilterCounts && Array.isArray(validFilterCounts.categories)) {
+            const hasItems = validFilterCounts.categories.some(c => c.id === category.id);
+            return hasItems || selectedFilters.category_id?.includes(category.id);
         }
-
-        return categoryIds.includes(subcategory.category_id) &&
-            subcategory.name.toLowerCase().includes(searchSubcategory.toLowerCase());
+        return true;
     });
 
+    const filteredSubcategories = subcategories.filter((subcategory) => {
+        const matchesSearch = subcategory.name.toLowerCase().includes(searchSubcategory.toLowerCase());
+        if (!matchesSearch) return false;
+        
+        // 1. Filtro cruzado inteligente del backend (prioridad principal)
+        if (validFilterCounts && Array.isArray(validFilterCounts.subcategories)) {
+            const hasItems = validFilterCounts.subcategories.some(s => s.id === subcategory.id);
+            return hasItems || selectedFilters.subcategory_id?.includes(subcategory.id) || selectedFilters.subcategory_id?.includes(subcategory.slug);
+        }
+        
+        // 2. Fallback: Si no hay validFilterCounts, filtramos por las categorías seleccionadas
+        if (selectedFilters.category_id && selectedFilters.category_id.length > 0) {
+            // Verificar relación M:M (subcategory.categories)
+            if (subcategory.categories && Array.isArray(subcategory.categories)) {
+                const belongsToSelectedCategory = subcategory.categories.some(c => selectedFilters.category_id.includes(c.id));
+                if (belongsToSelectedCategory) return true;
+            }
+            // Fallback legado
+            if (subcategory.category_id && selectedFilters.category_id.includes(subcategory.category_id)) {
+                return true;
+            }
+            
+            // Si la subcategoría está explícitamente seleccionada, mantenerla visible
+            if (selectedFilters.subcategory_id?.includes(subcategory.id)) return true;
+            
+            return false;
+        }
+        
+        return true;
+    });
 
+    // Obtener categorías con sus subcategorías relacionadas y validadas
+    const categoriesWithSubs = filteredCategories.map(category => ({
+        ...category,
+        subcategories: filteredSubcategories.filter(sub => {
+            // Verificar si la subcategoría pertenece a la categoría usando la relación M:M
+            if (sub.categories && Array.isArray(sub.categories)) {
+                return sub.categories.some(c => c.id === category.id || c.slug === category.slug);
+            }
+            // Fallback legado si sub.category_id aún existe
+            return sub.category_id === category.id || sub.category_slug === category.slug;
+        })
+    }));
 
     // Filtrar marcas según el input
-    const filteredBrands = brands.filter((brand) =>
-        brand.name.toLowerCase().includes(searchBrand.toLowerCase())
-    );
+    const filteredBrands = brands.filter((brand) => {
+        const matchesSearch = brand.name.toLowerCase().includes(searchBrand.toLowerCase());
+        if (!matchesSearch) return false;
+        
+        // Filtro cruzado inteligente
+        if (validFilterCounts && Array.isArray(validFilterCounts.brands)) {
+            const hasItems = validFilterCounts.brands.some(b => b.id === brand.id);
+            return hasItems || selectedFilters.brand_id?.includes(brand.id);
+        }
+        return true;
+    });
 
-    const filteredCollections = collections.filter((collection) =>
-        collection.name.toLowerCase().includes(searchCollection.toLowerCase())
-    );
+    const filteredCollections = collections.filter((collection) => {
+        const matchesSearch = collection.name.toLowerCase().includes(searchCollection.toLowerCase());
+        if (!matchesSearch) return false;
+        
+        // Filtro cruzado inteligente
+        if (validFilterCounts && Array.isArray(validFilterCounts.collections)) {
+            const hasItems = validFilterCounts.collections.some(c => c.id === collection.id);
+            return hasItems || selectedFilters.collection_id?.includes(collection.id);
+        }
+        return true;
+    });
 
     // Filtrar tiendas según el input
-    const filteredStores = stores.filter((store) =>
-        store.name.toLowerCase().includes(searchStore.toLowerCase())
-    );
+    const filteredStores = stores.filter((store) => {
+        const matchesSearch = store.name.toLowerCase().includes(searchStore.toLowerCase());
+        if (!matchesSearch) return false;
+        
+        // Filtro cruzado inteligente
+        if (validFilterCounts && Array.isArray(validFilterCounts.stores)) {
+            const hasItems = validFilterCounts.stores.some(s => s.id === store.id);
+            return hasItems || selectedFilters.store_id?.includes(store.id);
+        }
+        return true;
+    });
 
     const [filtersOpen, setFiltersOpen] = useState(false);
 

@@ -398,7 +398,7 @@ const CatalogoFiltrosMiBalon = ({
                             : response.data.category_ids
                               ? [response.data.category_ids]
                               : [],
-                        brand_id: GET.brand ? [GET.brand] : [],
+                        brand_id: Array.isArray(response.data.brand_ids) ? response.data.brand_ids : (response.data.brand_ids ? [response.data.brand_ids] : []),
                         subcategory_id: Array.isArray(
                             response.data.subcategory_ids,
                         )
@@ -444,6 +444,8 @@ const CatalogoFiltrosMiBalon = ({
         from: 0,
         to: 0,
     });
+
+    const [validFilterCounts, setValidFilterCounts] = useState(null);
 
     const transformFilters = (filters) => {
         const transformedFilters = [];
@@ -503,18 +505,7 @@ const CatalogoFiltrosMiBalon = ({
         }
 
         if (filters.brand_id.length > 0) {
-            const brandConditions = filters.brand_id.map((slug) => {
-                // Buscar la marca en el array para obtener su ID
-                const brand = brands.find((b) => b.slug === slug);
-
-                if (brand) {
-                    // Si encontramos la marca, usar su ID
-                    return ["brand.slug", "=", brand.slug];
-                } else {
-                    // Si no la encontramos, usar slug
-                    return ["brand.slug", "=", slug];
-                }
-            });
+            const brandConditions = filters.brand_id.map((id) => ["brand.id", "=", id]);
             const joined = ArrayJoin(brandConditions, "or");
             transformedFilters.push(joined.length === 1 ? joined[0] : joined);
         }
@@ -666,7 +657,7 @@ const CatalogoFiltrosMiBalon = ({
             selectedFilters.category_id.includes(cat.id),
         );
         const hasMatchingBrands = detected.brands.some((brand) =>
-            selectedFilters.brand_id.includes(brand.slug),
+            selectedFilters.brand_id.includes(brand.id),
         );
         const hasMatchingSubcategories = detected.subcategories.some((subcat) =>
             selectedFilters.subcategory_id.includes(subcat.id),
@@ -700,11 +691,10 @@ const CatalogoFiltrosMiBalon = ({
                 ];
             }
 
-            // Aplicar filtros de marcas detectadas
             if (detected.brands.length > 0) {
-                const brandSlugs = detected.brands.map((brand) => brand.slug);
+                const brandIds = detected.brands.map((brand) => brand.id);
                 newFilters.brand_id = [
-                    ...new Set([...newFilters.brand_id, ...brandSlugs]),
+                    ...new Set([...newFilters.brand_id, ...brandIds]),
                 ];
             }
 
@@ -761,13 +751,12 @@ const CatalogoFiltrosMiBalon = ({
                     ];
                 }
 
-                // Aplicar filtros de marcas detectadas
                 if (detected.brands.length > 0) {
-                    const brandSlugs = detected.brands.map(
-                        (brand) => brand.slug,
+                    const brandIds = detected.brands.map(
+                        (brand) => brand.id,
                     );
                     newFilters.brand_id = [
-                        ...new Set([...newFilters.brand_id, ...brandSlugs]),
+                        ...new Set([...newFilters.brand_id, ...brandIds]),
                     ];
                 }
 
@@ -829,13 +818,12 @@ const CatalogoFiltrosMiBalon = ({
                         );
                     }
 
-                    // Remover marcas detectadas
                     if (detected.brands.length > 0) {
-                        const brandSlugs = detected.brands.map(
-                            (brand) => brand.slug,
+                        const brandIds = detected.brands.map(
+                            (brand) => brand.id,
                         );
                         newFilters.brand_id = newFilters.brand_id.filter(
-                            (slug) => !brandSlugs.includes(slug),
+                            (id) => !brandIds.includes(id),
                         );
                     }
 
@@ -891,7 +879,7 @@ const CatalogoFiltrosMiBalon = ({
                 enhancedFilters.brand_id = [
                     ...new Set([
                         ...enhancedFilters.brand_id,
-                        ...intelligentFilters.brands.map((brand) => brand.slug),
+                        ...intelligentFilters.brands.map((brand) => brand.id),
                     ]),
                 ];
             }
@@ -1067,19 +1055,16 @@ const CatalogoFiltrosMiBalon = ({
             });
 
             // Update all filter options from backend summary
-            setBrands(response?.summary?.brands || []);
-            setCategories(response?.summary?.categories || []);
-            setSubcategories(response?.summary?.subcategories || []);
-            setCollections(response?.summary?.collections || []);
-            setStores(response?.summary?.stores || []);
-
-            // Only update price ranges if they are not fixed by dat_prices
-            if (!data?.dat_prices) {
-                setPriceRanges(response?.summary?.priceRanges || []);
-            }
-
-            setTags(response?.summary?.tags || []);
-            setAmenities(response?.summary?.amenities || data?.amenities || []);
+            setValidFilterCounts({
+                categories: response?.summary?.categories || [],
+                brands: response?.summary?.brands || [],
+                subcategories: response?.summary?.subcategories || [],
+                collections: response?.summary?.collections || [],
+                stores: response?.summary?.stores || [],
+                priceRanges: !data?.dat_prices ? (response?.summary?.priceRanges || []) : [],
+                tags: response?.summary?.tags || [],
+                amenities: response?.summary?.amenities || data?.amenities || []
+            });
         } catch (error) {
             console.error("Error fetching products:", error);
 
@@ -1480,46 +1465,95 @@ const CatalogoFiltrosMiBalon = ({
     const activePriceRanges = getPriceRanges();
 
     // Filtrar categorías según el input
-    const filteredCategories = categories.filter((category) =>
-        category.name.toLowerCase().includes(searchCategory.toLowerCase()),
-    );
-    const filteredSubcategories = subcategories.filter((subcategory) => {
-        // Si hay categorías seleccionadas en los filtros, solo mostrar subcategorías de esas categorías
-        let categoryIds;
-        if (
-            selectedFilters.category_id &&
-            selectedFilters.category_id.length > 0
-        ) {
-            // Hay categorías seleccionadas, solo mostrar subcategorías de esas categorías
-            categoryIds = categories
-                .filter((cat) => selectedFilters.category_id.includes(cat.id))
-                .map((cat) => cat.id);
-        } else {
-            // No hay categorías seleccionadas, mostrar subcategorías de todas las categorías disponibles
-            categoryIds = categories.map((cat) => cat.id);
+    const filteredCategories = categories.filter((category) => {
+        const matchesSearch = category.name.toLowerCase().includes(searchCategory.toLowerCase());
+        if (!matchesSearch) return false;
+        
+        // Filtro cruzado inteligente
+        if (validFilterCounts && Array.isArray(validFilterCounts.categories)) {
+            const hasItems = validFilterCounts.categories.some(c => c.id === category.id);
+            return hasItems || selectedFilters.category_id?.includes(category.id);
         }
+        return true;
+    }).map(category => ({
+        ...category,
+        subcategories: subcategories.filter(sub => {
+            // Verificar relación M:M
+            if (sub.categories && Array.isArray(sub.categories)) {
+                return sub.categories.some(c => c.id === category.id || c.slug === category.slug);
+            }
+            // Fallback legado
+            return sub.category_id === category.id || sub.category_slug === category.slug;
+        })
+    }));
 
-        return (
-            categoryIds.includes(subcategory.category_id) &&
-            subcategory.name
-                .toLowerCase()
-                .includes(searchSubcategory.toLowerCase())
-        );
+    const filteredSubcategories = subcategories.filter((subcategory) => {
+        const matchesSearch = subcategory.name.toLowerCase().includes(searchSubcategory.toLowerCase());
+        if (!matchesSearch) return false;
+        
+        // Si hay categorías seleccionadas, queremos mostrar las subcategorías que pertenecen a esas categorías (incluso si no tienen productos)
+        if (selectedFilters.category_id && selectedFilters.category_id.length > 0) {
+            // Verificar relación M:M (subcategory.categories)
+            if (subcategory.categories && Array.isArray(subcategory.categories)) {
+                const belongsToSelectedCategory = subcategory.categories.some(c => selectedFilters.category_id.includes(c.id));
+                if (belongsToSelectedCategory) return true;
+            }
+            // Fallback legado
+            if (subcategory.category_id && selectedFilters.category_id.includes(subcategory.category_id)) {
+                return true;
+            }
+            
+            // Si la subcategoría está explícitamente seleccionada, mantenerla visible
+            if (selectedFilters.subcategory_id?.includes(subcategory.id)) return true;
+            
+            return false;
+        }
+        
+        // Filtro cruzado inteligente del backend (soporta pivot M:M)
+        if (validFilterCounts && Array.isArray(validFilterCounts.subcategories)) {
+            const hasItems = validFilterCounts.subcategories.some(s => s.id === subcategory.id);
+            return hasItems || selectedFilters.subcategory_id?.includes(subcategory.id);
+        }
+        return true;
     });
 
     // Filtrar marcas según el input
-    const filteredBrands = brands.filter((brand) =>
-        brand.name.toLowerCase().includes(searchBrand.toLowerCase()),
-    );
+    const filteredBrands = brands.filter((brand) => {
+        const matchesSearch = brand.name.toLowerCase().includes(searchBrand.toLowerCase());
+        if (!matchesSearch) return false;
+        
+        // Filtro cruzado inteligente
+        if (validFilterCounts && Array.isArray(validFilterCounts.brands)) {
+            const hasItems = validFilterCounts.brands.some(b => b.id === brand.id);
+            return hasItems || selectedFilters.brand_id?.includes(brand.id);
+        }
+        return true;
+    });
 
-    const filteredCollections = collections.filter((collection) =>
-        collection.name.toLowerCase().includes(searchCollection.toLowerCase()),
-    );
+    const filteredCollections = collections.filter((collection) => {
+        const matchesSearch = collection.name.toLowerCase().includes(searchCollection.toLowerCase());
+        if (!matchesSearch) return false;
+        
+        // Filtro cruzado inteligente
+        if (validFilterCounts && Array.isArray(validFilterCounts.collections)) {
+            const hasItems = validFilterCounts.collections.some(c => c.id === collection.id);
+            return hasItems || selectedFilters.collection_id?.includes(collection.id);
+        }
+        return true;
+    });
 
     // Filtrar tiendas según el input
-    const filteredStores = stores.filter((store) =>
-        store.name.toLowerCase().includes(searchStore.toLowerCase()),
-    );
+    const filteredStores = stores.filter((store) => {
+        const matchesSearch = store.name.toLowerCase().includes(searchStore.toLowerCase());
+        if (!matchesSearch) return false;
+        
+        // Filtro cruzado inteligente
+        if (validFilterCounts && Array.isArray(validFilterCounts.stores)) {
+            const hasItems = validFilterCounts.stores.some(s => s.id === store.id);
+            return hasItems || selectedFilters.store_id?.includes(store.id);
+        }
+        return true;
+    });
 
     const [filtersOpen, setFiltersOpen] = useState(false);
 
@@ -2078,11 +2112,11 @@ const CatalogoFiltrosMiBalon = ({
                                                                                 onChange={() =>
                                                                                     handleFilterChange(
                                                                                         "brand_id",
-                                                                                        brand.slug,
+                                                                                        brand.id,
                                                                                     )
                                                                                 }
                                                                                 checked={selectedFilters.brand_id?.includes(
-                                                                                    brand.slug,
+                                                                                    brand.id,
                                                                                 )}
                                                                             />
                                                                             <span className="text-sm font-medium line-clamp-1 text-neutral-dark  transition-colors duration-200">
@@ -2091,7 +2125,7 @@ const CatalogoFiltrosMiBalon = ({
                                                                                 }
                                                                             </span>
                                                                             {selectedFilters.brand_id?.includes(
-                                                                                brand.slug,
+                                                                                brand.id,
                                                                             ) && (
                                                                                 <motion.div
                                                                                     className="ml-auto"

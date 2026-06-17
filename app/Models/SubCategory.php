@@ -15,7 +15,6 @@ class SubCategory extends Model
     protected $keyType = 'string';
 
     protected $fillable = [
-        'category_id',
         'slug',
         'order_index',
         'name',
@@ -34,9 +33,9 @@ class SubCategory extends Model
         'status' => 'boolean',
     ];
 
-    public function category(): BelongsTo
+    public function categories(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
     {
-        return $this->belongsTo(Category::class);
+        return $this->belongsToMany(Category::class, 'category_sub_category', 'subcategory_id', 'category_id');
     }
 
     public function items()

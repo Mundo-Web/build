@@ -43,6 +43,6 @@ class Category extends Model
 
     public function subcategories()
     {
-        return $this->hasMany(SubCategory::class)->where('status', true);
+        return $this->belongsToMany(SubCategory::class, 'category_sub_category', 'category_id', 'subcategory_id')->where('sub_categories.status', true);
     }
 }

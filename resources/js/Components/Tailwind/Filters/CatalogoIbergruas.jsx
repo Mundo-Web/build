@@ -216,7 +216,7 @@ const CatalogoIbergruas = ({ items, data, filteredData, cart, setCart }) => {
                     setSelectedFilters(prev => ({
                         ...prev,
                         category_id: Array.isArray(response.data.category_ids) ? response.data.category_ids : (response.data.category_ids ? [response.data.category_ids] : []),
-                        brand_id: GET.brand ? [GET.brand] : [],
+                        brand_id: Array.isArray(response.data.brand_ids) ? response.data.brand_ids : (response.data.brand_ids ? [response.data.brand_ids] : []),
                         subcategory_id: Array.isArray(response.data.subcategory_ids) ? response.data.subcategory_ids : (response.data.subcategory_ids ? [response.data.subcategory_ids] : []),
                         collection_id: Array.isArray(response.data.collection_ids) ? response.data.collection_ids : (response.data.collection_ids ? [response.data.collection_ids] : []),
                     }));
@@ -238,9 +238,7 @@ const CatalogoIbergruas = ({ items, data, filteredData, cart, setCart }) => {
             });
         }
         if (filters.collection_id.length > 0) {
-            const collectionConditions = filters.collection_id.map((slug) => [
-                "collection.id", "=", collections.find(c => c.slug === slug)?.id || slug,
-            ]);
+            const collectionConditions = filters.collection_id.map((id) => ["collection.id", "=", id]);
             transformedFilters.push(ArrayJoin(collectionConditions, 'or'));
         }
         if (filters.category_id.length > 0) {
@@ -252,10 +250,7 @@ const CatalogoIbergruas = ({ items, data, filteredData, cart, setCart }) => {
             transformedFilters.push(ArrayJoin(subcategoryConditions, 'or'));
         }
         if (filters.brand_id.length > 0) {
-            const brandConditions = filters.brand_id.map((slug) => {
-                const brand = brands.find(b => b.slug === slug);
-                return brand ? ["brand.slug", "=", brand.slug] : ["brand.slug", "=", slug];
-            });
+            const brandConditions = filters.brand_id.map((id) => ["brand.id", "=", id]);
             transformedFilters.push(ArrayJoin(brandConditions, 'or'));
         }
         if (filters.tag_id && filters.tag_id.length > 0) {

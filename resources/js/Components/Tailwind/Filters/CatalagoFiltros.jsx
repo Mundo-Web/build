@@ -257,6 +257,8 @@ const CatalagoFiltros = ({ items, data, filteredData, cart, setCart }) => {
         };
     });
 
+    const [validFilterCounts, setValidFilterCounts] = useState(null);
+
     const [selectedFilters, setSelectedFilters] = useState({
         collection_id: [],
         category_id: [],
@@ -325,7 +327,7 @@ const CatalagoFiltros = ({ items, data, filteredData, cart, setCart }) => {
                     setSelectedFilters(prev => ({
                         ...prev,
                         category_id: Array.isArray(response.data.category_ids) ? response.data.category_ids : (response.data.category_ids ? [response.data.category_ids] : []),
-                        brand_id: GET.brand ? [GET.brand] : [],
+                        brand_id: Array.isArray(response.data.brand_ids) ? response.data.brand_ids : (response.data.brand_ids ? [response.data.brand_ids] : []),
                         subcategory_id: Array.isArray(response.data.subcategory_ids) ? response.data.subcategory_ids : (response.data.subcategory_ids ? [response.data.subcategory_ids] : []),
                         collection_id: Array.isArray(response.data.collection_ids) ? response.data.collection_ids : (response.data.collection_ids ? [response.data.collection_ids] : []),
                     }));
@@ -400,26 +402,11 @@ const CatalagoFiltros = ({ items, data, filteredData, cart, setCart }) => {
         }
 
         if (filters.brand_id.length > 0) {
-            const brandConditions = filters.brand_id.map((slug) => {
-                // Buscar la marca en el array para obtener su ID
-                const brand = brands.find(b => b.slug === slug);
-
-                if (brand) {
-                    // Si encontramos la marca, usar su ID
-                    return [
-                        "brand.slug",
-                        "=",
-                        brand.slug,
-                    ];
-                } else {
-                    // Si no la encontramos, usar slug
-                    return [
-                        "brand.slug",
-                        "=",
-                        slug,
-                    ];
-                }
-            });
+            const brandConditions = filters.brand_id.map((id) => [
+                "brand.id",
+                "=",
+                id,
+            ]);
             transformedFilters.push(ArrayJoin(brandConditions, 'or'));
         }
 
@@ -540,7 +527,7 @@ const CatalagoFiltros = ({ items, data, filteredData, cart, setCart }) => {
             selectedFilters.category_id.includes(cat.id)
         );
         const hasMatchingBrands = detected.brands.some(brand =>
-            selectedFilters.brand_id.includes(brand.slug)
+            selectedFilters.brand_id.includes(brand.id)
         );
         const hasMatchingSubcategories = detected.subcategories.some(subcat =>
             selectedFilters.subcategory_id.includes(subcat.id)
@@ -568,10 +555,9 @@ const CatalagoFiltros = ({ items, data, filteredData, cart, setCart }) => {
                 newFilters.category_id = [...new Set([...newFilters.category_id, ...categoryIds])];
             }
 
-            // Aplicar filtros de marcas detectadas
             if (detected.brands.length > 0) {
-                const brandSlugs = detected.brands.map(brand => brand.slug);
-                newFilters.brand_id = [...new Set([...newFilters.brand_id, ...brandSlugs])];
+                const brandIds = detected.brands.map(brand => brand.id);
+                newFilters.brand_id = [...new Set([...newFilters.brand_id, ...brandIds])];
             }
 
             // Aplicar filtros de subcategorías detectadas
@@ -623,8 +609,8 @@ const CatalagoFiltros = ({ items, data, filteredData, cart, setCart }) => {
 
                     // Remover marcas detectadas
                     if (detected.brands.length > 0) {
-                        const brandSlugs = detected.brands.map(brand => brand.slug);
-                        newFilters.brand_id = newFilters.brand_id.filter(slug => !brandSlugs.includes(slug));
+                        const brandIds = detected.brands.map(brand => brand.id);
+                        newFilters.brand_id = newFilters.brand_id.filter(id => !brandIds.includes(id));
                     }
 
                     // Remover subcategorías detectadas
@@ -667,7 +653,7 @@ const CatalagoFiltros = ({ items, data, filteredData, cart, setCart }) => {
             if (intelligentFilters.brands.length > 0) {
                 enhancedFilters.brand_id = [...new Set([
                     ...enhancedFilters.brand_id,
-                    ...intelligentFilters.brands.map(brand => brand.slug)
+                    ...intelligentFilters.brands.map(brand => brand.id)
                 ])];
             }
 
@@ -840,12 +826,14 @@ const CatalagoFiltros = ({ items, data, filteredData, cart, setCart }) => {
             });
 
             // Update all filter options from backend summary
-            setBrands(response?.summary?.brands || []);
-            setCategories(response?.summary?.categories || []);
-            setSubcategories(response?.summary?.subcategories || []);
-            setCollections(response?.summary?.collections || []);
-            setPriceRanges(response?.summary?.priceRanges || []);
-            setTags(response?.summary?.tags || []);
+            setValidFilterCounts({
+                categories: response?.summary?.categories || [],
+                brands: response?.summary?.brands || [],
+                subcategories: response?.summary?.subcategories || [],
+                collections: response?.summary?.collections || [],
+                priceRanges: response?.summary?.priceRanges || [],
+                tags: response?.summary?.tags || []
+            });
         } catch (error) {
             console.error("Error fetching products:", error);
 
@@ -958,10 +946,9 @@ const CatalagoFiltros = ({ items, data, filteredData, cart, setCart }) => {
                         setSelectedFilters(prev => {
                             const newFilters = { ...prev };
 
-                            // Aplicar filtros de marcas detectadas
                             if (detected.brands.length > 0) {
-                                const brandSlugs = detected.brands.map(brand => brand.slug);
-                                newFilters.brand_id = [...new Set([...newFilters.brand_id, ...brandSlugs])];
+                                const brandIds = detected.brands.map(brand => brand.id);
+                                newFilters.brand_id = [...new Set([...newFilters.brand_id, ...brandIds])];
                             }
 
                             // Aplicar filtros de categorías detectadas
@@ -1114,32 +1101,71 @@ const CatalagoFiltros = ({ items, data, filteredData, cart, setCart }) => {
     const [searchBrand, setSearchBrand] = useState("");
 
     // Filtrar categorías según el input
-    const filteredCategories = categories.filter((category) =>
-        category.name.toLowerCase().includes(searchCategory.toLowerCase())
-    );
-    const filteredSubcategories = subcategories.filter((subcategory) => {
-        // Si hay categorías seleccionadas en los filtros, solo mostrar subcategorías de esas categorías
-        let categoryIds;
-        if (selectedFilters.category_id && selectedFilters.category_id.length > 0) {
-            // Hay categorías seleccionadas, solo mostrar subcategorías de esas categorías
-            categoryIds = categories
-                .filter(cat => selectedFilters.category_id.includes(cat.id))
-                .map(cat => cat.id);
-        } else {
-            // No hay categorías seleccionadas, mostrar subcategorías de todas las categorías disponibles
-            categoryIds = categories.map(cat => cat.id);
+    const filteredCategories = categories.filter((category) => {
+        const matchesSearch = category.name.toLowerCase().includes(searchCategory.toLowerCase());
+        if (!matchesSearch) return false;
+        
+        // Filtro cruzado inteligente
+        if (validFilterCounts && Array.isArray(validFilterCounts.categories)) {
+            const hasItems = validFilterCounts.categories.some(c => c.id === category.id);
+            // Mostrar si tiene items o si está actualmente seleccionada
+            return hasItems || selectedFilters.category_id?.includes(category.id);
         }
+        return true;
+    }).map(category => ({
+        ...category,
+        subcategories: subcategories.filter(sub => {
+            // Verificar relación M:M
+            if (sub.categories && Array.isArray(sub.categories)) {
+                return sub.categories.some(c => c.id === category.id || c.slug === category.slug);
+            }
+            // Fallback legado
+            return sub.category_id === category.id || sub.category_slug === category.slug;
+        })
+    }));
 
-        return categoryIds.includes(subcategory.category_id) &&
-            subcategory.name.toLowerCase().includes(searchSubcategory.toLowerCase());
+    const filteredSubcategories = subcategories.filter((subcategory) => {
+        const matchesSearch = subcategory.name.toLowerCase().includes(searchSubcategory.toLowerCase());
+        if (!matchesSearch) return false;
+        
+        // Si hay categorías seleccionadas, queremos mostrar las subcategorías que pertenecen a esas categorías (incluso si no tienen productos)
+        if (selectedFilters.category_id && selectedFilters.category_id.length > 0) {
+            // Verificar relación M:M (subcategory.categories)
+            if (subcategory.categories && Array.isArray(subcategory.categories)) {
+                const belongsToSelectedCategory = subcategory.categories.some(c => selectedFilters.category_id.includes(c.id));
+                if (belongsToSelectedCategory) return true;
+            }
+            // Fallback legado
+            if (subcategory.category_id && selectedFilters.category_id.includes(subcategory.category_id)) {
+                return true;
+            }
+            
+            // Si la subcategoría está explícitamente seleccionada, mantenerla visible
+            if (selectedFilters.subcategory_id?.includes(subcategory.id)) return true;
+            
+            return false;
+        }
+        
+        // Filtro cruzado inteligente del backend (soporta pivot M:M)
+        if (validFilterCounts && Array.isArray(validFilterCounts.subcategories)) {
+            const hasItems = validFilterCounts.subcategories.some(s => s.id === subcategory.id);
+            return hasItems || selectedFilters.subcategory_id?.includes(subcategory.id);
+        }
+        return true;
     });
 
-
-
     // Filtrar marcas según el input
-    const filteredBrands = brands.filter((brand) =>
-        brand.name.toLowerCase().includes(searchBrand.toLowerCase())
-    );
+    const filteredBrands = brands.filter((brand) => {
+        const matchesSearch = brand.name.toLowerCase().includes(searchBrand.toLowerCase());
+        if (!matchesSearch) return false;
+        
+        // Filtro cruzado inteligente
+        if (validFilterCounts && Array.isArray(validFilterCounts.brands)) {
+            const hasItems = validFilterCounts.brands.some(b => b.id === brand.id);
+            return hasItems || selectedFilters.brand_id?.includes(brand.id);
+        }
+        return true;
+    });
 
     const [filtersOpen, setFiltersOpen] = useState(false);
 
@@ -1439,13 +1465,13 @@ const CatalagoFiltros = ({ items, data, filteredData, cart, setCart }) => {
                                                                     <input
                                                                         type="checkbox"
                                                                         className={modernFilterStyles.checkbox}
-                                                                        onChange={() => handleFilterChange("brand_id", brand.slug)}
-                                                                        checked={selectedFilters.brand_id?.includes(brand.slug)}
+                                                                        onChange={() => handleFilterChange("brand_id", brand.id)}
+                                                                        checked={selectedFilters.brand_id?.includes(brand.id)}
                                                                     />
                                                                     <span className="text-sm font-medium line-clamp-1 customtext-neutral-dark  transition-colors duration-200">
                                                                         {brand.name}
                                                                     </span>
-                                                                    {selectedFilters.brand_id?.includes(brand.slug) && (
+                                                                    {selectedFilters.brand_id?.includes(brand.id) && (
                                                                         <motion.div
                                                                             className="ml-auto"
                                                                             initial={{ scale: 0 }}
@@ -1819,13 +1845,13 @@ const CatalagoFiltros = ({ items, data, filteredData, cart, setCart }) => {
                                                         </h4>
                                                         <div className="flex flex-wrap gap-2">
                                                             {/* Chips de marcas con AnimatedBadge */}
-                                                            {selectedFilters.brand_id?.map((brandSlug) => {
-                                                                const brand = brands.find(b => b.slug === brandSlug);
+                                                            {selectedFilters.brand_id?.map((brandId) => {
+                                                                const brand = brands.find(b => b.id === brandId);
                                                                 return brand ? (
                                                                     <AnimatedBadge
-                                                                        key={brandSlug}
+                                                                        key={brandId}
 
-                                                                        onClick={() => handleFilterChange("brand_id", brandSlug)}
+                                                                        onClick={() => handleFilterChange("brand_id", brandId)}
                                                                         className="group"
                                                                     >
                                                                         <Tag className="h-3 w-3" />

@@ -224,7 +224,7 @@ class UnifiedItemImport implements ToModel, WithHeadingRow, SkipsOnError, SkipsO
                     }
 
                     $subCategory = SubCategory::firstOrCreate(
-                        ['name' => $subcategoria, 'category_id' => $category->id],
+                        ['name' => $subcategoria],
                         [
                             'slug' => $subCategorySlug,
                             'status' => true
@@ -232,6 +232,10 @@ class UnifiedItemImport implements ToModel, WithHeadingRow, SkipsOnError, SkipsO
                     );
                     $subCategory->status = true;
                     $subCategory->save();
+
+                    if (!$subCategory->categories()->where('categories.id', $category->id)->exists()) {
+                        $subCategory->categories()->attach($category->id);
+                    }
                 }
             }
 
