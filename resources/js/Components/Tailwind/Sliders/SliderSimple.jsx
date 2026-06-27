@@ -36,7 +36,13 @@ const SliderSimple = ({ items, data }) => {
       {
         items.map((slider, i) => {
           return <SwiperSlide key={`slider-${i}`} className='relative w-full'>
-            <img className='absolute top-0 left-0 w-full h-full object-cover object-center z-0' src={`/storage/images/slider/${slider.bg_image || 'undefined'}`} alt={slider.name} />
+            <img
+              className='absolute top-0 left-0 w-full h-full object-cover object-center z-0'
+              src={`/storage/images/slider/${slider.bg_image || 'undefined'}`}
+              alt={slider.name}
+              loading={i === 0 ? "eager" : "lazy"}
+              fetchPriority={i === 0 ? "high" : "auto"}
+            />
             <div className="relative w-full px-[5%] replace-max-w-here mx-auto p-4 h-[480px] md:h-[600px] flex flex-col items-start justify-center">
               <div className="flex flex-col gap-5 lg:gap-10 items-start">
                 <h2 

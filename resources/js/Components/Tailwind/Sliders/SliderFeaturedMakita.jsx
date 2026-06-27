@@ -64,6 +64,8 @@ const SliderFeaturedMakita = ({
                       src={`/storage/images/brand/${item?.brand.image}`}
                       alt="Logo"
                       className="h-12 md:h-16"
+                      loading={i === 0 ? "eager" : "lazy"}
+                      fetchPriority={i === 0 ? "high" : "auto"}
                     />
 
                     <div className="text-white text-base md:text-lg opacity-80 mt-2 mb-4 prose line-clamp-4" dangerouslySetInnerHTML={{ __html: item?.description }}>
@@ -85,6 +87,8 @@ const SliderFeaturedMakita = ({
                         src={`/storage/images/item/${item?.banner}`}
                         alt={item?.name}
                         className=" min-w-[350px] lg:w-[500px] object-cover"
+                        loading={i === 0 ? "eager" : "lazy"}
+                        fetchPriority={i === 0 ? "high" : "auto"}
                       />
                     </div>
                   </div>

@@ -72,6 +72,8 @@ const SliderTwoColumnSwiper = ({ items, data }) => {
                   src={`/storage/images/slider/${slider.bg_image || 'undefined'}`} 
                   alt={slider.name} 
                   onError={e => e.target.src = '/api/cover/thumbnail/null'} 
+                  loading={i === 0 ? "eager" : "lazy"}
+                  fetchPriority={i === 0 ? "high" : "auto"}
                 />
               </motion.div>
               

@@ -244,6 +244,14 @@ $component = Route::currentRouteName();
     </script>
     <link rel="shortcut icon" href="/assets/resources/icon.png?v={{ $version }}" type="image/png">
     <link rel="preload" href="/assets/resources/logo.png?v={{ $version }}" as="image" type="image/png">
+    
+    @if(isset($data['firstActiveSliderImage']) && $data['firstActiveSliderImage'])
+    <link rel="preload" as="image" href="/storage/images/slider/{{ $data['firstActiveSliderImage'] }}" fetchpriority="high" media="(min-width: 768px)">
+    @endif
+    @if(isset($data['firstActiveSliderImageMobile']) && $data['firstActiveSliderImageMobile'])
+    <link rel="preload" as="image" href="/storage/images/slider/{{ $data['firstActiveSliderImageMobile'] }}" fetchpriority="high" media="(max-width: 767px)">
+    @endif
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
@@ -295,23 +303,37 @@ $component = Route::currentRouteName();
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'">
 
-    <link rel="preload" href='https://fonts.googleapis.com/css?family=Poppins' as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <!-- Google Fonts Combinadas y Asincronas -->
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Noto+Color+Emoji&family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Poppins:ital,wght@0,300..700;1,300..700&family=Rajdhani:wght@300;400;500;600;700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
     <noscript>
-        <link rel="stylesheet" href='https://fonts.googleapis.com/css?family=Poppins'>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Noto+Color+Emoji&family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Poppins:ital,wght@0,300..700;1,300..700&family=Rajdhani:wght@300;400;500;600;700&display=swap">
     </noscript>
-
-
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Color+Emoji&display=swap" rel="stylesheet">
 
     <!-- Pixel injection is handled by InjectPixelsMiddleware with cache -->
     @if ($data['fonts']['title']['url'] && $data['fonts']['title']['source'] !== 'true')
-    <link rel="stylesheet" href="<?php echo $data['fonts']['title']['url']; ?>">
+    @php
+        $titleFontUrl = $data['fonts']['title']['url'];
+        if (strpos($titleFontUrl, 'fonts.googleapis.com') !== false && strpos($titleFontUrl, 'display=swap') === false) {
+            $titleFontUrl .= (strpos($titleFontUrl, '?') !== false ? '&' : '?') . 'display=swap';
+        }
+    @endphp
+    <link rel="preload" href="<?php echo $titleFontUrl; ?>" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript>
+        <link rel="stylesheet" href="<?php echo $titleFontUrl; ?>">
+    </noscript>
     @endif
 
     @if ($data['fonts']['paragraph']['url'] && $data['fonts']['paragraph']['source'] !== 'true')
-    <link rel="stylesheet" href="<?php echo $data['fonts']['paragraph']['url']; ?>">
+    @php
+        $paragraphFontUrl = $data['fonts']['paragraph']['url'];
+        if (strpos($paragraphFontUrl, 'fonts.googleapis.com') !== false && strpos($paragraphFontUrl, 'display=swap') === false) {
+            $paragraphFontUrl .= (strpos($paragraphFontUrl, '?') !== false ? '&' : '?') . 'display=swap';
+        }
+    @endphp
+    <link rel="preload" href="<?php echo $paragraphFontUrl; ?>" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript>
+        <link rel="stylesheet" href="<?php echo $paragraphFontUrl; ?>">
+    </noscript>
     @endif
 
     @vite(['resources/css/app.css', 'resources/js/' . Route::currentRouteName()])
@@ -536,7 +558,6 @@ $component = Route::currentRouteName();
 
     <script src="/lte/assets/js/select2.full.min.js?v=<?php echo $version; ?>" defer></script>
     <script src="https://cdn.jsdelivr.net/npm/flowbite@2.4.1/dist/flowbite.min.js" defer></script>
-    <script src="/lte/assets/libs/quill/quill.min.js?v=<?php echo $version; ?>" defer></script>
 
     <script src="/assets/js/ecommerce-tracker.js" defer></script>
     <script>

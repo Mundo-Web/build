@@ -113,6 +113,8 @@ const SliderImagen = ({ items, data }) => {
                                                 alt={brand.name}
                                                 className={`brand-logo max-h-[60px] lg:max-h-[80px] w-auto object-contain hover:scale-105 transition-transform cursor-pointer ${data?.class_image }`}
                                                 onLoad={handleImagesLoad}
+                                                loading={index === 0 ? "eager" : "lazy"}
+                                                fetchPriority={index === 0 ? "high" : "auto"}
                                                 style={{
                                                     objectFit: 'contain',
                                                     objectPosition: 'center',

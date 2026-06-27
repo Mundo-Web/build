@@ -63,6 +63,8 @@ const SliderBrandsPaani = ({ items, data }) => {
                                         alt={brand.name}
                                         className="brand-logo max-h-[90px] md:max-h-[60px] w-auto object-contain hover:scale-105 transition-transform cursor-pointer"
                                         onLoad={handleImagesLoad}
+                                        loading={index === 0 ? "eager" : "lazy"}
+                                        fetchPriority={index === 0 ? "high" : "auto"}
                                         style={{
                                             maxWidth: '100%',
                                             objectFit: 'contain',

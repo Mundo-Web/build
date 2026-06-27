@@ -121,6 +121,8 @@ const SliderFirstClass = ({ sliders = [], data }) => {
                         src={`/storage/images/slider/${currentSlideData.bg_image || currentSlideData.image}`}
                         alt={`${currentSlideData.name}-background`}
                         className="w-full h-full object-cover transition-all duration-1000"
+                        loading="eager"
+                        fetchPriority="high"
                         onError={(e) =>
                             (e.target.src = "/api/cover/thumbnail/null")
                         }
@@ -255,6 +257,8 @@ const SliderFirstClass = ({ sliders = [], data }) => {
                                             src={`/storage/images/slider/${currentSlideData.image}`}
                                             alt={`${currentSlideData.name}-image`}
                                             className="w-full h-full object-cover transition-transform duration-700 hover:scale-110"
+                                            loading="eager"
+                                            fetchPriority="high"
                                             onError={(e) =>
                                                 (e.target.src =
                                                     "/api/cover/thumbnail/null")

@@ -123,6 +123,8 @@ const SliderPremium = ({ items, data, generals = [] }) => {
                                 src={`/storage/images/slider/${slide.bg_image}`}
                                 alt={slide.name}
                                 className="w-full h-full object-cover object-center grayscale-[20%] contrast-125 scale-105"
+                                loading={index === 0 ? "eager" : "lazy"}
+                                fetchPriority={index === 0 ? "high" : "auto"}
                             />
 
                             <div className="absolute inset-0 z-20 flex flex-col justify-end pb-20 md:pb-32 px-primary 2xl:px-0 2xl:max-w-7xl mx-auto">

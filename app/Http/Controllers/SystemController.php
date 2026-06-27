@@ -215,9 +215,22 @@ class SystemController extends BasicController
                             $query->orderBy($table . '.updated_at', 'desc');
                         }
                     }
+
                     $shortID = Crypto::short();
                     $system->itemsId = $shortID;
-                    $props['systemItems'][$shortID] = $query->get();
+                    $items = $query->get();
+                    $props['systemItems'][$shortID] = $items;
+
+                    if ($component['using']['model'] === 'Slider' && !isset($props['reactData']['firstActiveSliderImage'])) {
+                        $sortedItems = $items->sortBy(function ($item) {
+                            return $item->order_index ?? 0;
+                        });
+                        $firstItem = $sortedItems->first();
+                        if ($firstItem) {
+                            $props['reactData']['firstActiveSliderImage'] = $firstItem->bg_image;
+                            $props['reactData']['firstActiveSliderImageMobile'] = $firstItem->bg_image_mobile ?? $firstItem->bg_image;
+                        }
+                    }
                 }
 
                 if (isset($component['json'])) {

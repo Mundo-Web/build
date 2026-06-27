@@ -53,6 +53,8 @@ const SliderJustImage = ({ data, items }) => {
                 alt=""
                 className="w-full apect-[14/5] object-cover"
                 onError={e => e.target.src = '/api/cover/thumbnail/null'}
+                loading={i === 0 ? "eager" : "lazy"}
+                fetchPriority={i === 0 ? "high" : "auto"}
               />
             ) : (
               <div className="relative w-full aspect-[14/5] overflow-hidden">
