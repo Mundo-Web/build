@@ -440,6 +440,7 @@ const SliderLaPetacaContact = ({ items, data, generals = [] }) => {
                                     alt={slide.name}
                                     className="w-full h-full object-cover"
                                     loading={index === 0 ? "eager" : "lazy"}
+                                    fetchPriority={index === 0 ? "high" : "auto"}
                                 />
 
                                 {/* Overlay Logic from SliderLaPetaca */}

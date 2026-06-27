@@ -190,6 +190,7 @@ const SliderIbergruas = ({ items, data, generals = [] }) => {
                                                         ? "eager"
                                                         : "lazy"
                                                 }
+                                                fetchPriority={index === 0 ? "high" : "auto"}
                                             />
                                         </div>
                                         {/* Mobile Image */}
@@ -206,6 +207,7 @@ const SliderIbergruas = ({ items, data, generals = [] }) => {
                                                         ? "eager"
                                                         : "lazy"
                                                 }
+                                                fetchPriority={index === 0 ? "high" : "auto"}
                                             />
                                         </div>
                                     </>

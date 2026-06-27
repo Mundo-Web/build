@@ -1,1 +1,0 @@
-const t=t=>{if(!t)return"";const r=String(t).trim();return""===r?"":/^(https?:)?\/\//i.test(r)||r.startsWith("blob:")||r.startsWith("data:")||r.startsWith("/")?r:`/storage/images/banner/${r}`};export{t as r};

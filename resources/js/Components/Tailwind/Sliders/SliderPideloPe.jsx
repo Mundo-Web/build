@@ -125,7 +125,8 @@ const SliderPideloPe = ({ items, data }) => {
                                 <img
                                     src={item.image ? `/storage/images/slider/${item.image}` : `/storage/images/slider/${item.bg_image || "undefined"}`}
                                     alt={item.name}
-                                    loading="lazy"
+                                    loading={index === 0 ? "eager" : "lazy"}
+                                    fetchPriority={index === 0 ? "high" : "auto"}
                                     className="object-contain h-full w-auto max-h-[400px] lg:max-h-[600px] "
                                 />
                             </motion.div>

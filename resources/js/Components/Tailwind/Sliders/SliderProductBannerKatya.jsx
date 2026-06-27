@@ -77,7 +77,8 @@ const SliderProductBannerKatya = ({ items, data, generals = [] }) => {
                                                 src={`/storage/images/item/${product.banner}`}
                                                 alt={product.name}
                                                 className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500"
-                                                loading="lazy"
+                                                loading={index === 0 ? "eager" : "lazy"}
+                                                fetchPriority={index === 0 ? "high" : "auto"}
                                             />
                                         </div>
                                     </div>

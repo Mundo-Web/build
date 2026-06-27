@@ -274,6 +274,7 @@ const SliderMultivet = ({ items, data, generals = [] }) => {
                                         <source
                                             media="(min-width: 768px)"
                                             srcSet={`/storage/images/slider/${slide?.bg_image}`}
+                                            fetchPriority={index === 0 ? "high" : "auto"}
                                             onError={(e) =>
                                             (e.target.src =
                                                 "/api/cover/thumbnail/null")
@@ -286,6 +287,7 @@ const SliderMultivet = ({ items, data, generals = [] }) => {
                                             loading={
                                                 index === 0 ? "eager" : "lazy"
                                             }
+                                            fetchPriority={index === 0 ? "high" : "auto"}
                                             onError={(e) =>
                                             (e.target.src =
                                                 "/api/cover/thumbnail/null")

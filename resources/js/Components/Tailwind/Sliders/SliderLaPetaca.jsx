@@ -189,7 +189,7 @@ const SliderLaPetaca = ({ items, data, generals = [] }) => {
                                 alt={slide.name}
                                 className="w-full h-full object-cover"
                                 loading={index === 0 ? "eager" : "lazy"}
-                                fetchpriority={index === 0 ? "high" : "low"}
+                                fetchPriority={index === 0 ? "high" : "low"}
                             />
                             {/* ...existing code for overlays and content... */}
                             {slide?.show_overlay !== false &&

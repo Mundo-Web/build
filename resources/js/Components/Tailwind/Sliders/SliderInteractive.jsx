@@ -447,7 +447,8 @@ const SliderInteractive = ({ items, data, generals = [] }) => {
                                             key={`image-desktop-${index}`}
                                             src={`/storage/images/slider/${item.bg_image || "undefined"}`}
                                             alt={item.name}
-                                            loading="lazy"
+                                            loading="eager"
+                                            fetchPriority="high"
                                             className={`hidden md:block absolute top-0 left-0 h-full md:h-full w-screen md:w-full object-cover ${data?.imageBgPosition || "object-right-25"} md:object-center z-0 md:mr-20 lg:mr-0`}
                                             variants={imageVariants}
                                             initial="initial"
@@ -465,7 +466,8 @@ const SliderInteractive = ({ items, data, generals = [] }) => {
                                             key={`image-mobile-${index}`}
                                             src={`/storage/images/slider/${item.bg_image_mobile || item.bg_image || "undefined"}`}
                                             alt={item.name}
-                                            loading="lazy"
+                                            loading="eager"
+                                            fetchPriority="high"
                                             className={`block md:hidden absolute top-0 left-0 h-full w-screen object-cover ${data?.imageBgPosition || "object-right-25"} z-0`}
                                             variants={imageVariants}
                                             initial="initial"

@@ -113,7 +113,8 @@ const SliderBananaLab = ({ items, data }) => {
                             <motion.img
                                 src={`/assets/img/backgrounds/sliders/slider.png`}
                                 alt={item.name}
-                                loading="lazy"
+                                loading={index === 0 ? "eager" : "lazy"}
+                                fetchPriority={index === 0 ? "high" : "auto"}
                                 className="absolute bottom-0 -rotate-180 left-0 object-cover object-right-bottom h-full lg:top-0 lg:right-0 lg:rotate-0"
                                 initial={{ opacity: 0 }}
                                 animate={{ opacity: 1 }}
@@ -166,7 +167,8 @@ const SliderBananaLab = ({ items, data }) => {
                             <motion.img
                                 src={`/storage/images/slider/${item.bg_image || "undefined"}`}
                                 alt={item.name}
-                                loading="lazy"
+                                loading={index === 0 ? "eager" : "lazy"}
+                                fetchPriority={index === 0 ? "high" : "auto"}
                                 className="absolute -bottom-40 w-auto h-[600px] object-cover lg:right-0 lg:h-[700px]"
                                 initial={{ opacity: 0, x: 100 }}
                                 animate={{ opacity: 1, x: 0 }}
