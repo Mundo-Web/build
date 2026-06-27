@@ -9,6 +9,11 @@
 
     RewriteEngine On
 
+    # Bloquear acceso a archivos y rutas de escaneo sensibles (Mitigación de Bots)
+    RewriteRule (?i)\.(env|git|svn|bak|sql|zip|rar|tar\.gz)$ - [F,L]
+    RewriteRule (?i)(wp-admin|wp-login|wp-content|wp-includes|xmlrpc\.php) - [F,L]
+    RewriteRule (?i)(phpmyadmin|adminer\.php) - [F,L]
+
     # Handle Authorization Header
     RewriteCond %{HTTP:Authorization} .
     RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]

@@ -7,6 +7,11 @@ DirectoryIndex index.php
 <IfModule mod_rewrite.c>
     RewriteEngine On
 
+    # Bloquear acceso a archivos y rutas de escaneo sensibles (Mitigación de Bots)
+    RewriteRule (?i)\.(env|git|svn|bak|sql|zip|rar|tar\.gz)$ - [F,L]
+    RewriteRule (?i)(wp-admin|wp-login|wp-content|wp-includes|xmlrpc\.php) - [F,L]
+    RewriteRule (?i)(phpmyadmin|adminer\.php) - [F,L]
+
     # Si la petición ya viene con /public/, no hagas nada
     RewriteCond %{REQUEST_URI} ^/public/ [NC]
     RewriteRule ^ - [L]
