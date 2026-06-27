@@ -556,7 +556,7 @@ $component = Route::currentRouteName();
     </script>
     @endif
 
-    <script src="/lte/assets/js/select2.full.min.js?v=<?php echo $version; ?>" defer></script>
+    <script src="/lte/assets/libs/select2/js/select2.full.min.js?v=<?php echo $version; ?>" defer></script>
     <script src="https://cdn.jsdelivr.net/npm/flowbite@2.4.1/dist/flowbite.min.js" defer></script>
 
     <script src="/assets/js/ecommerce-tracker.js" defer></script>

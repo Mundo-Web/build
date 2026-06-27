@@ -75,3 +75,5 @@ COLORS_SYSTEM.md
 /.agents
 /database/seeders/MiBalonSystemSeeder.php  
 EMPRESA_CONTEXT.md
+
+trace_mcp.json
