@@ -1,0 +1,1 @@
+var e=Object.defineProperty,t=(t,s,a)=>((t,s,a)=>s in t?e(t,s,{enumerable:!0,configurable:!0,writable:!0,value:a}):t[s]=a)(t,"symbol"!=typeof s?s+"":s,a);const s=class{};t(s,"set",(e,t)=>{if("whatsapp_advisors"!==e&&"additional_shipping_costs"!==e||"string"!=typeof t)s[e]=t;else try{s[e]=JSON.parse(t)}catch(a){s[e]=[]}}),t(s,"get",e=>s[e]??null);let a=s;export{a as G};

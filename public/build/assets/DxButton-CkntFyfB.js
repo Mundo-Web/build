@@ -1,0 +1,1 @@
+const t=({className:t,title:e,icon:i,onClick:l,...o})=>$("<div>").dxButton({hint:e,template:(t,e)=>{e.addClass(`${i} d-block`)},elementAttr:{class:`${t} position-relative me-1 px-1 py-0 tippy-here`,...o},onClick:l});export{t as D};

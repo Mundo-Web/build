@@ -1,0 +1,1 @@
+const e=(e,t,a,n)=>{if($(e).empty(),t){if(Array.isArray(t))t.forEach(t=>{const{[a]:o,[n]:c}=t,r=document.createElement("option");r.value=o??t,r.text=c??t,r.selected=!0,$(e).append(r)});else{const n=document.createElement("option");n.value=t,n.text=a??t,$(e).append(n),$(e).val(t)}$(e).trigger("change")}};export{e as S};
