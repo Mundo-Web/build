@@ -308,6 +308,7 @@ const System = ({
         const dataWithElementId = { ...data, element_id };
 
         // Configuración de animación desde data (configurable desde admin)
+        const isMobileDevice = typeof window !== "undefined" && window.innerWidth <= 768;
         const animationConfig = {
             animation: data?.scroll_animation || "fade-up", // Tipo de animación
             duration: parseFloat(data?.scroll_duration) || 0.8,
@@ -315,7 +316,8 @@ const System = ({
             easing: data?.scroll_easing || "gcigc",
             disabled:
                 data?.scroll_animation === "none" ||
-                data?.scroll_disabled === true,
+                data?.scroll_disabled === true ||
+                isMobileDevice, // Deshabilitar animaciones en móvil para máximo rendimiento
         };
 
         // Componentes que NO deben tener animación de scroll (fixed, floating, etc)
