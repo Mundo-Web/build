@@ -151,6 +151,8 @@ const MenuSimple = ({ pages = [], items, data, visible = false }) => {
                                                 <a
                                                     key={`${tag.id}-${actualIndex}`}
                                                     href={`/catalogo?tag=${tag.id}`}
+                                                    title={tag.description || tag.name}
+                                                    aria-label={`Ir a ${tag.name}`}
                                                     className="group relative border-white border-2 overflow-hidden rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02]"
                                                     style={{
                                                         background: `linear-gradient(135deg, ${tag.background_color || '#3b82f6'}, ${tag.background_color || '#3b82f6'}dd)`,
@@ -288,11 +290,12 @@ const MenuSimple = ({ pages = [], items, data, visible = false }) => {
                                                         color: tag.text_color || '#ffffff',
                                                     }}
                                                     title={tag.description || tag.name}
+                                                    aria-label={`Ir a ${tag.name}`}
                                                 >
                                                     {tag.icon && (
                                                         <img
                                                             src={`/storage/images/tag/${tag.icon}`}
-                                                            alt={tag.name}
+                                                            alt={`Ir a ${tag.name}`}
                                                             className="w-4 h-4"
                                                             onError={(e) => (e.target.src = "/api/cover/thumbnail/null")}
                                                         />
