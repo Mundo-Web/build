@@ -138,7 +138,7 @@ const MenuSimple = ({ pages = [], items, data, visible = false }) => {
                 ref={menuRef}
             >
                 <div className="px-primary  2xl:px-0 2xl:max-w-7xl mx-auto">
-                    <ul className="flex items-center gap-4 lg:gap-6 text-sm justify-between">
+                    <div className="flex items-center gap-4 lg:gap-6 text-sm justify-between">
                         {/* Mostrar solo tags en mobile si corresponde */}
                         {showOnlyTagsMobile ? (
                             <div className="w-full py-3 px-4">
@@ -309,7 +309,7 @@ const MenuSimple = ({ pages = [], items, data, visible = false }) => {
                                 )}
                             </>
                         )}
-                    </ul>
+                    </div>
                 </div>
             </nav>
         </>
