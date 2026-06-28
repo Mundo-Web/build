@@ -95,6 +95,7 @@ const FooterB = ({ pages, generals, data }) => {
                                     <li key={index}>
                                         <a
                                             href={page.path}
+                                            aria-label={`Ver ${page.name}`}
                                             className={`hover:customtext-primary hover:font-semibold text-sm cursor-pointer transition-all duration-300 ${data?.class_menu_item || ''}`}
                                         >
                                             {page.name}
@@ -118,6 +119,7 @@ const FooterB = ({ pages, generals, data }) => {
                             <li>
                                 <a
                                     onClick={() => openModal(0)}
+                                    aria-label="Ver políticas de privacidad"
                                     className={`cursor-pointer hover:customtext-primary hover:font-bold transition-all duration-300 ${data?.class_menu_item || ''}`}
                                 >
                                     Políticas de privacidad
@@ -126,7 +128,8 @@ const FooterB = ({ pages, generals, data }) => {
                             <li>
                                 <a
                                     type="button"
-                                    href="#"
+
+                                    aria-label="Ver términos y condiciones"
                                     onClick={() => openModal(1)}
                                     className={`cursor-pointer hover:customtext-primary hover:font-bold transition-all duration-300 ${data?.class_menu_item || ''}`}
                                 >
@@ -136,8 +139,9 @@ const FooterB = ({ pages, generals, data }) => {
                             <li>
                                 <a
                                     type="button"
-                                    href="#"
+
                                     onClick={() => openModal(2)}
+                                    aria-label="Ver políticas de cambio"
                                     className={`cursor-pointer hover:customtext-primary hover:font-bold transition-all duration-300 ${data?.class_menu_item || ''}`}
                                 >
                                     Políticas de cambio
@@ -148,6 +152,9 @@ const FooterB = ({ pages, generals, data }) => {
 
 
                                     href="/libro-reclamaciones"
+                                    aria-label="Ver libro de reclamaciones"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
                                     className="cursor-pointer flex flex-col gap-2 items-start  "
                                 >
                                     <span className={`hover:customtext-primary hover:font-bold transition-all duration-300 ${data?.class_menu_item || ''}`}>

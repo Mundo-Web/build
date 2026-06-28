@@ -139,6 +139,7 @@ const TopBarSocials = ({ items, data }) => {
                                 Powered by{" "}
                                 <a
                                     href="https://www.mundoweb.pe"
+                                    aria-label="Visitar MundoWeb"
                                     target="_blank"
                                     rel="noopener noreferrer"
                                 >
@@ -160,7 +161,7 @@ const TopBarSocials = ({ items, data }) => {
                                     s.name === social.description ||
                                     s.iconRef === social.icon ||
                                     s.name.toLowerCase() ===
-                                        social.description?.toLowerCase(),
+                                    social.description?.toLowerCase(),
                             );
 
                             const IconComponent = socialData?.icon;
@@ -175,6 +176,7 @@ const TopBarSocials = ({ items, data }) => {
                                         href={social.url || social.link || "#"}
                                         target="_blank"
                                         rel="noopener noreferrer"
+                                        aria-label={`Ver ${social.name || social.description || "Red social"}`}
                                         onClick={(e) => {
                                             if (!social.url && !social.link) {
                                                 e.preventDefault();
