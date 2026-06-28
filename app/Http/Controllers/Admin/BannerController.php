@@ -80,11 +80,7 @@ class BannerController extends BasicController
 
                 if (!$request->hasFile($field)) continue;
                 $full = $request->file($field);
-                $uuid = Crypto::randomUUID();
-                $ext = $full->getClientOriginalExtension();
-                $path = "images/{$snake_case}/{$uuid}.{$ext}";
-                Storage::put($path, file_get_contents($full));
-                $body[$field] = "{$uuid}.{$ext}";
+                $body[$field] = \App\Http\Controllers\BasicController::saveImage($full, $snake_case);
             }
 
             $bannerJpa = $this->model::find($request->id);

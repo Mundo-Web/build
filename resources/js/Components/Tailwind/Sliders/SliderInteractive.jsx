@@ -14,52 +14,52 @@ const SliderInteractive = ({ items, data, generals = [] }) => {
 
     const imageVariants = hasAnimation
         ? {
-              initial: {
-                  scale: 1,
-                  opacity: 1,
-              },
-              animate: {
-                  scale: [1, 1.2, 1],
-                  x: [1, -50, 1],
-                  opacity: 1,
-                  transition: {
-                      duration: 20,
+            initial: {
+                scale: 1,
+                opacity: 1,
+            },
+            animate: {
+                scale: [1, 1.2, 1],
+                x: [1, -50, 1],
+                opacity: 1,
+                transition: {
+                    duration: 20,
 
-                      repeat: Infinity,
-                      repeatType: "loop",
-                  },
-              },
-              exit: {
-                  scale: 1,
-                  opacity: 0.8,
-                  transition: {
-                      duration: 0.3,
-                      ease: "easeInOut",
-                  },
-              },
-          }
+                    repeat: Infinity,
+                    repeatType: "loop",
+                },
+            },
+            exit: {
+                scale: 1,
+                opacity: 0.8,
+                transition: {
+                    duration: 0.3,
+                    ease: "easeInOut",
+                },
+            },
+        }
         : {
-              initial: {
-                  scale: 1,
-                  opacity: 1,
-              },
-              animate: {
-                  scale: [1, 1, 1],
+            initial: {
+                scale: 1,
+                opacity: 1,
+            },
+            animate: {
+                scale: [1, 1, 1],
 
-                  opacity: 1,
-                  transition: {
-                      duration: 20,
-                  },
-              },
-              exit: {
-                  scale: 1,
-                  opacity: 0.8,
-                  transition: {
-                      duration: 0.3,
-                      ease: "easeInOut",
-                  },
-              },
-          };
+                opacity: 1,
+                transition: {
+                    duration: 20,
+                },
+            },
+            exit: {
+                scale: 1,
+                opacity: 0.8,
+                transition: {
+                    duration: 0.3,
+                    ease: "easeInOut",
+                },
+            },
+        };
 
     // Variantes de animación para los textos
     const titleVariants = {
@@ -251,7 +251,7 @@ const SliderInteractive = ({ items, data, generals = [] }) => {
         const threshold = 20;
         const deltaX = Math.abs(
             (currentTranslate.current + currentIndex * 100) *
-                (window.innerWidth / 100),
+            (window.innerWidth / 100),
         );
         if (deltaX > threshold) {
             if (currentTranslate.current > -currentIndex * 100) {
@@ -294,7 +294,7 @@ const SliderInteractive = ({ items, data, generals = [] }) => {
         const threshold = 50; // Aumentado de 20 a 50 para mejor detección
         const deltaX = Math.abs(
             (currentTranslate.current + currentIndex * 100) *
-                (window.innerWidth / 100),
+            (window.innerWidth / 100),
         );
         if (deltaX > threshold) {
             if (currentTranslate.current > -currentIndex * 100) {
@@ -332,9 +332,8 @@ const SliderInteractive = ({ items, data, generals = [] }) => {
                 sliderRef.current.style.transition = "none";
                 setCurrentIndex(duplicatedItems.length - 2);
                 requestAnimationFrame(() => {
-                    sliderRef.current.style.transform = `translateX(-${
-                        (duplicatedItems.length - 2) * 100
-                    }%)`;
+                    sliderRef.current.style.transform = `translateX(-${(duplicatedItems.length - 2) * 100
+                        }%)`;
                     setTimeout(() => {
                         sliderRef.current.style.transition =
                             "transform 0.5s ease-in-out";
@@ -346,9 +345,8 @@ const SliderInteractive = ({ items, data, generals = [] }) => {
                 sliderRef.current.style.transition = "none";
                 setCurrentIndex(1);
                 requestAnimationFrame(() => {
-                    sliderRef.current.style.transform = `translateX(-${
-                        1 * 100
-                    }%)`;
+                    sliderRef.current.style.transform = `translateX(-${1 * 100
+                        }%)`;
                     setTimeout(() => {
                         sliderRef.current.style.transition =
                             "transform 0.5s ease-in-out";
@@ -448,7 +446,7 @@ const SliderInteractive = ({ items, data, generals = [] }) => {
                                             src={`/storage/images/slider/${item.bg_image || "undefined"}`}
                                             alt={item.name}
                                             loading="eager"
-                                            fetchPriority="high"
+                                            fetchpriority="high"
                                             className={`hidden md:block absolute top-0 left-0 h-full md:h-full w-screen md:w-full object-cover ${data?.imageBgPosition || "object-right-25"} md:object-center z-0 md:mr-20 lg:mr-0`}
                                             variants={imageVariants}
                                             initial="initial"
@@ -467,7 +465,7 @@ const SliderInteractive = ({ items, data, generals = [] }) => {
                                             src={`/storage/images/slider/${item.bg_image_mobile || item.bg_image || "undefined"}`}
                                             alt={item.name}
                                             loading="eager"
-                                            fetchPriority="high"
+                                            fetchpriority="high"
                                             className={`block md:hidden absolute top-0 left-0 h-full w-screen object-cover ${data?.imageBgPosition || "object-right-25"} z-0`}
                                             variants={imageVariants}
                                             initial="initial"
@@ -490,41 +488,40 @@ const SliderInteractive = ({ items, data, generals = [] }) => {
                                     <div
                                         className="absolute inset-0"
                                         style={{
-                                            background: `linear-gradient(${
-                                                item?.overlay_direction ===
+                                            background: `linear-gradient(${item?.overlay_direction ===
                                                 "to-r"
-                                                    ? "to right"
+                                                ? "to right"
+                                                : item?.overlay_direction ===
+                                                    "to-l"
+                                                    ? "to left"
                                                     : item?.overlay_direction ===
-                                                        "to-l"
-                                                      ? "to left"
-                                                      : item?.overlay_direction ===
-                                                          "to-t"
+                                                        "to-t"
                                                         ? "to top"
                                                         : item?.overlay_direction ===
                                                             "to-b"
-                                                          ? "to bottom"
-                                                          : item?.overlay_direction ===
-                                                              "to-tr"
-                                                            ? "to top right"
+                                                            ? "to bottom"
                                                             : item?.overlay_direction ===
-                                                                "to-tl"
-                                                              ? "to top left"
-                                                              : item?.overlay_direction ===
-                                                                  "to-br"
-                                                                ? "to bottom right"
+                                                                "to-tr"
+                                                                ? "to top right"
                                                                 : item?.overlay_direction ===
-                                                                    "to-bl"
-                                                                  ? "to bottom left"
-                                                                  : "to bottom"
-                                            }, ${item?.overlay_color || "#000000"}${Math.round(
-                                                (item?.overlay_opacity ?? 50) *
+                                                                    "to-tl"
+                                                                    ? "to top left"
+                                                                    : item?.overlay_direction ===
+                                                                        "to-br"
+                                                                        ? "to bottom right"
+                                                                        : item?.overlay_direction ===
+                                                                            "to-bl"
+                                                                            ? "to bottom left"
+                                                                            : "to bottom"
+                                                }, ${item?.overlay_color || "#000000"}${Math.round(
+                                                    (item?.overlay_opacity ?? 50) *
                                                     2.55,
-                                            )
-                                                .toString(16)
-                                                .padStart(
-                                                    2,
-                                                    "0",
-                                                )}, transparent)`,
+                                                )
+                                                    .toString(16)
+                                                    .padStart(
+                                                        2,
+                                                        "0",
+                                                    )}, transparent)`,
                                         }}
                                     ></div>
                                 )}
@@ -532,26 +529,26 @@ const SliderInteractive = ({ items, data, generals = [] }) => {
                             {/* Overlays por defecto si el overlay personalizado está desactivado */}
                             {(item?.show_overlay === false ||
                                 item?.show_overlay === 0) && (
-                                <>
-                                    {/* Overlay por defecto desde data.class_overlay */}
-                                    {data?.class_overlay && (
-                                        <div
-                                            className={`absolute inset-0 ${data?.class_overlay}`}
-                                        ></div>
-                                    )}
+                                    <>
+                                        {/* Overlay por defecto desde data.class_overlay */}
+                                        {data?.class_overlay && (
+                                            <div
+                                                className={`absolute inset-0 ${data?.class_overlay}`}
+                                            ></div>
+                                        )}
 
-                                    {/* Overlays legacy (mantener compatibilidad) */}
-                                    {data?.overlayMobile && (
-                                        <div className="md:hidden absolute inset-0 bg-gradient-to-b from-transparent to-white"></div>
-                                    )}
-                                    {data?.overlayMobileDark && (
-                                        <div className="md:hidden absolute inset-0 bg-gradient-to-b from-transparent to-black"></div>
-                                    )}
-                                    {data?.overlayDesktop && (
-                                        <div className="absolute inset-0 bg-gradient-to-l from-transparent via-black/60 to-black/80"></div>
-                                    )}
-                                </>
-                            )}
+                                        {/* Overlays legacy (mantener compatibilidad) */}
+                                        {data?.overlayMobile && (
+                                            <div className="md:hidden absolute inset-0 bg-gradient-to-b from-transparent to-white"></div>
+                                        )}
+                                        {data?.overlayMobileDark && (
+                                            <div className="md:hidden absolute inset-0 bg-gradient-to-b from-transparent to-black"></div>
+                                        )}
+                                        {data?.overlayDesktop && (
+                                            <div className="absolute inset-0 bg-gradient-to-l from-transparent via-black/60 to-black/80"></div>
+                                        )}
+                                    </>
+                                )}
 
                             {!data?.only_image && (
                                 <>
@@ -627,9 +624,9 @@ const SliderInteractive = ({ items, data, generals = [] }) => {
                                                                         : undefined
                                                                 }
                                                                 ref={(el) =>
-                                                                    (buttonsRef.current[
-                                                                        index
-                                                                    ] = el)
+                                                                (buttonsRef.current[
+                                                                    index
+                                                                ] = el)
                                                                 }
                                                                 className={`bg-primary border-none flex flex-row items-center gap-3 px-10 py-4 text-base rounded-xl tracking-wide font-bold text-white ${data?.class_button_primary || "text-white"}`}
                                                                 onClick={(
@@ -735,22 +732,20 @@ const SliderInteractive = ({ items, data, generals = [] }) => {
                 <div className="px-primary 2xl:px-0 2xl:max-w-7xl mx-auto ">
                     <div className="relative">
                         <div
-                            className={`absolute bottom-4 ${
-                                alignmentClassPagination === "left"
-                                    ? "inset-x-0 left-0"
-                                    : alignmentClassPagination === "right"
-                                      ? "right-0"
-                                      : "left-1/2 transform -translate-x-1/2"
-                            }`}
+                            className={`absolute bottom-4 ${alignmentClassPagination === "left"
+                                ? "inset-x-0 left-0"
+                                : alignmentClassPagination === "right"
+                                    ? "right-0"
+                                    : "left-1/2 transform -translate-x-1/2"
+                                }`}
                         >
                             {sortedItems.map((_, index) => (
                                 <div
                                     key={`dot-${index}`}
-                                    className={`inline-flex mx-1 w-3 h-3 rounded-full ${
-                                        currentIndex === index + 1
-                                            ? "bg-transparent h-5 w-5 lg:w-6 lg:h-6 items-center justify-center border-2 border-primary"
-                                            : "bg-secondary"
-                                    }`}
+                                    className={`inline-flex mx-1 w-3 h-3 rounded-full ${currentIndex === index + 1
+                                        ? "bg-transparent h-5 w-5 lg:w-6 lg:h-6 items-center justify-center border-2 border-primary"
+                                        : "bg-secondary"
+                                        }`}
                                     onClick={() => setCurrentIndex(index + 1)}
                                 >
                                     {currentIndex === index + 1 && (

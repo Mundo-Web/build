@@ -657,6 +657,60 @@ class BasicController extends Controller
     return $data;
   }
 
+  /**
+   * Guarda una imagen optimizándola a WebP de forma transparente si es compatible.
+   * Retorna el nombre del archivo guardado (ej. uuid.webp o uuid.jpg)
+   */
+  public static function saveImage($file, string $snake_case): string
+  {
+    $uuid = Crypto::randomUUID();
+    $ext = strtolower($file->getClientOriginalExtension());
+    
+    // Si es una imagen compatible, la optimizamos y convertimos a WebP
+    if (in_array($ext, ['jpg', 'jpeg', 'png', 'webp'])) {
+      $realPath = $file->getRealPath();
+      $imgInfo = @getimagesize($realPath);
+      if ($imgInfo) {
+        $mime = $imgInfo['mime'];
+        $sourceImage = null;
+        switch ($mime) {
+          case 'image/jpeg':
+          case 'image/jpg':
+            $sourceImage = @imagecreatefromjpeg($realPath);
+            break;
+          case 'image/png':
+            $sourceImage = @imagecreatefrompng($realPath);
+            if ($sourceImage) {
+              imagealphablending($sourceImage, false);
+              imagesavealpha($sourceImage, true);
+            }
+            break;
+          case 'image/webp':
+            $sourceImage = @imagecreatefromwebp($realPath);
+            break;
+        }
+        
+        if ($sourceImage) {
+          $tempPath = tempnam(sys_get_temp_dir(), 'webp');
+          if (@imagewebp($sourceImage, $tempPath, 90)) {
+            $path = "images/{$snake_case}/{$uuid}.webp";
+            Storage::put($path, file_get_contents($tempPath));
+            @imagedestroy($sourceImage);
+            @unlink($tempPath);
+            return "{$uuid}.webp";
+          }
+          @imagedestroy($sourceImage);
+          @unlink($tempPath);
+        }
+      }
+    }
+
+    // Fallback: guardar el archivo original
+    $path = "images/{$snake_case}/{$uuid}.{$ext}";
+    Storage::put($path, file_get_contents($file));
+    return "{$uuid}.{$ext}";
+  }
+
   public function clearCache()
   {
     Cache::flush();
@@ -720,11 +774,7 @@ class BasicController extends Controller
         }
 
         $full = $request->file($field);
-        $uuid = Crypto::randomUUID();
-        $ext = $full->getClientOriginalExtension();
-        $path = "images/{$snake_case}/{$uuid}.{$ext}";
-        Storage::put($path, file_get_contents($full));
-        $body[$field] = "{$uuid}.{$ext}";
+        $body[$field] = self::saveImage($full, $snake_case);
       }
 
       $jpa = $this->model::find(isset($body['id']) ? $body['id'] : null);

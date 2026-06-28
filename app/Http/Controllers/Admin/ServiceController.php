@@ -152,11 +152,7 @@ class ServiceController extends BasicController
                 }
 
                 $full = $request->file($field);
-                $uuid = Crypto::randomUUID();
-                $ext = $full->getClientOriginalExtension();
-                $path = "images/{$snake_case}/{$uuid}.{$ext}";
-                Storage::put($path, file_get_contents($full));
-                $imageData[$field] = "{$uuid}.{$ext}";
+                $imageData[$field] = \App\Http\Controllers\BasicController::saveImage($full, $snake_case);
             }
 
             // Crear o actualizar el servicio
@@ -284,14 +280,11 @@ class ServiceController extends BasicController
                 foreach ($galleryFiles as $index => $file) {
                     if ($file && $file->isValid()) {
                         $snake_case = Text::camelToSnakeCase(str_replace('App\\Models\\', '', $this->model));
-                        $uuid = Crypto::randomUUID();
-                        $ext = $file->getClientOriginalExtension();
-                        $path = "images/{$snake_case}/{$uuid}.{$ext}";
-                        Storage::put($path, file_get_contents($file));
+                        $filename = \App\Http\Controllers\BasicController::saveImage($file, $snake_case);
 
                         ServiceImage::create([
                             'service_id' => $service->id,
-                            'image' => "{$uuid}.{$ext}",
+                            'image' => $filename,
                             'order' => $currentMaxOrder + $index + 1
                         ]);
                     }

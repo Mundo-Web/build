@@ -55,7 +55,7 @@ class AppServiceProvider extends ServiceProvider
 
         // Cargar de forma asíncrona (non-blocking) CSS secundarios para mejorar rendimiento FCP/LCP
         \Illuminate\Support\Facades\Vite::useStyleTagAttributes(function (?string $src, string $url, ?array $chunk, ?array $manifest) {
-            if ($src !== null && (str_contains($src, 'vendor-swiper.css') || str_contains($src, 'TippyButton.css'))) {
+            if (str_contains($url, 'vendor-swiper') || str_contains($url, 'TippyButton')) {
                 return [
                     'rel' => 'preload',
                     'as' => 'style',

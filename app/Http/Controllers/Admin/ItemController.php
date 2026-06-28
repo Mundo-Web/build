@@ -72,11 +72,7 @@ class ItemController extends BasicController
                 }
 
                 $full = $request->file("image");
-                $uuid = Crypto::randomUUID();
-                $ext = $full->getClientOriginalExtension();
-                $path = "images/{$snake_case}/{$uuid}.{$ext}";
-                Storage::put($path, file_get_contents($full));
-                $item->image = "{$uuid}.{$ext}";
+                $item->image = \App\Http\Controllers\BasicController::saveImage($full, $snake_case);
                 $item->save();
             }
 
@@ -87,13 +83,10 @@ class ItemController extends BasicController
                 $lastOrder = $item->images()->max('order') ?? 0;
 
                 foreach ($galleryFiles as $index => $file) {
-                    $uuid = Crypto::randomUUID();
-                    $ext = $file->getClientOriginalExtension();
-                    $path = "images/{$snake_case}/{$uuid}.{$ext}";
-                    Storage::put($path, file_get_contents($file));
+                    $filename = \App\Http\Controllers\BasicController::saveImage($file, $snake_case);
 
                     $item->images()->create([
-                        'url' => "{$uuid}.{$ext}",
+                        'url' => $filename,
                         'order' => $lastOrder + $index + 1
                     ]);
                 }
@@ -467,11 +460,7 @@ class ItemController extends BasicController
             if ($request->hasFile('image')) {
                 $snake_case = Text::camelToSnakeCase(str_replace('App\\Models\\', '', $this->model));
                 $full = $request->file("image");
-                $uuid = Crypto::randomUUID();
-                $ext = $full->getClientOriginalExtension();
-                $path = "images/{$snake_case}/{$uuid}.{$ext}";
-                Storage::put($path, file_get_contents($full));
-                $item->image = "{$uuid}.{$ext}";
+                $item->image = \App\Http\Controllers\BasicController::saveImage($full, $snake_case);
                 $item->save();
             }
 
@@ -479,11 +468,7 @@ class ItemController extends BasicController
             if ($request->hasFile('banner')) {
                 $snake_case = Text::camelToSnakeCase(str_replace('App\\Models\\', '', $this->model));
                 $full = $request->file("banner");
-                $uuid = Crypto::randomUUID();
-                $ext = $full->getClientOriginalExtension();
-                $path = "images/{$snake_case}/{$uuid}.{$ext}";
-                Storage::put($path, file_get_contents($full));
-                $item->banner = "{$uuid}.{$ext}";
+                $item->banner = \App\Http\Controllers\BasicController::saveImage($full, $snake_case);
                 $item->save();
             }
 
@@ -491,11 +476,7 @@ class ItemController extends BasicController
             if ($request->hasFile('texture')) {
                 $snake_case = Text::camelToSnakeCase(str_replace('App\\Models\\', '', $this->model));
                 $full = $request->file("texture");
-                $uuid = Crypto::randomUUID();
-                $ext = $full->getClientOriginalExtension();
-                $path = "images/{$snake_case}/{$uuid}.{$ext}";
-                Storage::put($path, file_get_contents($full));
-                $item->texture = "{$uuid}.{$ext}";
+                $item->texture = \App\Http\Controllers\BasicController::saveImage($full, $snake_case);
                 $item->save();
             }
 
@@ -613,15 +594,11 @@ class ItemController extends BasicController
                 if (!is_array($galleryFiles)) $galleryFiles = [$galleryFiles];
                 foreach ($galleryFiles as $index => $file) {
                     $snake_case = Text::camelToSnakeCase(str_replace('App\\Models\\', '', $this->model));
-                    $full = $file;
-                    $uuid = Crypto::randomUUID();
-                    $ext = $full->getClientOriginalExtension();
-                    $path = "images/{$snake_case}/{$uuid}.{$ext}";
-                    Storage::put($path, file_get_contents($full));
+                    $filename = \App\Http\Controllers\BasicController::saveImage($file, $snake_case);
 
                     // Crear imagen con orden secuencial
                     $item->images()->create([
-                        'url' => "{$uuid}.{$ext}",
+                        'url' => $filename,
                         'order' => $lastOrder + $index + 1
                     ]);
                     $newImagesCount++;

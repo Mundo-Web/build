@@ -103,33 +103,22 @@ class CategoryController extends BasicController
                 }
 
                 $full = $request->file($field);
-                $uuid = \SoDe\Extend\Crypto::randomUUID();
-                $ext = $full->getClientOriginalExtension();
-                $path = "images/{$snake_case}/{$uuid}.{$ext}";
-                Storage::put($path, file_get_contents($full));
-                $body[$field] = "{$uuid}.{$ext}";
+                $body[$field] = \App\Http\Controllers\BasicController::saveImage($full, $snake_case);
             }
-
+ 
             // Process banner images from JSON array
             if (isset($body['banners']) && is_array($body['banners'])) {
                 foreach ($body['banners'] as $index => $banner) {
                     $fieldName = "banner_image_{$index}";
-
+ 
                     if ($request->hasFile($fieldName)) {
                         $file = $request->file($fieldName);
-                        $uuid = \SoDe\Extend\Crypto::randomUUID();
-                        $ext = $file->getClientOriginalExtension();
-                        $path = "images/{$snake_case}/{$uuid}.{$ext}";
-
-                        Storage::put($path, file_get_contents($file));
-
+                        $body['banners'][$index]['image'] = \App\Http\Controllers\BasicController::saveImage($file, $snake_case);
+ 
                         Log::info('CategoryController - Imagen de banner guardada:', [
                             'index' => $index,
-                            'path' => $path,
-                            'filename' => "{$uuid}.{$ext}"
+                            'filename' => $body['banners'][$index]['image']
                         ]);
-
-                        $body['banners'][$index]['image'] = "{$uuid}.{$ext}";
                     }
                 }
             }
