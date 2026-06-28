@@ -646,7 +646,7 @@ const HeaderSearchB = ({
                                         </AnimatePresence>
                                     </div>
                                 ) : (
-                                    <a href="/iniciar-sesion" className="flex items-center">
+                                    <a href="/iniciar-sesion" aria-label={`Iniciar Sesión - ${Global.APP_NAME}`} alt={`Iniciar Sesión - ${Global.APP_NAME}`} className="flex items-center" >
                                         <CircleUser className="customtext-primary" width="1.5rem" />
                                     </a>
                                 )}

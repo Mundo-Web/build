@@ -32,14 +32,14 @@ class GenerateRobotsTxt extends Command
     private function buildRobotsContent($sitemapUrl, $additionalRules)
     {
         $content = "# Robots.txt\n";
-        $content .= "# Última actualización: " . now()->format('Y-m-d H:i:s') . "\n\n";
+        $content .= "# Ultima actualizacion: " . now()->format('Y-m-d H:i:s') . "\n\n";
         
         // Regla principal
-        $content .= "# Configuración principal\n";
+        $content .= "# Configuracion principal\n";
         $content .= "User-agent: *\n";
         $content .= "Allow: /\n\n";
         
-        // Bloquear rutas protegidas por defecto
+        // Bloquear rutas protegidas por defecto (directorios)
         $content .= "# Rutas protegidas del sistema\n";
         $content .= "Disallow: /admin\n";
         $content .= "Disallow: /admin/*\n";
@@ -47,30 +47,49 @@ class GenerateRobotsTxt extends Command
         $content .= "Disallow: /dashboard/*\n";
         $content .= "Disallow: /api/\n";
         $content .= "Disallow: /vendor/\n";
-        $content .= "Disallow: /storage/private/\n";
-        $content .= "Disallow: /.env\n";
-        $content .= "Disallow: /*.php$\n";
-        $content .= "Disallow: /*.inc$\n";
-        $content .= "Disallow: /*.sql$\n";
-        $content .= "Disallow: /*.zip$\n\n";
+        $content .= "Disallow: /storage/private/\n\n";
         
-        // Permitir recursos públicos
-        $content .= "# Recursos públicos permitidos\n";
+        // Permitir recursos publicos
+        $content .= "# Recursos publicos permitidos\n";
         $content .= "Allow: /css/\n";
         $content .= "Allow: /js/\n";
         $content .= "Allow: /build/\n";
         $content .= "Allow: /assets/\n";
         $content .= "Allow: /storage/images/\n\n";
         
-        // Reglas adicionales personalizadas (User-agents específicos, Disallow adicionales, etc.)
+        // Permisos para bots de Inteligencia Artificial (IA) y busquedas conversacionales
+        $content .= "# Agentes de Inteligencia Artificial permitidos para busquedas y respuestas\n";
+        $aiBots = [
+            'OAI-SearchBot',
+            'ChatGPT-User',
+            'GPTBot',
+            'ClaudeBot',
+            'Claude-Web',
+            'anthropic-ai',
+            'Google-Extended',
+            'PerplexityBot',
+            'Perplexity-User',
+            'bingbot',
+            'Applebot',
+            'Applebot-Extended',
+            'CCBot',
+            'facebookexternalhit',
+            'meta-externalagent'
+        ];
+        foreach ($aiBots as $bot) {
+            $content .= "User-agent: {$bot}\n";
+            $content .= "Allow: /\n\n";
+        }
+        
+        // Reglas adicionales personalizadas (User-agents especificos, Disallow adicionales, etc.)
         if (!empty($additionalRules)) {
-            $content .= "# Configuración adicional personalizada\n";
+            $content .= "# Configuracion adicional personalizada\n";
             $content .= trim($additionalRules) . "\n\n";
         }
         
         // Sitemap
         $content .= "# Sitemap\n";
-        $content .= "Sitemap: " . rtrim(url('/'), '/') . "/sitemap.xml\n";
+        $content .= "Sitemap: " . rtrim($sitemapUrl, '/') . "/sitemap.xml\n";
         
         return $content;
     }
