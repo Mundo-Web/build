@@ -392,11 +392,9 @@ const Header = ({
                 );
         }
     };
-    return (
-        <React.Suspense fallback={null}>
-            {getHeader()}
-        </React.Suspense>
-    );
+    return getHeader();
 };
 
 export default Header;
+
+

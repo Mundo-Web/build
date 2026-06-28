@@ -12,7 +12,6 @@ import Testimonies from './Components/Home/Testimonies';
 import Articles from './Components/Home/Articles';
 import AboutTrasciende from './Components/Home/AboutTrasciende';
 import ArrayDetails2Object from './Utils/ArrayDetails2Object';
-import LazySection from './Components/LazySection';
 
 const Home = ({ sliders, indicators = [], aboutKaori, courses, testimonies, articles, details: detailsDB }) => {
   const details = ArrayDetails2Object(detailsDB)
@@ -31,23 +30,25 @@ const Home = ({ sliders, indicators = [], aboutKaori, courses, testimonies, arti
         details['about.video'] &&
         <AboutTrasciende details={details} />
       }
+      {/* {
+        courses.length > 0 &&
+        <Courses courses={courses.slice(0, 3)} />
+      }
+      {
+        courses.slice(3, 7).length > 0 &&
+        <MoreCourses courses={courses.slice(3, 7)} />
+      } */}
       {
         courses.length > 0 &&
-        <LazySection height="500px">
-          <MoreCourses courses={courses} details={details} />
-        </LazySection>
+        <MoreCourses courses={courses} details={details} />
       }
       {
         testimonies.length > 0 &&
-        <LazySection height="400px">
-          <Testimonies testimonies={testimonies} details={details} />
-        </LazySection>
+        <Testimonies testimonies={testimonies} details={details} />
       }
       {
         articles.length > 0 &&
-        <LazySection height="400px">
-          <Articles articles={articles} details={details} />
-        </LazySection>
+        <Articles articles={articles} details={details} />
       }
     </>
   );

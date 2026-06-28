@@ -6,7 +6,6 @@ import Global from "./Utils/Global";
 import ItemsRest from "./Actions/ItemsRest";
 import SortByAfterField from "./Utils/SortByAfterField";
 import { Toaster } from "sonner";
-import LazySection from "./Components/LazySection";
 
 // Componente de animación de scroll
 const ScrollAnimation = React.lazy(
@@ -834,51 +833,16 @@ const System = ({
         //     hasRole
         // }}>
         <main className="font-paragraph">
-            {systemsSorted.map((system, index) => {
-                const component = system.component;
-                // Los componentes de navegación/estructura o las primeras 2 secciones se cargan de inmediato
-                const isAboveFold = [
-
-                    "header",
-                    "slider",
-                    "floating",
-                    "menu"
-                ].includes(component) || index <= 2;
-
-                const element = getSystem(system);
-
-                if (isAboveFold) {
-                    return (
-                        <React.Fragment
-                            key={
-                                system.id ??
-                                `sys-${index}-${system.component}-${system.element_id}`
-                            }
-                        >
-                            {element}
-                        </React.Fragment>
-                    );
-                }
-
-                // Las secciones más abajo se cargan de forma diferida (lazy rendering)
-                let height = "200px";
-                if (component === "footer") height = "350px";
-                else if (component === "product") height = "450px";
-                else if (component === "banner") height = "250px";
-                else if (component === "category") height = "200px";
-
-                return (
-                    <LazySection
-                        key={
-                            system.id ??
-                            `sys-${index}-${system.component}-${system.element_id}`
-                        }
-                        height={height}
-                    >
-                        {element}
-                    </LazySection>
-                );
-            })}
+            {systemsSorted.map((system, index) => (
+                <React.Fragment
+                    key={
+                        system.id ??
+                        `sys-${index}-${system.component}-${system.element_id}`
+                    }
+                >
+                    {getSystem(system)}
+                </React.Fragment>
+            ))}
             <Toaster />
         </main>
         // </SystemContext.Provider>

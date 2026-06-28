@@ -209,11 +209,7 @@ const Footer = ({ data, which, items, pages, generals, contacts, stores }) => {
                 );
         }
     };
-    return (
-        <React.Suspense fallback={null}>
-            {getFooter()}
-        </React.Suspense>
-    );
+    return getFooter();
 };
 
 export default Footer;
