@@ -30,17 +30,20 @@ export function getLuminance(color) {
 }
 
 export function adjustTextColor(element) {
-    const backgroundColor = window.getComputedStyle(element).backgroundColor;
-    const backgroundLuminance = getLuminance(backgroundColor);
+    if (!element) return;
+    requestAnimationFrame(() => {
+        const backgroundColor = window.getComputedStyle(element).backgroundColor;
+        const backgroundLuminance = getLuminance(backgroundColor);
 
-    const threshold = 0.5; // Umbral de luminancia (ajustable)
-    const useWhiteText = backgroundLuminance < threshold; // Si es oscuro, usa texto blanco
+        const threshold = 0.5; // Umbral de luminancia (ajustable)
+        const useWhiteText = backgroundLuminance < threshold; // Si es oscuro, usa texto blanco
 
-    if (useWhiteText && !element.classList.contains("text-white")) {
-        element.classList.add("text-white");
-        element.classList.remove("text-black");
-    } else if (!useWhiteText && !element.classList.contains("text-black")) {
-        element.classList.add("text-black");
-        element.classList.remove("text-white");
-    }
+        if (useWhiteText && !element.classList.contains("text-white")) {
+            element.classList.add("text-white");
+            element.classList.remove("text-black");
+        } else if (!useWhiteText && !element.classList.contains("text-black")) {
+            element.classList.add("text-black");
+            element.classList.remove("text-white");
+        }
+    });
 }

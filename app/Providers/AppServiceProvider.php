@@ -52,5 +52,17 @@ class AppServiceProvider extends ServiceProvider
                 $view->with('generals', $generals);
             }
         });
+
+        // Cargar de forma asíncrona (non-blocking) CSS secundarios para mejorar rendimiento FCP/LCP
+        \Illuminate\Support\Facades\Vite::useStyleTagAttributes(function (string $src, string $url, ?array $chunk, ?array $manifest) {
+            if (str_contains($src, 'vendor-swiper.css') || str_contains($src, 'TippyButton.css')) {
+                return [
+                    'rel' => 'preload',
+                    'as' => 'style',
+                    'onload' => "this.onload=null;this.rel='stylesheet'"
+                ];
+            }
+            return [];
+        });
     }
 }
