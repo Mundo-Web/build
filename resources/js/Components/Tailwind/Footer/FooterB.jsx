@@ -118,6 +118,8 @@ const FooterB = ({ pages, generals, data }) => {
                         <ul className={`space-y-3 text-white ${data?.class_menu_list || ''}`}>
                             <li>
                                 <a
+                                    href="#"
+                                    type="button"
                                     onClick={() => openModal(0)}
                                     aria-label="Ver políticas de privacidad"
                                     className={`cursor-pointer hover:customtext-primary hover:font-bold transition-all duration-300 ${data?.class_menu_item || ''}`}
@@ -127,6 +129,7 @@ const FooterB = ({ pages, generals, data }) => {
                             </li>
                             <li>
                                 <a
+                                    href="#"
                                     type="button"
 
                                     aria-label="Ver términos y condiciones"
@@ -138,6 +141,7 @@ const FooterB = ({ pages, generals, data }) => {
                             </li>
                             <li>
                                 <a
+                                    href="#"
                                     type="button"
 
                                     onClick={() => openModal(2)}

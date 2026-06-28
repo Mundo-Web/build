@@ -613,6 +613,8 @@ const SliderInteractive = ({ items, data, generals = [] }) => {
                                                                 href={
                                                                     item.button_link
                                                                 }
+                                                                title={item.button_text}
+                                                                aria-label={`${item.button_text} - Slide ${index + 1}`}
                                                                 target={
                                                                     item?.button_new_tab
                                                                         ? "_blank"

@@ -104,7 +104,7 @@ const HeaderSearchB = ({
                         ['summary', 'contains', query],
                         'or',
                         ['description', 'contains', query],
-                         'or',
+                        'or',
                         ['sku', 'contains', query]
                     ],
                     // No enviar sort para usar el ordenamiento por relevancia del backend
@@ -487,11 +487,11 @@ const HeaderSearchB = ({
     // Determinar si el usuario es cliente (no admin ni superadmin, ni proveedor, usando roles array)
     let isCustomer = false;
     let dashboardUrl = '/admin/home';
-    
+
     if (isUser && Array.isArray(isUser.roles)) {
         const roleNames = isUser.roles.map(r => r.name?.toLowerCase());
         isCustomer = !roleNames.includes('admin') && !roleNames.includes('root') && !roleNames.includes('provider');
-        
+
         if (roleNames.includes('provider')) {
             dashboardUrl = '/provider/home';
         }
@@ -787,7 +787,7 @@ const HeaderSearchB = ({
                                         <span className="hidden md:inline">{isUser.name}</span>
                                     </button>
                                 ) : (
-                                    <a href="/iniciar-sesion" className="flex items-center gap-2 text-sm hover:customtext-primary transition-colors duration-300">
+                                    <a href="/iniciar-sesion" aria-label={`Iniciar Sesión - ${Global.APP_NAME}`} alt={`Iniciar Sesión - ${Global.APP_NAME}`} className="flex items-center gap-2 text-sm hover:customtext-primary transition-colors duration-300">
                                         <CircleUser className="customtext-primary" />
                                         <span className="hidden md:inline">Iniciar Sesión</span>
                                     </a>
