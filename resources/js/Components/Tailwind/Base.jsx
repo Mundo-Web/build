@@ -15,8 +15,9 @@ const Base = ({ children, summary, socials, generals }) => {
 
       <TopBar socials={socials} />
    
-  
-      <Header socials={socials} generals={generals} />
+      <Suspense fallback={null}>
+        <Header socials={socials} generals={generals} />
+      </Suspense>
   
     <main className="overflow-hidden min-h-[360px]">
     
@@ -24,7 +25,9 @@ const Base = ({ children, summary, socials, generals }) => {
      
     </main>
  
-      <Footer summary={summary} socials={socials} generals={generals} />
+      <Suspense fallback={null}>
+        <Footer summary={summary} socials={socials} generals={generals} />
+      </Suspense>
   
   </>
 }

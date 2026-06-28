@@ -6,6 +6,7 @@ import Global from "./Utils/Global";
 import ItemsRest from "./Actions/ItemsRest";
 import SortByAfterField from "./Utils/SortByAfterField";
 import { Toaster } from "sonner";
+import LazySection from "./Components/LazySection";
 
 // Componente de animación de scroll
 const ScrollAnimation = React.lazy(
@@ -154,7 +155,7 @@ const System = ({
     categorias,
     referrer,
     referral_code,
-    hasRole = () => {},
+    hasRole = () => { },
 }) => {
     React.useEffect(() => {
         // Matar el loader nativo de PHP de inmediato para que el usuario vea la web
@@ -210,7 +211,7 @@ const System = ({
         // Obtener la tasa de IGV desde la configuración general (correlative: igv_checkout)
         const igvGeneral = generals.find(g => g.correlative === "igv_checkout");
         const igvRate = parseFloat(igvGeneral?.description) || 18;
-        
+
         // Actualizar Global para que otros componentes lo tengan
         Global.IGV_RATE = igvRate;
 
@@ -237,7 +238,7 @@ const System = ({
         });
 
         const currentPerception = perceptionBasis > 100 ? perceptionBasis * (Global.PERCEPTION_RATE / 100) : 0;
-        
+
         setCartTotals({
             subTotal: currentSubTotal,
             igv: currentIgv,
@@ -430,7 +431,7 @@ const System = ({
                         favorites={favorites}
                         generals={generals}
                         setFavorites={setFavorites}
-                        // contacts={generals}
+                    // contacts={generals}
                     />,
                 );
             case "category":
@@ -528,7 +529,7 @@ const System = ({
                         favorites={favorites}
                         setFavorites={setFavorites}
                         textstatic={textstatic}
-                        //contacts={contacts}
+                    //contacts={contacts}
                     />,
                 );
             case "cart":
@@ -795,7 +796,7 @@ const System = ({
                         data={dataWithElementId}
                         items={getItems(itemsId)}
 
-                        // contacts={contacts}
+                    // contacts={contacts}
                     />,
                 );
             case "support":
@@ -833,16 +834,51 @@ const System = ({
         //     hasRole
         // }}>
         <main className="font-paragraph">
-            {systemsSorted.map((system, index) => (
-                <React.Fragment
-                    key={
-                        system.id ??
-                        `sys-${index}-${system.component}-${system.element_id}`
-                    }
-                >
-                    {getSystem(system)}
-                </React.Fragment>
-            ))}
+            {systemsSorted.map((system, index) => {
+                const component = system.component;
+                // Los componentes de navegación/estructura o las primeras 2 secciones se cargan de inmediato
+                const isAboveFold = [
+
+                    "header",
+                    "slider",
+                    "floating",
+                    "menu"
+                ].includes(component) || index <= 2;
+
+                const element = getSystem(system);
+
+                if (isAboveFold) {
+                    return (
+                        <React.Fragment
+                            key={
+                                system.id ??
+                                `sys-${index}-${system.component}-${system.element_id}`
+                            }
+                        >
+                            {element}
+                        </React.Fragment>
+                    );
+                }
+
+                // Las secciones más abajo se cargan de forma diferida (lazy rendering)
+                let height = "200px";
+                if (component === "footer") height = "350px";
+                else if (component === "product") height = "450px";
+                else if (component === "banner") height = "250px";
+                else if (component === "category") height = "200px";
+
+                return (
+                    <LazySection
+                        key={
+                            system.id ??
+                            `sys-${index}-${system.component}-${system.element_id}`
+                        }
+                        height={height}
+                    >
+                        {element}
+                    </LazySection>
+                );
+            })}
             <Toaster />
         </main>
         // </SystemContext.Provider>
