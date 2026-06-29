@@ -28,6 +28,7 @@ class Slider extends Model
         'button_new_tab',
         'secondary_button_text',
         'secondary_button_link',
+        'secondary_button_new_tab',
         'title_color',
         'description_color',
         'show_overlay',
@@ -48,5 +49,6 @@ class Slider extends Model
         'show_overlay' => 'boolean',
         'show_content' => 'boolean',
         'button_new_tab' => 'boolean',
+        'secondary_button_new_tab' => 'boolean',
     ];
 }

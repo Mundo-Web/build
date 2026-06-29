@@ -187,6 +187,8 @@ const SliderHostinfinityV2 = ({ items, data, generals = [] }) => {
                                     {slide.secondary_button_link && slide.secondary_button_text && (
                                         <a
                                             href={slide.secondary_button_link}
+                                            target={slide.secondary_button_new_tab ? '_blank' : undefined}
+                                            rel={slide.secondary_button_new_tab ? 'noopener noreferrer' : undefined}
                                             onClick={(e) => handleButtonClick(e, slide.secondary_button_link)}
                                             className={`inline-flex items-center px-8 py-4 text-lg font-semibold rounded-full border-2 border-white/30 text-white hover:bg-white/10 backdrop-blur-sm transition-all duration-300 ${data?.class_secondary_button || ''}`}
                                         >

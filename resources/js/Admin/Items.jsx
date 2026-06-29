@@ -3814,7 +3814,20 @@ const Items = ({
                     </div>
                 </div>
             </Modal>
-            <Modal modalRef={modalImportRef} title={"Importar Datos"} size="lg">
+            <Modal
+                modalRef={modalImportRef}
+                title={"Importar Datos"}
+                size="xl"
+                onClose={() => {
+                    try {
+                        if (gridRef.current) {
+                            $(gridRef.current).dxDataGrid("instance").refresh();
+                        }
+                    } catch (e) {
+                        console.error("Error refreshing grid on modal close:", e);
+                    }
+                }}
+            >
                 <ModalImportItem
                     gridRef={gridRef}
                     modalRef={modalImportRef}

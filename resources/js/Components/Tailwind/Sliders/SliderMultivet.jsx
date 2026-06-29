@@ -445,12 +445,14 @@ const SliderMultivet = ({ items, data, generals = [] }) => {
                                                                             slide?.secondary_button_link
                                                                         }
                                                                         target={
-                                                                            "_blank"
-
+                                                                            slide?.secondary_button_new_tab
+                                                                                ? "_blank"
+                                                                                : "_self"
                                                                         }
                                                                         rel={
-                                                                            "noopener noreferrer"
-
+                                                                            slide?.secondary_button_new_tab
+                                                                                ? "noopener noreferrer"
+                                                                                : undefined
                                                                         }
                                                                         className={`bg-white/20 backdrop-blur-sm border-2 border-white/30 text-white flex items-center justify-center gap-2 py-3 lg:gap-3 px-6 lg:py-4 text-base rounded-xl tracking-wide font-bold hover:bg-white/30 transition-all duration-300 ${data?.class_button_primary || ""}`}
                                                                     >

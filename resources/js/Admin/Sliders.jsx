@@ -48,6 +48,7 @@ const Sliders = () => {
     const [overlayColor, setOverlayColor] = useState("#000000");
     const [overlayType, setOverlayType] = useState("gradient");
     const [buttonNewTab, setButtonNewTab] = useState(false);
+    const [buttonSecondaryNewTab, setButtonSecondaryNewTab] = useState(false);
     const [showContent, setShowContent] = useState(true);
 
     const onModalOpen = (data) => {
@@ -132,6 +133,9 @@ const Sliders = () => {
         setButtonNewTab(
             data?.button_new_tab === true || data?.button_new_tab === 1,
         );
+        setButtonSecondaryNewTab(
+            data?.secondary_button_new_tab === true || data?.secondary_button_new_tab === 1,
+        );
         setShowContent(data?.show_content !== false && data?.show_content !== 0);
 
         $(modalRef.current).modal("show");
@@ -163,6 +167,8 @@ const Sliders = () => {
         if (secondaryButtonLinkRef.current)
             request.secondary_button_link =
                 secondaryButtonLinkRef.current.value;
+        if (Fillable.has("sliders", "secondary_button_new_tab"))
+            request.secondary_button_new_tab = buttonSecondaryNewTab ? 1 : 0;
 
         // Color fields
         if (titleColorRef.current)
@@ -867,6 +873,37 @@ const Sliders = () => {
                                                 label="URL del botón secundario"
                                                 col="col-sm-6"
                                             />
+                                        )}
+                                        {Fillable.has(
+                                            "sliders",
+                                            "secondary_button_new_tab",
+                                        ) && (
+                                            <div className="col-sm-6 mt-2">
+                                                <label className="form-label">
+                                                    Abrir en nueva pestaña
+                                                </label>
+                                                <div className="form-check form-switch">
+                                                    <input
+                                                        className="form-check-input"
+                                                        type="checkbox"
+                                                        checked={buttonSecondaryNewTab}
+                                                        onChange={(e) =>
+                                                            setButtonSecondaryNewTab(
+                                                                e.target.checked,
+                                                            )
+                                                        }
+                                                        style={{
+                                                            width: "50px",
+                                                            height: "25px",
+                                                        }}
+                                                    />
+                                                    <label className="form-check-label ms-2">
+                                                        {buttonSecondaryNewTab
+                                                            ? "Sí"
+                                                            : "No"}
+                                                    </label>
+                                                </div>
+                                            </div>
                                         )}
                                     </>
                                 )}

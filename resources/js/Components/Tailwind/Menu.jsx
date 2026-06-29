@@ -3,6 +3,7 @@ import React from "react"
 
 
 const MenuSimple = React.lazy(() => import('./Menu/MenuSimple'))
+const MenuMicjc = React.lazy(() => import('./Menu/MenuMicjc'))
 const MenuMultivet = React.lazy(() => import('./Menu/MenuMultivet'))
 const MenuBananaLab = React.lazy(() => import('./Menu/MenuBananaLab'))
 const MenuExpertFarma = React.lazy(() => import('./Menu/MenuExpertFarma'))
@@ -14,6 +15,8 @@ const Menu = ({ data, which, items, generals = [], cart, setCart, pages }) => {
 
       case 'MenuSimple':
         return <MenuSimple data={data} items={items} cart={cart} setCart={setCart} pages={pages} />
+      case 'MenuMicjc':
+        return <MenuMicjc data={data} items={items} cart={cart} setCart={setCart} pages={pages} />
       case 'MenuMultivet':
         return <MenuMultivet data={data} items={items} cart={cart} setCart={setCart} pages={pages} generals={generals} />
         case 'MenuBananaLab':

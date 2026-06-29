@@ -357,6 +357,8 @@ const SliderLaPetaca = ({ items, data, generals = [] }) => {
                                                             href={
                                                                 slide.secondary_button_link
                                                             }
+                                                            target={slide?.secondary_button_new_tab ? "_blank" : "_self"}
+                                                            rel={slide?.secondary_button_new_tab ? "noopener noreferrer" : undefined}
                                                             onClick={(e) => {
                                                                 const href =
                                                                     slide.secondary_button_link;

@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { adjustTextColor } from "../../../Functions/adjustTextColor";
 import Global from "../../../Utils/Global";
 import TextWithHighlight from "../../../Utils/TextWithHighlight";
+import paginationVariants from "./paginationVariants";
 
 const SliderInteractive = ({ items, data, generals = [] }) => {
     // Verificar si las animaciones están habilitadas
@@ -154,19 +155,14 @@ const SliderInteractive = ({ items, data, generals = [] }) => {
         exit: {},
     };
 
-    //TODO: Validación y conversión de infiniteLoop
-    const parseInfiniteLoop = (value) => {
-        const validTrueValues = ["true", "si"];
-        const validFalseValues = ["false", "no"];
-        if (validTrueValues.includes(value?.toLowerCase())) {
-            return true;
-        } else if (validFalseValues.includes(value?.toLowerCase())) {
-            return false;
-        }
-        return false; // Valor predeterminado si no se especifica o es inválido
+    // Parse boolean/string option for toggles
+    const parseBool = (value, defaultValue = false) => {
+        if (value === true || value === "true" || value === "si" || value === "yes" || value === 1 || value === "1") return true;
+        if (value === false || value === "false" || value === "no" || value === 0 || value === "0") return false;
+        return defaultValue;
     };
 
-    const infiniteLoop = parseInfiniteLoop(data?.infiniteLoop);
+    const infiniteLoop = parseBool(data?.infiniteLoop, false);
 
     // Obtener datos de WhatsApp de generals
     const phoneWhatsappObj = generals?.find(
@@ -195,16 +191,19 @@ const SliderInteractive = ({ items, data, generals = [] }) => {
         sortedItems[0],
     ];
     const validAlignments = ["center", "left", "right"];
-    const validPosition = ["yes", "true", "si"];
-    const showPagination = validAlignments.includes(data?.paginationAlignment);
-    const alignmentClassPagination = showPagination
+    const showPagination = data?.showPagination !== undefined
+        ? parseBool(data?.showPagination, false)
+        : validAlignments.includes(data?.paginationAlignment);
+
+    const alignmentClassPagination = validAlignments.includes(data?.paginationAlignment)
         ? data?.paginationAlignment
         : "center";
 
-    const showNavigation = validPosition.includes(data?.showNavigation);
-    const alignmentClassNavigation = showNavigation
-        ? data?.navigationAlignment
-        : "true";
+    const showNavigation = parseBool(data?.showNavigation, false);
+
+    // Cargar variante de paginación
+    const variantName = data?.paginationVariant || "standard";
+    const variant = paginationVariants[variantName] || paginationVariants.standard;
 
     const nextSlide = () => {
         setCurrentIndex(
@@ -526,180 +525,170 @@ const SliderInteractive = ({ items, data, generals = [] }) => {
                                     ></div>
                                 )}
 
-                            {/* Overlays por defecto si el overlay personalizado está desactivado */}
-                            {(item?.show_overlay === false ||
-                                item?.show_overlay === 0) && (
-                                    <>
-                                        {/* Overlay por defecto desde data.class_overlay */}
-                                        {data?.class_overlay && (
-                                            <div
-                                                className={`absolute inset-0 ${data?.class_overlay}`}
-                                            ></div>
-                                        )}
 
-                                        {/* Overlays legacy (mantener compatibilidad) */}
-                                        {data?.overlayMobile && (
-                                            <div className="md:hidden absolute inset-0 bg-gradient-to-b from-transparent to-white"></div>
-                                        )}
-                                        {data?.overlayMobileDark && (
-                                            <div className="md:hidden absolute inset-0 bg-gradient-to-b from-transparent to-black"></div>
-                                        )}
-                                        {data?.overlayDesktop && (
-                                            <div className="absolute inset-0 bg-gradient-to-l from-transparent via-black/60 to-black/80"></div>
-                                        )}
+                            {
+                                item?.show_content !== false &&
+                                item?.show_content !== 0 &&
+                                item?.show_content !== "0" &&
+                                item?.show_content !== "false" && (
+                                    <>
+                                        <div
+                                            className={`relative w-full px-primary 2xl:px-0 2xl:max-w-7xl  mx-auto  h-[calc(100dvh-20dvh)] md:h-[600px] flex flex-col items-start justify-center md:justify-center ${isDarkBg ? "text-white" : "customtext-neutral-dark"} ${data?.class_slider_container || ""}`}
+                                        >
+                                            <AnimatePresence mode="wait">
+                                                <motion.div
+                                                    key={`content-${currentIndex}-${item.name}`}
+                                                    variants={containerVariants}
+                                                    initial="initial"
+                                                    animate="animate"
+                                                    exit="exit"
+                                                    className={`${Global.APP_CORRELATIVE === "stechperu" ? "py-10" : "py-20"} flex flex-col gap-5 lg:gap-10 h-full lg:h-auto  lg:py-0 items-start justify-between lg:justify-normal lg:items-start w-full`}
+                                                >
+                                                    <div>
+                                                        <motion.h2
+                                                            variants={titleVariants}
+                                                            className={`${Global.APP_CORRELATIVE === "stechperu" ? "w-6/12  md:w-full md:max-w-md text-[30px]  " : "w-full  md:w-full text-[40px]  md:max-w-lg "} font-title leading-tight sm:text-5xl md:text-6xl tracking-normal font-bold ${data?.class_title}`}
+                                                            style={{
+                                                                color:
+                                                                    item.title_color ||
+                                                                    (isDarkBg
+                                                                        ? "#FFFFFF"
+                                                                        : "#000000"),
+                                                                textShadow:
+                                                                    "0 0 20px rgba(0, 0, 0, .25)",
+                                                            }}
+                                                        >
+                                                            <TextWithHighlight
+                                                                text={item.name}
+                                                                color=""
+                                                            />
+                                                        </motion.h2>
+                                                        <motion.p
+                                                            variants={
+                                                                descriptionVariants
+                                                            }
+                                                            className={`${Global.APP_CORRELATIVE === "stechperu" ? "w-8/12" : "w-full"} md:w-full md:max-w-md text-lg leading-tight font-paragraph ${data?.class_description}`}
+                                                            style={{
+                                                                color:
+                                                                    item.description_color ||
+                                                                    (isDarkBg
+                                                                        ? "#FFFFFF"
+                                                                        : "#000000"),
+                                                                textShadow:
+                                                                    "0 0 20px rgba(0, 0, 0, .25)",
+                                                            }}
+                                                        >
+                                                            {item.description}
+                                                        </motion.p>
+                                                    </div>
+                                                    {((item.button_text && item.button_link) ||
+                                                        (item.secondary_button_text && item.secondary_button_link)) && (
+                                                            <motion.div
+                                                                variants={
+                                                                    buttonsVariants
+                                                                }
+                                                                className={`flex flex-row gap-5 md:gap-10  w-full  ${Global.APP_CORRELATIVE === "stechperu" ? "justify-center lg:justify-start items-center lg:items-start" : "items-start"}`}
+                                                            >
+                                                                {item.button_text &&
+                                                                    item.button_link && (
+                                                                        <a
+                                                                            href={
+                                                                                item.button_link
+                                                                            }
+                                                                            title={item.button_text}
+                                                                            aria-label={`${item.button_text} - Slide ${index + 1}`}
+                                                                            target={
+                                                                                item?.button_new_tab
+                                                                                    ? "_blank"
+                                                                                    : "_self"
+                                                                            }
+                                                                            rel={
+                                                                                item?.button_new_tab
+                                                                                    ? "noopener noreferrer"
+                                                                                    : undefined
+                                                                            }
+                                                                            ref={(el) =>
+                                                                            (buttonsRef.current[
+                                                                                index
+                                                                            ] = el)
+                                                                            }
+                                                                            className={`bg-primary border-none flex flex-row items-center gap-3 px-10 py-4 text-base rounded-xl tracking-wide font-bold text-white ${data?.class_button_primary || "text-white"}`}
+                                                                            onClick={(
+                                                                                e,
+                                                                            ) => {
+                                                                                e.stopPropagation();
+                                                                            }}
+                                                                            onMouseDown={(
+                                                                                e,
+                                                                            ) =>
+                                                                                e.stopPropagation()
+                                                                            }
+                                                                            onTouchStart={(
+                                                                                e,
+                                                                            ) =>
+                                                                                e.stopPropagation()
+                                                                            }
+                                                                        >
+                                                                            {
+                                                                                item.button_text
+                                                                            }
+                                                                            <Tag
+                                                                                width={
+                                                                                    "1.25rem"
+                                                                                }
+                                                                                className={`transform rotate-90 ${data?.class_icon_primary || ""}`}
+                                                                            />
+                                                                        </a>
+                                                                    )}
+
+                                                                {/* Botón Secundario */}
+                                                                {item.secondary_button_text &&
+                                                                    item.secondary_button_link && (
+                                                                        <a
+                                                                            href={
+                                                                                item.secondary_button_link
+                                                                            }
+                                                                            title={item.secondary_button_text}
+                                                                            aria-label={`${item.secondary_button_text} - Slide ${index + 1}`}
+                                                                            target={
+                                                                                item?.secondary_button_new_tab
+                                                                                    ? "_blank"
+                                                                                    : "_self"
+                                                                            }
+                                                                            rel={
+                                                                                item?.secondary_button_new_tab
+                                                                                    ? "noopener noreferrer"
+                                                                                    : undefined
+                                                                            }
+                                                                            className={`border-2 font-bold px-10 py-4 text-base rounded-xl transition-all duration-300 bg-white border-primary text-primary hover:text-white hover:bg-primary ${data?.class_secondary_button || ""}`}
+                                                                            onClick={(
+                                                                                e,
+                                                                            ) => {
+                                                                                e.stopPropagation();
+                                                                            }}
+                                                                            onMouseDown={(
+                                                                                e,
+                                                                            ) =>
+                                                                                e.stopPropagation()
+                                                                            }
+                                                                            onTouchStart={(
+                                                                                e,
+                                                                            ) =>
+                                                                                e.stopPropagation()
+                                                                            }
+                                                                        >
+                                                                            {
+                                                                                item.secondary_button_text
+                                                                            }
+                                                                        </a>
+                                                                    )}
+                                                            </motion.div>
+                                                        )}
+                                                </motion.div>
+                                            </AnimatePresence>
+                                        </div>
                                     </>
                                 )}
-
-                            {!data?.only_image && (
-                                <>
-                                    <div
-                                        className={`relative w-full px-primary 2xl:px-0 2xl:max-w-7xl  mx-auto  h-[calc(100dvh-20dvh)] md:h-[600px] flex flex-col items-start justify-center md:justify-center ${isDarkBg ? "text-white" : "customtext-neutral-dark"} ${data?.class_slider_container || ""}`}
-                                    >
-                                        <AnimatePresence mode="wait">
-                                            <motion.div
-                                                key={`content-${currentIndex}-${item.name}`}
-                                                variants={containerVariants}
-                                                initial="initial"
-                                                animate="animate"
-                                                exit="exit"
-                                                className={`${Global.APP_CORRELATIVE === "stechperu" ? "py-10" : "py-20"} flex flex-col gap-5 lg:gap-10 h-full lg:h-auto  lg:py-0 items-start justify-between lg:justify-normal lg:items-start w-full`}
-                                            >
-                                                <div>
-                                                    <motion.h2
-                                                        variants={titleVariants}
-                                                        className={`${Global.APP_CORRELATIVE === "stechperu" ? "w-6/12  md:w-full md:max-w-md text-[30px]  " : "w-full  md:w-full text-[40px]  md:max-w-lg "} font-title leading-tight sm:text-5xl md:text-6xl tracking-normal font-bold ${data?.class_title}`}
-                                                        style={{
-                                                            color:
-                                                                item.title_color ||
-                                                                (isDarkBg
-                                                                    ? "#FFFFFF"
-                                                                    : "#000000"),
-                                                            textShadow:
-                                                                "0 0 20px rgba(0, 0, 0, .25)",
-                                                        }}
-                                                    >
-                                                        <TextWithHighlight
-                                                            text={item.name}
-                                                            color=""
-                                                        />
-                                                    </motion.h2>
-                                                    <motion.p
-                                                        variants={
-                                                            descriptionVariants
-                                                        }
-                                                        className={`${Global.APP_CORRELATIVE === "stechperu" ? "w-8/12" : "w-full"} md:w-full md:max-w-md text-lg leading-tight font-paragraph ${data?.class_description}`}
-                                                        style={{
-                                                            color:
-                                                                item.description_color ||
-                                                                (isDarkBg
-                                                                    ? "#FFFFFF"
-                                                                    : "#000000"),
-                                                            textShadow:
-                                                                "0 0 20px rgba(0, 0, 0, .25)",
-                                                        }}
-                                                    >
-                                                        {item.description}
-                                                    </motion.p>
-                                                </div>
-                                                {item.button_text &&
-                                                    item.button_link && (
-                                                        <motion.div
-                                                            variants={
-                                                                buttonsVariants
-                                                            }
-                                                            className={`flex flex-row gap-5 md:gap-10  w-full  ${Global.APP_CORRELATIVE === "stechperu" ? "justify-center lg:justify-start items-center lg:items-start" : "items-start"}`}
-                                                        >
-                                                            <a
-                                                                href={
-                                                                    item.button_link
-                                                                }
-                                                                title={item.button_text}
-                                                                aria-label={`${item.button_text} - Slide ${index + 1}`}
-                                                                target={
-                                                                    item?.button_new_tab
-                                                                        ? "_blank"
-                                                                        : "_self"
-                                                                }
-                                                                rel={
-                                                                    item?.button_new_tab
-                                                                        ? "noopener noreferrer"
-                                                                        : undefined
-                                                                }
-                                                                ref={(el) =>
-                                                                (buttonsRef.current[
-                                                                    index
-                                                                ] = el)
-                                                                }
-                                                                className={`bg-primary border-none flex flex-row items-center gap-3 px-10 py-4 text-base rounded-xl tracking-wide font-bold text-white ${data?.class_button_primary || "text-white"}`}
-                                                                onClick={(
-                                                                    e,
-                                                                ) => {
-                                                                    e.stopPropagation();
-                                                                }}
-                                                                onMouseDown={(
-                                                                    e,
-                                                                ) =>
-                                                                    e.stopPropagation()
-                                                                }
-                                                                onTouchStart={(
-                                                                    e,
-                                                                ) =>
-                                                                    e.stopPropagation()
-                                                                }
-                                                            >
-                                                                {
-                                                                    item.button_text
-                                                                }
-                                                                <Tag
-                                                                    width={
-                                                                        "1.25rem"
-                                                                    }
-                                                                    className={`transform rotate-90 ${data?.class_icon_primary || ""}`}
-                                                                />
-                                                            </a>
-
-                                                            {/* Botón de WhatsApp */}
-                                                            {data?.whatsapp_info &&
-                                                                phoneWhatsapp && (
-                                                                    <a
-                                                                        href={`https://wa.me/${phoneWhatsapp.replace(/\D/g, "")}?text=${encodeURIComponent(messageWhatsapp || "¡Hola! Me interesa obtener más información sobre sus productos.")}`}
-                                                                        target="_blank"
-                                                                        rel="noopener noreferrer"
-                                                                        className="bg-white border-2 border-neutral-dark backdrop-blur-sm text-gray-800 flex flex-row items-center gap-3 px-6 lg:px-8 py-3 lg:py-4 text-sm lg:text-base rounded-xl tracking-wide font-bold"
-                                                                        onClick={(
-                                                                            e,
-                                                                        ) => {
-                                                                            e.stopPropagation();
-                                                                        }}
-                                                                        onMouseDown={(
-                                                                            e,
-                                                                        ) =>
-                                                                            e.stopPropagation()
-                                                                        }
-                                                                        onTouchStart={(
-                                                                            e,
-                                                                        ) =>
-                                                                            e.stopPropagation()
-                                                                        }
-                                                                    >
-                                                                        <MessageCircle
-                                                                            width={
-                                                                                "1.25rem"
-                                                                            }
-                                                                            className="customtext-neutral-dark"
-                                                                        />
-                                                                        Hablar
-                                                                        con un
-                                                                        asesor
-                                                                    </a>
-                                                                )}
-                                                        </motion.div>
-                                                    )}
-                                            </motion.div>
-                                        </AnimatePresence>
-                                    </div>
-                                </>
-                            )}
                         </div>
                     ))}
                 </div>
@@ -744,14 +733,15 @@ const SliderInteractive = ({ items, data, generals = [] }) => {
                             {sortedItems.map((_, index) => (
                                 <div
                                     key={`dot-${index}`}
-                                    className={`inline-flex mx-1 w-3 h-3 rounded-full ${currentIndex === index + 1
-                                        ? "bg-transparent h-5 w-5 lg:w-6 lg:h-6 items-center justify-center border-2 border-primary"
-                                        : "bg-secondary"
-                                        }`}
+                                    className={`inline-flex mx-1 w-3 h-3 rounded-full cursor-pointer transition-all duration-300 ${
+                                        currentIndex === index + 1
+                                            ? variant.active
+                                            : variant.inactive
+                                    }`}
                                     onClick={() => setCurrentIndex(index + 1)}
                                 >
-                                    {currentIndex === index + 1 && (
-                                        <div className="w-3 h-3 bg-primary rounded-full items-center justify-center"></div>
+                                    {currentIndex === index + 1 && variant.activeInner && (
+                                        <div className={variant.activeInner}></div>
                                     )}
                                 </div>
                             ))}

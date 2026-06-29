@@ -43,6 +43,24 @@ class ItemsRest extends BasicRest {
         }
     };
 
+    previewData = async (request) => {
+        try {
+            const response = await fetch(`/api/unified-import/preview`, {
+                method: "POST",
+                body: request,
+            });
+
+            const result = await response.json();
+            if (!response.ok) {
+                throw new Error(result?.message || "Error al previsualizar el archivo");
+            }
+            return result;
+        } catch (error) {
+            console.error("Error en previewData:", error.message);
+            throw error;
+        }
+    };
+
     importData = async (request) => {
         console.log("FormData recibido en importData:", [...request.entries()]);
 

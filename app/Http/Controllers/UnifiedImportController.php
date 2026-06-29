@@ -35,7 +35,7 @@ class UnifiedImportController extends Controller
     {
         set_time_limit(0); // Evitar timeout en importaciones largas
         $request->validate([
-            'file' => 'required|file|mimes:xlsx,xls,csv|max:10240', // 10MB max
+            'file' => 'required|file|mimes:xlsx,xls,csv,json,txt|max:10240', // 10MB max
             'mode' => 'nullable|in:reset,add_update', // Validar modo
         ]);
 
@@ -48,8 +48,11 @@ class UnifiedImportController extends Controller
                 'mode' => $mode,
             ];
 
-            // Mapeos personalizados si se proporcionan
+            // Mapeos personalizados si se proporcionan (puede venir como JSON string)
             $customMappings = $request->input('field_mappings', []);
+            if (is_string($customMappings)) {
+                $customMappings = json_decode($customMappings, true) ?? [];
+            }
 
             // Crear importador con configuración
             $import = new UnifiedItemImport($options);
@@ -59,8 +62,31 @@ class UnifiedImportController extends Controller
                 $import->setFieldMappings($customMappings);
             }
 
-            // Ejecutar importación
-            Excel::import($import, $request->file('file'));
+            $file = $request->file('file');
+            $extension = strtolower($file->getClientOriginalExtension());
+
+            if ($extension === 'json') {
+                $content = file_get_contents($file->getRealPath());
+                $jsonArray = json_decode($content, true);
+                if (!is_array($jsonArray)) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'El archivo JSON no tiene un formato válido (debe ser un array de objetos).'
+                    ], 400);
+                }
+
+                if (isset($jsonArray['sku']) || isset($jsonArray['title'])) {
+                    $jsonArray = [$jsonArray];
+                }
+
+                // Ejecutar importación fila por fila
+                foreach ($jsonArray as $row) {
+                    $import->model($row);
+                }
+            } else {
+                // Ejecutar importación tradicional vía Excel/CSV
+                Excel::import($import, $file);
+            }
 
             // Obtener errores si los hay
             $errors = $import->getErrors();
@@ -129,28 +155,58 @@ class UnifiedImportController extends Controller
     public function preview(Request $request)
     {
         $request->validate([
-            'file' => 'required|file|mimes:xlsx,xls,csv|max:5120', // 5MB max para preview
+            'file' => 'required|file|mimes:xlsx,xls,csv,json,txt|max:5120', // 5MB max para preview
         ]);
 
         try {
-            // Leer solo las primeras filas para preview
-            $data = Excel::toArray(new class implements \Maatwebsite\Excel\Concerns\ToArray {
-                public function array(array $array)
-                {
-                    return array_slice($array, 0, 3); // Solo 3 filas
+            $file = $request->file('file');
+            $extension = strtolower($file->getClientOriginalExtension());
+            $headers = [];
+            $firstRow = [];
+            $secondRow = [];
+
+            if ($extension === 'json') {
+                $content = file_get_contents($file->getRealPath());
+                $decoded = json_decode($content, true);
+                if (!is_array($decoded)) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'El archivo JSON no tiene un formato válido (debe ser un array de objetos).'
+                    ], 400);
                 }
-            }, $request->file('file'));
 
-            if (empty($data) || empty($data[0])) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'El archivo está vacío o no se pudo leer'
-                ], 400);
+                if (isset($decoded['sku']) || isset($decoded['title'])) {
+                    $decoded = [$decoded];
+                }
+
+                if (!empty($decoded)) {
+                    $firstObj = $decoded[0];
+                    $headers = array_keys($firstObj);
+                    
+                    // Convertir filas asociativas del JSON a arrays indexados
+                    $firstRow = array_values($firstObj);
+                    $secondRow = isset($decoded[1]) ? array_values($decoded[1]) : [];
+                }
+            } else {
+                // Leer solo las primeras filas para preview
+                $data = Excel::toArray(new class implements \Maatwebsite\Excel\Concerns\ToArray {
+                    public function array(array $array)
+                    {
+                        return array_slice($array, 0, 3); // Solo 3 filas
+                    }
+                }, $file);
+
+                if (empty($data) || empty($data[0])) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'El archivo está vacío o no se pudo leer'
+                    ], 400);
+                }
+
+                $headers = $data[0][0] ?? [];
+                $firstRow = $data[0][1] ?? [];
+                $secondRow = $data[0][2] ?? [];
             }
-
-            $headers = $data[0][0] ?? [];
-            $firstRow = $data[0][1] ?? [];
-            $secondRow = $data[0][2] ?? [];
 
             // Analizar qué campos se reconocen
             $import = new UnifiedItemImport(['truncate' => false]);

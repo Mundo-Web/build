@@ -235,6 +235,8 @@ const SliderFirstClass = ({ sliders = [], data }) => {
                                             currentSlideData.secondary_button_link ||
                                             "#"
                                         }
+                                        target={currentSlideData.secondary_button_new_tab ? "_blank" : undefined}
+                                        rel={currentSlideData.secondary_button_new_tab ? "noopener noreferrer" : undefined}
                                         className={`border-2 border-white/30 bg-white/10 backdrop-blur-sm text-white hover:bg-white hover:text-gray-900 px-8 py-4 lg:px-10 lg:py-5 rounded-xl text-lg lg:text-xl font-semibold transition-all duration-300 transform hover:scale-105 hover:-translate-y-1 flex items-center justify-center group ${data?.class_button_secondary || ""}`}
                                     >
                                         <MessageCircle className="mr-3 h-5 w-5 lg:h-6 lg:w-6 group-hover:scale-110 transition-transform duration-200" />

@@ -150,6 +150,20 @@
                 }
             },
             {
+                "id": "MenuMicjc",
+                "name": "Menu - Micjc (Doble Panel Premium)",
+                "image": "top-bar-simple.png",
+                "data": [
+                    "showCategories"
+                ],
+                "using": {
+                    "model": "Category",
+                    "with": [
+                        "subcategories"
+                    ]
+                }
+            },
+            {
                 "id": "MenuMultivet",
                 "name": "Menu - Multivet",
                 "image": "top-bar-simple.png",
@@ -768,38 +782,8 @@
                     ]
                 }
             },
-            {
-                "id": "SliderSimple",
-                "name": "Simple",
-                "image": "slider-simple.png",
-                "data": [
-                    "pagination"
-                ],
-                "using": {
-                    "model": "Slider",
-                    "fields": [
-                        "name",
-                        "description",
-                        "bg_image",
-                        "button_text",
-                        "button_link"
-                    ]
-                }
-            },
-            {
-                "id": "SliderJustImage",
-                "name": "Solo Imagen",
-                "image": "slider-just-image.png",
-                "using": {
-                    "model": "Slider",
-                    "fields": [
-                        "bg_type",
-                        "bg_image",
-                        "bg_video",
-                        "button_link"
-                    ]
-                }
-            },
+        
+         
             {
                 "id": "SliderSearch",
                 "name": "Search",
@@ -827,20 +811,18 @@
                     "class_slider_section",
                     "class_slider",
                     "class_slider_container",
-                    "infiniteLoop",
-                    "paginationAlignment",
-                    "showNavigation",
+                    "bool:infiniteLoop:Loop Infinito",
+                    "select:paginationAlignment:Alineación de Paginación:center|Centro,left|Izquierda,right|Derecha",
+                    "bool:showNavigation:Mostrar Flechas de Navegación",
+                    "bool:showPagination:Mostrar Paginación",
+                    "select:paginationVariant:Variante de Paginación:standard|Estándar (Primary/Secondary),white|Todo Blanco,dark|Oscuro,primary|Primario",
                     "imageBgPosition",
-                    "overlayMobile",
-                    "overlayMobileDark",
-                    "overlayDesktop",
-                    "whatsapp_info",
                     "class_button_primary",
                     "class_icon_primary",
                     "class_title",
                     "class_description",
-                    "animation_slider",
-                    "only_image"
+                    "bool:animation_slider:Animación de Imagen (Efecto Ken Burns)"
+                  
                 ],
                 "using": {
                     "model": "Slider"
@@ -926,25 +908,7 @@
                     "message_whatsapp"
                 ]
             },
-            {
-                "id": "SliderFeaturedMakita",
-                "name": "SliderFeaturedMakita",
-                "image": "slider-simple.png",
-                "data": [
-                    "title",
-                    "description"
-                ],
-                "using": {
-                    "model": "Item",
-                    "filters": [
-                        "featured"
-                    ],
-                    "with": [
-                        "brand"
-                    ],
-                    "limit": 10
-                }
-            },
+         
             {
                 "id": "SliderBananaLab",
                 "name": "SliderBananaLab",
@@ -1014,45 +978,8 @@
                     ]
                 }
             },
-            {
-                "id": "SliderTwoColumnSwiper",
-                "name": "Two Column Swiper",
-                "image": "slider-simple.png",
-                "data": [
-                    "pagination"
-                ],
-                "using": {
-                    "model": "Slider",
-                    "fields": [
-                        "name",
-                        "description",
-                        "bg_image",
-                        "button_text",
-                        "button_link"
-                    ]
-                }
-            },
-            {
-                "id": "SliderFirstClass",
-                "name": "Slider FirstClass Courier",
-                "image": "slider-firstclass.png",
-                "data": [
-                    "class_slider",
-                    "class_badge",
-                    "class_title",
-                    "class_highlight_title",
-                    "class_subtitle",
-                    "class_description",
-                    "class_button_primary",
-                    "class_button_secondary",
-                    "class_indicators",
-                    "class_arrows",
-                    "class_overlay"
-                ],
-                "using": {
-                    "model": "Slider"
-                }
-            },
+         
+        
             {
                 "id": "SliderLaPetaca",
                 "name": "Slider - La Petaca Hotel",
@@ -1113,50 +1040,8 @@
                     "atalaya_leads_api_key"
                 ]
             },
-            {
-                "id": "SliderHostinfinity",
-                "name": "Slider - Hostinfinity (SaaS)",
-                "image": "slider-hostinfinity.png",
-                "data": [
-                    "autoplayDelay",
-                    "showNavigation",
-                    "showIndicators",
-                    "showCounter",
-                    "class_slider",
-                    "class_content_slider",
-                    "class_title",
-                    "class_description",
-                    "class_buttons_container",
-                    "class_button",
-                    "class_secondary_button"
-                ],
-                "using": {
-                    "model": "Slider"
-                },
-                "generals": []
-            },
-              {
-                "id": "SliderHostinfinityV2",
-                "name": "Slider - Hostinfinity (SaaS) V2",
-                "image": "slider-hostinfinity.png",
-                "data": [
-                    "autoplayDelay",
-                    "showNavigation",
-                    "showIndicators",
-                    "showCounter",
-                    "class_slider",
-                    "class_content_slider",
-                    "class_title",
-                    "class_description",
-                    "class_buttons_container",
-                    "class_button",
-                    "class_secondary_button"
-                ],
-                "using": {
-                    "model": "Slider"
-                },
-                "generals": []
-            },
+          
+       
             {
                 "id": "SliderPremium",
                 "name": "Slider Premium Rainstarstore",

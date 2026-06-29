@@ -356,7 +356,7 @@ const SliderIbergruas = ({ items, data, generals = [] }) => {
                                                                             slide.secondary_button_link
                                                                         }
                                                                         target={
-                                                                            slide?.button_new_tab
+                                                                            slide?.secondary_button_new_tab
                                                                                 ? "_blank"
                                                                                 : "_self"
                                                                         }

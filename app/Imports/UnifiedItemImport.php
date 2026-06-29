@@ -32,8 +32,10 @@ class UnifiedItemImport implements ToModel, WithHeadingRow, SkipsOnError, SkipsO
 
     private $errors = [];
     private $fieldMappings = [];
-    private $truncateMode = true;
     private $importMode = 'reset'; // 'reset' o 'add_update'
+    private $skuImagesCache = [];
+    private static $downloadCache = [];
+    private $rowCount = 0;
 
     /**
      * Constructor con configuración flexible
@@ -48,6 +50,9 @@ class UnifiedItemImport implements ToModel, WithHeadingRow, SkipsOnError, SkipsO
         $this->importMode = $options['mode'] ?? 'reset';
         $this->truncateMode = ($this->importMode === 'reset') ? true : false;
         $this->fieldMappings = $options['fieldMappings'] ?? $this->getDefaultFieldMappings();
+
+        self::$downloadCache = [];
+        $this->skuImagesCache = [];
 
         if ($this->truncateMode) {
             $this->truncateTables();
@@ -113,7 +118,9 @@ class UnifiedItemImport implements ToModel, WithHeadingRow, SkipsOnError, SkipsO
                 'specs_iconos'
             ],
             'atributos' => ['atributos', 'attribute', 'atrib', 'Atributos', 'atributo'],
-            'valores' => ['valores', 'values', 'valor', 'Valores', 'valores_atributos', 'valor del atributo', 'valor_del_atributo']
+            'valores' => ['valores', 'values', 'valor', 'Valores', 'valores_atributos', 'valor del attribute', 'valor_del_attribute'],
+            'imagen' => ['imagen', 'image', 'imagen_principal', 'Image', 'Imagen'],
+            'galeria' => ['galeria', 'gallery', 'imagenes_galeria', 'imágenes_galería', 'galería', 'gallery_images']
         ];
     }
 
@@ -167,6 +174,7 @@ class UnifiedItemImport implements ToModel, WithHeadingRow, SkipsOnError, SkipsO
 
     public function model(array $row)
     {
+        $this->rowCount++;
         try {
             // Verificar si la fila está vacía
             if ($this->isRowEmpty($row)) {
@@ -233,9 +241,7 @@ class UnifiedItemImport implements ToModel, WithHeadingRow, SkipsOnError, SkipsO
                     $subCategory->status = true;
                     $subCategory->save();
 
-                    if (!$subCategory->categories()->where('categories.id', $category->id)->exists()) {
-                        $subCategory->categories()->attach($category->id);
-                    }
+                    $subCategory->categories()->syncWithoutDetaching([$category->id]);
                 }
             }
 
@@ -273,8 +279,8 @@ class UnifiedItemImport implements ToModel, WithHeadingRow, SkipsOnError, SkipsO
                 }
             }
 
-            // 5️⃣ Generar slug único para el producto
-            $slug = $this->generateUniqueSlug($nombreProducto, $this->getFieldValue($row, 'color'), $this->getFieldValue($row, 'talla'));
+            // 5️⃣ Generar slug único para el producto (pasando SKU para optimización en add_update)
+            $slug = $this->generateUniqueSlug($nombreProducto, $this->getFieldValue($row, 'color'), $this->getFieldValue($row, 'talla'), $sku);
 
             // 6️⃣ Preparar datos del precio
             $precio = $this->getNumericValue($row, 'precio');
@@ -316,7 +322,7 @@ class UnifiedItemImport implements ToModel, WithHeadingRow, SkipsOnError, SkipsO
                 'collection_id' => $collection ? $collection->id : null,
                 'brand_id' => $brand ? $brand->id : null,
                 'store_id' => $store ? $store->id : null,
-                'image' => $this->getMainImage($row, 'sku'),
+                'image' => $this->resolveMainImage($row, $sku),
                 'slug' => $slug,
                 'stock' => $this->getNumericValue($row, 'stock', 10),
                 'weight' => $this->getNumericValue($row, 'peso', 0),
@@ -371,6 +377,11 @@ class UnifiedItemImport implements ToModel, WithHeadingRow, SkipsOnError, SkipsO
                     $this->saveGalleryImages($item, $row, 'sku');
                 }
 
+                // 9.5️⃣ Guardar imágenes de galería desde URLs si existen
+                if ($shouldProcessImages) {
+                    $this->saveGalleryImagesFromExcel($item, $row);
+                }
+
                 // 🔟 Asociar regla de descuento si existe
                 $this->associateDiscountRule($item, $row);
 
@@ -385,18 +396,41 @@ class UnifiedItemImport implements ToModel, WithHeadingRow, SkipsOnError, SkipsO
 
             return $item;
         } catch (\Exception $e) {
-            $errorMessage = sprintf(
-                "Error al procesar fila con SKU '%s': %s (Línea: %s, Archivo: %s)",
-                $this->getFieldValue($row, 'sku', 'sin SKU'),
+            $rowSku = $this->getFieldValue($row, 'sku');
+            $rowName = $this->getFieldValue($row, 'nombre_producto');
+            
+            // Truncar para evitar textos gigantes en el mensaje si el mapeo está cruzado
+            $displaySku = $rowSku ? (strlen($rowSku) > 35 ? substr($rowSku, 0, 35) . '...' : $rowSku) : null;
+            $displayName = $rowName ? (strlen($rowName) > 35 ? substr($rowName, 0, 35) . '...' : $rowName) : null;
+
+            // Formatear un mensaje de error súper amigable para el cliente
+            if ($e->getMessage() === 'SKU y nombre del producto son requeridos') {
+                if (empty($rowSku) && empty($rowName)) {
+                    $userMessage = "Fila {$this->rowCount}: No se pudo importar porque el SKU y el Nombre del producto están vacíos.";
+                } elseif (empty($rowSku)) {
+                    $userMessage = "Fila {$this->rowCount} (Nombre: '{$displayName}'): Falta el SKU del producto, el cual es obligatorio.";
+                } else {
+                    $userMessage = "Fila {$this->rowCount} (SKU: '{$displaySku}'): Falta el Nombre del producto, el cual es obligatorio.";
+                }
+            } else {
+                $userMessage = "Fila {$this->rowCount}" . 
+                    ($displaySku ? " (SKU: '{$displaySku}')" : "") . 
+                    ": No se pudo procesar debido a: " . $e->getMessage();
+            }
+
+            $this->addError($userMessage);
+
+            // Registro técnico en logs de Laravel para el desarrollador (con archivo y línea exacta)
+            $technicalMessage = sprintf(
+                "Error al procesar fila con SKU '%s' en fila %d: %s (Línea: %s, Archivo: %s)",
+                $rowSku ?? 'sin SKU',
+                $this->rowCount,
                 $e->getMessage(),
                 $e->getLine(),
                 basename($e->getFile())
             );
 
-            $this->addError($errorMessage);
-
-            // Log detallado para debugging
-            Log::error($errorMessage, [
+            Log::error($technicalMessage, [
                 'row_data' => $row,
                 'trace' => $e->getTraceAsString()
             ]);
@@ -478,8 +512,16 @@ class UnifiedItemImport implements ToModel, WithHeadingRow, SkipsOnError, SkipsO
     /**
      * Generar slug único para el producto
      */
-    private function generateUniqueSlug(string $nombre, ?string $color = null, ?string $talla = null): string
+    private function generateUniqueSlug(string $nombre, ?string $color = null, ?string $talla = null, ?string $sku = null): string
     {
+        // Si estamos en add_update y el item ya existe con este SKU, conservar su slug actual
+        if ($sku && $this->importMode === 'add_update') {
+            $existingItem = Item::where('sku', $sku)->first();
+            if ($existingItem && $existingItem->slug) {
+                return $existingItem->slug;
+            }
+        }
+
         $baseSlug = Str::slug($nombre . ($color ? '-' . $color : '') . '-' . ($talla ? '-' . $talla : ''));
         $slug = $baseSlug;
 
@@ -706,7 +748,10 @@ class UnifiedItemImport implements ToModel, WithHeadingRow, SkipsOnError, SkipsO
         $images = $this->getColorNumberImages($codigoagrupador, $color);
 
         if (empty($images)) {
-            $item->update(['visible' => false]);
+            // Solo ocultar si no tiene una imagen principal asignada previamente
+            if (empty($item->image)) {
+                $item->update(['visible' => false]);
+            }
             return;
         }
 
@@ -728,7 +773,10 @@ class UnifiedItemImport implements ToModel, WithHeadingRow, SkipsOnError, SkipsO
         $images = $this->getSkuBasedImages($sku);
 
         if (empty($images)) {
-            $item->update(['visible' => false]);
+            // Solo ocultar si no tiene una imagen principal asignada previamente
+            if (empty($item->image)) {
+                $item->update(['visible' => false]);
+            }
             return;
         }
 
@@ -788,6 +836,11 @@ class UnifiedItemImport implements ToModel, WithHeadingRow, SkipsOnError, SkipsO
      */
     private function getSkuBasedImages(string $sku): array
     {
+        // Retornar del caché si ya se buscó este SKU en la misma importación
+        if (isset($this->skuImagesCache[$sku])) {
+            return $this->skuImagesCache[$sku];
+        }
+
         $images = [];
         $basePath = "images/item/";
         $extensions = ['jpg', 'jpeg', 'png', 'webp'];
@@ -800,29 +853,22 @@ class UnifiedItemImport implements ToModel, WithHeadingRow, SkipsOnError, SkipsO
             }
         }
 
-        $files = File::scan(storage_path('/app/images/item'), [
-            'type' => 'file',
-            'startsWith' => $sku
-        ]);
-        return $files;
-        // Imágenes de galería: sku_1.ext, etc.
-        $i = 1;
-        while (true) {
-            $found = false;
-            $galleryImageName = "{$sku}_{$i}";
-
-            foreach ($extensions as $ext) {
-                if (Storage::exists("{$basePath}{$galleryImageName}.{$ext}")) {
-                    $images[] = "{$galleryImageName}.{$ext}";
-                    $found = true;
-                    break;
+        // Buscar usando glob de manera ultra-rápida en el sistema de archivos
+        $dir = storage_path('app/images/item');
+        if (is_dir($dir)) {
+            $pattern = $dir . DIRECTORY_SEPARATOR . $sku . '*';
+            $matchingFiles = glob($pattern);
+            if (is_array($matchingFiles)) {
+                foreach ($matchingFiles as $file) {
+                    $basename = basename($file);
+                    if (!in_array($basename, $images)) {
+                        $images[] = $basename;
+                    }
                 }
             }
-
-            if (!$found) break;
-            $i++;
         }
 
+        $this->skuImagesCache[$sku] = $images;
         return $images;
     }
     
@@ -1377,6 +1423,169 @@ class UnifiedItemImport implements ToModel, WithHeadingRow, SkipsOnError, SkipsO
 
         if (!empty($syncData)) {
             $item->attributes()->sync($syncData);
+        }
+    }
+
+    /**
+     * Resuelve la imagen principal descargándola si es una URL,
+     * o buscando localmente en caso contrario.
+     */
+    private function resolveMainImage(array $row, ?string $sku = null): ?string
+    {
+        $mainImageUrl = $this->getFieldValue($row, 'imagen');
+        if ($mainImageUrl && (str_starts_with($mainImageUrl, 'http://') || str_starts_with($mainImageUrl, 'https://'))) {
+            // Si el producto ya tiene imagen local y existe el archivo, no volver a descargarla en add_update
+            if ($sku && $this->importMode === 'add_update') {
+                $existingItem = Item::where('sku', $sku)->first();
+                if ($existingItem && $existingItem->image && Storage::exists("images/item/{$existingItem->image}")) {
+                    return $existingItem->image;
+                }
+            }
+            return $this->downloadAndSaveImageFromUrl($mainImageUrl);
+        }
+        return $this->getMainImage($row, 'sku');
+    }
+
+    /**
+     * Descarga y guarda imágenes para la galería desde las URLs definidas en el Excel.
+     */
+    private function saveGalleryImagesFromExcel(Item $item, array $row): void
+    {
+        if (!$this->hasField($row, 'galeria')) {
+            return;
+        }
+
+        $galleryStr = $this->getFieldValue($row, 'galeria');
+        if (empty($galleryStr)) {
+            return;
+        }
+
+        // Si estamos en add_update y ya existen imágenes de galería, no volver a descargarlas
+        if ($this->importMode === 'add_update' && $item->images()->exists()) {
+            return;
+        }
+
+        // Separar múltiples URLs por comas o saltos de línea
+        $urls = preg_split('/[\n,]+/', $galleryStr);
+        $lastOrder = $item->images()->max('order') ?? 0;
+        $orderIndex = 1;
+
+        foreach ($urls as $url) {
+            $url = trim($url);
+            if (empty($url)) {
+                continue;
+            }
+
+            if (str_starts_with($url, 'http://') || str_starts_with($url, 'https://')) {
+                $filename = $this->downloadAndSaveImageFromUrl($url);
+                if ($filename) {
+                    $item->images()->create([
+                        'url' => $filename,
+                        'order' => $lastOrder + $orderIndex
+                    ]);
+                    $orderIndex++;
+                }
+            }
+        }
+    }
+
+    /**
+     * Descarga una imagen desde una URL remota, la optimiza convirtiéndola a WebP
+     * y la guarda en storage utilizando una lógica similar a BasicController::saveImage.
+     */
+    private function downloadAndSaveImageFromUrl(string $url): ?string
+    {
+        try {
+            $url = trim($url);
+            if (empty($url) || !filter_var($url, FILTER_VALIDATE_URL)) {
+                return null;
+            }
+
+            // Verificar si la imagen ya fue descargada en este proceso
+            if (isset(self::$downloadCache[$url])) {
+                return self::$downloadCache[$url];
+            }
+
+            // Crear archivo temporal
+            $tempFile = tempnam(sys_get_temp_dir(), 'import_img_');
+            if (!$tempFile) {
+                return null;
+            }
+
+            // Descargar usando cURL
+            $ch = curl_init($url);
+            $fp = fopen($tempFile, 'wb');
+            curl_setopt($ch, CURLOPT_FILE, $fp);
+            curl_setopt($ch, CURLOPT_HEADER, 0);
+            curl_setopt($ch, CURLOPT_TIMEOUT, 30);
+            curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+            curl_exec($ch);
+            curl_close($ch);
+            fclose($fp);
+
+            if (!file_exists($tempFile) || !filesize($tempFile)) {
+                @unlink($tempFile);
+                return null;
+            }
+
+            // Optimizar y convertir a WebP
+            $uuid = Crypto::randomUUID();
+            $imgInfo = @getimagesize($tempFile);
+            if ($imgInfo) {
+                $mime = $imgInfo['mime'];
+                $sourceImage = null;
+                switch ($mime) {
+                    case 'image/jpeg':
+                    case 'image/jpg':
+                        $sourceImage = @imagecreatefromjpeg($tempFile);
+                        break;
+                    case 'image/png':
+                        $sourceImage = @imagecreatefrompng($tempFile);
+                        if ($sourceImage) {
+                            imagealphablending($sourceImage, false);
+                            imagesavealpha($sourceImage, true);
+                        }
+                        break;
+                    case 'image/webp':
+                        $sourceImage = @imagecreatefromwebp($tempFile);
+                        break;
+                }
+
+                if ($sourceImage) {
+                    $webpTempPath = tempnam(sys_get_temp_dir(), 'webp_');
+                    if (@imagewebp($sourceImage, $webpTempPath, 90)) {
+                        $path = "images/item/{$uuid}.webp";
+                        Storage::put($path, file_get_contents($webpTempPath));
+                        @imagedestroy($sourceImage);
+                        @unlink($webpTempPath);
+                        @unlink($tempFile);
+                        
+                        self::$downloadCache[$url] = "{$uuid}.webp";
+                        return "{$uuid}.webp";
+                    }
+                    @imagedestroy($sourceImage);
+                    @unlink($webpTempPath);
+                }
+            }
+
+            // Fallback: guardar archivo original si no se puede convertir
+            $ext = strtolower(pathinfo($url, PATHINFO_EXTENSION));
+            if (empty($ext) || !in_array($ext, ['png', 'jpg', 'jpeg', 'webp', 'gif'])) {
+                $ext = 'png'; // default
+            }
+            $path = "images/item/{$uuid}.{$ext}";
+            Storage::put($path, file_get_contents($tempFile));
+            @unlink($tempFile);
+            
+            $filename = "{$uuid}.{$ext}";
+            self::$downloadCache[$url] = $filename;
+            return $filename;
+
+        } catch (\Exception $e) {
+            Log::error("Error al descargar imagen desde URL {$url}: " . $e->getMessage());
+            return null;
         }
     }
 }
