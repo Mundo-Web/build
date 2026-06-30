@@ -39,10 +39,7 @@ const Categories = () => {
     const [isEditing, setIsEditing] = useState(false);
 
     const onModalOpen = (data) => {
-        console.log("=== onModalOpen called ===");
-        console.log("Full data object:", data);
-        console.log("data.banners specifically:", data?.banners);
-        console.log("typeof data.banners:", typeof data?.banners);
+
 
         if (data?.id) setIsEditing(true);
         else setIsEditing(false);
@@ -416,8 +413,8 @@ const Categories = () => {
                                         borderRadius: "4px",
                                     }}
                                     onError={(e) =>
-                                        (e.target.src =
-                                            "/api/cover/thumbnail/null")
+                                    (e.target.src =
+                                        "/api/cover/thumbnail/null")
                                     }
                                 />,
                             );
@@ -441,13 +438,14 @@ const Categories = () => {
                                         borderRadius: "4px",
                                     }}
                                     onError={(e) =>
-                                        (e.target.src =
-                                            "/api/cover/thumbnail/null")
+                                    (e.target.src =
+                                        "/api/cover/thumbnail/null")
                                     }
                                 />,
                             );
                         },
                     },
+                    Fillable.has("categories", "featured") &&
                     {
                         dataField: "featured",
                         caption: "Destacado",
@@ -512,7 +510,8 @@ const Categories = () => {
                             );
                         },
                     },
-                    Fillable.has("categories", "is_perception_taxable") && {
+                    (Fillable.has("categories", "is_perception_taxable") ||
+                        Fillable.has("categories", "perception_percentage")) && {
                         dataField: "is_perception_taxable",
                         caption: "Sujeto a Percepción",
                         dataType: "boolean",
@@ -601,27 +600,27 @@ const Categories = () => {
                         </li>
                         {(Fillable.has("categories", "banner") ||
                             Fillable.has("categories", "image")) && (
-                            <li className="nav-item" role="presentation">
-                                <button
-                                    className="nav-link"
-                                    id="multimedia-tab"
-                                    data-bs-toggle="pill"
-                                    data-bs-target="#multimedia"
-                                    type="button"
-                                    role="tab"
-                                    aria-controls="multimedia"
-                                    aria-selected="false"
-                                    style={{
-                                        borderRadius: "6px",
-                                        fontWeight: "500",
-                                        transition: "all 0.3s ease",
-                                    }}
-                                >
-                                    <i className="fas fa-images me-2"></i>
-                                    Multimedia
-                                </button>
-                            </li>
-                        )}
+                                <li className="nav-item" role="presentation">
+                                    <button
+                                        className="nav-link"
+                                        id="multimedia-tab"
+                                        data-bs-toggle="pill"
+                                        data-bs-target="#multimedia"
+                                        type="button"
+                                        role="tab"
+                                        aria-controls="multimedia"
+                                        aria-selected="false"
+                                        style={{
+                                            borderRadius: "6px",
+                                            fontWeight: "500",
+                                            transition: "all 0.3s ease",
+                                        }}
+                                    >
+                                        <i className="fas fa-images me-2"></i>
+                                        Multimedia
+                                    </button>
+                                </li>
+                            )}
                         {Fillable.has("categories", "banners") && (
                             <li className="nav-item" role="presentation">
                                 <button
@@ -723,9 +722,23 @@ const Categories = () => {
                                                         }
                                                     />
                                                 </div>
-                                                <div className="col-12 mt-2">
+                                                <div className="col-12 mt-2" hidden={
+                                                    !Fillable.has(
+                                                        "categories",
+                                                        "is_perception_taxable",
+                                                    ) ||
+                                                    !Fillable.has(
+                                                        "categories",
+                                                        "perception_percentage",
+                                                    )
+                                                } >
                                                     <div className="row align-items-end">
-                                                        <div className="col-md-6">
+                                                        <div className="col-md-6" hidden={
+                                                            !Fillable.has(
+                                                                "categories",
+                                                                "is_perception_taxable",
+                                                            )
+                                                        }>
                                                             <SwitchFormGroup
                                                                 eRef={
                                                                     isPerceptionTaxableRef
@@ -733,7 +746,12 @@ const Categories = () => {
                                                                 label="Sujeto a Percepción"
                                                             />
                                                         </div>
-                                                        <div className="col-md-6">
+                                                        <div className="col-md-6" hidden={
+                                                            !Fillable.has(
+                                                                "categories",
+                                                                "perception_percentage",
+                                                            )
+                                                        }>
                                                             <InputFormGroup
                                                                 eRef={perceptionPercentageRef}
                                                                 label="Porcentaje de Percepción (%)"
@@ -759,72 +777,72 @@ const Categories = () => {
                         {/* Pestaña: Multimedia */}
                         {(Fillable.has("categories", "banner") ||
                             Fillable.has("categories", "image")) && (
-                            <div
-                                className="tab-pane fade"
-                                id="multimedia"
-                                role="tabpanel"
-                                aria-labelledby="multimedia-tab"
-                            >
-                                <div className="row g-3">
-                                    <div className="col-12">
-                                        <div className="card border-0 shadow-sm">
-                                            <div className="card-header bg-light">
-                                                <h6 className="mb-0">
-                                                    <i className="fas fa-images me-2 text-success"></i>
-                                                    Imágenes Principales
-                                                </h6>
-                                            </div>
-                                            <div className="card-body">
-                                                <div className="row g-3">
-                                                    {Fillable.has(
-                                                        "categories",
-                                                        "banner",
-                                                    ) && (
-                                                        <div className="col-md-6">
-                                                            <ImageFormGroup
-                                                                eRef={bannerRef}
-                                                                name="banner"
-                                                                label="Banner Principal"
-                                                                col="col-12"
-                                                                aspect={16 / 9}
-                                                            />
-                                                            <small className="text-muted">
-                                                                <i className="fas fa-info-circle me-1"></i>
-                                                                Recomendado:
-                                                                1600x900px
-                                                                (proporción
-                                                                16:9)
-                                                            </small>
-                                                        </div>
-                                                    )}
-                                                    {Fillable.has(
-                                                        "categories",
-                                                        "image",
-                                                    ) && (
-                                                        <div className="col-md-6">
-                                                            <ImageFormGroup
-                                                                eRef={imageRef}
-                                                                name="image"
-                                                                label="Imagen de Portada"
-                                                                col="col-12"
-                                                                aspect={16 / 9}
-                                                            />
-                                                            <small className="text-muted">
-                                                                <i className="fas fa-info-circle me-1"></i>
-                                                                Recomendado:
-                                                                1600x900px
-                                                                (proporción
-                                                                16:9)
-                                                            </small>
-                                                        </div>
-                                                    )}
+                                <div
+                                    className="tab-pane fade"
+                                    id="multimedia"
+                                    role="tabpanel"
+                                    aria-labelledby="multimedia-tab"
+                                >
+                                    <div className="row g-3">
+                                        <div className="col-12">
+                                            <div className="card border-0 shadow-sm">
+                                                <div className="card-header bg-light">
+                                                    <h6 className="mb-0">
+                                                        <i className="fas fa-images me-2 text-success"></i>
+                                                        Imágenes Principales
+                                                    </h6>
+                                                </div>
+                                                <div className="card-body">
+                                                    <div className="row g-3">
+                                                        {Fillable.has(
+                                                            "categories",
+                                                            "banner",
+                                                        ) && (
+                                                                <div className="col-md-6">
+                                                                    <ImageFormGroup
+                                                                        eRef={bannerRef}
+                                                                        name="banner"
+                                                                        label="Banner Principal"
+                                                                        col="col-12"
+                                                                        aspect={16 / 9}
+                                                                    />
+                                                                    <small className="text-muted">
+                                                                        <i className="fas fa-info-circle me-1"></i>
+                                                                        Recomendado:
+                                                                        1600x900px
+                                                                        (proporción
+                                                                        16:9)
+                                                                    </small>
+                                                                </div>
+                                                            )}
+                                                        {Fillable.has(
+                                                            "categories",
+                                                            "image",
+                                                        ) && (
+                                                                <div className="col-md-6">
+                                                                    <ImageFormGroup
+                                                                        eRef={imageRef}
+                                                                        name="image"
+                                                                        label="Imagen de Portada"
+                                                                        col="col-12"
+                                                                        aspect={16 / 9}
+                                                                    />
+                                                                    <small className="text-muted">
+                                                                        <i className="fas fa-info-circle me-1"></i>
+                                                                        Recomendado:
+                                                                        1600x900px
+                                                                        (proporción
+                                                                        16:9)
+                                                                    </small>
+                                                                </div>
+                                                            )}
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                        )}
+                            )}
 
                         {/* Pestaña: Banners del Catálogo */}
                         {Fillable.has("categories", "banners") && (
