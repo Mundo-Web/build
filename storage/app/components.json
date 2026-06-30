@@ -816,6 +816,8 @@
                     "bool:showNavigation:Mostrar Flechas de Navegación",
                     "bool:showPagination:Mostrar Paginación",
                     "select:paginationVariant:Variante de Paginación:standard|Estándar (Primary/Secondary),white|Todo Blanco,dark|Oscuro,primary|Primario",
+                    "select:navigationVariant:Variante de Flechas (Color):standard|Estándar,white|Blanco con Sombra,dark|Oscuro,primary|Morado Primario",
+                    "select:navigationShape:Forma de Flechas:default|Semi-redondeado lateral,round|Circular flotante,square|Cuadrado de borde",
                     "imageBgPosition",
                     "class_button_primary",
                     "class_icon_primary",

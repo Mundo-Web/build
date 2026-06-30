@@ -5,6 +5,7 @@ import { adjustTextColor } from "../../../Functions/adjustTextColor";
 import Global from "../../../Utils/Global";
 import TextWithHighlight from "../../../Utils/TextWithHighlight";
 import paginationVariants from "./paginationVariants";
+import navigationVariants from "./navigationVariants";
 
 const SliderInteractive = ({ items, data, generals = [] }) => {
     // Verificar si las animaciones están habilitadas
@@ -204,6 +205,12 @@ const SliderInteractive = ({ items, data, generals = [] }) => {
     // Cargar variante de paginación
     const variantName = data?.paginationVariant || "standard";
     const variant = paginationVariants[variantName] || paginationVariants.standard;
+
+    // Cargar variante y forma de navegación
+    const navVariantName = data?.navigationVariant || "standard";
+    const navShapeName = data?.navigationShape || "default";
+    const navVariant = navigationVariants.variants[navVariantName] || navigationVariants.variants.standard;
+    const navShape = navigationVariants.shapes[navShapeName] || navigationVariants.shapes.default;
 
     const nextSlide = () => {
         setCurrentIndex(
@@ -697,23 +704,23 @@ const SliderInteractive = ({ items, data, generals = [] }) => {
             {showNavigation && (
                 <>
                     <div
-                        className={`absolute top-1/2 left-0 transform -translate-y-1/2 `}
+                        className={`absolute top-1/2 ${navShape.leftWrapper} transform -translate-y-1/2 z-30`}
                     >
                         <button
                             onClick={prevSlide}
-                            className="bg-secondary rounded-r-lg text-white w-12 h-12 flex items-center justify-center"
+                            className={`${navVariant.button} ${navShape.leftButton} w-12 h-12 flex items-center justify-center transition-all duration-300 hover:scale-105`}
                         >
-                            <ChevronLeft width={"1rem"} />
+                            <ChevronLeft width={"1.25rem"} style={{ color: navVariant.iconColor }} />
                         </button>
                     </div>
                     <div
-                        className={`absolute top-1/2 right-0 transform -translate-y-1/2 `}
+                        className={`absolute top-1/2 ${navShape.rightWrapper} transform -translate-y-1/2 z-30`}
                     >
                         <button
                             onClick={nextSlide}
-                            className="bg-secondary rounded-l-lg text-white w-12 h-12 flex items-center justify-center"
+                            className={`${navVariant.button} ${navShape.rightButton} w-12 h-12 flex items-center justify-center transition-all duration-300 hover:scale-105`}
                         >
-                            <ChevronRight width={"1rem"} />
+                            <ChevronRight width={"1.25rem"} style={{ color: navVariant.iconColor }} />
                         </button>
                     </div>
                 </>
