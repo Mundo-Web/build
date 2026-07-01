@@ -312,14 +312,15 @@ class SystemController extends BasicController
                     $result = $class::with($relations)
                         ->where($field, $value)
                         ->first();
+                    if (!$result) {
+                        abort(404);
+                    }
                     $props['filteredData'][$key] = $result;
-                    if ($result) {
-                        // Espejamos también bajo la clave del modelo (ej: 'Item')
-                        // para que el frontend pueda leerlo desde filteredData.Item
-                        $props['filteredData'][$model] = $result;
-                        if ($key === 'slug') {
-                            $props['reactData'][$model] = $result;
-                        }
+                    // Espejamos también bajo la clave del modelo (ej: 'Item')
+                    // para que el frontend pueda leerlo desde filteredData.Item
+                    $props['filteredData'][$model] = $result;
+                    if ($key === 'slug') {
+                        $props['reactData'][$model] = $result;
                     }
                 } elseif ($model) {
                     // Cargar todos los registros
