@@ -4,7 +4,7 @@ import { Autoplay, A11y, Keyboard, Navigation } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/navigation";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import CardProductMiBalon from "./Components/CardProductMiBalon";
+import ProductCardSelector from "./ProductCardSelector";
 import TextWithHighlight from "../../../Utils/TextWithHighlight";
 
 const ProductSwiperMiBalon = ({ items, data, setCart, cart }) => {
@@ -16,14 +16,14 @@ const ProductSwiperMiBalon = ({ items, data, setCart, cart }) => {
     return (
         <section
             id={data?.element_id || null}
-            className={`py-16 md:py-24 bg-neutral-50 ${data?.class_container || ""}`}
+            className={`py-16 md:py-24 bg-sections-color ${data?.class_container || ""}`}
         >
             <div className="container mx-auto px-primary 2xl:px-0 2xl:max-w-7xl">
                 {/* Header */}
                 <div className="flex flex-col md:flex-row justify-between items-end mb-10 gap-4">
                     <div className="text-left">
                         <h2
-                            className={`text-4xl md:text-7xl  font-title text-neutral-dark tracking-tight mb-2 ${data?.class_title || ""}`}
+                            className={`font-title text-neutral-dark mb-2 ${data?.class_title || "text-4xl md:text-7xl"}`}
                         >
                             <TextWithHighlight
                                 text={data?.title}
@@ -55,16 +55,16 @@ const ProductSwiperMiBalon = ({ items, data, setCart, cart }) => {
                 </div>
 
                 {/* Swiper */}
-                <div className="relative pb-10">
+                <div className="relative ">
                     <Swiper
                         modules={[Autoplay, A11y, Keyboard, Navigation]}
                         spaceBetween={24}
                         slidesPerView={1}
-                        loop={true}
-                        autoplay={{
+                        loop={data?.loop !== false}
+                        autoplay={data?.autoplay !== false ? {
                             delay: 4000,
                             disableOnInteraction: false,
-                        }}
+                        } : false}
                         navigation={{
                             prevEl: prevRef.current,
                             nextEl: nextRef.current,
@@ -76,17 +76,18 @@ const ProductSwiperMiBalon = ({ items, data, setCart, cart }) => {
                         breakpoints={{
                             640: { slidesPerView: 2 },
                             768: { slidesPerView: 3 },
-                            1024: { slidesPerView: 4 },
+                            1024: { slidesPerView: 3 },
                             1280: { slidesPerView: 4 },
                         }}
-                        className="w-full !px-4 !py-6 -mx-4"
+                        className="w-full !px-4 !py-7 -mx-4"
                     >
                         {items.map((product, index) => (
                             <SwiperSlide
                                 key={`${product.id}-${index}`}
                                 className="h-auto"
                             >
-                                <CardProductMiBalon
+                                <ProductCardSelector
+                                    cardType={data?.type_card_product || "CardProductMiBalon"}
                                     product={product}
                                     setCart={setCart}
                                     cart={cart}
@@ -97,8 +98,8 @@ const ProductSwiperMiBalon = ({ items, data, setCart, cart }) => {
                     </Swiper>
                 </div>
 
-                {data?.link_catalog && (
-                    <div className="text-center mt-4">
+                {data?.show_link_catalog !== false && data?.link_catalog && (
+                    <div className="text-center mt-10">
                         <a
                             href={data.link_catalog}
                             className="inline-block text-primary font-bold hover:underline transition-colors hover:text-neutral-dark"

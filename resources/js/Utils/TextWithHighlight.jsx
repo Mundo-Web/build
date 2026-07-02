@@ -31,6 +31,16 @@ const TextWithHighlight = ({ text = "", split = false, split_coma = false, split
         }
     }, [counter, safeText]);
 
+    const renderStyle = () => (
+        <style dangerouslySetInnerHTML={{ __html: `
+            .text-highlight-primary {
+                background: var(--bg-bg_primary_gradient, var(--bg-primary)) !important;
+                -webkit-background-clip: text !important;
+                background-clip: text !important;
+            }
+        `}} />
+    );
+
     const renderHighlightedText = (textToRender) => {
         let processedText = textToRender;
 
@@ -45,15 +55,28 @@ const TextWithHighlight = ({ text = "", split = false, split_coma = false, split
 
         const parts = processedText.split(/(\*[^*]+\*)/g); // separa todo lo entre *...*
 
-        return parts.map((part, index) =>
-            part.startsWith("*") && part.endsWith("*") ? (
-                <span key={index} className={`${className} ${color} bg-clip-text text-transparent `}>
-                    {part.slice(1, -1)}
-                </span>
-            ) : (
-                <span className={`${className}`} key={index}>{part}</span>
-            )
-        );
+        return parts.map((part, index) => {
+            if (part.startsWith("*") && part.endsWith("*")) {
+                const cleanedClassName = className.replace(/\btext-[a-z0-9-]+\b/g, "");
+                const isBgPrimary = color === "bg-primary";
+                const appliedClass = isBgPrimary ? "text-highlight-primary" : color;
+                return (
+                    <span
+                        key={index}
+                        className={`${cleanedClassName} ${appliedClass} ${isBgPrimary ? "" : "bg-clip-text"} text-transparent`}
+                        style={isBgPrimary ? {} : { WebkitBackgroundClip: "text", backgroundClip: "text" }}
+                    >
+                        {part.slice(1, -1)}
+                    </span>
+                );
+            } else {
+                return (
+                    <span className={`${className}`} key={index}>
+                        {part}
+                    </span>
+                );
+            }
+        });
     };
 
     if (split) {
@@ -62,12 +85,15 @@ const TextWithHighlight = ({ text = "", split = false, split_coma = false, split
         const remainingText = words.slice(1).join(" ");
 
         return (
-            <div className={`flex flex-col ${className}`}>
-                <span className={`block ${className}`}>{renderHighlightedText(firstWord)}</span>
-                <span className={`block ${className}`}>
-                    {renderHighlightedText(remainingText)}
-                </span>
-            </div>
+            <>
+                {renderStyle()}
+                <div className={`flex flex-col ${className}`}>
+                    <span className={`block ${className}`}>{renderHighlightedText(firstWord)}</span>
+                    <span className={`block ${className}`}>
+                        {renderHighlightedText(remainingText)}
+                    </span>
+                </div>
+            </>
         );
     }
 
@@ -77,12 +103,15 @@ const TextWithHighlight = ({ text = "", split = false, split_coma = false, split
         const remainingText = words.slice(1).join(" ");
 
         return (
-            <div className={`flex flex-col ${className}`}>
-                <span className={`block ${className}`}>{renderHighlightedText(firstWord)}</span>
-                <span className={`block ${className}`}>
-                    {renderHighlightedText(remainingText)}
-                </span>
-            </div>
+            <>
+                {renderStyle()}
+                <div className={`flex flex-col ${className}`}>
+                    <span className={`block ${className}`}>{renderHighlightedText(firstWord)}</span>
+                    <span className={`block ${className}`}>
+                        {renderHighlightedText(remainingText)}
+                    </span>
+                </div>
+            </>
         );
     }
     if (split_dos_puntos) {
@@ -91,16 +120,24 @@ const TextWithHighlight = ({ text = "", split = false, split_coma = false, split
         const remainingText = words.slice(1).join(" ");
 
         return (
-            <div className={`flex flex-col ${className}`}>
-                <span className={`block ${className}`}>{firstWord}</span>
-                <span className={`block ${className}`}>
-                    {renderHighlightedText(remainingText)}
-                </span>
-            </div>
+            <>
+                {renderStyle()}
+                <div className={`flex flex-col ${className}`}>
+                    <span className={`block ${className}`}>{firstWord}</span>
+                    <span className={`block ${className}`}>
+                        {renderHighlightedText(remainingText)}
+                    </span>
+                </div>
+            </>
         );
     }
 
-    return <span className={className}>{renderHighlightedText(safeText)}</span>;
+    return (
+        <>
+            {renderStyle()}
+            <span className={className}>{renderHighlightedText(safeText)}</span>
+        </>
+    );
 };
 
 export default TextWithHighlight;

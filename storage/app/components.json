@@ -173,7 +173,7 @@
                     "icon",
                     "class_container",
                     "type_order",
-                    "cardType",
+                    "select:cardType:Tipo de Tarjeta:CardProductMiBalon|Mi Balón,CardProductMicjc|Micjc,CardProductBananaLab|Banana Lab,CardProductMultivet|Multivet,CardProductKatya|Katya,ProductCardColors|Sala Fabulosa,ProductCardColorsBoton|Colors Boton,ProductCardFull|Full,ProductCardSimple|Simple",
                     "show_categories",
                     "button_top",
                     "button_bottom",
@@ -942,28 +942,7 @@
                     ]
                 }
             },
-            {
-                "id": "SliderImagen",
-                "name": "Imagen",
-                "image": "slider-simple.png",
-                "data": [
-                    "title",
-                    "class_section",
-                    "class_content",
-                    "class_button",
-                    "class_image",
-                    "autoplay"
-                ],
-                "using": {
-                    "model": "Brand",
-                    "fields": [
-                        "name",
-                        "description",
-                        "image",
-                        "slug"
-                    ]
-                }
-            },
+
             {
                 "id": "SliderBrandsPaani",
                 "name": "Brand Paani",
@@ -1238,7 +1217,7 @@
                     "dat_prices",
                     "section_prices",
                     "section_stores",
-                    "type_card_product",
+                    "select:type_card_product:Tipo de Tarjeta de Producto:CardProductMiBalon|Mi Balón,CardProductMicjc|Micjc,CardProductBananaLab|Banana Lab,CardProductMultivet|Multivet,CardProductKatya|Katya,ProductCardColors|Sala Fabulosa,ProductCardColorsBoton|Colors Boton,ProductCardFull|Full,ProductCardSimple|Simple",
                     "class_product_container",
                     "class_product_card_container",
                     "class_clear_button",
@@ -1334,7 +1313,7 @@
                     "dat_prices",
                     "section_prices",
                     "section_stores",
-                    "type_card_product",
+                    "select:type_card_product:Tipo de Tarjeta de Producto:CardProductMiBalon|Mi Balón,CardProductMicjc|Micjc,CardProductBananaLab|Banana Lab,CardProductMultivet|Multivet,CardProductKatya|Katya,ProductCardColors|Sala Fabulosa,ProductCardColorsBoton|Colors Boton,ProductCardFull|Full,ProductCardSimple|Simple",
                     "class_product_container",
                     "class_product_card_container",
                     "class_clear_button",
@@ -1423,7 +1402,7 @@
                     "section_subcategories",
                     "section_prices",
                     "section_stores",
-                    "type_card_product",
+                    "select:type_card_product:Tipo de Tarjeta de Producto:CardProductMiBalon|Mi Balón,CardProductMicjc|Micjc,CardProductBananaLab|Banana Lab,CardProductMultivet|Multivet,CardProductKatya|Katya,ProductCardColors|Sala Fabulosa,ProductCardColorsBoton|Colors Boton,ProductCardFull|Full,ProductCardSimple|Simple",
                     "class_clear_button",
                     "class_title"
                 ],
@@ -1948,7 +1927,7 @@
                     "product_title",
                     "product_description",
                     "button_text",
-                    "type_card_product",
+                    "select:type_card_product:Tipo de Tarjeta de Producto:CardProductMiBalon|Mi Balón,CardProductMicjc|Micjc,CardProductBananaLab|Banana Lab,CardProductMultivet|Multivet,CardProductKatya|Katya,ProductCardColors|Sala Fabulosa,ProductCardColorsBoton|Colors Boton,ProductCardFull|Full,ProductCardSimple|Simple",
                     "class_hero_title",
                     "class_hero_subtitle",
                     "class_category_title",
@@ -2559,6 +2538,10 @@
                     "title",
                     "description",
                     "link_catalog",
+                    "select:type_card_product:Tipo de Tarjeta de Producto:CardProductMiBalon|Mi Balón,CardProductMicjc|Micjc,CardProductBananaLab|Banana Lab,CardProductMultivet|Multivet,CardProductKatya|Katya,ProductCardColors|Sala Fabulosa,ProductCardColorsBoton|Colors Boton,ProductCardFull|Full,ProductCardSimple|Simple",
+                    "bool:autoplay:Activar Autoplay (Reproducción Automática)",
+                    "bool:loop:Activar Bucle Infinito (Loop)",
+                    "bool:show_link_catalog:Mostrar Enlace a Todo el Catálogo",
                     "class_container",
                     "class_title"
                 ],
@@ -2651,7 +2634,7 @@
                     "text_button",
                     "class_section",
                     "class_button",
-                    "cardType",
+                    "select:cardType:Tipo de Tarjeta:CardProductMiBalon|Mi Balón,CardProductMicjc|Micjc,CardProductBananaLab|Banana Lab,CardProductMultivet|Multivet,CardProductKatya|Katya,ProductCardColors|Sala Fabulosa,ProductCardColorsBoton|Colors Boton,ProductCardFull|Full,ProductCardSimple|Simple",
                     "show_categories",
                     "button_top",
                     "button_bottom",
@@ -5712,6 +5695,29 @@
                         "name",
                         "image",
                         "description",
+                        "slug"
+                    ]
+                }
+            },
+            {
+                "id": "BrandInfinite",
+                "name": "Marcas Infinito (BrandInfinite)",
+                "image": "brand-carousel.png",
+                "data": [
+                    "title",
+                    "class_section",
+                    "class_content",
+                    "select:navigationVariant:Variante de Botones:standard|Estándar,white|Blanco Circular,dark|Oscuro",
+                    "class_button",
+                    "class_image",
+                    "bool:autoplay:Activar Autoplay"
+                ],
+                "using": {
+                    "model": "Brand",
+                    "fields": [
+                        "name",
+                        "description",
+                        "image",
                         "slug"
                     ]
                 }

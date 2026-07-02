@@ -7,7 +7,6 @@ const SliderInteractive = React.lazy(
     () => import("./Sliders/SliderInteractive"),
 );
 const SliderBananaLab = React.lazy(() => import("./Sliders/SliderBananaLab"));
-const SliderImagen = React.lazy(() => import("./Sliders/SliderImagen"));
 const SliderBrandsPaani = React.lazy(
     () => import("./Sliders/SliderBrandsPaani"),
 );
@@ -63,9 +62,6 @@ const Slider = ({ which, data, sliders, generals = [] }) => {
                 );
             case "SliderBananaLab":
                 return <SliderBananaLab data={data} items={sliders} />;
-            case "SliderImagen":
-                return <SliderImagen data={data} items={sliders} />;
-
             case "SliderJustImage":
                 return <SliderJustImage data={data} items={sliders} />;
             case "SliderBrandsPaani":
