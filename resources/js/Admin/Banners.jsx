@@ -21,7 +21,7 @@ import Modal from "../Components/Adminto/Modal";
 import Table from "../Components/Adminto/Table";
 import DxButton from "../Components/dx/DxButton";
 import InputFormGroup from "../Components/Adminto/form/InputFormGroup";
-import CreateReactScript from "../Utils/CreateReactScript";
+import CreateReactScript, { hasRole } from "../Utils/CreateReactScript";
 import ReactAppend from "../Utils/ReactAppend";
 import SortByAfterField from "../Utils/SortByAfterField";
 import { resolveSystemAsset } from "../Components/Tailwind/Banners/bannerUtils";
@@ -71,6 +71,12 @@ const buildPreviewData = (data = {}) => {
 };
 
 const Banners = ({ pages, systems: systemsFromProps = [] }) => {
+    const hasValue = (val) => {
+        if (val === undefined || val === null || val === "") return false;
+        if (Array.isArray(val)) return val.some(x => x !== undefined && x !== null && x !== "");
+        return true;
+    };
+
     const gridRef = useRef();
     const modalRef = useRef();
 
@@ -115,6 +121,7 @@ const Banners = ({ pages, systems: systemsFromProps = [] }) => {
     const [isMultiDescription, setIsMultiDescription] = useState(false);
     const [isAbsolute, setIsAbsolute] = useState(false);
     const [descriptionList, setDescriptionList] = useState([]);
+    const [initialSnapshot, setInitialSnapshot] = useState(() => getDefaultPreviewData());
 
     const handleMultiDescriptionChange = (index, value) => {
         const newList = [...descriptionList];
@@ -666,6 +673,11 @@ const Banners = ({ pages, systems: systemsFromProps = [] }) => {
             name: "Banner Mi Balón",
             icon: "mdi mdi-star-circle",
         },
+        {
+            id: "BannerJustImageMicjc",
+            name: "Banner Solo Imagen (BannerJustImageMicjc)",
+            icon: "mdi mdi-image-area",
+        },
     ];
 
     const normalizePageId = (value) =>
@@ -773,12 +785,15 @@ const Banners = ({ pages, systems: systemsFromProps = [] }) => {
         const bannerData = banner?.data || {};
         const previewSnapshot = buildPreviewData(bannerData);
 
+        // Guardar snapshot inicial para condiciones de visibilidad (no cambia mientras se edita)
+        setInitialSnapshot(previewSnapshot);
+
         // Establecer el estado de previsualización PRIMERO
         resetPreviewData(previewSnapshot);
 
-        idRef.current.value = banner?.id ?? "";
-        nameRef.current.value = previewSnapshot.name;
-        subtitleRef.current.value = previewSnapshot.subtitle;
+        if (idRef.current) idRef.current.value = banner?.id ?? "";
+        if (nameRef.current) nameRef.current.value = previewSnapshot.name;
+        if (subtitleRef.current) subtitleRef.current.value = previewSnapshot.subtitle;
         if (footerTextRef.current)
             footerTextRef.current.value = previewSnapshot.footer_text;
 
@@ -802,8 +817,8 @@ const Banners = ({ pages, systems: systemsFromProps = [] }) => {
                     previewSnapshot.description || "";
         }
         handlePreviewFieldChange("multi_description", isMulti);
-        buttonTextRef.current.value = previewSnapshot.button_text;
-        buttonLinkRef.current.value = previewSnapshot.button_link;
+        if (buttonTextRef.current) buttonTextRef.current.value = previewSnapshot.button_text;
+        if (buttonLinkRef.current) buttonLinkRef.current.value = previewSnapshot.button_link;
 
         const backgroundUrl = resolveSystemAsset(previewSnapshot.background);
         const imageUrl = resolveSystemAsset(previewSnapshot.image);
@@ -811,11 +826,11 @@ const Banners = ({ pages, systems: systemsFromProps = [] }) => {
         if (backgroundRef.image) {
             backgroundRef.image.src = backgroundUrl || "";
         }
-        backgroundRef.current.value = null;
+        if (backgroundRef.current) backgroundRef.current.value = null;
         if (imageRef.image) {
             imageRef.image.src = imageUrl || "";
         }
-        imageRef.current.value = null;
+        if (imageRef.current) imageRef.current.value = null;
 
         // Reset delete flags using the same pattern as Categories.jsx
         if (backgroundRef.resetDeleteFlag) backgroundRef.resetDeleteFlag();
@@ -828,9 +843,11 @@ const Banners = ({ pages, systems: systemsFromProps = [] }) => {
         }
 
         // Nuevos campos
-        $(pageIdRef.current)
-            .val(banner?.page_id || "")
-            .trigger("change");
+        if (pageIdRef.current) {
+            $(pageIdRef.current)
+                .val(banner?.page_id || "")
+                .trigger("change");
+        }
         const editingPageId = banner?.page_id || "";
         setSelectedPageId(editingPageId);
 
@@ -839,14 +856,18 @@ const Banners = ({ pages, systems: systemsFromProps = [] }) => {
 
         // Esperar un momento para que se carguen los componentes y luego setear el valor
         setTimeout(() => {
-            const afterValue = banner?.after_component || "";
-            $(afterComponentRef.current).val(afterValue).trigger("change");
+            if (afterComponentRef.current) {
+                const afterValue = banner?.after_component || "";
+                $(afterComponentRef.current).val(afterValue).trigger("change");
+            }
         }, 100);
 
         // Establecer el tipo de banner y disparar el evento para actualizar el preview
-        $(bannerTypeRef.current)
-            .val(previewSnapshot.type || "BannerSimple")
-            .trigger("change");
+        if (bannerTypeRef.current) {
+            $(bannerTypeRef.current)
+                .val(previewSnapshot.type || "BannerSimple")
+                .trigger("change");
+        }
 
         $(modalRef.current).modal("show");
     };
@@ -857,17 +878,77 @@ const Banners = ({ pages, systems: systemsFromProps = [] }) => {
 
         setIsSaving(true);
         try {
-            const bannerId = idRef.current.value;
-            const pageId = $(pageIdRef.current).val();
+            if (!hasRole("Root")) {
+                // Check if any visible field was cleared
+                if (hasValue(initialSnapshot.subtitle) && subtitleRef.current && !subtitleRef.current.value.trim()) {
+                    Swal.fire("Error de validación", "El campo Subtítulo es requerido.", "error");
+                    setIsSaving(false);
+                    return;
+                }
+                if (hasValue(initialSnapshot.name) && nameRef.current && !nameRef.current.value.trim()) {
+                    Swal.fire("Error de validación", "El campo Título Principal es requerido.", "error");
+                    setIsSaving(false);
+                    return;
+                }
+                if (hasValue(initialSnapshot.description)) {
+                    if (isMultiDescription) {
+                        if (descriptionList.filter(x => x && x.trim()).length === 0) {
+                            Swal.fire("Error de validación", "El campo Descripción / Contenido requiere al menos una línea con texto.", "error");
+                            setIsSaving(false);
+                            return;
+                        }
+                    } else if (descriptionRef.current && !descriptionRef.current.value.trim()) {
+                        Swal.fire("Error de validación", "El campo Descripción es requerido.", "error");
+                        setIsSaving(false);
+                        return;
+                    }
+                }
+                if (hasValue(initialSnapshot.footer_text) && footerTextRef.current && !footerTextRef.current.value.trim()) {
+                    Swal.fire("Error de validación", "El campo Texto Footer es requerido.", "error");
+                    setIsSaving(false);
+                    return;
+                }
+                if (hasValue(initialSnapshot.button_text) && buttonTextRef.current && !buttonTextRef.current.value.trim()) {
+                    Swal.fire("Error de validación", "El campo Texto del botón es requerido.", "error");
+                    setIsSaving(false);
+                    return;
+                }
+                if (hasValue(initialSnapshot.button_link) && buttonLinkRef.current && !buttonLinkRef.current.value.trim()) {
+                    Swal.fire("Error de validación", "El campo Enlace del botón es requerido.", "error");
+                    setIsSaving(false);
+                    return;
+                }
+
+                // Image validations
+                if (hasValue(initialSnapshot.image) && imageRef.getDeleteFlag && imageRef.getDeleteFlag()) {
+                    const imageFile = imageRef.current ? imageRef.current.files[0] : null;
+                    if (!imageFile) {
+                        Swal.fire("Error de validación", "La imagen frontal es requerida y no se puede eliminar sin subir una nueva.", "error");
+                        setIsSaving(false);
+                        return;
+                    }
+                }
+                if (hasValue(initialSnapshot.background) && backgroundRef.getDeleteFlag && backgroundRef.getDeleteFlag()) {
+                    const bgFile = backgroundRef.current ? backgroundRef.current.files[0] : null;
+                    if (!bgFile) {
+                        Swal.fire("Error de validación", "La imagen de fondo (background) es requerida y no se puede eliminar sin subir una nueva.", "error");
+                        setIsSaving(false);
+                        return;
+                    }
+                }
+            }
+
+            const bannerId = idRef.current ? idRef.current.value : "";
+            const pageId = pageIdRef.current ? $(pageIdRef.current).val() : (editingSnapshot?.page_id || "");
             const normalizedPageId = normalizePageId(pageId);
-            const afterComponent = $(afterComponentRef.current).val() || null;
+            const afterComponent = afterComponentRef.current ? ($(afterComponentRef.current).val() || null) : (editingSnapshot?.after_component || null);
             // CRÍTICO: Usar el estado previewData.type en lugar de leer del select
             // Esto garantiza que el valor guardado sea el que está en el estado actualizado
             const bannerType = previewData.type || "BannerSimple";
 
             const systemData = {
-                name: `Banner - ${nameRef.current.value}`,
-                subtitle: subtitleRef.current.value,
+                name: `Banner - ${nameRef.current ? nameRef.current.value : (previewData.name || "")}`,
+                subtitle: subtitleRef.current ? subtitleRef.current.value : (previewData.subtitle || ""),
                 component: "banner",
                 value: bannerType,
                 page_id: normalizedPageId,
@@ -889,18 +970,16 @@ const Banners = ({ pages, systems: systemsFromProps = [] }) => {
                       {}
                     : {}),
                 // Sobrescribir solo los campos que están en el formulario
-                name: nameRef.current.value,
-                subtitle: subtitleRef.current.value,
+                name: nameRef.current ? nameRef.current.value : (previewData.name || ""),
+                subtitle: subtitleRef.current ? subtitleRef.current.value : (previewData.subtitle || ""),
                 description: isMultiDescription
                     ? descriptionList.filter((x) => x && x.trim())
-                    : descriptionRef.current.value,
-                footer_text: footerTextRef.current?.value || "",
+                    : (descriptionRef.current ? descriptionRef.current.value : (previewData.description || "")),
+                footer_text: footerTextRef.current ? footerTextRef.current.value : (previewData.footer_text || ""),
                 multi_description: isMultiDescription,
-                button_text: buttonTextRef.current.value,
-                button_link: buttonLinkRef.current.value,
-                contenedor: absoluteRef.current?.checked
-                    ? "absoluto"
-                    : "relativo",
+                button_text: buttonTextRef.current ? buttonTextRef.current.value : (previewData.button_text || ""),
+                button_link: buttonLinkRef.current ? buttonLinkRef.current.value : (previewData.button_link || ""),
+                contenedor: absoluteRef.current ? (absoluteRef.current.checked ? "absoluto" : "relativo") : (previewData.contenedor || "relativo"),
                 type: bannerType,
             };
 
@@ -917,11 +996,11 @@ const Banners = ({ pages, systems: systemsFromProps = [] }) => {
                 }
             });
 
-            const background = backgroundRef.current.files[0];
+            const background = backgroundRef.current ? backgroundRef.current.files[0] : null;
             if (background) {
                 formData.append("background", background);
             }
-            const image = imageRef.current.files[0];
+            const image = imageRef.current ? imageRef.current.files[0] : null;
             if (image) {
                 formData.append("image", image);
             }
@@ -1129,6 +1208,21 @@ const Banners = ({ pages, systems: systemsFromProps = [] }) => {
         setSystems((old) => old.filter((x) => x.id != id));
     };
 
+    const showContentTab = hasRole("Root") || 
+        hasValue(initialSnapshot.name) || 
+        hasValue(initialSnapshot.subtitle) || 
+        hasValue(initialSnapshot.description) || 
+        hasValue(initialSnapshot.footer_text) || 
+        hasValue(initialSnapshot.button_text);
+
+    const showImagesTab = hasRole("Root") || 
+        hasValue(initialSnapshot.image) || 
+        hasValue(initialSnapshot.background);
+
+    const defaultActiveTab = hasRole("Root") 
+        ? "general" 
+        : (showContentTab ? "content" : (showImagesTab ? "images" : ""));
+
     return (
         <>
             <Table
@@ -1149,16 +1243,18 @@ const Banners = ({ pages, systems: systemsFromProps = [] }) => {
                                     .refresh(),
                         },
                     });
-                    container.unshift({
-                        widget: "dxButton",
-                        location: "after",
-                        options: {
-                            icon: "plus",
-                            text: "Nuevo banner",
-                            hint: "Nuevo banner",
-                            onClick: () => onModalOpen(),
-                        },
-                    });
+                    if (hasRole("Root")) {
+                        container.unshift({
+                            widget: "dxButton",
+                            location: "after",
+                            options: {
+                                icon: "plus",
+                                text: "Nuevo banner",
+                                hint: "Nuevo banner",
+                                onClick: () => onModalOpen(),
+                            },
+                        });
+                    }
                 }}
                 columns={[
                     {
@@ -1303,14 +1399,16 @@ const Banners = ({ pages, systems: systemsFromProps = [] }) => {
                                     onClick: () => onModalOpen(data),
                                 }),
                             );
-                            container.append(
-                                DxButton({
-                                    className: "btn btn-xs btn-soft-danger",
-                                    title: "Eliminar",
-                                    icon: "fa fa-trash",
-                                    onClick: () => onDeleteClicked(data.id),
-                                }),
-                            );
+                            if (hasRole("Root")) {
+                                container.append(
+                                    DxButton({
+                                        className: "btn btn-xs btn-soft-danger",
+                                        title: "Eliminar",
+                                        icon: "fa fa-trash",
+                                        onClick: () => onDeleteClicked(data.id),
+                                    }),
+                                );
+                            }
                         },
                         allowFiltering: false,
                         allowExporting: false,
@@ -1393,45 +1491,47 @@ const Banners = ({ pages, systems: systemsFromProps = [] }) => {
                             id="bannerTabs"
                             role="tablist"
                         >
-                            <li className="nav-item" role="presentation">
+                            {hasRole("Root") && (
+                                <li className="nav-item" role="presentation">
+                                    <button
+                                        className={`nav-link ${defaultActiveTab === "general" ? "active" : ""}`}
+                                        id="general-tab"
+                                        data-bs-toggle="pill"
+                                        data-bs-target="#general"
+                                        type="button"
+                                        role="tab"
+                                        aria-controls="general"
+                                        aria-selected={defaultActiveTab === "general" ? "true" : "false"}
+                                    >
+                                        <i className="fa fa-cog me-1"></i> General
+                                    </button>
+                                </li>
+                            )}
+                            <li className={`nav-item ${showContentTab ? "" : "d-none"}`} role="presentation">
                                 <button
-                                    className="nav-link active"
-                                    id="general-tab"
-                                    data-bs-toggle="pill"
-                                    data-bs-target="#general"
-                                    type="button"
-                                    role="tab"
-                                    aria-controls="general"
-                                    aria-selected="true"
-                                >
-                                    <i className="fa fa-cog me-1"></i> General
-                                </button>
-                            </li>
-                            <li className="nav-item" role="presentation">
-                                <button
-                                    className="nav-link"
+                                    className={`nav-link ${defaultActiveTab === "content" ? "active" : ""}`}
                                     id="content-tab"
                                     data-bs-toggle="pill"
                                     data-bs-target="#content"
                                     type="button"
                                     role="tab"
                                     aria-controls="content"
-                                    aria-selected="false"
+                                    aria-selected={defaultActiveTab === "content" ? "true" : "false"}
                                 >
                                     <i className="fa fa-align-left me-1"></i>{" "}
                                     Contenido
                                 </button>
                             </li>
-                            <li className="nav-item" role="presentation">
+                            <li className={`nav-item ${showImagesTab ? "" : "d-none"}`} role="presentation">
                                 <button
-                                    className="nav-link"
+                                    className={`nav-link ${defaultActiveTab === "images" ? "active" : ""}`}
                                     id="images-tab"
                                     data-bs-toggle="pill"
                                     data-bs-target="#images"
                                     type="button"
                                     role="tab"
                                     aria-controls="images"
-                                    aria-selected="false"
+                                    aria-selected={defaultActiveTab === "images" ? "true" : "false"}
                                 >
                                     <i className="fa fa-image me-1"></i>{" "}
                                     Imágenes
@@ -1441,12 +1541,13 @@ const Banners = ({ pages, systems: systemsFromProps = [] }) => {
 
                         <div className="tab-content" id="bannerTabsContent">
                             {/* General Tab */}
-                            <div
-                                className="tab-pane fade show active"
-                                id="general"
-                                role="tabpanel"
-                                aria-labelledby="general-tab"
-                            >
+                            {hasRole("Root") && (
+                                <div
+                                    className={`tab-pane fade ${defaultActiveTab === "general" ? "show active" : ""}`}
+                                    id="general"
+                                    role="tabpanel"
+                                    aria-labelledby="general-tab"
+                                >
                                 <div className="row">
                                     <div className="col-md-6">
                                         <SelectFormGroup
@@ -1520,42 +1621,50 @@ const Banners = ({ pages, systems: systemsFromProps = [] }) => {
                                     </div>
                                 )}
                             </div>
+                            )}
+
 
                             {/* Content Tab */}
                             <div
-                                className="tab-pane fade"
+                                className={`tab-pane fade ${defaultActiveTab === "content" ? "show active" : ""} ${showContentTab ? "" : "d-none"}`}
                                 id="content"
                                 role="tabpanel"
                                 aria-labelledby="content-tab"
                             >
                                 {Fillable.has("banners", "subtitle") && (
+                                    <div className={hasRole("Root") || hasValue(initialSnapshot.subtitle) ? "" : "d-none"}>
+                                        <TextareaFormGroup
+                                            eRef={subtitleRef}
+                                            label="Subtítulo"
+                                            rows={2}
+                                            required={!hasRole("Root") && hasValue(initialSnapshot.subtitle)}
+                                            onChange={(event) =>
+                                                handlePreviewFieldChange(
+                                                    "subtitle",
+                                                    event.target.value,
+                                                )
+                                            }
+                                        />
+                                    </div>
+                                )}
+
+                                <div className={hasRole("Root") || hasValue(initialSnapshot.name) ? "" : "d-none"}>
                                     <TextareaFormGroup
-                                        eRef={subtitleRef}
-                                        label="Subtítulo"
+                                        eRef={nameRef}
+                                        label="Titulo Principal"
                                         rows={2}
+                                        required={!hasRole("Root") && hasValue(initialSnapshot.name)}
                                         onChange={(event) =>
                                             handlePreviewFieldChange(
-                                                "subtitle",
+                                                "name",
                                                 event.target.value,
                                             )
                                         }
                                     />
-                                )}
-
-                                <TextareaFormGroup
-                                    eRef={nameRef}
-                                    label="Titulo Principal"
-                                    rows={2}
-                                    onChange={(event) =>
-                                        handlePreviewFieldChange(
-                                            "name",
-                                            event.target.value,
-                                        )
-                                    }
-                                />
+                                </div>
 
                                 {Fillable.has("banners", "description") && (
-                                    <div className="form-group mb-3 border rounded p-3 bg-light">
+                                    <div className={`form-group mb-3 border rounded p-3 bg-light ${hasRole("Root") || hasValue(initialSnapshot.description) ? "" : "d-none"}`}>
                                         <div className="d-flex justify-content-between align-items-center mb-2">
                                             <label className="mb-0 fw-bold">
                                                 Descripción / Contenido
@@ -1563,7 +1672,7 @@ const Banners = ({ pages, systems: systemsFromProps = [] }) => {
                                             {Fillable.has(
                                                 "banners",
                                                 "multi_description",
-                                            ) && (
+                                            ) && (hasRole("Root") || isMultiDescription) && (
                                                 <div className="d-flex align-items-center">
                                                     <span
                                                         className="me-3 fw-bold text-muted"
@@ -1581,6 +1690,7 @@ const Banners = ({ pages, systems: systemsFromProps = [] }) => {
                                                             checked={
                                                                 isMultiDescription
                                                             }
+                                                            disabled={!hasRole("Root")}
                                                             onChange={(e) => {
                                                                 const checked =
                                                                     e.target
@@ -1614,7 +1724,7 @@ const Banners = ({ pages, systems: systemsFromProps = [] }) => {
                                                                         descriptionList.join(
                                                                             "\n",
                                                                         );
-                                                                    if (
+                                                                    if(
                                                                         descriptionRef.current
                                                                     )
                                                                         descriptionRef.current.value =
@@ -1660,14 +1770,11 @@ const Banners = ({ pages, systems: systemsFromProps = [] }) => {
                                                             <button
                                                                 type="button"
                                                                 className="btn btn-danger btn-sm"
+                                                                disabled={!hasRole("Root") || descriptionList.length === 1}
                                                                 onClick={() =>
                                                                     removeDescription(
                                                                         index,
                                                                     )
-                                                                }
-                                                                disabled={
-                                                                    descriptionList.length ===
-                                                                    1
                                                                 }
                                                                 title="Eliminar línea"
                                                             >
@@ -1676,20 +1783,23 @@ const Banners = ({ pages, systems: systemsFromProps = [] }) => {
                                                         </div>
                                                     ),
                                                 )}
-                                                <button
-                                                    type="button"
-                                                    className="btn btn-primary btn-sm mt-1"
-                                                    onClick={addDescription}
-                                                >
-                                                    <i className="fa fa-plus me-1"></i>{" "}
-                                                    Agregar línea
-                                                </button>
+                                                {hasRole("Root") && (
+                                                    <button
+                                                        type="button"
+                                                        className="btn btn-primary btn-sm mt-1"
+                                                        onClick={addDescription}
+                                                    >
+                                                        <i className="fa fa-plus me-1"></i>{" "}
+                                                        Agregar línea
+                                                    </button>
+                                                )}
                                             </div>
                                         ) : (
                                             <TextareaFormGroup
                                                 eRef={descriptionRef}
                                                 label="Descripción"
                                                 rows={2}
+                                                required={!hasRole("Root") && hasValue(initialSnapshot.description)}
                                                 onChange={(e) =>
                                                     handlePreviewFieldChange(
                                                         "description",
@@ -1702,25 +1812,29 @@ const Banners = ({ pages, systems: systemsFromProps = [] }) => {
                                 )}
 
                                 {Fillable.has("banners", "footer_text") && (
-                                    <TextareaFormGroup
-                                        eRef={footerTextRef}
-                                        label="Texto Footer"
-                                        rows={2}
-                                        onChange={(event) =>
-                                            handlePreviewFieldChange(
-                                                "footer_text",
-                                                event.target.value,
-                                            )
-                                        }
-                                    />
+                                    <div className={hasRole("Root") || hasValue(initialSnapshot.footer_text) ? "" : "d-none"}>
+                                        <TextareaFormGroup
+                                            eRef={footerTextRef}
+                                            label="Texto Footer"
+                                            rows={2}
+                                            required={!hasRole("Root") && hasValue(initialSnapshot.footer_text)}
+                                            onChange={(event) =>
+                                                handlePreviewFieldChange(
+                                                    "footer_text",
+                                                    event.target.value,
+                                                )
+                                            }
+                                        />
+                                    </div>
                                 )}
 
                                 {Fillable.has("banners", "button_text") && (
-                                    <div className="row">
+                                    <div className={`row ${hasRole("Root") || hasValue(initialSnapshot.button_text) ? "" : "d-none"}`}>
                                         <InputFormGroup
                                             col="col-md-6"
                                             eRef={buttonTextRef}
                                             label="Texto del botón"
+                                            required={!hasRole("Root") && hasValue(initialSnapshot.button_text)}
                                             onChange={(e) =>
                                                 handlePreviewFieldChange(
                                                     "button_text",
@@ -1736,6 +1850,7 @@ const Banners = ({ pages, systems: systemsFromProps = [] }) => {
                                                 col="col-md-6"
                                                 eRef={buttonLinkRef}
                                                 label="Enlace del botón"
+                                                required={!hasRole("Root") && hasValue(initialSnapshot.button_link)}
                                                 onChange={(e) =>
                                                     handlePreviewFieldChange(
                                                         "button_link",
@@ -1750,34 +1865,39 @@ const Banners = ({ pages, systems: systemsFromProps = [] }) => {
 
                             {/* Images Tab */}
                             <div
-                                className="tab-pane fade"
+                                className={`tab-pane fade ${defaultActiveTab === "images" ? "show active" : ""} ${showImagesTab ? "" : "d-none"}`}
                                 id="images"
                                 role="tabpanel"
                                 aria-labelledby="images-tab"
                             >
-                                {Fillable.has("banners", "image") && (
-                                    <ImageFormGroup
-                                        eRef={imageRef}
-                                        label="Imagen (Frontal / Principal)"
-                                        col="col-12"
-                                        aspectRatio={4 / 3} // Aspect ratio aproximado, ajustable
-                                        onChange={handleImageChange("image")}
-                                        deleteable
-                                    />
-                                )}
-                                {Fillable.has("banners", "background") && (
-                                    <ImageFormGroup
-                                        eRef={backgroundRef}
-                                        label="Fondo (Background)"
-                                        col="col-12"
-                                        aspectRatio={16 / 9}
-                                        onChange={handleImageChange(
-                                            "background",
-                                        )}
-                                        deleteable
-                                    />
-                                )}
-                            </div>
+                                    {Fillable.has("banners", "image") && (
+                                        <div className={hasRole("Root") || hasValue(initialSnapshot.image) ? "" : "d-none"}>
+                                            <ImageFormGroup
+                                                eRef={imageRef}
+                                                label="Imagen (Frontal / Principal)"
+                                                col="col-12"
+                                                aspectRatio={4 / 3} // Aspect ratio aproximado, ajustable
+                                                onChange={handleImageChange("image")}
+                                                deleteable
+                                            />
+                                        </div>
+                                    )}
+                                    {Fillable.has("banners", "background") && (
+                                         <div className={hasRole("Root") || hasValue(initialSnapshot.background) ? "" : "d-none"}>
+                                            <ImageFormGroup
+                                                eRef={backgroundRef}
+                                                label="Fondo (Background)"
+                                                col="col-12"
+                                                aspectRatio={16 / 9}
+                                                onChange={handleImageChange(
+                                                    "background",
+                                                )}
+                                                deleteable
+                                            />
+                                        </div>
+                                    )}
+                                </div>
+
                         </div>
                     </div>
                 </div>

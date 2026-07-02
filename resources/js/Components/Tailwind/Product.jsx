@@ -59,6 +59,9 @@ const ProductGridRainstar = React.lazy(
 const ProductSwiperMiBalon = React.lazy(
     () => import("./Products/ProductSwiperMiBalon"),
 );
+const ProductSwiperBanners = React.lazy(
+    () => import("./Products/ProductSwiperBanners"),
+);
 
 const Product = ({
     which,
@@ -139,6 +142,13 @@ const Product = ({
                         items={items}
                         cart={cart}
                         setCart={setCart}
+                    />
+                );
+            case "ProductSwiperBanners":
+                return (
+                    <ProductSwiperBanners
+                        data={data}
+                        items={items}
                     />
                 );
             case "ProductIbergruas":

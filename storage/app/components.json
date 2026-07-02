@@ -2531,6 +2531,36 @@
                 }
             },
             {
+                "id": "ProductSwiperBanners",
+                "name": "Carrusel de Banners de Productos (ProductSwiperBanners)",
+                "image": "product-infinite.png",
+                "data": [
+                    "title",
+                    "bool:autoplay:Activar Autoplay (Reproducción Automática)",
+                    "bool:loop:Activar Bucle Infinito (Loop)",
+                    "class_section",
+                    "class_title",
+                    "class_image"
+                ],
+                "using": {
+                    "model": "Item",
+                    "filters": [
+                        "featured",
+                        "recommended",
+                        "offering",
+                        "is_new",
+                        "views",
+                        "most_view"
+                    ],
+                    "with": [
+                        "category",
+                        "subcategory",
+                        "brand"
+                    ],
+                    "limit": 12
+                }
+            },
+            {
                 "id": "ProductSwiperMiBalon",
                 "name": "Carrusel de Productos Mi Balón",
                 "image": "product-infinite.png",
@@ -3328,6 +3358,16 @@
                     "bool:show_gradient:Mostrar Degradado",
                     "class_title",
                     "class_button",
+                    "class"
+                ]
+            },
+            {
+                "id": "BannerJustImageMicjc",
+                "name": "Banner Solo Imagen (BannerJustImageMicjc)",
+                "image": "banner-premium-campaign.png",
+                "data": [
+                    "background",
+                    "button_link",
                     "class"
                 ]
             }

@@ -50,26 +50,36 @@ class BannerController extends BasicController
     {
         $response = new Response();
         try {
+            Log::info("BannerController save request data:", [
+                'body' => $request->all(),
+                'has_image' => $request->hasFile('image'),
+                'has_background' => $request->hasFile('background'),
+                'files' => array_keys($request->allFiles())
+            ]);
             $body = $request->all();
             unset($body['id']);
 
             $snake_case = Text::camelToSnakeCase(str_replace('App\\Models\\', '', $this->model));
             foreach ($this->imageFields as $field) {
+                // Ensure delete flag keys do not end up in the database json
+                unset($body[$field . '_delete']);
 
                 // Check if image should be deleted (when hidden field contains 'DELETE')
                 $deleteFlag = $request->input($field . '_delete');
 
-                if ($deleteFlag === 'DELETE') {
+                if ($deleteFlag === 'DELETE' && !$request->hasFile($field)) {
                     // Find existing record to delete old image file
                     if ($request->id) {
                         $existingRecord = $this->model::find($request->id);
                         if ($existingRecord && isset($existingRecord->data[$field])) {
                             $oldFilename = $existingRecord->data[$field];
-                            if (!Text::has($oldFilename, '.')) {
-                                $oldFilename = "{$oldFilename}.enc";
+                            if ($oldFilename) {
+                                if (!Text::has($oldFilename, '.')) {
+                                    $oldFilename = "{$oldFilename}.enc";
+                                }
+                                $oldPath = "images/{$snake_case}/{$oldFilename}";
+                                Storage::delete($oldPath);
                             }
-                            $oldPath = "images/{$snake_case}/{$oldFilename}";
-                            Storage::delete($oldPath);
                         }
                     }
                     // Set field to null in database
@@ -77,8 +87,23 @@ class BannerController extends BasicController
                     continue;
                 }
 
-
                 if (!$request->hasFile($field)) continue;
+
+                // Delete old image when uploading a replacement
+                if ($request->id) {
+                    $existingRecord = $this->model::find($request->id);
+                    if ($existingRecord && isset($existingRecord->data[$field])) {
+                        $oldFilename = $existingRecord->data[$field];
+                        if ($oldFilename) {
+                            if (!Text::has($oldFilename, '.')) {
+                                $oldFilename = "{$oldFilename}.enc";
+                            }
+                            $oldPath = "images/{$snake_case}/{$oldFilename}";
+                            Storage::delete($oldPath);
+                        }
+                    }
+                }
+
                 $full = $request->file($field);
                 $body[$field] = \App\Http\Controllers\BasicController::saveImage($full, $snake_case);
             }

@@ -38,6 +38,9 @@ const BannerPremiumCampaign = lazy(
 const BannerMiBalon = lazy(
     () => import("./Banners/BannerMiBalon"),
 );
+const BannerJustImageMicjc = lazy(
+    () => import("./Banners/BannerJustImageMicjc"),
+);
 
 const Banner = ({ which, data, items, generals }) => {
     const getBanner = () => {
@@ -46,6 +49,8 @@ const Banner = ({ which, data, items, generals }) => {
                 return <BannerPremiumCampaign data={data} />;
             case "BannerMiBalon":
                 return <BannerMiBalon data={data} />;
+            case "BannerJustImageMicjc":
+                return <BannerJustImageMicjc data={data} />;
 
             case "BannerSimple":
                 return <BannerSimple data={data} />;
