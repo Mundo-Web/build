@@ -45,7 +45,7 @@ const BrandInfinite = ({ items, data }) => {
         ? "w-12 h-12 flex items-center justify-center rounded-full bg-white text-neutral-800 border border-neutral-200 shadow-md hover:bg-neutral-50 hover:scale-105 transition-all cursor-pointer"
         : `p-2 rounded-lg shadow-lg hover:scale-105 transition-transform ${data?.class_button || "bg-white"}`;
 
-    const prevPositionClass = isWhiteVariant ? "absolute -left-4 z-20" : "absolute -left-2 z-20";
+    const prevPositionClass = isWhiteVariant ? "absolute left-0 z-20" : "absolute -left-2 z-20";
     const nextPositionClass = isWhiteVariant ? "absolute -right-4 z-20" : "absolute -right-2 z-20";
 
     return (

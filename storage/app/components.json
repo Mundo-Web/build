@@ -3325,6 +3325,9 @@
                     "button_text",
                     "button_link",
                     "background",
+                    "bool:show_gradient:Mostrar Degradado",
+                    "class_title",
+                    "class_button",
                     "class"
                 ]
             }
@@ -5229,8 +5232,8 @@
                 "name": "Footer Editorial Premium Rainstar",
                 "image": "footer-rainstar.png",
                 "data": [
+                    "bool:show_join_us:Mostrar opción Únete a Nosotros",
                     "class"
-                    
                 ],
                 "generals": [
                     "footer_description",

@@ -53,7 +53,7 @@ const Card = ({ cat, path }) => {
 
             {/* 4. Capa de Texto: Esquina superior izquierda */}
             <div className="absolute top-6 left-6 sm:top-8 sm:left-8 z-30 text-left flex flex-col items-start gap-1">
-                <h3 className="font-paragraph font-semibold text-white text-lg sm:text-3xl lg:text-4xl drop-shadow-md">
+                <h3 className="font-paragraph font-semibold text-white text-lg lg:text-3xl xl:text-4xl drop-shadow-md">
                     {cat.name}
                 </h3>
 

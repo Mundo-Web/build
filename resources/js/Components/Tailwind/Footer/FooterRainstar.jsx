@@ -83,8 +83,8 @@ const FooterRainstar = ({ pages = [], generals = [], data, socials = [] }) => {
         if (!result) return;
 
         toast.success("¡Suscrito!", {
-            description: `Te has suscrito correctamente a Rainstar Store.`,
-            icon: <CircleCheckBig className="h-5 w-5 text-black" />,
+            description: `Te has suscrito a ${Global.APP_NAME}.`,
+            icon: <CircleCheckBig className="h-5 w-5 text-success" />,
             duration: 3000,
             position: "top-center",
         });
@@ -114,10 +114,10 @@ const FooterRainstar = ({ pages = [], generals = [], data, socials = [] }) => {
     return (
         <footer
             id={data?.element_id || null}
-            className={`bg-black text-white pt-24 pb-12 overflow-hidden ${data?.class || ""}`}
+            className={`bg-accent text-white pt-24 pb-8 overflow-hidden ${data?.class || ""}`}
         >
             <div className="container mx-auto px-primary 2xl:px-0 2xl:max-w-7xl">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-16 mb-24">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-10 mb-24">
                     {/* Brand Section */}
                     <div className="lg:col-span-4 space-y-8">
                         <div className="mb-8">
@@ -131,13 +131,13 @@ const FooterRainstar = ({ pages = [], generals = [], data, socials = [] }) => {
                                 }}
                             />
                         </div>
-                        <p className="text-white text-base leading-relaxed">
+                        <p className="text-white text-base ">
                             {footerDescription ||
-                                "Elevando el estándar de la moda con piezas curadas para quienes exigen exclusividad y calidad superior."}
+                                ""}
                         </p>
 
                         <div className="pt-4">
-                            <h4 className="text-[10px] font-bold uppercase tracking-[0.3em] text-white mb-6">
+                            <h4 className="text-xs font-bold uppercase  text-white mb-6">
                                 Síguenos
                             </h4>
                             <div className="flex gap-4">
@@ -147,7 +147,7 @@ const FooterRainstar = ({ pages = [], generals = [], data, socials = [] }) => {
                                             href={social.link}
                                             target="_blank"
                                             rel="noopener noreferrer"
-                                            className="w-10 h-10 rounded-full border border-neutral-800 flex items-center justify-center hover:bg-white hover:text-black transition-all duration-500 group"
+                                            className="w-10 h-10 rounded-full border border-white flex items-center justify-center hover:bg-white hover:text-black transition-all duration-500 group"
                                         >
                                             <i
                                                 className={`${social.icon} text-base group-hover:scale-110 transition-transform`}
@@ -161,7 +161,7 @@ const FooterRainstar = ({ pages = [], generals = [], data, socials = [] }) => {
 
                     {/* Navigation Section */}
                     <div className="lg:col-span-2">
-                        <h4 className="text-[10px] font-bold uppercase tracking-[0.3em] text-white mb-8">
+                        <h4 className="text-sm font-bold uppercase  text-white mb-8">
                             Explorar
                         </h4>
                         <ul className="space-y-4">
@@ -184,26 +184,28 @@ const FooterRainstar = ({ pages = [], generals = [], data, socials = [] }) => {
                                     </li>
                                 ))}
 
-                            <li>
-                                <button
-                                    onClick={() => setSellerModalOpen(true)}
-                                    className="text-white hover:text-white transition-colors flex items-center justify-between group text-sm w-full text-left"
-                                >
-                                    <span className="font-medium">
-                                        Únete a Nosotros
-                                    </span>
-                                    <ArrowUpRight
-                                        size={12}
-                                        className="opacity-0 group-hover:opacity-100 transition-opacity"
-                                    />
-                                </button>
-                            </li>
+                            {data?.show_join_us !== false && (
+                                <li>
+                                    <button
+                                        onClick={() => setSellerModalOpen(true)}
+                                        className="text-white hover:text-white transition-colors flex items-center justify-between group text-sm w-full text-left"
+                                    >
+                                        <span className="font-medium">
+                                            Únete a Nosotros
+                                        </span>
+                                        <ArrowUpRight
+                                            size={12}
+                                            className="opacity-0 group-hover:opacity-100 transition-opacity"
+                                        />
+                                    </button>
+                                </li>
+                            )}
                         </ul>
                     </div>
 
                     {/* Legal Section */}
                     <div className="lg:col-span-2">
-                        <h4 className="text-[10px] font-bold uppercase tracking-[0.3em] text-white mb-8">
+                        <h4 className="text-sm font-bold uppercase  text-white mb-8">
                             Legal
                         </h4>
                         <ul className="space-y-6">
@@ -267,7 +269,7 @@ const FooterRainstar = ({ pages = [], generals = [], data, socials = [] }) => {
                                 <div className="space-y-4">
                                     <a
                                         href="/libro-reclamaciones"
-                                        className="text-white hover:text-white transition-colors flex items-center justify-between group text-[11px] font-bold tracking-widest uppercase"
+                                        className="text-white hover:text-white transition-colors flex items-center justify-between group text-xs font-bold  uppercase"
                                     >
                                         <span>Libro de Reclamaciones</span>
                                         <ArrowUpRight
@@ -284,8 +286,8 @@ const FooterRainstar = ({ pages = [], generals = [], data, socials = [] }) => {
                                             alt="Libro de Reclamaciones"
                                             className="w-full h-auto object-contain transition-all duration-300"
                                             onError={(e) =>
-                                                (e.target.style.display =
-                                                    "none")
+                                            (e.target.style.display =
+                                                "none")
                                             }
                                         />
                                     </a>
@@ -297,10 +299,10 @@ const FooterRainstar = ({ pages = [], generals = [], data, socials = [] }) => {
                     {/* Newsletter + Contact Section */}
                     <div className="lg:col-span-4 space-y-12">
                         <div>
-                            <h4 className="text-[10px] font-bold uppercase tracking-[0.3em] text-white mb-8">
+                            <h4 className="text-sm font-bold uppercase  text-white mb-8">
                                 Suscríbete
                             </h4>
-                            <p className="text-white mb-6 text-xs leading-relaxed">
+                            <p className="text-white mb-6 text-sm ">
                                 Únete a nuestra comunidad exclusiva y recibe
                                 lanzamientos y eventos privados.
                             </p>
@@ -308,11 +310,23 @@ const FooterRainstar = ({ pages = [], generals = [], data, socials = [] }) => {
                                 onSubmit={onEmailSubmit}
                                 className="relative group"
                             >
+                                <style dangerouslySetInnerHTML={{
+                                    __html: `
+                                    .footer-email-input:-webkit-autofill,
+                                    .footer-email-input:-webkit-autofill:hover,
+                                    .footer-email-input:-webkit-autofill:focus,
+                                    .footer-email-input:-webkit-autofill:active {
+                                        -webkit-text-fill-color: white !important;
+                                        transition: background-color 9999s ease-in-out 0s !important;
+                                    }
+                                ` }} />
                                 <input
                                     ref={emailRef}
                                     type="email"
                                     placeholder="TU CORREO"
-                                    className="w-full bg-transparent border-b border-neutral-700 py-3 pr-10 text-xs focus:border-white focus:outline-none transition-colors placeholder:text-neutral-600 uppercase tracking-widest font-bold"
+                                    required
+                                    autoComplete="off"
+                                    className="footer-email-input w-full bg-transparent border-b border-white py-3 pr-10 text-xs focus:border-white focus:outline-none transition-colors placeholder:text-white  font-bold"
                                     disabled={saving}
                                 />
                                 <button
@@ -333,7 +347,7 @@ const FooterRainstar = ({ pages = [], generals = [], data, socials = [] }) => {
                         </div>
 
                         <div>
-                            <h4 className="text-[10px] font-bold uppercase tracking-[0.3em] text-white mb-8">
+                            <h4 className="text-sm font-bold uppercase  text-white mb-8">
                                 Contacto
                             </h4>
                             <div className="space-y-6 text-sm tracking-wide">
@@ -343,7 +357,7 @@ const FooterRainstar = ({ pages = [], generals = [], data, socials = [] }) => {
                                             size={18}
                                             className="text-white mt-1 shrink-0 group-hover:text-white transition-colors"
                                         />
-                                        <p className="text-white leading-relaxed group-hover:text-gray-200 transition-colors uppercase text-[11px] font-medium tracking-wider">
+                                        <p className="text-white  group-hover:text-gray-200 transition-colors  text-xs font-medium tracking-wider">
                                             {address}
                                         </p>
                                     </div>
@@ -363,7 +377,7 @@ const FooterRainstar = ({ pages = [], generals = [], data, socials = [] }) => {
                                                             size={18}
                                                             className="text-white shrink-0 group-hover:text-white transition-colors"
                                                         />
-                                                        <span className="text-white group-hover:text-gray-200 transition-colors font-bold text-[11px] tracking-widest">
+                                                        <span className="text-white group-hover:text-gray-200 transition-colors font-bold text-xs ">
                                                             {phone.trim()}
                                                         </span>
                                                     </a>
@@ -383,7 +397,7 @@ const FooterRainstar = ({ pages = [], generals = [], data, socials = [] }) => {
                                                             size={18}
                                                             className="text-white shrink-0 group-hover:text-white transition-colors"
                                                         />
-                                                        <span className="text-white group-hover:text-gray-200 transition-colors font-bold text-[11px] tracking-wider truncate">
+                                                        <span className="text-white group-hover:text-gray-200 transition-colors font-bold text-xs tracking-wider truncate">
                                                             {email.trim()}
                                                         </span>
                                                     </a>
@@ -391,16 +405,16 @@ const FooterRainstar = ({ pages = [], generals = [], data, socials = [] }) => {
                                     </div>
                                 </div>
                                 {openingHours && (
-                                    <div className="flex items-start gap-4 group pt-2 border-t border-neutral-900 mt-6 overflow-hidden">
+                                    <div className="flex items-start gap-4 group pt-2 border-t border-white mt-6 overflow-hidden">
                                         <Clock
                                             size={18}
                                             className="text-white mt-1 shrink-0 group-hover:text-white transition-colors"
                                         />
                                         <div className="space-y-1">
-                                            <p className="text-[10px] font-extrabold uppercase tracking-[0.2em] text-gray-600 group-hover:text-white transition-colors">
+                                            <p className="text-xs font-bold uppercase  text-white group-hover:text-white transition-colors">
                                                 Horarios de atención
                                             </p>
-                                            <p className="text-white leading-relaxed group-hover:text-gray-200 transition-colors whitespace-pre-line text-[11px] lowercase first-letter:uppercase font-medium">
+                                            <p className="text-white  group-hover:text-gray-200 transition-colors whitespace-pre-line text-xs lowercase first-letter:uppercase font-medium">
                                                 {openingHours}
                                             </p>
                                         </div>
@@ -412,8 +426,8 @@ const FooterRainstar = ({ pages = [], generals = [], data, socials = [] }) => {
                 </div>
 
                 {/* Bottom Section */}
-                <div className="pt-8 border-t border-neutral-900 flex flex-col md:flex-row justify-between items-center gap-8">
-                    <div className="flex flex-col md:flex-row items-center gap-4 text-[10px] font-bold tracking-[0.2em] text-white uppercase text-center md:text-left">
+                <div className="pt-8 border-t border-white flex flex-col md:flex-row justify-center items-center gap-8">
+                    <div className="flex flex-col md:flex-row items-center justify-center gap-2 text-xs font-medium  text-white">
                         <span>{copyright}</span>
                         <span className="hidden md:block opacity-30">|</span>
                         <span className="flex items-center gap-1">

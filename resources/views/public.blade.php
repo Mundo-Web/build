@@ -409,7 +409,7 @@ $isCheckout = ($page->correlative ?? '') === 'checkout' ||
 
         /* Classes and Overrides */
         <?php foreach ($data['colors'] as $color): ?><?php if ($color->name === 'bg_primary_gradient' && !empty($color->description)): ?>.bg-primary {
-            background: var(--bg-<?php echo $color->name; ?>) !important;
+            background-image: var(--bg-<?php echo $color->name; ?>) !important;
         }
 
         <?php endif; ?>.customtext-<?php echo $color->name; ?> {
