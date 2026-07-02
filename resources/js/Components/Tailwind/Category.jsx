@@ -32,6 +32,7 @@ const CategoryInfiniteSlider = React.lazy(
 );
 const CategoryMosaic = React.lazy(() => import("./Categories/CategoryMosaic"));
 const CategoryMosaicMiBalon = React.lazy(() => import("./Categories/CategoryMosaicMiBalon"));
+const CategoryBannerMicjc = React.lazy(() => import("./Categories/CategoryBannerMicjc"));
 
 const Category = ({ which, data, items }) => {
     const getCategory = () => {
@@ -64,6 +65,8 @@ const Category = ({ which, data, items }) => {
                 return <CategoryInfiniteSlider data={data} items={items} />;
             case "CategoryMosaicMiBalon":
                 return <CategoryMosaicMiBalon data={data} items={items} />;
+            case "CategoryBannerMicjc":
+                return <CategoryBannerMicjc data={data} items={items} />;
 
             default:
                 return (

@@ -904,8 +904,51 @@ const CatalagoFiltros = ({ items, data, filteredData, cart, setCart }) => {
             // Set initial data from SystemController
             setCategories(filteredData.categories || []);
             setBrands(filteredData.brands || []);
-            setSubcategories(filteredData.subcategories || []);
             setPriceRanges(filteredData.priceRanges || []);
+
+            // Extraer y enriquecer subcategorías con sus categorías asignadas para asegurar que las relaciones existan siempre
+            let allSubs = [];
+            if (filteredData.categories) {
+                const subMap = new Map();
+                
+                // 1. Poblar a partir de la relación categories.subcategories (que es 100% confiable y tiene relaciones M:M)
+                filteredData.categories.forEach(cat => {
+                    if (cat.subcategories) {
+                        cat.subcategories.forEach(sub => {
+                            const existing = subMap.get(sub.id) || { ...sub, categories: [] };
+                            if (!existing.categories.some(c => c.id === cat.id)) {
+                                existing.categories.push(cat);
+                            }
+                            existing.category_id = cat.id;
+                            subMap.set(sub.id, existing);
+                        });
+                    }
+                });
+                
+                // 2. Agregar o enriquecer con los datos de filteredData.subcategories
+                const rawSubs = filteredData.subcategories || [];
+                rawSubs.forEach(sub => {
+                    const existing = subMap.get(sub.id);
+                    if (existing) {
+                        subMap.set(sub.id, { ...sub, ...existing });
+                    } else {
+                        const categoriesForSub = [];
+                        if (sub.category_id) {
+                            const matchedCat = filteredData.categories.find(c => c.id === sub.category_id);
+                            if (matchedCat) categoriesForSub.push(matchedCat);
+                        }
+                        subMap.set(sub.id, {
+                            ...sub,
+                            categories: categoriesForSub
+                        });
+                    }
+                });
+                
+                allSubs = Array.from(subMap.values());
+            } else {
+                allSubs = filteredData.subcategories || [];
+            }
+            setSubcategories(allSubs);
         }
 
         // Convert slugs from GET parameters to IDs
@@ -1107,22 +1150,12 @@ const CatalagoFiltros = ({ items, data, filteredData, cart, setCart }) => {
         
         // Filtro cruzado inteligente
         if (validFilterCounts && Array.isArray(validFilterCounts.categories)) {
-            const hasItems = validFilterCounts.categories.some(c => c.id === category.id);
+            const hasItems = validFilterCounts.categories.some(c => c.id === category.id || c.slug === category.slug);
             // Mostrar si tiene items o si está actualmente seleccionada
             return hasItems || selectedFilters.category_id?.includes(category.id);
         }
         return true;
-    }).map(category => ({
-        ...category,
-        subcategories: subcategories.filter(sub => {
-            // Verificar relación M:M
-            if (sub.categories && Array.isArray(sub.categories)) {
-                return sub.categories.some(c => c.id === category.id || c.slug === category.slug);
-            }
-            // Fallback legado
-            return sub.category_id === category.id || sub.category_slug === category.slug;
-        })
-    }));
+    });
 
     const filteredSubcategories = subcategories.filter((subcategory) => {
         const matchesSearch = subcategory.name.toLowerCase().includes(searchSubcategory.toLowerCase());
@@ -1132,7 +1165,7 @@ const CatalagoFiltros = ({ items, data, filteredData, cart, setCart }) => {
         if (selectedFilters.category_id && selectedFilters.category_id.length > 0) {
             // Verificar relación M:M (subcategory.categories)
             if (subcategory.categories && Array.isArray(subcategory.categories)) {
-                const belongsToSelectedCategory = subcategory.categories.some(c => selectedFilters.category_id.includes(c.id));
+                const belongsToSelectedCategory = subcategory.categories.some(c => selectedFilters.category_id.includes(c.id) || selectedFilters.category_id.includes(c.slug));
                 if (belongsToSelectedCategory) return true;
             }
             // Fallback legado
@@ -1141,15 +1174,15 @@ const CatalagoFiltros = ({ items, data, filteredData, cart, setCart }) => {
             }
             
             // Si la subcategoría está explícitamente seleccionada, mantenerla visible
-            if (selectedFilters.subcategory_id?.includes(subcategory.id)) return true;
+            if (selectedFilters.subcategory_id?.includes(subcategory.id) || selectedFilters.subcategory_id?.includes(subcategory.slug)) return true;
             
             return false;
         }
         
         // Filtro cruzado inteligente del backend (soporta pivot M:M)
         if (validFilterCounts && Array.isArray(validFilterCounts.subcategories)) {
-            const hasItems = validFilterCounts.subcategories.some(s => s.id === subcategory.id);
-            return hasItems || selectedFilters.subcategory_id?.includes(subcategory.id);
+            const hasItems = validFilterCounts.subcategories.some(s => s.id === subcategory.id || s.slug === subcategory.slug);
+            return hasItems || selectedFilters.subcategory_id?.includes(subcategory.id) || selectedFilters.subcategory_id?.includes(subcategory.slug);
         }
         return true;
     });
@@ -1559,7 +1592,6 @@ const CatalagoFiltros = ({ items, data, filteredData, cart, setCart }) => {
                                                                 >
                                                                     <motion.label
                                                                         className={`${modernFilterStyles.label} `}
-
                                                                     >
                                                                         <input
                                                                             type="checkbox"
@@ -1570,7 +1602,7 @@ const CatalagoFiltros = ({ items, data, filteredData, cart, setCart }) => {
                                                                         <span className="text-sm line-clamp-1 customtext-neutral-dark  transition-colors duration-200">
                                                                             {category.name}
                                                                         </span>
-                                                                        {selectedFilters.category_id?.includes(category.slug) && (
+                                                                        {selectedFilters.category_id?.includes(category.id) && (
                                                                             <motion.div
                                                                                 className="ml-auto"
                                                                                 initial={{ scale: 0 }}
@@ -1581,39 +1613,6 @@ const CatalagoFiltros = ({ items, data, filteredData, cart, setCart }) => {
                                                                             </motion.div>
                                                                         )}
                                                                     </motion.label>
-
-                                                                    {/* Subcategorías expandibles */}
-                                                                    <AnimatePresence>
-                                                                        {selectedFilters.category_id?.includes(category.slug) && category.subcategories && (
-                                                                            <motion.div
-                                                                                className="bg-gradient-to-b from-purple-25 to-white/50 p-3"
-                                                                                initial={{ height: 0, opacity: 0 }}
-                                                                                animate={{ height: "auto", opacity: 1 }}
-                                                                                exit={{ height: 0, opacity: 0 }}
-                                                                                transition={{ duration: 0.3 }}
-                                                                            >
-                                                                                <div className="space-y-2 pl-4 border-l-2 border-purple-200">
-                                                                                    {category.subcategories.map((sub) => (
-                                                                                        <motion.label
-                                                                                            key={sub.id}
-                                                                                            className="flex items-center gap-2 py-1.5 px-2 rounded-lg hover:bg-purple-50/60 transition-colors duration-200 cursor-pointer group"
-                                                                                            whileHover={{ x: 3 }}
-                                                                                        >
-                                                                                            <input
-                                                                                                type="checkbox"
-                                                                                                className="h-4 w-4 rounded border-2 border-purple-300 text-purple-600 focus:ring-purple-500/30"
-                                                                                                onChange={() => handleFilterChange("subcategory_id", sub.slug)}
-                                                                                                checked={selectedFilters.subcategory_id?.includes(sub.slug)}
-                                                                                            />
-                                                                                            <span className="text-sm line-clamp-1 customtext-neutral-dark group-hover:text-purple-600 transition-colors duration-200">
-                                                                                                {sub.name}
-                                                                                            </span>
-                                                                                        </motion.label>
-                                                                                    ))}
-                                                                                </div>
-                                                                            </motion.div>
-                                                                        )}
-                                                                    </AnimatePresence>
                                                                 </motion.div>
                                                             ))}
                                                         </AnimatePresence>
