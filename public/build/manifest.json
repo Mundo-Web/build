@@ -9844,7 +9844,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Product.jsx": {
-    "file": "assets/Product-DET7-fgn.js",
+    "file": "assets/Product-BSUN7662.js",
     "name": "Product",
     "src": "resources/js/Components/Tailwind/Product.jsx",
     "isEntry": true,
@@ -9886,7 +9886,7 @@
     ]
   },
   "resources/js/Components/Tailwind/ProductDetail.jsx": {
-    "file": "assets/ProductDetail-CuK3bolI.js",
+    "file": "assets/ProductDetail-BacrZXzg.js",
     "name": "ProductDetail",
     "src": "resources/js/Components/Tailwind/ProductDetail.jsx",
     "isDynamicEntry": true,
@@ -10055,7 +10055,7 @@
     ]
   },
   "resources/js/Components/Tailwind/ProductDetails/ProductDetailHuaillys.jsx": {
-    "file": "assets/ProductDetailHuaillys-DfnPCF8l.js",
+    "file": "assets/ProductDetailHuaillys-BcjX_fJP.js",
     "name": "ProductDetailHuaillys",
     "src": "resources/js/Components/Tailwind/ProductDetails/ProductDetailHuaillys.jsx",
     "isEntry": true,
@@ -13025,7 +13025,7 @@
     ]
   },
   "resources/js/System.jsx": {
-    "file": "assets/System-Bcvx97YY.js",
+    "file": "assets/System-DNq_wFhW.js",
     "name": "System",
     "src": "resources/js/System.jsx",
     "isEntry": true,
