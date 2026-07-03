@@ -4444,6 +4444,30 @@
                 }
             },
             {
+                "id": "BlogSectionMicjc",
+                "name": "BlogSectionMicjc",
+                "image": "blog-section-micjc.png",
+                "data": [
+                    "title",
+                    "subtitle",
+                    "posts_per_page",
+                    "blog_url",
+                    "read_more_text",
+                    "view_all_text",
+                    "class_section",
+                    "class_card",
+                    "class_button",
+                    "class_badge_category"
+                ],
+                "using": {
+                    "model": "Post",
+                    "limit": 4,
+                    "with": [
+                        "category"
+                    ]
+                }
+            },
+            {
                 "id": "BlogWebQuirurgica",
                 "name": "Blog WebQuirúrgica",
                 "image": "blog-webquirurgica.png",

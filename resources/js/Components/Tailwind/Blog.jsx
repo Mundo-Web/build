@@ -17,6 +17,7 @@ const BlogWebQuirurgica = React.lazy(() => import("./Blogs/BlogWebQuirurgica"));
 const BlogRainstar = React.lazy(() => import("./Blogs/BlogRainstar"));
 const BlogMiBalon = React.lazy(() => import("./Blogs/BlogMiBalon"));
 const BlogSectionMiBalon = React.lazy(() => import("./Blogs/BlogSectionMiBalon"));
+const BlogSectionMicjc = React.lazy(() => import("./Blogs/BlogSectionMicjc"));
 
 const Blog = ({
     data,
@@ -96,6 +97,8 @@ const Blog = ({
                 );
             case "BlogSectionMiBalon":
                 return <BlogSectionMiBalon data={data} items={items} />;
+            case "BlogSectionMicjc":
+                return <BlogSectionMicjc data={data} items={items} />;
             default:
                 return <div>No hay componente {which}</div>;
         }
