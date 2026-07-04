@@ -80,10 +80,10 @@ const BlogSectionMicjc = ({ data, items = [] }) => {
         >
             <div className="container mx-auto px-primary 2xl:px-0 2xl:max-w-7xl">
                 {/* Header Section */}
-                <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12 md:mb-16">
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12 md:mb-16">
                     <div className="text-left max-w-2xl">
                         <h2
-                            className={`font-title text-neutral-dark mb-2 font-bold ${data?.class_title || "text-[36px] leading-tight md:text-5xl"}`}
+                            className={`font-title text-neutral-dark mb-2 font-bold ${data?.class_title || "text-4xl md:text-5xl lg:text-6xl"}`}
                         >
                             <TextWithHighlight
                                 text={data?.title || "Nuestro *Blog* y Novedades"}

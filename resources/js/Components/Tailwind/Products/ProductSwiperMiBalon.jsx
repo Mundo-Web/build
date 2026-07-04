@@ -20,7 +20,7 @@ const ProductSwiperMiBalon = ({ items, data, setCart, cart }) => {
         >
             <div className="container mx-auto px-primary 2xl:px-0 2xl:max-w-7xl">
                 {/* Header */}
-                <div className="flex flex-col md:flex-row lgg:justify-between lg:items-end mb-10 gap-4">
+                <div className="flex flex-col md:flex-row lg:justify-between lg:items-center mb-10 gap-4">
                     <div className="lg:text-left">
                         <h2
                             className={`font-title text-neutral-dark mb-2 ${data?.class_title || "text-4xl md:text-7xl"}`}

@@ -178,7 +178,7 @@ const ContactMiBalon = ({ data, generals = [] }) => {
                         },
                     );
                     const atalayaResult = await atalayaResponse.json();
-                } catch (error) {}
+                } catch (error) { }
             }
 
             if (data?.redirect) {
@@ -223,7 +223,7 @@ const ContactMiBalon = ({ data, generals = [] }) => {
                 variants={itemVariants}
             >
                 <motion.div
-                    className="w-full px-primary 2xl:px-0 2xl:max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16"
+                    className="w-full px-primary 2xl:px-0 2xl:max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 xl:gap-16"
                     variants={containerVariants}
                 >
                     {/* Left: Contact Form */}
@@ -259,7 +259,7 @@ const ContactMiBalon = ({ data, generals = [] }) => {
                             variants={containerVariants}
                         >
                             <motion.div
-                                className="flex flex-col md:flex-row gap-5"
+                                className="flex flex-col  gap-5"
                                 variants={itemVariants}
                             >
                                 <input
@@ -279,7 +279,7 @@ const ContactMiBalon = ({ data, generals = [] }) => {
                             </motion.div>
 
                             <motion.div
-                                className="flex flex-col md:flex-row gap-5"
+                                className="flex flex-col  gap-5"
                                 variants={itemVariants}
                             >
                                 <input
@@ -375,21 +375,24 @@ const ContactMiBalon = ({ data, generals = [] }) => {
                                                         "email_contact",
                                                 )?.description || "";
                                             if (emailData.includes(",")) {
-                                                return emailData
-                                                    .split(",")
-                                                    .map((email, index) => (
-                                                        <div
-                                                            key={index}
-                                                            className="block"
-                                                        >
-                                                            <a
-                                                                href={`mailto:${email.trim()}`}
-                                                                className="hover:text-primary transition-colors"
-                                                            >
-                                                                {email.trim()}
-                                                            </a>
-                                                        </div>
-                                                    ));
+                                                const emails = emailData.split(",");
+                                                return (
+                                                    <div className="flex flex-wrap items-center justify-center gap-x-2 gap-y-1">
+                                                        {emails.map((email, index) => (
+                                                            <React.Fragment key={index}>
+                                                                <a
+                                                                    href={`mailto:${email.trim()}`}
+                                                                    className="hover:text-primary transition-colors"
+                                                                >
+                                                                    {email.trim()}
+                                                                </a>
+                                                                {index < emails.length - 1 && (
+                                                                    <span className="text-gray-300">|</span>
+                                                                )}
+                                                            </React.Fragment>
+                                                        ))}
+                                                    </div>
+                                                );
                                             }
                                             return (
                                                 <a
@@ -418,41 +421,44 @@ const ContactMiBalon = ({ data, generals = [] }) => {
                                         Teléfono
                                     </h3>
                                     <div className="text-gray-600 font-body text-sm break-words">
-                                        {(() => {
-                                            const phoneData =
-                                                generalsData.find(
-                                                    (item) =>
-                                                        item.correlative ===
-                                                        "phone_contact",
-                                                )?.description || "";
-                                            if (phoneData.includes(",")) {
-                                                return phoneData
-                                                    .split(",")
-                                                    .map((phone, index) => (
-                                                        <div
-                                                            key={index}
-                                                            className="block"
-                                                        >
-                                                            <a
-                                                                href={`tel:${phone.trim()}`}
-                                                                className="hover:text-primary transition-colors"
-                                                            >
-                                                                {phone.trim()}
-                                                            </a>
-                                                        </div>
-                                                    ));
-                                            }
-                                            return (
-                                                <a
-                                                    href={`tel:${phoneData}`}
-                                                    className="hover:text-primary transition-colors"
-                                                >
-                                                    {phoneData ||
-                                                        "+51 987 654 321"}
-                                                </a>
-                                            );
-                                        })()}
-                                    </div>
+                                         {(() => {
+                                             const phoneData =
+                                                 generalsData.find(
+                                                     (item) =>
+                                                         item.correlative ===
+                                                         "phone_contact",
+                                                 )?.description || "";
+                                             if (phoneData.includes(",")) {
+                                                 const phones = phoneData.split(",");
+                                                 return (
+                                                     <div className="flex flex-wrap items-center justify-center gap-x-2 gap-y-1">
+                                                         {phones.map((phone, index) => (
+                                                             <React.Fragment key={index}>
+                                                                 <a
+                                                                     href={`tel:${phone.trim()}`}
+                                                                     className="hover:text-primary transition-colors"
+                                                                 >
+                                                                     {phone.trim()}
+                                                                 </a>
+                                                                 {index < phones.length - 1 && (
+                                                                     <span className="text-gray-300">|</span>
+                                                                 )}
+                                                             </React.Fragment>
+                                                         ))}
+                                                     </div>
+                                                 );
+                                             }
+                                             return (
+                                                 <a
+                                                     href={`tel:${phoneData}`}
+                                                     className="hover:text-primary transition-colors"
+                                                 >
+                                                     {phoneData ||
+                                                         "+51 987 654 321"}
+                                                 </a>
+                                             );
+                                         })()}
+                                     </div>
                                 </div>
                             </motion.div>
                         </motion.div>

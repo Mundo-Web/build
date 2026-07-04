@@ -51,7 +51,7 @@ const BrandInfinite = ({ items, data }) => {
     return (
         <div id={data?.element_id || null} className={`${data?.class_section || "bg-[#F7F9FB]"}`}>
             {data?.title && (
-                <h2 className="text-[36px] leading-tight md:text-5xl text-center font-bold font-title py-4 md:py-8 ">
+                <h2 className={`text-center font-bold text-neutral-dark font-title py-4 md:py-8 leading-tight ${data?.class_title || "text-[36px]  md:text-5xl  "} `}>
                     {data.title}
                 </h2>
             )}

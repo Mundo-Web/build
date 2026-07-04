@@ -306,7 +306,7 @@ const CatalogoFiltrosRainstar = ({
                 },
             ];
         })(),
-        is_master: 1,
+        is_master: data?.is_master !== false ? 1 : 0,
     });
 
     // Función para convertir slugs a IDs
@@ -1096,7 +1096,49 @@ const CatalogoFiltrosRainstar = ({
             // Set initial data from SystemController
             setCategories(filteredData.categories || []);
             setBrands(filteredData.brands || []);
-            setSubcategories(filteredData.subcategories || []);
+            // Extraer y enriquecer subcategorías con sus categorías asignadas para asegurar que las relaciones existan siempre
+            let allSubs = [];
+            if (filteredData.categories) {
+                const subMap = new Map();
+                
+                // 1. Poblar a partir de la relación categories.subcategories (que es 100% confiable y tiene relaciones M:M)
+                filteredData.categories.forEach(cat => {
+                    if (cat.subcategories) {
+                        cat.subcategories.forEach(sub => {
+                            const existing = subMap.get(sub.id) || { ...sub, categories: [] };
+                            if (!existing.categories.some(c => c.id === cat.id)) {
+                                existing.categories.push(cat);
+                            }
+                            existing.category_id = cat.id;
+                            subMap.set(sub.id, existing);
+                        });
+                    }
+                });
+                
+                // 2. Agregar o enriquecer con los datos de filteredData.subcategories
+                const rawSubs = filteredData.subcategories || [];
+                rawSubs.forEach(sub => {
+                    const existing = subMap.get(sub.id);
+                    if (existing) {
+                        subMap.set(sub.id, { ...sub, ...existing });
+                    } else {
+                        const categoriesForSub = [];
+                        if (sub.category_id) {
+                            const matchedCat = filteredData.categories.find(c => c.id === sub.category_id);
+                            if (matchedCat) categoriesForSub.push(matchedCat);
+                        }
+                        subMap.set(sub.id, {
+                            ...sub,
+                            categories: categoriesForSub
+                        });
+                    }
+                });
+                
+                allSubs = Array.from(subMap.values());
+            } else {
+                allSubs = filteredData.subcategories || [];
+            }
+            setSubcategories(allSubs);
             setStores(filteredData.stores || []);
             setPriceRanges(filteredData.priceRanges || []);
 
@@ -2945,6 +2987,7 @@ const CatalogoFiltrosRainstar = ({
                                                             desc: true,
                                                         },
                                                     ],
+                                                    is_master: data?.is_master !== false ? 1 : 0,
                                                 }));
                                                 setFilterSequence([]);
                                             }}
@@ -3201,6 +3244,7 @@ const CatalogoFiltrosRainstar = ({
                                                                                     desc: true,
                                                                                 },
                                                                             ],
+                                                                            is_master: data?.is_master !== false ? 1 : 0,
                                                                         };
 
                                                                     return cleanFilters;

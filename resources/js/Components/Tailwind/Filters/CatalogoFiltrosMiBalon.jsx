@@ -362,7 +362,7 @@ const CatalogoFiltrosMiBalon = ({
                 },
             ];
         })(),
-        is_master: 1,
+        is_master: data?.is_master !== false ? 1 : 0,
     });
 
     // Función para convertir slugs a IDs
@@ -396,28 +396,28 @@ const CatalogoFiltrosMiBalon = ({
                         category_id: Array.isArray(response.data.category_ids)
                             ? response.data.category_ids
                             : response.data.category_ids
-                              ? [response.data.category_ids]
-                              : [],
+                                ? [response.data.category_ids]
+                                : [],
                         brand_id: Array.isArray(response.data.brand_ids) ? response.data.brand_ids : (response.data.brand_ids ? [response.data.brand_ids] : []),
                         subcategory_id: Array.isArray(
                             response.data.subcategory_ids,
                         )
                             ? response.data.subcategory_ids
                             : response.data.subcategory_ids
-                              ? [response.data.subcategory_ids]
-                              : [],
+                                ? [response.data.subcategory_ids]
+                                : [],
                         collection_id: Array.isArray(
                             response.data.collection_ids,
                         )
                             ? response.data.collection_ids
                             : response.data.collection_ids
-                              ? [response.data.collection_ids]
-                              : [],
+                                ? [response.data.collection_ids]
+                                : [],
                         store_id: Array.isArray(response.data.store_ids)
                             ? response.data.store_ids
                             : response.data.store_ids
-                              ? [response.data.store_ids]
-                              : [],
+                                ? [response.data.store_ids]
+                                : [],
                     };
 
                     setSelectedFilters(newFilters);
@@ -1143,7 +1143,49 @@ const CatalogoFiltrosMiBalon = ({
             // Set initial data from SystemController
             setCategories(filteredData.categories || []);
             setBrands(filteredData.brands || []);
-            setSubcategories(filteredData.subcategories || []);
+            // Extraer y enriquecer subcategorías con sus categorías asignadas para asegurar que las relaciones existan siempre
+            let allSubs = [];
+            if (filteredData.categories) {
+                const subMap = new Map();
+
+                // 1. Poblar a partir de la relación categories.subcategories (que es 100% confiable y tiene relaciones M:M)
+                filteredData.categories.forEach(cat => {
+                    if (cat.subcategories) {
+                        cat.subcategories.forEach(sub => {
+                            const existing = subMap.get(sub.id) || { ...sub, categories: [] };
+                            if (!existing.categories.some(c => c.id === cat.id)) {
+                                existing.categories.push(cat);
+                            }
+                            existing.category_id = cat.id;
+                            subMap.set(sub.id, existing);
+                        });
+                    }
+                });
+
+                // 2. Agregar o enriquecer con los datos de filteredData.subcategories
+                const rawSubs = filteredData.subcategories || [];
+                rawSubs.forEach(sub => {
+                    const existing = subMap.get(sub.id);
+                    if (existing) {
+                        subMap.set(sub.id, { ...sub, ...existing });
+                    } else {
+                        const categoriesForSub = [];
+                        if (sub.category_id) {
+                            const matchedCat = filteredData.categories.find(c => c.id === sub.category_id);
+                            if (matchedCat) categoriesForSub.push(matchedCat);
+                        }
+                        subMap.set(sub.id, {
+                            ...sub,
+                            categories: categoriesForSub
+                        });
+                    }
+                });
+
+                allSubs = Array.from(subMap.values());
+            } else {
+                allSubs = filteredData.subcategories || [];
+            }
+            setSubcategories(allSubs);
             setStores(filteredData.stores || []);
             setPriceRanges(filteredData.priceRanges || []);
 
@@ -1468,7 +1510,7 @@ const CatalogoFiltrosMiBalon = ({
     const filteredCategories = categories.filter((category) => {
         const matchesSearch = category.name.toLowerCase().includes(searchCategory.toLowerCase());
         if (!matchesSearch) return false;
-        
+
         // Filtro cruzado inteligente
         if (validFilterCounts && Array.isArray(validFilterCounts.categories)) {
             const hasItems = validFilterCounts.categories.some(c => c.id === category.id);
@@ -1490,7 +1532,7 @@ const CatalogoFiltrosMiBalon = ({
     const filteredSubcategories = subcategories.filter((subcategory) => {
         const matchesSearch = subcategory.name.toLowerCase().includes(searchSubcategory.toLowerCase());
         if (!matchesSearch) return false;
-        
+
         // Si hay categorías seleccionadas, queremos mostrar las subcategorías que pertenecen a esas categorías (incluso si no tienen productos)
         if (selectedFilters.category_id && selectedFilters.category_id.length > 0) {
             // Verificar relación M:M (subcategory.categories)
@@ -1502,13 +1544,13 @@ const CatalogoFiltrosMiBalon = ({
             if (subcategory.category_id && selectedFilters.category_id.includes(subcategory.category_id)) {
                 return true;
             }
-            
+
             // Si la subcategoría está explícitamente seleccionada, mantenerla visible
             if (selectedFilters.subcategory_id?.includes(subcategory.id)) return true;
-            
+
             return false;
         }
-        
+
         // Filtro cruzado inteligente del backend (soporta pivot M:M)
         if (validFilterCounts && Array.isArray(validFilterCounts.subcategories)) {
             const hasItems = validFilterCounts.subcategories.some(s => s.id === subcategory.id);
@@ -1521,7 +1563,7 @@ const CatalogoFiltrosMiBalon = ({
     const filteredBrands = brands.filter((brand) => {
         const matchesSearch = brand.name.toLowerCase().includes(searchBrand.toLowerCase());
         if (!matchesSearch) return false;
-        
+
         // Filtro cruzado inteligente
         if (validFilterCounts && Array.isArray(validFilterCounts.brands)) {
             const hasItems = validFilterCounts.brands.some(b => b.id === brand.id);
@@ -1533,7 +1575,7 @@ const CatalogoFiltrosMiBalon = ({
     const filteredCollections = collections.filter((collection) => {
         const matchesSearch = collection.name.toLowerCase().includes(searchCollection.toLowerCase());
         if (!matchesSearch) return false;
-        
+
         // Filtro cruzado inteligente
         if (validFilterCounts && Array.isArray(validFilterCounts.collections)) {
             const hasItems = validFilterCounts.collections.some(c => c.id === collection.id);
@@ -1546,7 +1588,7 @@ const CatalogoFiltrosMiBalon = ({
     const filteredStores = stores.filter((store) => {
         const matchesSearch = store.name.toLowerCase().includes(searchStore.toLowerCase());
         if (!matchesSearch) return false;
-        
+
         // Filtro cruzado inteligente
         if (validFilterCounts && Array.isArray(validFilterCounts.stores)) {
             const hasItems = validFilterCounts.stores.some(s => s.id === store.id);
@@ -1594,7 +1636,7 @@ const CatalogoFiltrosMiBalon = ({
                         whileHover={{ scale: 1.02 }}
                     >
                         <h2
-                            className={`text-3xl lg:text-6xl md:text-4xl font-title text-neutral-dark lg:mb-2 ${data?.class_title}`}
+                            className={` font-title text-neutral-dark lg:mb-2 ${data?.class_title || 'text-3xl md:text-5xl xl:text-6xl'}`}
                         >
                             {data?.title}
                         </h2>
@@ -1610,7 +1652,7 @@ const CatalogoFiltrosMiBalon = ({
                                 placeholder="Ordenar por"
                                 value={
                                     selectedFilters.sort?.[0]?.selector &&
-                                    selectedFilters.sort?.[0]?.desc !==
+                                        selectedFilters.sort?.[0]?.desc !==
                                         undefined
                                         ? `${selectedFilters.sort[0].selector}:${selectedFilters.sort[0].desc ? "desc" : "asc"}`
                                         : "final_price:desc"
@@ -1705,7 +1747,7 @@ const CatalogoFiltrosMiBalon = ({
                                 placeholder="Ordenar"
                                 value={
                                     selectedFilters.sort?.[0]?.selector &&
-                                    selectedFilters.sort?.[0]?.desc !==
+                                        selectedFilters.sort?.[0]?.desc !==
                                         undefined
                                         ? `${selectedFilters.sort[0].selector}:${selectedFilters.sort[0].desc ? "desc" : "asc"}`
                                         : "final_price:desc"
@@ -1737,11 +1779,10 @@ const CatalogoFiltrosMiBalon = ({
 
                     {/* Panel de filtros mejorado */}
                     <motion.div
-                        className={`${
-                            filtersOpen
-                                ? "fixed inset-0 backdrop-blur-md z-[999] flex flex-col mobile-filter-modal"
-                                : "hidden"
-                        } lg:block lg:w-3/12 lg:bg-transparent lg:h-max lg:relative lg:z-auto`}
+                        className={`${filtersOpen
+                            ? "fixed inset-0 backdrop-blur-md z-[999] flex flex-col mobile-filter-modal"
+                            : "hidden"
+                            } lg:block lg:w-3/12 lg:bg-transparent lg:h-max lg:relative lg:z-auto`}
                         {...(filtersOpen ? filterAnimations.container : {})}
                         initial={filtersOpen ? { opacity: 0 } : false}
                         animate={filtersOpen ? { opacity: 1 } : false}
@@ -1750,28 +1791,26 @@ const CatalogoFiltrosMiBalon = ({
                         onClick={
                             filtersOpen
                                 ? (e) => {
-                                      if (e.target === e.currentTarget) {
-                                          setFiltersOpen(false);
-                                      }
-                                  }
+                                    if (e.target === e.currentTarget) {
+                                        setFiltersOpen(false);
+                                    }
+                                }
                                 : undefined
                         }
                     >
                         {/* Contenedor principal de filtros - Estructura mejorada para mobile */}
                         <div
-                            className={`${
-                                filtersOpen
-                                    ? "flex flex-col h-full bg-transparent"
-                                    : modernFilterStyles.filterContainer
-                            } lg:backdrop-blur-xl lg:border lg:border-gray-200/60 lg:rounded-3xl lg:shadow-2xl lg:shadow-gray-900/10`}
+                            className={`${filtersOpen
+                                ? "flex flex-col h-full bg-transparent"
+                                : modernFilterStyles.filterContainer
+                                } lg:backdrop-blur-xl lg:border lg:border-gray-200/60 lg:rounded-3xl lg:shadow-2xl lg:shadow-gray-900/10`}
                         >
                             {/* Contenido principal del modal mobile - ocupando todo excepto el footer */}
                             <div
-                                className={`${
-                                    filtersOpen
-                                        ? "mx-4 mt-4 mb-2 bg-white rounded-t-3xl shadow-2xl flex flex-col flex-1 overflow-hidden safe-area-top mobile-filter-content"
-                                        : ""
-                                }`}
+                                className={`${filtersOpen
+                                    ? "mx-4 mt-4 mb-2 bg-white rounded-t-3xl shadow-2xl flex flex-col flex-1 overflow-hidden safe-area-top mobile-filter-content"
+                                    : ""
+                                    }`}
                             >
                                 {/* Header mejorado */}
                                 <motion.div
@@ -1905,7 +1944,7 @@ const CatalogoFiltrosMiBalon = ({
                                                         <div className="space-y-2 max-h-[200px] overflow-y-auto custom-scrollbar">
                                                             <AnimatePresence>
                                                                 {filteredCollections.length >
-                                                                0 ? (
+                                                                    0 ? (
                                                                     filteredCollections.map(
                                                                         (
                                                                             collection,
@@ -1948,21 +1987,21 @@ const CatalogoFiltrosMiBalon = ({
                                                                                 {selectedFilters.collection_id?.includes(
                                                                                     collection.slug,
                                                                                 ) && (
-                                                                                    <motion.div
-                                                                                        className="ml-auto"
-                                                                                        initial={{
-                                                                                            scale: 0,
-                                                                                        }}
-                                                                                        animate={{
-                                                                                            scale: 1,
-                                                                                        }}
-                                                                                        exit={{
-                                                                                            scale: 0,
-                                                                                        }}
-                                                                                    >
-                                                                                        <CheckCircle2 className="h-4 w-4 text-primary" />
-                                                                                    </motion.div>
-                                                                                )}
+                                                                                        <motion.div
+                                                                                            className="ml-auto"
+                                                                                            initial={{
+                                                                                                scale: 0,
+                                                                                            }}
+                                                                                            animate={{
+                                                                                                scale: 1,
+                                                                                            }}
+                                                                                            exit={{
+                                                                                                scale: 0,
+                                                                                            }}
+                                                                                        >
+                                                                                            <CheckCircle2 className="h-4 w-4 text-primary" />
+                                                                                        </motion.div>
+                                                                                    )}
                                                                             </motion.label>
                                                                         ),
                                                                     )
@@ -2127,21 +2166,21 @@ const CatalogoFiltrosMiBalon = ({
                                                                             {selectedFilters.brand_id?.includes(
                                                                                 brand.id,
                                                                             ) && (
-                                                                                <motion.div
-                                                                                    className="ml-auto"
-                                                                                    initial={{
-                                                                                        scale: 0,
-                                                                                    }}
-                                                                                    animate={{
-                                                                                        scale: 1,
-                                                                                    }}
-                                                                                    exit={{
-                                                                                        scale: 0,
-                                                                                    }}
-                                                                                >
-                                                                                    <CheckCircle2 className="h-4 w-4 text-primary" />
-                                                                                </motion.div>
-                                                                            )}
+                                                                                    <motion.div
+                                                                                        className="ml-auto"
+                                                                                        initial={{
+                                                                                            scale: 0,
+                                                                                        }}
+                                                                                        animate={{
+                                                                                            scale: 1,
+                                                                                        }}
+                                                                                        exit={{
+                                                                                            scale: 0,
+                                                                                        }}
+                                                                                    >
+                                                                                        <CheckCircle2 className="h-4 w-4 text-primary" />
+                                                                                    </motion.div>
+                                                                                )}
                                                                         </motion.label>
                                                                     ),
                                                                 )}
@@ -2287,21 +2326,21 @@ const CatalogoFiltrosMiBalon = ({
                                                                             {selectedFilters.store_id?.includes(
                                                                                 store.id,
                                                                             ) && (
-                                                                                <motion.div
-                                                                                    className="ml-auto"
-                                                                                    initial={{
-                                                                                        scale: 0,
-                                                                                    }}
-                                                                                    animate={{
-                                                                                        scale: 1,
-                                                                                    }}
-                                                                                    exit={{
-                                                                                        scale: 0,
-                                                                                    }}
-                                                                                >
-                                                                                    <CheckCircle2 className="h-4 w-4 text-primary" />
-                                                                                </motion.div>
-                                                                            )}
+                                                                                    <motion.div
+                                                                                        className="ml-auto"
+                                                                                        initial={{
+                                                                                            scale: 0,
+                                                                                        }}
+                                                                                        animate={{
+                                                                                            scale: 1,
+                                                                                        }}
+                                                                                        exit={{
+                                                                                            scale: 0,
+                                                                                        }}
+                                                                                    >
+                                                                                        <CheckCircle2 className="h-4 w-4 text-primary" />
+                                                                                    </motion.div>
+                                                                                )}
                                                                         </motion.label>
                                                                     ),
                                                                 )}
@@ -2448,21 +2487,21 @@ const CatalogoFiltrosMiBalon = ({
                                                                                 {selectedFilters.category_id?.includes(
                                                                                     category.slug,
                                                                                 ) && (
-                                                                                    <motion.div
-                                                                                        className="ml-auto"
-                                                                                        initial={{
-                                                                                            scale: 0,
-                                                                                        }}
-                                                                                        animate={{
-                                                                                            scale: 1,
-                                                                                        }}
-                                                                                        exit={{
-                                                                                            scale: 0,
-                                                                                        }}
-                                                                                    >
-                                                                                        <CheckCircle2 className="h-4 w-4 text-primary" />
-                                                                                    </motion.div>
-                                                                                )}
+                                                                                        <motion.div
+                                                                                            className="ml-auto"
+                                                                                            initial={{
+                                                                                                scale: 0,
+                                                                                            }}
+                                                                                            animate={{
+                                                                                                scale: 1,
+                                                                                            }}
+                                                                                            exit={{
+                                                                                                scale: 0,
+                                                                                            }}
+                                                                                        >
+                                                                                            <CheckCircle2 className="h-4 w-4 text-primary" />
+                                                                                        </motion.div>
+                                                                                    )}
                                                                             </motion.label>
 
                                                                             {/* Subcategorías expandibles */}
@@ -2646,7 +2685,7 @@ const CatalogoFiltrosMiBalon = ({
                                                         <div className="space-y-2 max-h-[250px] overflow-y-auto custom-scrollbar">
                                                             <AnimatePresence>
                                                                 {filteredSubcategories.length >
-                                                                0 ? (
+                                                                    0 ? (
                                                                     filteredSubcategories.map(
                                                                         (
                                                                             subcategory,
@@ -2689,21 +2728,21 @@ const CatalogoFiltrosMiBalon = ({
                                                                                 {selectedFilters.subcategory_id?.includes(
                                                                                     subcategory.id,
                                                                                 ) && (
-                                                                                    <motion.div
-                                                                                        className="ml-auto"
-                                                                                        initial={{
-                                                                                            scale: 0,
-                                                                                        }}
-                                                                                        animate={{
-                                                                                            scale: 1,
-                                                                                        }}
-                                                                                        exit={{
-                                                                                            scale: 0,
-                                                                                        }}
-                                                                                    >
-                                                                                        <CheckCircle2 className="h-4 w-4 text-primary" />
-                                                                                    </motion.div>
-                                                                                )}
+                                                                                        <motion.div
+                                                                                            className="ml-auto"
+                                                                                            initial={{
+                                                                                                scale: 0,
+                                                                                            }}
+                                                                                            animate={{
+                                                                                                scale: 1,
+                                                                                            }}
+                                                                                            exit={{
+                                                                                                scale: 0,
+                                                                                            }}
+                                                                                        >
+                                                                                            <CheckCircle2 className="h-4 w-4 text-primary" />
+                                                                                        </motion.div>
+                                                                                    )}
                                                                             </motion.label>
                                                                         ),
                                                                     )
@@ -2837,15 +2876,15 @@ const CatalogoFiltrosMiBalon = ({
                                                                                             Number(
                                                                                                 priceRange.min,
                                                                                             ) ===
-                                                                                                Number(
-                                                                                                    range.min,
-                                                                                                ) &&
+                                                                                            Number(
+                                                                                                range.min,
+                                                                                            ) &&
                                                                                             Number(
                                                                                                 priceRange.max,
                                                                                             ) ===
-                                                                                                Number(
-                                                                                                    range.max,
-                                                                                                ),
+                                                                                            Number(
+                                                                                                range.max,
+                                                                                            ),
                                                                                     ) ||
                                                                                     false
                                                                                 }
@@ -2862,31 +2901,31 @@ const CatalogoFiltrosMiBalon = ({
                                                                                     Number(
                                                                                         priceRange.min,
                                                                                     ) ===
-                                                                                        Number(
-                                                                                            range.min,
-                                                                                        ) &&
+                                                                                    Number(
+                                                                                        range.min,
+                                                                                    ) &&
                                                                                     Number(
                                                                                         priceRange.max,
                                                                                     ) ===
-                                                                                        Number(
-                                                                                            range.max,
-                                                                                        ),
+                                                                                    Number(
+                                                                                        range.max,
+                                                                                    ),
                                                                             ) && (
-                                                                                <motion.div
-                                                                                    className="ml-auto"
-                                                                                    initial={{
-                                                                                        scale: 0,
-                                                                                    }}
-                                                                                    animate={{
-                                                                                        scale: 1,
-                                                                                    }}
-                                                                                    exit={{
-                                                                                        scale: 0,
-                                                                                    }}
-                                                                                >
-                                                                                    <CheckCircle2 className="h-4 w-4 text-primary" />
-                                                                                </motion.div>
-                                                                            )}
+                                                                                    <motion.div
+                                                                                        className="ml-auto"
+                                                                                        initial={{
+                                                                                            scale: 0,
+                                                                                        }}
+                                                                                        animate={{
+                                                                                            scale: 1,
+                                                                                        }}
+                                                                                        exit={{
+                                                                                            scale: 0,
+                                                                                        }}
+                                                                                    >
+                                                                                        <CheckCircle2 className="h-4 w-4 text-primary" />
+                                                                                    </motion.div>
+                                                                                )}
                                                                         </motion.label>
                                                                     ),
                                                                 )}
@@ -2991,7 +3030,7 @@ const CatalogoFiltrosMiBalon = ({
                                                         <div className="space-y-2 max-h-[250px] overflow-y-auto custom-scrollbar">
                                                             <AnimatePresence>
                                                                 {filteredAmenities.length >
-                                                                0 ? (
+                                                                    0 ? (
                                                                     filteredAmenities.map(
                                                                         (
                                                                             amenity,
@@ -3037,8 +3076,8 @@ const CatalogoFiltrosMiBalon = ({
                                                                                             onError={(
                                                                                                 e,
                                                                                             ) =>
-                                                                                                (e.target.style.display =
-                                                                                                    "none")
+                                                                                            (e.target.style.display =
+                                                                                                "none")
                                                                                             }
                                                                                         />
                                                                                     )}
@@ -3051,21 +3090,21 @@ const CatalogoFiltrosMiBalon = ({
                                                                                 {selectedFilters.amenity_id?.includes(
                                                                                     amenity.id,
                                                                                 ) && (
-                                                                                    <motion.div
-                                                                                        className="ml-auto"
-                                                                                        initial={{
-                                                                                            scale: 0,
-                                                                                        }}
-                                                                                        animate={{
-                                                                                            scale: 1,
-                                                                                        }}
-                                                                                        exit={{
-                                                                                            scale: 0,
-                                                                                        }}
-                                                                                    >
-                                                                                        <CheckCircle2 className="h-4 w-4 text-primary" />
-                                                                                    </motion.div>
-                                                                                )}
+                                                                                        <motion.div
+                                                                                            className="ml-auto"
+                                                                                            initial={{
+                                                                                                scale: 0,
+                                                                                            }}
+                                                                                            animate={{
+                                                                                                scale: 1,
+                                                                                            }}
+                                                                                            exit={{
+                                                                                                scale: 0,
+                                                                                            }}
+                                                                                        >
+                                                                                            <CheckCircle2 className="h-4 w-4 text-primary" />
+                                                                                        </motion.div>
+                                                                                    )}
                                                                             </motion.label>
                                                                         ),
                                                                     )
@@ -3115,396 +3154,396 @@ const CatalogoFiltrosMiBalon = ({
                                                 selectedFilters.store_id
                                                     ?.length > 0 ||
                                                 selectedFilters.tag_id?.length >
-                                                    0 ||
+                                                0 ||
                                                 selectedFilters.amenity_id
                                                     ?.length > 0 ||
                                                 (selectedFilters.price &&
                                                     selectedFilters.price
                                                         .length > 0)) && (
-                                                <motion.div
-                                                    className="mb-4"
-                                                    initial={{
-                                                        opacity: 0,
-                                                        y: 10,
-                                                    }}
-                                                    animate={{
-                                                        opacity: 1,
-                                                        y: 0,
-                                                    }}
-                                                    exit={{
-                                                        opacity: 0,
-                                                        y: -10,
-                                                    }}
-                                                >
-                                                    <h4 className="text-sm font-semibold text-neutral-dark mb-3 flex items-center gap-2">
-                                                        <Star className="h-4 w-4 text-primary" />
-                                                        Filtros Activos
-                                                    </h4>
-                                                    <div className="flex flex-wrap gap-2">
-                                                        {/* Chips de marcas con AnimatedBadge */}
-                                                        {selectedFilters.brand_id?.map(
-                                                            (brandSlug) => {
-                                                                const brand =
-                                                                    brands.find(
-                                                                        (b) =>
-                                                                            b.slug ===
-                                                                            brandSlug,
-                                                                    );
-                                                                return brand ? (
-                                                                    <AnimatedBadge
-                                                                        key={
-                                                                            brandSlug
-                                                                        }
-                                                                        onClick={() =>
-                                                                            handleFilterChange(
-                                                                                "brand_id",
-                                                                                brandSlug,
-                                                                            )
-                                                                        }
-                                                                        className="group"
-                                                                    >
-                                                                        <Tag className="h-3 w-3" />
-                                                                        <span>
-                                                                            {
-                                                                                brand.name
+                                                    <motion.div
+                                                        className="mb-4"
+                                                        initial={{
+                                                            opacity: 0,
+                                                            y: 10,
+                                                        }}
+                                                        animate={{
+                                                            opacity: 1,
+                                                            y: 0,
+                                                        }}
+                                                        exit={{
+                                                            opacity: 0,
+                                                            y: -10,
+                                                        }}
+                                                    >
+                                                        <h4 className="text-sm font-semibold text-neutral-dark mb-3 flex items-center gap-2">
+                                                            <Star className="h-4 w-4 text-primary" />
+                                                            Filtros Activos
+                                                        </h4>
+                                                        <div className="flex flex-wrap gap-2">
+                                                            {/* Chips de marcas con AnimatedBadge */}
+                                                            {selectedFilters.brand_id?.map(
+                                                                (brandId) => {
+                                                                    const brand =
+                                                                        brands.find(
+                                                                            (b) =>
+                                                                                b.id ===
+                                                                                brandId,
+                                                                        );
+                                                                    return brand ? (
+                                                                        <AnimatedBadge
+                                                                            key={
+                                                                                brandId
                                                                             }
-                                                                        </span>
-                                                                        <motion.div
-                                                                            className="ml-1  rounded-full p-0.5 transition-colors duration-200"
-                                                                            whileHover={{
-                                                                                scale: 1.2,
-                                                                            }}
-                                                                            whileTap={{
-                                                                                scale: 0.9,
-                                                                            }}
+                                                                            onClick={() =>
+                                                                                handleFilterChange(
+                                                                                    "brand_id",
+                                                                                    brandId,
+                                                                                )
+                                                                            }
+                                                                            className="group"
                                                                         >
-                                                                            <X className="h-3 w-3" />
-                                                                        </motion.div>
-                                                                    </AnimatedBadge>
-                                                                ) : null;
-                                                            },
-                                                        )}
+                                                                            <Tag className="h-3 w-3" />
+                                                                            <span>
+                                                                                {
+                                                                                    brand.name
+                                                                                }
+                                                                            </span>
+                                                                            <motion.div
+                                                                                className="ml-1  rounded-full p-0.5 transition-colors duration-200"
+                                                                                whileHover={{
+                                                                                    scale: 1.2,
+                                                                                }}
+                                                                                whileTap={{
+                                                                                    scale: 0.9,
+                                                                                }}
+                                                                            >
+                                                                                <X className="h-3 w-3" />
+                                                                            </motion.div>
+                                                                        </AnimatedBadge>
+                                                                    ) : null;
+                                                                },
+                                                            )}
 
-                                                        {/* Chips de colecciones con AnimatedBadge */}
-                                                        {selectedFilters.collection_id?.map(
-                                                            (
-                                                                collectionSlug,
-                                                            ) => {
-                                                                const collection =
-                                                                    collections.find(
-                                                                        (c) =>
-                                                                            c.slug ===
-                                                                            collectionSlug,
-                                                                    );
-                                                                return collection ? (
-                                                                    <AnimatedBadge
-                                                                        key={
-                                                                            collectionSlug
-                                                                        }
-                                                                        onClick={() =>
-                                                                            handleFilterChange(
-                                                                                "collection_id",
+                                                            {/* Chips de colecciones con AnimatedBadge */}
+                                                            {selectedFilters.collection_id?.map(
+                                                                (
+                                                                    collectionSlug,
+                                                                ) => {
+                                                                    const collection =
+                                                                        collections.find(
+                                                                            (c) =>
+                                                                                c.slug ===
                                                                                 collectionSlug,
-                                                                            )
-                                                                        }
-                                                                        className="group"
-                                                                    >
-                                                                        <Package className="h-3 w-3" />
-                                                                        <span>
-                                                                            {
-                                                                                collection.name
+                                                                        );
+                                                                    return collection ? (
+                                                                        <AnimatedBadge
+                                                                            key={
+                                                                                collectionSlug
                                                                             }
-                                                                        </span>
-                                                                        <motion.div
-                                                                            className="ml-1 rounded-full p-0.5 transition-colors duration-200"
-                                                                            whileHover={{
-                                                                                scale: 1.2,
-                                                                            }}
-                                                                            whileTap={{
-                                                                                scale: 0.9,
-                                                                            }}
+                                                                            onClick={() =>
+                                                                                handleFilterChange(
+                                                                                    "collection_id",
+                                                                                    collectionSlug,
+                                                                                )
+                                                                            }
+                                                                            className="group"
                                                                         >
-                                                                            <X className="h-3 w-3" />
-                                                                        </motion.div>
-                                                                    </AnimatedBadge>
-                                                                ) : null;
-                                                            },
-                                                        )}
+                                                                            <Package className="h-3 w-3" />
+                                                                            <span>
+                                                                                {
+                                                                                    collection.name
+                                                                                }
+                                                                            </span>
+                                                                            <motion.div
+                                                                                className="ml-1 rounded-full p-0.5 transition-colors duration-200"
+                                                                                whileHover={{
+                                                                                    scale: 1.2,
+                                                                                }}
+                                                                                whileTap={{
+                                                                                    scale: 0.9,
+                                                                                }}
+                                                                            >
+                                                                                <X className="h-3 w-3" />
+                                                                            </motion.div>
+                                                                        </AnimatedBadge>
+                                                                    ) : null;
+                                                                },
+                                                            )}
 
-                                                        {/* Chips de categorías con AnimatedBadge */}
-                                                        {selectedFilters.category_id?.map(
-                                                            (categorySlug) => {
-                                                                const category =
-                                                                    categories.find(
-                                                                        (c) =>
-                                                                            c.id ===
-                                                                            categorySlug,
-                                                                    );
-                                                                return category ? (
-                                                                    <AnimatedBadge
-                                                                        key={
-                                                                            categorySlug
-                                                                        }
-                                                                        onClick={() =>
-                                                                            handleFilterChange(
-                                                                                "category_id",
+                                                            {/* Chips de categorías con AnimatedBadge */}
+                                                            {selectedFilters.category_id?.map(
+                                                                (categorySlug) => {
+                                                                    const category =
+                                                                        categories.find(
+                                                                            (c) =>
+                                                                                c.id ===
                                                                                 categorySlug,
-                                                                            )
-                                                                        }
-                                                                    >
-                                                                        <Layers className="h-3 w-3" />
-                                                                        <span>
-                                                                            {
-                                                                                category.name
+                                                                        );
+                                                                    return category ? (
+                                                                        <AnimatedBadge
+                                                                            key={
+                                                                                categorySlug
                                                                             }
-                                                                        </span>
-                                                                        <motion.div
-                                                                            className="ml-1  rounded-full p-0.5 transition-colors duration-200"
-                                                                            whileHover={{
-                                                                                scale: 1.2,
-                                                                            }}
-                                                                            whileTap={{
-                                                                                scale: 0.9,
-                                                                            }}
+                                                                            onClick={() =>
+                                                                                handleFilterChange(
+                                                                                    "category_id",
+                                                                                    categorySlug,
+                                                                                )
+                                                                            }
                                                                         >
-                                                                            <X className="h-3 w-3" />
-                                                                        </motion.div>
-                                                                    </AnimatedBadge>
-                                                                ) : null;
-                                                            },
-                                                        )}
+                                                                            <Layers className="h-3 w-3" />
+                                                                            <span>
+                                                                                {
+                                                                                    category.name
+                                                                                }
+                                                                            </span>
+                                                                            <motion.div
+                                                                                className="ml-1  rounded-full p-0.5 transition-colors duration-200"
+                                                                                whileHover={{
+                                                                                    scale: 1.2,
+                                                                                }}
+                                                                                whileTap={{
+                                                                                    scale: 0.9,
+                                                                                }}
+                                                                            >
+                                                                                <X className="h-3 w-3" />
+                                                                            </motion.div>
+                                                                        </AnimatedBadge>
+                                                                    ) : null;
+                                                                },
+                                                            )}
 
-                                                        {/* Chips de subcategorías con AnimatedBadge */}
-                                                        {selectedFilters.subcategory_id?.map(
-                                                            (
-                                                                subcategorySlug,
-                                                            ) => {
-                                                                const subcategory =
-                                                                    subcategories.find(
-                                                                        (sub) =>
-                                                                            sub.id ===
-                                                                            subcategorySlug,
-                                                                    );
-                                                                return subcategory ? (
-                                                                    <AnimatedBadge
-                                                                        key={
-                                                                            subcategorySlug
-                                                                        }
-                                                                        onClick={() =>
-                                                                            handleFilterChange(
-                                                                                "subcategory_id",
+                                                            {/* Chips de subcategorías con AnimatedBadge */}
+                                                            {selectedFilters.subcategory_id?.map(
+                                                                (
+                                                                    subcategorySlug,
+                                                                ) => {
+                                                                    const subcategory =
+                                                                        subcategories.find(
+                                                                            (sub) =>
+                                                                                sub.id ===
                                                                                 subcategorySlug,
-                                                                            )
-                                                                        }
-                                                                    >
-                                                                        <Grid3X3 className="h-3 w-3" />
-                                                                        <span>
-                                                                            {
-                                                                                subcategory.name
+                                                                        );
+                                                                    return subcategory ? (
+                                                                        <AnimatedBadge
+                                                                            key={
+                                                                                subcategorySlug
                                                                             }
-                                                                        </span>
-                                                                        <motion.div
-                                                                            className="ml-1 rounded-full p-0.5 transition-colors duration-200"
-                                                                            whileHover={{
-                                                                                scale: 1.2,
-                                                                            }}
-                                                                            whileTap={{
-                                                                                scale: 0.9,
-                                                                            }}
+                                                                            onClick={() =>
+                                                                                handleFilterChange(
+                                                                                    "subcategory_id",
+                                                                                    subcategorySlug,
+                                                                                )
+                                                                            }
                                                                         >
-                                                                            <X className="h-3 w-3" />
-                                                                        </motion.div>
-                                                                    </AnimatedBadge>
-                                                                ) : null;
-                                                            },
-                                                        )}
+                                                                            <Grid3X3 className="h-3 w-3" />
+                                                                            <span>
+                                                                                {
+                                                                                    subcategory.name
+                                                                                }
+                                                                            </span>
+                                                                            <motion.div
+                                                                                className="ml-1 rounded-full p-0.5 transition-colors duration-200"
+                                                                                whileHover={{
+                                                                                    scale: 1.2,
+                                                                                }}
+                                                                                whileTap={{
+                                                                                    scale: 0.9,
+                                                                                }}
+                                                                            >
+                                                                                <X className="h-3 w-3" />
+                                                                            </motion.div>
+                                                                        </AnimatedBadge>
+                                                                    ) : null;
+                                                                },
+                                                            )}
 
-                                                        {/* Chips de tiendas con AnimatedBadge */}
-                                                        {selectedFilters.store_id?.map(
-                                                            (storeId) => {
-                                                                const store =
-                                                                    stores.find(
-                                                                        (s) =>
-                                                                            s.id ===
-                                                                            storeId,
-                                                                    );
-                                                                return store ? (
-                                                                    <AnimatedBadge
-                                                                        key={
-                                                                            storeId
-                                                                        }
-                                                                        onClick={() =>
-                                                                            handleFilterChange(
-                                                                                "store_id",
+                                                            {/* Chips de tiendas con AnimatedBadge */}
+                                                            {selectedFilters.store_id?.map(
+                                                                (storeId) => {
+                                                                    const store =
+                                                                        stores.find(
+                                                                            (s) =>
+                                                                                s.id ===
                                                                                 storeId,
-                                                                            )
-                                                                        }
-                                                                    >
-                                                                        <Store className="h-3 w-3" />
-                                                                        <span>
-                                                                            {
-                                                                                store.name
+                                                                        );
+                                                                    return store ? (
+                                                                        <AnimatedBadge
+                                                                            key={
+                                                                                storeId
                                                                             }
-                                                                        </span>
-                                                                        <motion.div
-                                                                            className="ml-1 rounded-full p-0.5 transition-colors duration-200"
-                                                                            whileHover={{
-                                                                                scale: 1.2,
-                                                                            }}
-                                                                            whileTap={{
-                                                                                scale: 0.9,
-                                                                            }}
+                                                                            onClick={() =>
+                                                                                handleFilterChange(
+                                                                                    "store_id",
+                                                                                    storeId,
+                                                                                )
+                                                                            }
                                                                         >
-                                                                            <X className="h-3 w-3" />
-                                                                        </motion.div>
-                                                                    </AnimatedBadge>
-                                                                ) : null;
-                                                            },
-                                                        )}
+                                                                            <Store className="h-3 w-3" />
+                                                                            <span>
+                                                                                {
+                                                                                    store.name
+                                                                                }
+                                                                            </span>
+                                                                            <motion.div
+                                                                                className="ml-1 rounded-full p-0.5 transition-colors duration-200"
+                                                                                whileHover={{
+                                                                                    scale: 1.2,
+                                                                                }}
+                                                                                whileTap={{
+                                                                                    scale: 0.9,
+                                                                                }}
+                                                                            >
+                                                                                <X className="h-3 w-3" />
+                                                                            </motion.div>
+                                                                        </AnimatedBadge>
+                                                                    ) : null;
+                                                                },
+                                                            )}
 
-                                                        {/* Chips de tags con AnimatedBadge */}
-                                                        {selectedFilters.tag_id?.map(
-                                                            (tagId) => {
-                                                                const tag =
-                                                                    tags.find(
-                                                                        (t) =>
-                                                                            t.id ===
-                                                                            tagId,
-                                                                    );
-                                                                return tag ? (
-                                                                    <AnimatedBadge
-                                                                        key={
-                                                                            tagId
-                                                                        }
-                                                                        onClick={() =>
-                                                                            handleFilterChange(
-                                                                                "tag_id",
+                                                            {/* Chips de tags con AnimatedBadge */}
+                                                            {selectedFilters.tag_id?.map(
+                                                                (tagId) => {
+                                                                    const tag =
+                                                                        tags.find(
+                                                                            (t) =>
+                                                                                t.id ===
                                                                                 tagId,
-                                                                            )
-                                                                        }
-                                                                    >
-                                                                        <Hash className="h-3 w-3" />
-                                                                        <span>
-                                                                            {
-                                                                                tag.name
+                                                                        );
+                                                                    return tag ? (
+                                                                        <AnimatedBadge
+                                                                            key={
+                                                                                tagId
                                                                             }
-                                                                        </span>
-                                                                        <motion.div
-                                                                            className="ml-1 rounded-full p-0.5 transition-colors duration-200"
-                                                                            whileHover={{
-                                                                                scale: 1.2,
-                                                                            }}
-                                                                            whileTap={{
-                                                                                scale: 0.9,
-                                                                            }}
+                                                                            onClick={() =>
+                                                                                handleFilterChange(
+                                                                                    "tag_id",
+                                                                                    tagId,
+                                                                                )
+                                                                            }
                                                                         >
-                                                                            <X className="h-3 w-3" />
-                                                                        </motion.div>
-                                                                    </AnimatedBadge>
-                                                                ) : null;
-                                                            },
-                                                        )}
+                                                                            <Hash className="h-3 w-3" />
+                                                                            <span>
+                                                                                {
+                                                                                    tag.name
+                                                                                }
+                                                                            </span>
+                                                                            <motion.div
+                                                                                className="ml-1 rounded-full p-0.5 transition-colors duration-200"
+                                                                                whileHover={{
+                                                                                    scale: 1.2,
+                                                                                }}
+                                                                                whileTap={{
+                                                                                    scale: 0.9,
+                                                                                }}
+                                                                            >
+                                                                                <X className="h-3 w-3" />
+                                                                            </motion.div>
+                                                                        </AnimatedBadge>
+                                                                    ) : null;
+                                                                },
+                                                            )}
 
-                                                        {/* Chips de amenidades con AnimatedBadge */}
-                                                        {selectedFilters.amenity_id?.map(
-                                                            (amenityId) => {
-                                                                const amenity =
-                                                                    amenities.find(
-                                                                        (a) =>
-                                                                            a.id ===
-                                                                            amenityId,
-                                                                    );
-                                                                return amenity ? (
-                                                                    <AnimatedBadge
-                                                                        key={
-                                                                            amenityId
-                                                                        }
-                                                                        onClick={() =>
-                                                                            handleFilterChange(
-                                                                                "amenity_id",
+                                                            {/* Chips de amenidades con AnimatedBadge */}
+                                                            {selectedFilters.amenity_id?.map(
+                                                                (amenityId) => {
+                                                                    const amenity =
+                                                                        amenities.find(
+                                                                            (a) =>
+                                                                                a.id ===
                                                                                 amenityId,
-                                                                            )
-                                                                        }
-                                                                    >
-                                                                        <Coffee className="h-3 w-3" />
-                                                                        <span>
-                                                                            {
-                                                                                amenity.name
+                                                                        );
+                                                                    return amenity ? (
+                                                                        <AnimatedBadge
+                                                                            key={
+                                                                                amenityId
                                                                             }
-                                                                        </span>
-                                                                        <motion.div
-                                                                            className="ml-1 rounded-full p-0.5 transition-colors duration-200"
-                                                                            whileHover={{
-                                                                                scale: 1.2,
-                                                                            }}
-                                                                            whileTap={{
-                                                                                scale: 0.9,
-                                                                            }}
+                                                                            onClick={() =>
+                                                                                handleFilterChange(
+                                                                                    "amenity_id",
+                                                                                    amenityId,
+                                                                                )
+                                                                            }
                                                                         >
-                                                                            <X className="h-3 w-3" />
-                                                                        </motion.div>
-                                                                    </AnimatedBadge>
-                                                                ) : null;
-                                                            },
-                                                        )}
+                                                                            <Coffee className="h-3 w-3" />
+                                                                            <span>
+                                                                                {
+                                                                                    amenity.name
+                                                                                }
+                                                                            </span>
+                                                                            <motion.div
+                                                                                className="ml-1 rounded-full p-0.5 transition-colors duration-200"
+                                                                                whileHover={{
+                                                                                    scale: 1.2,
+                                                                                }}
+                                                                                whileTap={{
+                                                                                    scale: 0.9,
+                                                                                }}
+                                                                            >
+                                                                                <X className="h-3 w-3" />
+                                                                            </motion.div>
+                                                                        </AnimatedBadge>
+                                                                    ) : null;
+                                                                },
+                                                            )}
 
-                                                        {/* Chips de precio con AnimatedBadge */}
-                                                        {selectedFilters.price?.map(
-                                                            (
-                                                                priceRange,
-                                                                index,
-                                                            ) => {
-                                                                const matchedRange =
-                                                                    activePriceRanges.find(
-                                                                        (
-                                                                            range,
-                                                                        ) =>
-                                                                            Number(
-                                                                                range.min,
-                                                                            ) ===
+                                                            {/* Chips de precio con AnimatedBadge */}
+                                                            {selectedFilters.price?.map(
+                                                                (
+                                                                    priceRange,
+                                                                    index,
+                                                                ) => {
+                                                                    const matchedRange =
+                                                                        activePriceRanges.find(
+                                                                            (
+                                                                                range,
+                                                                            ) =>
+                                                                                Number(
+                                                                                    range.min,
+                                                                                ) ===
                                                                                 Number(
                                                                                     priceRange.min,
                                                                                 ) &&
-                                                                            Number(
-                                                                                range.max,
-                                                                            ) ===
+                                                                                Number(
+                                                                                    range.max,
+                                                                                ) ===
                                                                                 Number(
                                                                                     priceRange.max,
                                                                                 ),
-                                                                    );
-                                                                return (
-                                                                    <AnimatedBadge
-                                                                        key={`price-${priceRange.min}-${priceRange.max}`}
-                                                                        onClick={() =>
-                                                                            handleFilterChange(
-                                                                                "price",
-                                                                                priceRange,
-                                                                            )
-                                                                        }
-                                                                    >
-                                                                        <TrendingUp className="h-3 w-3" />
-                                                                        <span>
-                                                                            {matchedRange?.label ||
-                                                                                `${CurrencySymbol()} ${priceRange.min} - ${CurrencySymbol()} ${priceRange.max}`}
-                                                                        </span>
-                                                                        <motion.div
-                                                                            className="ml-1 rounded-full p-0.5 transition-colors duration-200"
-                                                                            whileHover={{
-                                                                                scale: 1.2,
-                                                                            }}
-                                                                            whileTap={{
-                                                                                scale: 0.9,
-                                                                            }}
+                                                                        );
+                                                                    return (
+                                                                        <AnimatedBadge
+                                                                            key={`price-${priceRange.min}-${priceRange.max}`}
+                                                                            onClick={() =>
+                                                                                handleFilterChange(
+                                                                                    "price",
+                                                                                    priceRange,
+                                                                                )
+                                                                            }
                                                                         >
-                                                                            <X className="h-3 w-3" />
-                                                                        </motion.div>
-                                                                    </AnimatedBadge>
-                                                                );
-                                                            },
-                                                        )}
-                                                    </div>
-                                                </motion.div>
-                                            )}
+                                                                            <TrendingUp className="h-3 w-3" />
+                                                                            <span>
+                                                                                {matchedRange?.label ||
+                                                                                    `${CurrencySymbol()} ${priceRange.min} - ${CurrencySymbol()} ${priceRange.max}`}
+                                                                            </span>
+                                                                            <motion.div
+                                                                                className="ml-1 rounded-full p-0.5 transition-colors duration-200"
+                                                                                whileHover={{
+                                                                                    scale: 1.2,
+                                                                                }}
+                                                                                whileTap={{
+                                                                                    scale: 0.9,
+                                                                                }}
+                                                                            >
+                                                                                <X className="h-3 w-3" />
+                                                                            </motion.div>
+                                                                        </AnimatedBadge>
+                                                                    );
+                                                                },
+                                                            )}
+                                                        </div>
+                                                    </motion.div>
+                                                )}
                                         </AnimatePresence>
                                     </motion.div>
 
@@ -3538,6 +3577,7 @@ const CatalogoFiltrosMiBalon = ({
                                                                 desc: true,
                                                             },
                                                         ],
+                                                        is_master: data?.is_master !== false ? 1 : 0,
                                                     };
 
                                                     return cleanFilters;
@@ -3708,7 +3748,7 @@ const CatalogoFiltrosMiBalon = ({
                                     )}
 
                                     {Array.isArray(products) &&
-                                    products.length > 0 ? (
+                                        products.length > 0 ? (
                                         products.map((product, index) => (
                                             <motion.div
                                                 className={`w-full ${data?.class_product_card_container || ""}`}
@@ -3754,9 +3794,9 @@ const CatalogoFiltrosMiBalon = ({
                                             </motion.div>
                                         ))
                                     ) : hasSearched &&
-                                      !loading &&
-                                      !isFiltering &&
-                                      showNoResults ? (
+                                        !loading &&
+                                        !isFiltering &&
+                                        showNoResults ? (
                                         <motion.div
                                             className="w-full col-span-2 lg:col-span-3  xl:col-span-3 flex items-center justify-center py-16"
                                             initial={{
@@ -3802,30 +3842,31 @@ const CatalogoFiltrosMiBalon = ({
                                                             setSelectedFilters(
                                                                 (prev) => {
                                                                     const cleanFilters =
-                                                                        {
-                                                                            collection_id:
-                                                                                [],
-                                                                            category_id:
-                                                                                [],
-                                                                            brand_id:
-                                                                                [],
-                                                                            subcategory_id:
-                                                                                [],
-                                                                            store_id:
-                                                                                [],
-                                                                            tag_id: [],
-                                                                            amenity_id:
-                                                                                [],
-                                                                            price: [],
-                                                                            name: null,
-                                                                            sort: [
-                                                                                {
-                                                                                    selector:
-                                                                                        "final_price",
-                                                                                    desc: true,
-                                                                                },
-                                                                            ],
-                                                                        };
+                                                                    {
+                                                                        collection_id:
+                                                                            [],
+                                                                        category_id:
+                                                                            [],
+                                                                        brand_id:
+                                                                            [],
+                                                                        subcategory_id:
+                                                                            [],
+                                                                        store_id:
+                                                                            [],
+                                                                        tag_id: [],
+                                                                        amenity_id:
+                                                                            [],
+                                                                        price: [],
+                                                                        name: null,
+                                                                        sort: [
+                                                                            {
+                                                                                selector:
+                                                                                    "final_price",
+                                                                                desc: true,
+                                                                            },
+                                                                        ],
+                                                                        is_master: data?.is_master !== false ? 1 : 0,
+                                                                    };
 
                                                                     return cleanFilters;
                                                                 },
@@ -3870,15 +3911,14 @@ const CatalogoFiltrosMiBalon = ({
                                     <div className="overflow-x-auto pb-2">
                                         <nav className="flex items-center gap-x-2 min-w-max">
                                             <motion.button
-                                                className={`p-3 inline-flex items-center gap-2 rounded-full transition-all duration-300 ${
-                                                    pagination.currentPage === 1
-                                                        ? "opacity-50 cursor-not-allowed bg-gray-100"
-                                                        : "bg-white text-primary border "
-                                                }`}
+                                                className={`p-3 inline-flex items-center gap-2 rounded-full transition-all duration-300 ${pagination.currentPage === 1
+                                                    ? "opacity-50 cursor-not-allowed bg-gray-100"
+                                                    : "bg-white text-primary border "
+                                                    }`}
                                                 onClick={() =>
                                                     handlePageChange(
                                                         pagination.currentPage -
-                                                            1,
+                                                        1,
                                                     )
                                                 }
                                                 disabled={
@@ -3906,12 +3946,11 @@ const CatalogoFiltrosMiBalon = ({
                                                         ) : (
                                                             <motion.button
                                                                 className={`w-10 h-10 p-2 inline-flex items-center justify-center rounded-full transition-all duration-300 font-semibold
-                                                        ${
-                                                            page ===
-                                                            pagination.currentPage
-                                                                ? " bg-primary text-white shadow-lg "
-                                                                : "bg-white   text-primary border border-gray-200 "
-                                                        }`}
+                                                        ${page ===
+                                                                        pagination.currentPage
+                                                                        ? " bg-primary text-white shadow-lg "
+                                                                        : "bg-white   text-primary border border-gray-200 "
+                                                                    }`}
                                                                 onClick={() =>
                                                                     handlePageChange(
                                                                         page,
@@ -3933,16 +3972,15 @@ const CatalogoFiltrosMiBalon = ({
                                             )}
 
                                             <motion.button
-                                                className={`p-3 inline-flex items-center gap-2 rounded-full transition-all duration-300 ${
-                                                    pagination.currentPage ===
+                                                className={`p-3 inline-flex items-center gap-2 rounded-full transition-all duration-300 ${pagination.currentPage ===
                                                     pagination.totalPages
-                                                        ? "opacity-50 cursor-not-allowed bg-gray-100"
-                                                        : "bg-white text-primary border "
-                                                }`}
+                                                    ? "opacity-50 cursor-not-allowed bg-gray-100"
+                                                    : "bg-white text-primary border "
+                                                    }`}
                                                 onClick={() =>
                                                     handlePageChange(
                                                         pagination.currentPage +
-                                                            1,
+                                                        1,
                                                     )
                                                 }
                                                 disabled={
@@ -3951,7 +3989,7 @@ const CatalogoFiltrosMiBalon = ({
                                                 }
                                                 whileTap={
                                                     pagination.currentPage !==
-                                                    pagination.totalPages
+                                                        pagination.totalPages
                                                         ? { scale: 0.95 }
                                                         : {}
                                                 }
@@ -4091,15 +4129,14 @@ const Tooltip = ({ children, text, position = "top" }) => {
                     >
                         {text}
                         <div
-                            className={`absolute w-0 h-0 border-l-4 border-r-4 border-transparent ${
-                                position === "top"
-                                    ? "border-t-4 border-t-gray-900 top-full left-1/2 -translate-x-1/2"
-                                    : position === "bottom"
-                                      ? "border-b-4 border-b-gray-900 bottom-full left-1/2 -translate-x-1/2"
-                                      : position === "left"
+                            className={`absolute w-0 h-0 border-l-4 border-r-4 border-transparent ${position === "top"
+                                ? "border-t-4 border-t-gray-900 top-full left-1/2 -translate-x-1/2"
+                                : position === "bottom"
+                                    ? "border-b-4 border-b-gray-900 bottom-full left-1/2 -translate-x-1/2"
+                                    : position === "left"
                                         ? "border-l-4 border-l-gray-900 left-full top-1/2 -translate-y-1/2"
                                         : "border-r-4 border-r-gray-900 right-full top-1/2 -translate-y-1/2"
-                            }`}
+                                }`}
                         />
                     </motion.div>
                 )}

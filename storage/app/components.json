@@ -1322,8 +1322,8 @@
                     "badge_brand_up_name",
                     "is_card_content_description",
                     "class_badge_category",
-                    "class_button_card_detail"
-                   
+                    "class_button_card_detail",
+                    "bool:is_master:Productos usan producto maestro"
                 ],
                 "options": [
                     {
@@ -1615,7 +1615,8 @@
                     "section_stores",
                     "section_prices",
                     "dat_prices",
-                    "section_amenities"
+                    "section_amenities",
+                    "bool:is_master:Productos usan producto maestro"
                 ],
                 "options": [
                     {
@@ -4773,22 +4774,7 @@
                     "model": "Aboutus"
                 }
             },
-            {
-                "id": "AboutBenefits",
-                "name": "Beneficios y Ventajas",
-                "image": "about-benefits.png",
-                "data": [
-                    "class_section",
-                    "class_container",
-                    "class_title",
-                    "class_subtitle",
-                    "class_benefits_grid",
-                    "class_benefit_card",
-                    "class_benefit_icon",
-                    "class_benefit_title",
-                    "class_benefit_description"
-                ]
-            },
+           
             {
                 "id": "AboutSidebar",
                 "name": "About con Sidebar - Estilo Service",
@@ -5772,6 +5758,8 @@
                 "image": "brand-carousel.png",
                 "data": [
                     "title",
+
+                    "class_title",
                     "class_section",
                     "class_content",
                     "select:navigationVariant:Variante de Botones:standard|Estándar,white|Blanco Circular,dark|Oscuro",
