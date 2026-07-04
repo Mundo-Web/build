@@ -63,6 +63,7 @@ use App\Http\Controllers\Admin\ProviderController as AdminProviderController;
 use App\Http\Controllers\Admin\JobApplicationController as AdminJobApplicationController;
 use App\Http\Controllers\Admin\PackagingController as AdminPackagingController;
 use App\Http\Controllers\Admin\RoleHasMenuController;
+use App\Http\Controllers\Admin\RelatedGroupController as AdminRelatedGroupController;
 // Public 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\RepositoryController;
@@ -137,6 +138,7 @@ Route::middleware(['can:Admin', 'auth'])->prefix('admin')->group(function () {
     Route::post('/items/status', [AdminItemController::class, 'setStatus']);
 
     Route::get('/combos', [AdminComboController::class, 'reactView'])->name('Admin/Combos.jsx');
+    Route::get('/related-groups', [AdminRelatedGroupController::class, 'reactView'])->name('Admin/RelatedGroups.jsx');
 
     Route::get('/categories', [AdminCategoryController::class, 'reactView'])->name('Admin/Categories.jsx');
     Route::get('/blog-categories', [AdminBlogCategoryController::class, 'reactView'])->name('Admin/BlogCategories.jsx');

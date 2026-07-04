@@ -151,6 +151,48 @@ class ItemsRest extends BasicRest {
     setStatus = async ({ id, status }) => {
         return await this.status({ id, status });
     };
+
+    syncRelatedItems = async (id, itemIds) => {
+        try {
+            const response = await fetch(`/api/admin/items/sync-related`, {
+                method: "POST",
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    'X-Xsrf-Token': decodeURIComponent(Cookies.get('XSRF-TOKEN'))
+                },
+                body: JSON.stringify({ id, related_item_ids: itemIds })
+            });
+            const result = await response.json();
+            if (!response.ok) {
+                throw new Error(result?.message || 'Error al sincronizar relacionados');
+            }
+            return result;
+        } catch (error) {
+            console.error('Error syncing related items:', error);
+            return null;
+        }
+    };
+
+    getManualRelated = async (id) => {
+        try {
+            const response = await fetch(`/api/admin/items/${id}/manual-related`, {
+                method: "GET",
+                headers: {
+                    'Accept': 'application/json',
+                    'X-Xsrf-Token': decodeURIComponent(Cookies.get('XSRF-TOKEN'))
+                }
+            });
+            const result = await response.json();
+            if (response.ok) {
+                return result.data;
+            }
+            return [];
+        } catch (error) {
+            console.error('Error fetching manual related:', error);
+            return [];
+        }
+    };
 }
 
 export default ItemsRest;

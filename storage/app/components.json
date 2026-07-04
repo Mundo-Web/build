@@ -3445,7 +3445,16 @@
                     "link_cart",
                     "class_button",
                     "class_header",
-                    "class_content"
+                    "class_content",
+                    "related_title",
+                    "related_description",
+                    "related_class_container",
+                    "related_class_title",
+                    "select:related_filter:Filtro Relacionados Automáticos:category_id|Por Categoría,collection_id|Por Colección,brand_id|Por Marca",
+                    "related_limit",
+                    "bool:related_loop:Loop en relacionados",
+                    "bool:related_autoplay:Autoplay en relacionados",
+                    "select:related_type_card_product:Tipo de Tarjeta Relacionados:CardProductMiBalon|Mi Balón,CardProductMicjc|Micjc,CardProductBananaLab|Banana Lab,CardProductMultivet|Multivet,CardProductKatya|Katya,ProductCardColors|Sala Fabulosa,ProductCardColorsBoton|Colors Boton,ProductCardFull|Full,ProductCardSimple|Simple"
                 ],
                 "using": {
                     "model": "Item",
@@ -3746,7 +3755,16 @@
                     "bool:cartButton:Mostrar botón Al Carrito",
                     "bool:showDeliveryPolicy:Mostrar Políticas de Envío",
                     "bool:show_whatsapp:Mostrar botón WhatsApp",
-                    "bool:quoteButton:Tipo de mensaje WhatsApp (activado = Cotización, desactivado = Consulta)"
+                    "bool:quoteButton:Tipo de mensaje WhatsApp (activado = Cotización, desactivado = Consulta)",
+                    "related_title",
+                    "related_description",
+                    "related_class_container",
+                    "related_class_title",
+                    "select:related_filter:Filtro Relacionados Automáticos:category_id|Por Categoría,collection_id|Por Colección,brand_id|Por Marca",
+                    "related_limit",
+                    "bool:related_loop:Loop en relacionados",
+                    "bool:related_autoplay:Autoplay en relacionados",
+                    "select:related_type_card_product:Tipo de Tarjeta Relacionados:CardProductMiBalon|Mi Balón,CardProductMicjc|Micjc,CardProductBananaLab|Banana Lab,CardProductMultivet|Multivet,CardProductKatya|Katya,ProductCardColors|Sala Fabulosa,ProductCardColorsBoton|Colors Boton,ProductCardFull|Full,ProductCardSimple|Simple"
                 ],
               
                 "generals": [

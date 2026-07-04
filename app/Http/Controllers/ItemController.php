@@ -7,6 +7,7 @@ use App\Models\Brand;
 use App\Models\Category;
 use App\Models\Collection;
 use App\Models\Combo;
+use App\Models\RelatedGroup;
 use App\Models\General;
 use App\Models\Item;
 use App\Models\ItemAmenity;
@@ -976,38 +977,97 @@ class ItemController extends BasicController
 
     public function relationsItems(Request $request): HttpResponse | ResponseFactory
     {
-        ////dump($request->all());
         $response = new Response();
         try {
-            // Validar el ID del producto
-            $request->validate([
-                'id' => 'required',
-            ]);
+            $request->validate(['id' => 'required']);
 
-            // Obtener el producto principal
             $product = Item::findOrFail($request->id);
-            ////dump($product);
-            // Obtener productos de la misma categoría (excluyendo el producto principal)
-            $relatedItems = Item::where('category_id', $product->category_id)
-                ->where('id', '!=', $product->id) // Excluir el producto actual
-                ->with(['category', 'brand']) // Cargar relaciones necesarias
-                ->where('status', true)
-                ->where('visible', true)
-                ->take(10) // Limitar a 10 productos
-                ->get();
-            ////dump($relatedItems);
+            $filter  = $request->input('related_filter', 'category');
+            $limit   = (int) $request->input('related_limit', 10);
 
-            // Verificar si hay productos relacionados
+            $relatedItems = collect();
+
+            // ── Prioridad 1: Relaciones individuales manuales ──────────────────
+            $manualRelated = $product->manualRelated()->take($limit)->get();
+            if ($manualRelated->isNotEmpty()) {
+                $relatedItems = $manualRelated;
+            }
+
+            // ── Prioridad 2: Grupo de relacionados ────────────────────────────
+            if ($relatedItems->isEmpty()) {
+                $group = RelatedGroup::whereHas('allItems', function ($q) use ($product) {
+                    $q->where('items.id', $product->id);
+                })->where('status', true)->first();
+
+                if ($group) {
+                    $relatedItems = $group->items()
+                        ->where('items.id', '!=', $product->id)
+                        ->take($limit)
+                        ->get();
+                }
+            }
+
+            // ── Prioridad 3: Filtro dinámico (category / brand / etc.) ────────
+            if ($relatedItems->isEmpty()) {
+                $query = Item::where('id', '!=', $product->id)
+                    ->where('status', true)
+                    ->where('visible', true);
+
+                switch ($filter) {
+                    case 'brand':
+                        $query->where('brand_id', $product->brand_id);
+                        break;
+                    case 'subcategory':
+                        $query->where('subcategory_id', $product->subcategory_id);
+                        break;
+                    case 'collection':
+                        $query->where('collection_id', $product->collection_id);
+                        break;
+                    default: // 'category'
+                        $query->where('category_id', $product->category_id);
+                        break;
+                }
+
+                $relatedItems = $query->take($limit)->get();
+            }
+
             if ($relatedItems->isEmpty()) {
                 $response->status = 400;
                 $response->message = 'No hay productos relacionados.';
                 return response($response->toArray(), $response->status);
             }
 
-            // Formatear la respuesta
             $response->status = 200;
             $response->message = 'Productos relacionados encontrados.';
             $response->data = $relatedItems;
+        } catch (\Throwable $th) {
+            $response->status = 400;
+            $response->message = $th->getMessage();
+        } finally {
+            return response($response->toArray(), $response->status);
+        }
+    }
+
+    /**
+     * Sync manual related items for a specific product (individual mode)
+     */
+    public function syncRelatedItems(Request $request): HttpResponse | ResponseFactory
+    {
+        $response = new Response();
+        try {
+            $request->validate(['id' => 'required']);
+
+            $product = Item::findOrFail($request->id);
+            $itemIds = $request->input('related_item_ids', []);
+
+            // Remove self just in case
+            $itemIds = array_filter($itemIds, fn($rid) => $rid !== $product->id);
+
+            $product->manualRelated()->sync($itemIds);
+
+            $response->status = 200;
+            $response->message = 'Productos relacionados guardados correctamente.';
+            $response->data = $product->manualRelated()->get();
         } catch (\Throwable $th) {
             $response->status = 400;
             $response->message = $th->getMessage();

@@ -100,6 +100,27 @@ const Items = ({
     const [selectedApplications, setSelectedApplications] = useState([]);
     const [applications, setApplications] = useState([]);
 
+    const manualRelatedRef = useRef();
+    const [selectedManualRelated, setSelectedManualRelated] = useState([]);
+
+    const handleManualRelatedChange = (event) => {
+        const selectedData = $(event.target).select2('data');
+        const newProducts = selectedData.map((item) => item.data).filter(Boolean);
+        setSelectedManualRelated((prev) => {
+            const existingIds = prev.map((p) => p.id);
+            const unique = newProducts.filter((p) => !existingIds.includes(p.id));
+            return [...prev, ...unique];
+        });
+    };
+
+    const removeManualRelated = (productId) => {
+        const updated = selectedManualRelated.filter((p) => p.id !== productId);
+        setSelectedManualRelated(updated);
+        if (manualRelatedRef.current) {
+            $(manualRelatedRef.current).val(updated.map((p) => p.id.toString())).trigger('change');
+        }
+    };
+
     // Estados para atributos dinámicos
     const [availableAttributes, setAvailableAttributes] = useState(
         initialAttributes || [],
@@ -502,6 +523,24 @@ const Items = ({
             setItemAttributes([]);
         }
 
+        if (data?.id) {
+            itemsRest.getManualRelated(data.id).then((related) => {
+                setSelectedManualRelated(related || []);
+                setTimeout(() => {
+                    if (manualRelatedRef.current) {
+                        $(manualRelatedRef.current).val((related || []).map(r => r.id)).trigger('change');
+                    }
+                }, 100);
+            });
+        } else {
+            setSelectedManualRelated([]);
+            setTimeout(() => {
+                if (manualRelatedRef.current) {
+                    $(manualRelatedRef.current).val([]).trigger('change');
+                }
+            }, 100);
+        }
+
         // Reset delete flags using direct references - only when opening modal
         if (bannerRef.deleteRef) bannerRef.deleteRef.value = "";
         if (imageRef.deleteRef) imageRef.deleteRef.value = "";
@@ -794,6 +833,10 @@ const Items = ({
 
         const result = await itemsRest.save(formData);
         if (!result) return;
+
+        // Guardar relaciones individuales
+        const relatedIds = $(manualRelatedRef.current).val() || [];
+        await itemsRest.syncRelatedItems(result.data?.id || result.id || idRef.current?.value, relatedIds);
 
         // Reset delete flags after successful save
         if (bannerRef.resetDeleteFlag) bannerRef.resetDeleteFlag();
@@ -1844,6 +1887,26 @@ const Items = ({
                             >
                                 <i className="fas fa-list-ul me-2"></i>
                                 Características
+                            </button>
+                        </li>
+                        <li className="nav-item" role="presentation">
+                            <button
+                                className="nav-link"
+                                id="related-tab"
+                                data-bs-toggle="pill"
+                                data-bs-target="#related"
+                                type="button"
+                                role="tab"
+                                aria-controls="related"
+                                aria-selected="false"
+                                style={{
+                                    borderRadius: "6px",
+                                    fontWeight: "500",
+                                    transition: "all 0.3s ease",
+                                }}
+                            >
+                                <i className="fas fa-link me-2"></i>
+                                Relacionados
                             </button>
                         </li>
                     </ul>
@@ -3809,6 +3872,94 @@ const Items = ({
                                             </div>
                                         </div>
                                     )}
+                            </div>
+                        </div>
+
+                        {/* Pestaña: Relacionados */}
+                        <div
+                            className="tab-pane fade"
+                            id="related"
+                            role="tabpanel"
+                            aria-labelledby="related-tab"
+                        >
+                            <div className="card border-0 shadow-sm">
+                                <div className="card-header">
+                                    <h6 className="mb-0">
+                                        <i className="fas fa-link me-2"></i>
+                                        Productos Relacionados (Manual)
+                                    </h6>
+                                </div>
+                                <div className="card-body">
+                                    <div className="alert alert-info">
+                                        <i className="fa fa-info-circle me-2"></i>
+                                        Aquí puedes elegir manualmente qué productos aparecerán como "Relacionados" o "También te puede interesar" en el detalle de este producto. 
+                                        Esta selección tiene <strong>prioridad máxima</strong> sobre los Grupos y las sugerencias automáticas de la misma categoría.
+                                    </div>
+                                    
+                                    <SelectAPIFormGroup
+                                        id="manual-related"
+                                        eRef={manualRelatedRef}
+                                        searchAPI="/api/admin/items/paginate"
+                                        searchBy="name"
+                                        label="Seleccionar productos"
+                                        dropdownParent="#principal-container"
+                                        multiple
+                                        onChange={handleManualRelatedChange}
+                                    />
+
+                                    {/* Lista de productos seleccionados manualmente */}
+                                    <div className='col-12 mt-4'>
+                                        <h6 className='mb-3'>
+                                            <i className='mdi mdi-package-variant me-2'></i>
+                                            Productos Seleccionados
+                                            <span className='badge bg-primary ms-2'>{selectedManualRelated.length}</span>
+                                        </h6>
+
+                                        {selectedManualRelated.length === 0 && (
+                                            <div className='alert alert-light text-center py-3'>
+                                                <i className='mdi mdi-basket-outline d-block mb-1' style={{ fontSize: '2rem', opacity: 0.4 }}></i>
+                                                <small className='text-muted'>Aún no has seleccionado productos relacionados.</small>
+                                            </div>
+                                        )}
+
+                                        <div className='row g-2'>
+                                            {selectedManualRelated.map((product) => (
+                                                <div key={product.id} className='col-md-6 col-lg-4'>
+                                                    <div className='card border h-100 shadow-sm mb-0'>
+                                                        <div className='row g-0 align-items-center h-100'>
+                                                            <div className='col-3'>
+                                                                <img
+                                                                    src={`/storage/images/item/${product?.image ?? 'undefined'}`}
+                                                                    className='img-fluid rounded-start'
+                                                                    style={{ height: '70px', objectFit: 'cover', width: '100%' }}
+                                                                    alt={product.name}
+                                                                    onError={(e) => e.target.src = '/api/cover/thumbnail/null'}
+                                                                />
+                                                            </div>
+                                                            <div className='col-9'>
+                                                                <div className='card-body p-2'>
+                                                                    <p className='card-title small fw-bold mb-0 line-clamp-2'>{product?.name}</p>
+                                                                    {product?.final_price && (
+                                                                        <p className='small text-primary mb-1'>
+                                                                            {CurrencySymbol()} {Number2Currency(product.final_price)}
+                                                                        </p>
+                                                                    )}
+                                                                    <button
+                                                                        type='button'
+                                                                        className='btn btn-xs btn-soft-danger mt-1'
+                                                                        onClick={() => removeManualRelated(product.id)}
+                                                                    >
+                                                                        <i className='fa fa-times me-1'></i> Quitar
+                                                                    </button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>

@@ -313,6 +313,8 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
             // Preparar la solicitud
             const request = {
                 id: item?.id,
+                related_filter: data?.related_filter || 'category',
+                related_limit: data?.related_limit || 10
             };
 
             // Llamar al backend para verificar el combo

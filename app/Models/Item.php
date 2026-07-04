@@ -335,6 +335,25 @@ class Item extends Model
             );
     }
 
+    /**
+     * Grupos de relacionados a los que pertenece este producto
+     */
+    public function relatedGroups()
+    {
+        return $this->belongsToMany(RelatedGroup::class, 'related_group_items', 'item_id', 'group_id');
+    }
+
+    /**
+     * Productos relacionados de forma individual (manual)
+     */
+    public function manualRelated()
+    {
+        return $this->belongsToMany(Item::class, 'item_related', 'item_id', 'related_item_id')
+            ->where('items.status', true)
+            ->where('items.visible', true)
+            ->select(['items.id', 'items.slug', 'items.name', 'items.image', 'items.final_price', 'items.price', 'items.discount', 'items.discount_percent', 'items.category_id', 'items.brand_id']);
+    }
+
     // En tu modelo Item.php
     public function getVariantsAttribute()
     {

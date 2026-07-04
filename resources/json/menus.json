@@ -25,7 +25,8 @@
           { "label": "Etiquetas", "href": "/admin/tags", "icon": "mdi mdi-label-multiple" },
           { "id": "product-amenities", "label": "Cualidades", "href": "/admin/amenities", "icon": "mdi mdi-star-circle" },
           {"label":"Atributos","href":"/admin/attributes","icon":"mdi mdi-format-list-bulleted-type" },
-      { "label": "Aplicaciones", "href": "/admin/applications", "icon": "mdi mdi-apps" }
+          { "label": "Aplicaciones", "href": "/admin/applications", "icon": "mdi mdi-apps" },
+          { "label": "Grupos Relacionados", "href": "/admin/related-groups", "icon": "mdi mdi-link-variant" }
         
         ]
       },

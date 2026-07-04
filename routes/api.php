@@ -64,6 +64,7 @@ use App\Http\Controllers\Admin\FaqController as AdminFaqController;
 use App\Http\Controllers\Admin\RankController as AdminRankController;
 use App\Http\Controllers\Admin\RankBonusController as AdminRankBonusController;
 use App\Http\Controllers\Admin\ComboController as AdminComboController;
+use App\Http\Controllers\Admin\RelatedGroupController as AdminRelatedGroupController;
 use App\Http\Controllers\Admin\DeliveryZoneController as AdminDeliveryZoneController;
 use App\Http\Controllers\Admin\ImageUploadController;
 use App\Http\Controllers\Admin\NotificationVariableController;
@@ -431,6 +432,21 @@ Route::middleware('auth')->group(function () {
     Route::patch('/combos/{field}', [AdminComboController::class, 'boolean']);
     Route::delete('/combos/{id}', [AdminComboController::class, 'delete']);
     Route::get('/combos/{id}', [AdminComboController::class, 'show']);
+
+    // Grupos de Productos Relacionados
+    Route::post('/related-groups', [AdminRelatedGroupController::class, 'save']);
+    Route::post('/related-groups/paginate', [AdminRelatedGroupController::class, 'paginate']);
+    Route::patch('/related-groups/{field}', [AdminRelatedGroupController::class, 'boolean']);
+    Route::delete('/related-groups/{id}', [AdminRelatedGroupController::class, 'delete']);
+    Route::get('/related-groups/{id}', [AdminRelatedGroupController::class, 'show']);
+    Route::post('/related-groups/{id}/sync-items', [AdminRelatedGroupController::class, 'syncItems']);
+
+    // Relaciones individuales por producto
+    Route::post('/items/sync-related', [ItemController::class, 'syncRelatedItems']);
+    Route::get('/items/{id}/manual-related', function ($id) {
+        $item = \App\Models\Item::findOrFail($id);
+        return response()->json(['status' => true, 'data' => $item->manualRelated()->get()]);
+    });
 
     Route::post('/coupons', [AdminCouponController::class, 'save']);
     Route::post('/coupons/paginate', [AdminCouponController::class, 'paginate']);
