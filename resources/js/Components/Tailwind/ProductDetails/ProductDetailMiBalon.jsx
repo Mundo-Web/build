@@ -17,7 +17,7 @@ import {
     Truck,
     X,
     ZoomIn,
-    MessageCircle,
+    Quote,
 } from "lucide-react";
 import ItemsRest from "../../../Actions/ItemsRest";
 import Swal from "sweetalert2";
@@ -33,6 +33,11 @@ import General from "../../../Utils/General";
 import ReactModal from "react-modal";
 import TextWithHighlight from "../../../Utils/TextWithHighlight";
 import CartModalMiBalon from "../Components/CartModalMiBalon";
+const WhatsAppIcon = ({ className }) => (
+    <svg className={className} fill="currentColor" viewBox="0 0 24 24">
+        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.892 3.386" />
+    </svg>
+);
 
 const ProductDetailMiBalon = ({
     item,
@@ -48,6 +53,7 @@ const ProductDetailMiBalon = ({
     const [isExpanded, setIsExpanded] = useState(false);
     const [expandedSpecificationMain, setExpanded] = useState(false);
     const [isAdvisorDropdownOpen, setIsAdvisorDropdownOpen] = useState(false);
+    const [whatsappAction, setWhatsappAction] = useState("consult"); // 'consult' o 'quote'
     const [deliveryPolicyModalOpen, setDeliveryPolicyModalOpen] =
         useState(false);
     const [variantsForSelectedGroup, setVariantsForSelectedGroup] = useState(
@@ -57,6 +63,7 @@ const ProductDetailMiBalon = ({
     const [selectedVariant, setSelectedVariant] = useState(item);
     const [selectedAttributes, setSelectedAttributes] = useState({});
     const [modalOpen, setModalOpen] = useState(false);
+    const [showAllSpecs, setShowAllSpecs] = useState(false);
 
     // Zoom State
     const [zoomPosition, setZoomPosition] = useState({ x: 0, y: 0 });
@@ -91,6 +98,39 @@ const ProductDetailMiBalon = ({
                         "rounded-none border-4 border-black bg-black text-white hover:bg-white hover:text-neutral-dark transition-all",
                 },
             });
+        }
+    };
+
+    const handleWhatsAppClick = (actionType) => {
+        setWhatsappAction(actionType);
+        const message = actionType === "quote"
+            ? `¡Hola! Me gustaría cotizar este producto: ${currentProduct?.name}\n\nCantidad: ${quantity} unidades\n\n¿Podrían enviarme más información y precios?`
+            : `¡Hola! Tengo dudas sobre: ${currentProduct?.name}`;
+
+        if (advisors && advisors.length > 1) {
+            setIsAdvisorDropdownOpen(true);
+        } else {
+            const defaultPhone = generals?.find(
+                (g) => g.correlative === "phone_whatsapp"
+            )?.description;
+            const phone = advisors?.[0]?.phone || defaultPhone;
+            if (phone) {
+                window.open(
+                    `https://api.whatsapp.com/send?phone=${phone}&text=${encodeURIComponent(message)}`,
+                    "_blank"
+                );
+            } else {
+                Swal.fire({
+                    title: "WhatsApp no disponible",
+                    text: "No se ha configurado un número de contacto.",
+                    icon: "warning",
+                    confirmButtonColor: "#000000",
+                    customClass: {
+                        popup: "rounded-none border-4 border-black uppercase tracking-tight",
+                        confirmButton: "rounded-none border-4 border-black bg-black text-white hover:bg-white hover:text-neutral-dark transition-all"
+                    }
+                });
+            }
         }
     };
 
@@ -349,46 +389,46 @@ const ProductDetailMiBalon = ({
     const group =
         variantsForSelectedGroup.length > 0
             ? {
-                  variants: variantsForSelectedGroup,
-                  allAttributes: Array.from(
-                      new Set(
-                          variantsForSelectedGroup.flatMap((v) => {
-                              const vAttrs = Array.isArray(v.attributes)
-                                  ? v.attributes
-                                  : Object.values(v.attributes || {});
-                              return vAttrs.map((a) => a.name || a.slug);
-                          }),
-                      ),
-                  ).map((name) => {
-                      const values = [];
-                      variantsForSelectedGroup.forEach((v) => {
-                          const vAttrs = Array.isArray(v.attributes)
-                              ? v.attributes
-                              : Object.values(v.attributes || {});
-                          const attr = vAttrs.find(
-                              (a) => (a.name || a.slug) === name,
-                          );
-                          if (attr) {
-                              const value = attr.pivot?.value || attr.value;
-                              if (!values.find((val) => val.value === value)) {
-                                  values.push({ value, itemId: v.id, item: v });
-                              }
-                          }
-                      });
-                      return {
-                          name,
-                          attribute: variantsForSelectedGroup
-                              .map((v) =>
-                                  Array.isArray(v.attributes)
-                                      ? v.attributes
-                                      : Object.values(v.attributes || {}),
-                              )
-                              .flat()
-                              .find((a) => (a.name || a.slug) === name),
-                          values,
-                      };
-                  }),
-              }
+                variants: variantsForSelectedGroup,
+                allAttributes: Array.from(
+                    new Set(
+                        variantsForSelectedGroup.flatMap((v) => {
+                            const vAttrs = Array.isArray(v.attributes)
+                                ? v.attributes
+                                : Object.values(v.attributes || {});
+                            return vAttrs.map((a) => a.name || a.slug);
+                        }),
+                    ),
+                ).map((name) => {
+                    const values = [];
+                    variantsForSelectedGroup.forEach((v) => {
+                        const vAttrs = Array.isArray(v.attributes)
+                            ? v.attributes
+                            : Object.values(v.attributes || {});
+                        const attr = vAttrs.find(
+                            (a) => (a.name || a.slug) === name,
+                        );
+                        if (attr) {
+                            const value = attr.pivot?.value || attr.value;
+                            if (!values.find((val) => val.value === value)) {
+                                values.push({ value, itemId: v.id, item: v });
+                            }
+                        }
+                    });
+                    return {
+                        name,
+                        attribute: variantsForSelectedGroup
+                            .map((v) =>
+                                Array.isArray(v.attributes)
+                                    ? v.attributes
+                                    : Object.values(v.attributes || {}),
+                            )
+                            .flat()
+                            .find((a) => (a.name || a.slug) === name),
+                        values,
+                    };
+                }),
+            }
             : null;
 
     const mibalonSectionTitleClass =
@@ -397,14 +437,19 @@ const ProductDetailMiBalon = ({
         "w-full py-5 text-lg font-title   transition-all duration-300 rounded-full  active:scale-[0.98]";
     const mibalonPrimaryBtn = `${mibalonButtonClass} bg-primary text-white hover:bg-neutral-dark hover:border-neutral-dark uppercase`;
     const mibalonSecondaryBtn = `${mibalonButtonClass} border border-neutral-dark bg-white text-neutral-dark hover:bg-gray-50 border-gray-200 uppercase`;
+    const mibalonWhatsappBtn = `${mibalonButtonClass} bg-[#25D366] text-white hover:bg-[#25D366] border border-[#25D366] hover:border-[#25D366] uppercase flex items-center justify-center gap-2`;
+    const mibalonQuoteBtn = `${mibalonButtonClass} bg-neutral-dark text-white hover:bg-black border border-neutral-dark hover:border-black uppercase flex items-center justify-center gap-2`;
+    const hasValidPrice =
+        (currentProduct?.final_price && parseFloat(currentProduct.final_price) > 0) ||
+        (currentProduct?.price && parseFloat(currentProduct.price) > 0);
 
     const generalSpecifications = (
         Array.isArray(currentProduct?.specifications) &&
-        currentProduct.specifications.length > 0
+            currentProduct.specifications.length > 0
             ? currentProduct.specifications
             : Array.isArray(item?.specifications)
-              ? item.specifications
-              : []
+                ? item.specifications
+                : []
     ).filter((s) => s.type === "general" || !s.type);
 
     console.log("ProductDetailMiBalon: Rendering with group", group);
@@ -423,8 +468,8 @@ const ProductDetailMiBalon = ({
                                 ...(Array.isArray(currentProduct?.images)
                                     ? currentProduct.images
                                     : Object.values(
-                                          currentProduct?.images || {},
-                                      )),
+                                        currentProduct?.images || {},
+                                    )),
                             ]
                                 .filter((img, idx, self) => {
                                     const url = img?.url || img;
@@ -452,8 +497,8 @@ const ProductDetailMiBalon = ({
                                                 src={`/storage/images/item/${imgUrl}`}
                                                 className="w-full h-full object-contain object-top"
                                                 onError={(e) =>
-                                                    (e.target.src =
-                                                        "/api/cover/thumbnail/null")
+                                                (e.target.src =
+                                                    "/api/cover/thumbnail/null")
                                                 }
                                             />
                                         </div>
@@ -497,13 +542,13 @@ const ProductDetailMiBalon = ({
                                         style={
                                             isZoomEnabled
                                                 ? {
-                                                      transformOrigin: `${zoomPosition.x}% ${zoomPosition.y}%`,
-                                                  }
+                                                    transformOrigin: `${zoomPosition.x}% ${zoomPosition.y}%`,
+                                                }
                                                 : {}
                                         }
                                         onError={(e) =>
-                                            (e.target.src =
-                                                "/api/cover/thumbnail/null")
+                                        (e.target.src =
+                                            "/api/cover/thumbnail/null")
                                         }
                                     />
                                 </AnimatePresence>
@@ -553,7 +598,7 @@ const ProductDetailMiBalon = ({
                                         currentProduct?.category?.name ||
                                         "COLECCIÓN PREMIUM"}
                                 </span>
-                                <h1 className="text-4xl md:text-5xl lg:text-6xl font-title uppercase tracking-tight leading-[1] text-neutral-dark">
+                                <h1 className={` text-4xl md:text-5xl lg:text-6xl font-title uppercase tracking-tight leading-[1] text-neutral-dark ${data?.class_title}`}>
                                     <TextWithHighlight
                                         text={currentProduct?.name}
                                         className="font-title"
@@ -572,20 +617,20 @@ const ProductDetailMiBalon = ({
                                 </span>
                                 {currentProduct?.price >
                                     currentProduct?.final_price && (
-                                    <div className="flex flex-col">
-                                        <span className="text-xl text-neutral-dark/30 line-through  leading-none">
-                                            {CurrencySymbol()}{" "}
-                                            {currentProduct?.price}
-                                        </span>
-                                        <span className="text-sm  tracking-tighter text-primary">
-                                            AHORRA{" "}
-                                            {Number(
-                                                currentProduct?.discount_percent,
-                                            ).toFixed(0)}
-                                            %
-                                        </span>
-                                    </div>
-                                )}
+                                        <div className="flex flex-col">
+                                            <span className="text-xl text-neutral-dark/30 line-through  leading-none">
+                                                {CurrencySymbol()}{" "}
+                                                {currentProduct?.price}
+                                            </span>
+                                            <span className="text-sm  tracking-tighter text-primary">
+                                                AHORRA{" "}
+                                                {Number(
+                                                    currentProduct?.discount_percent,
+                                                ).toFixed(0)}
+                                                %
+                                            </span>
+                                        </div>
+                                    )}
                             </div>
 
                             {/* Variants Selection */}
@@ -650,16 +695,16 @@ const ProductDetailMiBalon = ({
                                                                                 ) => {
                                                                                     newAttrs[
                                                                                         a.name ||
-                                                                                            a.slug
+                                                                                        a.slug
                                                                                     ] =
-                                                                                        {
-                                                                                            value:
-                                                                                                a
-                                                                                                    .pivot
-                                                                                                    ?.value ||
-                                                                                                a.value,
-                                                                                            item: matching,
-                                                                                        };
+                                                                                    {
+                                                                                        value:
+                                                                                            a
+                                                                                                .pivot
+                                                                                                ?.value ||
+                                                                                            a.value,
+                                                                                        item: matching,
+                                                                                    };
                                                                                 },
                                                                             );
                                                                             setSelectedAttributes(
@@ -689,37 +734,39 @@ const ProductDetailMiBalon = ({
                             )}
 
                             {/* Purchase Actions */}
-                            <div className="space-y-8 pt-12">
-                                <div className="flex items-center justify-between border-b border-black/5 pb-8">
-                                    <span className="text-sm   text-neutral-dark">
-                                        Cantidad
-                                    </span>
-                                    <div className="flex items-center gap-12">
-                                        <button
-                                            onClick={() =>
-                                                setQuantity(
-                                                    Math.max(1, quantity - 1),
-                                                )
-                                            }
-                                            className="text-2xl font-medium hover:text-primary   transition-colors"
-                                        >
-                                            -
-                                        </button>
-                                        <span className="text-lg  w-6 text-center text-neutral-dark">
-                                            {quantity}
+                            <div className="space-y-8">
+                                {hasValidPrice && (
+                                    <div className="flex items-center justify-between border-b border-black/5 pb-8">
+                                        <span className="text-sm   text-neutral-dark">
+                                            Cantidad
                                         </span>
-                                        <button
-                                            onClick={() =>
-                                                setQuantity(
-                                                    Math.min(10, quantity + 1),
-                                                )
-                                            }
-                                            className="text-2xl font-medium hover:text-primary transition-colors"
-                                        >
-                                            +
-                                        </button>
+                                        <div className="flex items-center gap-12">
+                                            <button
+                                                onClick={() =>
+                                                    setQuantity(
+                                                        Math.max(1, quantity - 1),
+                                                    )
+                                                }
+                                                className="text-2xl font-medium hover:text-primary   transition-colors"
+                                            >
+                                                -
+                                            </button>
+                                            <span className="text-lg  w-6 text-center text-neutral-dark">
+                                                {quantity}
+                                            </span>
+                                            <button
+                                                onClick={() =>
+                                                    setQuantity(
+                                                        Math.min(10, quantity + 1),
+                                                    )
+                                                }
+                                                className="text-2xl font-medium hover:text-primary transition-colors"
+                                            >
+                                                +
+                                            </button>
+                                        </div>
                                     </div>
-                                </div>
+                                )}
                                 {(() => {
                                     const hasMultipleVariants =
                                         variantsForSelectedGroup.length > 1;
@@ -732,36 +779,67 @@ const ProductDetailMiBalon = ({
                                             (totalSelectedAttributes <
                                                 totalRequiredAttributes ||
                                                 currentProduct.id ===
-                                                    item.id)) ||
+                                                item.id)) ||
                                         currentProduct.is_master
                                     );
 
+                                    // buyButton y cartButton: default true (aparecen a menos que el admin los desactive)
+                                    const showBuy = data?.buyButton !== false && hasValidPrice;
+                                    const showCart = data?.cartButton !== false && hasValidPrice;
+                                    // show_whatsapp y quoteButton: default false (solo aparecen si el admin los activa)
+                                    // show_whatsapp muestra/oculta el botón único de WhatsApp
+                                    // quoteButton determina si el mensaje es de cotización o consulta
+                                    const showWhatsApp = data?.show_whatsapp === true;
+                                    const whatsappType = data?.quoteButton === true ? "quote" : "consult";
+
                                     return (
-                                        <div className="grid grid-cols-2 gap-3">
-                                            <button
-                                                disabled={!isFullySelected}
-                                                onClick={() => {
-                                                    onAddClicked(
-                                                        currentProduct,
-                                                    );
-                                                    if (isFullySelected) {
-                                                        window.location.href =
-                                                            "/cart";
-                                                    }
-                                                }}
-                                                className={`${mibalonPrimaryBtn} ${!isFullySelected ? "opacity-50 cursor-not-allowed hover:bg-primary hover:border-neutral-dark" : ""}`}
-                                            >
-                                                Comprar ahora
-                                            </button>
-                                            <button
-                                                disabled={!isFullySelected}
-                                                onClick={() =>
-                                                    onAddClicked(currentProduct)
-                                                }
-                                                className={`${mibalonSecondaryBtn} ${!isFullySelected ? "opacity-50 cursor-not-allowed hover:bg-white hover:border-gray-200" : ""}`}
-                                            >
-                                                Al Carrito
-                                            </button>
+                                        <div className="space-y-4">
+                                            {(showBuy || showCart) && (
+                                                <div className="grid grid-cols-2 gap-3">
+                                                    {showBuy && (
+                                                        <button
+                                                            disabled={!isFullySelected}
+                                                            onClick={() => {
+                                                                onAddClicked(
+                                                                    currentProduct,
+                                                                );
+                                                                if (isFullySelected) {
+                                                                    window.location.href =
+                                                                        "/cart";
+                                                                }
+                                                            }}
+                                                            className={`${mibalonPrimaryBtn} ${!isFullySelected ? "opacity-50 cursor-not-allowed hover:bg-primary hover:border-neutral-dark" : ""}`}
+                                                        >
+                                                            Comprar ahora
+                                                        </button>
+                                                    )}
+                                                    {showCart && (
+                                                        <button
+                                                            disabled={!isFullySelected}
+                                                            onClick={() =>
+                                                                onAddClicked(currentProduct)
+                                                            }
+                                                            className={`${mibalonSecondaryBtn} ${!isFullySelected ? "opacity-50 cursor-not-allowed hover:bg-white hover:border-gray-200" : ""}`}
+                                                        >
+                                                            Al Carrito
+                                                        </button>
+                                                    )}
+                                                </div>
+                                            )}
+
+                                            {showWhatsApp && (
+                                                <button
+                                                    onClick={() => handleWhatsAppClick(whatsappType)}
+                                                    className={mibalonWhatsappBtn}
+                                                >
+                                                    <WhatsAppIcon className="w-5 h-5" />
+                                                    <span>
+                                                        {whatsappType === "quote"
+                                                            ? "Solicitar Cotización"
+                                                            : "Contactar por WhatsApp"}
+                                                    </span>
+                                                </button>
+                                            )}
                                         </div>
                                     );
                                 })()}
@@ -770,7 +848,7 @@ const ProductDetailMiBalon = ({
                     </div>
 
                     {/* Specifications & Description */}
-                    <div className="col-span-12 grid grid-cols-1 lg:grid-cols-2 gap-24 mt-20 border-t border-black/5 pt-20">
+                    <div className="col-span-12 grid grid-cols-1 lg:grid-cols-2 gap-24  border-t border-black/5 pt-10">
                         <section>
                             <h2 className={mibalonSectionTitleClass}>
                                 <span>01 Descripción</span>
@@ -790,31 +868,83 @@ const ProductDetailMiBalon = ({
                                 <span>02 Especificaciones</span>
                                 <Plus size={14} className="opacity-20" />
                             </h2>
-                            <div className="grid grid-cols-1 gap-6">
+                            <div className="grid grid-cols-1 gap-4">
                                 {generalSpecifications.length > 0 ? (
-                                    generalSpecifications.map((spec, i) => (
-                                        <div
-                                            key={i}
-                                            className="border-b border-gray-100 pb-4 flex items-center justify-between group"
-                                        >
-                                            <div className="flex items-center gap-4">
-                                                <span className="text-[9px]  text-gray-300 w-4">
-                                                    {(i + 1)
-                                                        .toString()
-                                                        .padStart(2, "0")}
-                                                </span>
-                                                <span className="text-sm   text-neutral-dark">
-                                                    {spec.title ||
-                                                        "Característica"}
+                                    <>
+                                        {/* Primeros 10 siempre visibles */}
+                                        {generalSpecifications.slice(0, 10).map((spec, i) => (
+                                            <div
+                                                key={i}
+                                                className="border-b border-gray-100 pb-4 flex items-center justify-between group"
+                                            >
+                                                <div className="flex items-center gap-4">
+                                                    <span className="text-[9px] text-gray-300 w-4">
+                                                        {(i + 1).toString().padStart(2, "0")}
+                                                    </span>
+                                                    <span className="text-sm text-neutral-dark">
+                                                        {spec.title || "Característica"}
+                                                    </span>
+                                                </div>
+                                                <span className="text-sm font-medium tracking-normal text-neutral-dark">
+                                                    {spec.description || spec.value}
                                                 </span>
                                             </div>
-                                            <span className="text-sm font-medium tracking-normal text-neutral-dark group-hover:text-neutral-dark transition-colors">
-                                                {spec.description || spec.value}
-                                            </span>
-                                        </div>
-                                    ))
+                                        ))}
+
+                                        {/* Especificaciones extra (>10) con animación */}
+                                        <AnimatePresence>
+                                            {showAllSpecs && generalSpecifications.length > 10 && (
+                                                <motion.div
+                                                    initial={{ opacity: 0, height: 0 }}
+                                                    animate={{ opacity: 1, height: "auto" }}
+                                                    exit={{ opacity: 0, height: 0 }}
+                                                    transition={{ duration: 0.35, ease: "easeInOut" }}
+                                                    className="overflow-hidden grid grid-cols-1 gap-4"
+                                                >
+                                                    {generalSpecifications.slice(10).map((spec, i) => (
+                                                        <div
+                                                            key={i + 10}
+                                                            className="border-b border-gray-100 pb-4 flex items-center justify-between group"
+                                                        >
+                                                            <div className="flex items-center gap-4">
+                                                                <span className="text-[9px] text-gray-300 w-4">
+                                                                    {(i + 11).toString().padStart(2, "0")}
+                                                                </span>
+                                                                <span className="text-sm text-neutral-dark">
+                                                                    {spec.title || "Característica"}
+                                                                </span>
+                                                            </div>
+                                                            <span className="text-sm font-medium tracking-normal text-neutral-dark">
+                                                                {spec.description || spec.value}
+                                                            </span>
+                                                        </div>
+                                                    ))}
+                                                </motion.div>
+                                            )}
+                                        </AnimatePresence>
+
+                                        {/* Botón Ver más / Ver menos */}
+                                        {generalSpecifications.length > 10 && (
+                                            <button
+                                                onClick={() => setShowAllSpecs(!showAllSpecs)}
+                                                className="mt-2 flex items-center gap-2 text-xs uppercase tracking-widest text-neutral-dark hover:text-neutral-dark transition-colors group w-fit"
+                                            >
+                                                <span>
+                                                    {showAllSpecs
+                                                        ? "Ver menos características"
+                                                        : `Ver más características`}
+                                                </span>
+                                                <motion.div
+                                                    animate={{ rotate: showAllSpecs ? 180 : 0 }}
+                                                    transition={{ duration: 0.3 }}
+                                                >
+                                                    <ChevronDown size={12} className="opacity-50 group-hover:opacity-100" />
+                                                </motion.div>
+                                            </button>
+                                        )}
+                                    </>
                                 ) : (
-                                    <p className="text-sm   text-neutral-dark/20">
+                                    <p className="text-sm text-neutral-dark/20">
                                         No hay especificaciones disponibles.
                                     </p>
                                 )}
@@ -823,31 +953,33 @@ const ProductDetailMiBalon = ({
                     </div>
 
                     {/* Policy Section */}
-                    <div className="col-span-12">
-                        <div
-                            onClick={() => setDeliveryPolicyModalOpen(true)}
-                            className="bg-[#F7F9FB] text-neutral-dark py-12 px-8 flex items-center justify-between cursor-pointer group border border-gray-100 hover:border-primary/30 hover:bg-white transition-all duration-500 rounded-[2rem]"
-                        >
-                            <div className="flex items-center gap-12">
-                                <Truck className="w-16 h-16 stroke-[1] text-neutral-dark/40 group-hover:text-primary transition-colors" />
-                                <div>
-                                    <h4 className="text-3xl lg:text-4xl font-title uppercase text-neutral-dark group-hover:text-primary transition-colors">
-                                        Políticas de Envío
-                                    </h4>
-                                    <p className="text-sm   text-neutral-dark/40 mt-2">
-                                        Condiciones de entrega y tiempos a nivel
-                                        nacional
-                                    </p>
+                    {data?.showDeliveryPolicy !== false && (
+                        <div className="col-span-12">
+                            <div
+                                onClick={() => setDeliveryPolicyModalOpen(true)}
+                                className="bg-[#F7F9FB] text-neutral-dark py-12 px-8 flex items-center justify-between cursor-pointer group border border-gray-100 hover:border-primary/30 hover:bg-white transition-all duration-500 rounded-[2rem]"
+                            >
+                                <div className="flex items-center gap-12">
+                                    <Truck className="w-16 h-16 stroke-[1] text-neutral-dark/40 group-hover:text-primary transition-colors" />
+                                    <div>
+                                        <h4 className="text-3xl lg:text-4xl font-title uppercase text-neutral-dark group-hover:text-primary transition-colors">
+                                            Políticas de Envío
+                                        </h4>
+                                        <p className="text-sm   text-neutral-dark/40 mt-2">
+                                            Condiciones de entrega y tiempos a nivel
+                                            nacional
+                                        </p>
+                                    </div>
+                                </div>
+                                <div className="flex items-center gap-6">
+                                    <span className="text-sm  tracking-widest hidden group-hover:block transition-all opacity-0 group-hover:opacity-100">
+                                        DETALLES
+                                    </span>
+                                    <ChevronRight className="w-10 h-10 transform group-hover:translate-x-4 transition-transform stroke-[1]" />
                                 </div>
                             </div>
-                            <div className="flex items-center gap-6">
-                                <span className="text-sm  tracking-widest hidden group-hover:block transition-all opacity-0 group-hover:opacity-100">
-                                    DETALLES
-                                </span>
-                                <ChevronRight className="w-10 h-10 transform group-hover:translate-x-4 transition-transform stroke-[1]" />
-                            </div>
                         </div>
-                    </div>
+                    )}
                 </div>
 
                 {/* Mobile View */}
@@ -881,11 +1013,11 @@ const ProductDetailMiBalon = ({
                                 </span>
                                 {currentProduct?.price >
                                     currentProduct?.final_price && (
-                                    <span className="text-lg text-neutral-dark/20 line-through ">
-                                        {CurrencySymbol()}{" "}
-                                        {currentProduct?.price}
-                                    </span>
-                                )}
+                                        <span className="text-lg text-neutral-dark/20 line-through ">
+                                            {CurrencySymbol()}{" "}
+                                            {currentProduct?.price}
+                                        </span>
+                                    )}
                             </div>
                         </div>
 
@@ -905,16 +1037,16 @@ const ProductDetailMiBalon = ({
                                     ...(Array.isArray(currentProduct?.images)
                                         ? currentProduct.images
                                         : Object.values(
-                                              currentProduct?.images || {},
-                                          )),
+                                            currentProduct?.images || {},
+                                        )),
                                 ].map((img, i) => (
                                     <SwiperSlide key={i}>
                                         <img
                                             src={`/storage/images/item/${img?.url || img}`}
                                             className="w-full h-full object-cover object-top"
                                             onError={(e) =>
-                                                (e.target.src =
-                                                    "/api/cover/thumbnail/null")
+                                            (e.target.src =
+                                                "/api/cover/thumbnail/null")
                                             }
                                         />
                                     </SwiperSlide>
@@ -955,9 +1087,9 @@ const ProductDetailMiBalon = ({
                                                             )
                                                                 ? matching.attributes
                                                                 : Object.values(
-                                                                      matching.attributes ||
-                                                                          {},
-                                                                  );
+                                                                    matching.attributes ||
+                                                                    {},
+                                                                );
                                                         mAttrs.forEach((a) => {
                                                             newAttrs[
                                                                 a.name || a.slug
@@ -1024,36 +1156,70 @@ const ProductDetailMiBalon = ({
                         </section>
                     </div>
 
-                    <div
-                        onClick={() => setDeliveryPolicyModalOpen(true)}
-                        className="border border-gray-100 py-8 flex justify-between items-center bg-gray-50 mx-2 active:bg-white transition-colors"
-                    >
-                        <div className="flex items-center gap-6">
-                            <Truck className="w-8 h-8 stroke-[1] text-neutral-dark/60" />
-                            <span className="text-sm   text-neutral-dark">
-                                Política de Envío
-                            </span>
+                    {data?.showDeliveryPolicy !== false && (
+                        <div
+                            onClick={() => setDeliveryPolicyModalOpen(true)}
+                            className="border border-gray-100 py-8 flex justify-between items-center bg-gray-50 mx-2 active:bg-white transition-colors"
+                        >
+                            <div className="flex items-center gap-6">
+                                <Truck className="w-8 h-8 stroke-[1] text-neutral-dark/60" />
+                                <span className="text-sm   text-neutral-dark">
+                                    Política de Envío
+                                </span>
+                            </div>
+                            <ChevronRight className="w-6 h-6 stroke-[1] text-neutral-dark/40" />
                         </div>
-                        <ChevronRight className="w-6 h-6 stroke-[1] text-neutral-dark/40" />
-                    </div>
+                    )}
 
-                    <div className="fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-neutral-dark p-6 grid grid-cols-2 gap-4 shadow-[0_-10px_30px_rgba(0,0,0,0.05)]">
-                        <button
-                            onClick={() => onAddClicked(currentProduct)}
-                            className={mibalonSecondaryBtn}
-                        >
-                            Carrito
-                        </button>
-                        <button
-                            onClick={() => {
-                                onAddClicked(currentProduct);
-                                window.location.href = "/cart";
-                            }}
-                            className={mibalonPrimaryBtn}
-                        >
-                            Pagar
-                        </button>
-                    </div>
+                    {(() => {
+                        const showBuy = data?.buyButton !== false && hasValidPrice;
+                        const showCart = data?.cartButton !== false && hasValidPrice;
+                        const showWhatsApp = data?.show_whatsapp === true;
+                        const whatsappType = data?.quoteButton === true ? "quote" : "consult";
+
+                        if (!showBuy && !showCart && !showWhatsApp) return null;
+
+                        return (
+                            <div className="fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-neutral-dark p-4 flex flex-col gap-2 shadow-[0_-10px_30px_rgba(0,0,0,0.05)]">
+                                {(showBuy || showCart) && (
+                                    <div className="flex gap-2">
+                                        {showCart && (
+                                            <button
+                                                onClick={() => onAddClicked(currentProduct)}
+                                                className={`${mibalonSecondaryBtn} !py-3 !text-sm flex-1`}
+                                            >
+                                                Carrito
+                                            </button>
+                                        )}
+                                        {showBuy && (
+                                            <button
+                                                onClick={() => {
+                                                    onAddClicked(currentProduct);
+                                                    window.location.href = "/cart";
+                                                }}
+                                                className={`${mibalonPrimaryBtn} !py-3 !text-sm flex-1`}
+                                            >
+                                                Pagar
+                                            </button>
+                                        )}
+                                    </div>
+                                )}
+                                {showWhatsApp && (
+                                    <button
+                                        onClick={() => handleWhatsAppClick(whatsappType)}
+                                        className={`${mibalonWhatsappBtn} !py-3 !text-sm`}
+                                    >
+                                        <WhatsAppIcon className="w-4 h-4" />
+                                        <span>
+                                            {whatsappType === "quote"
+                                                ? "Solicitar Cotización"
+                                                : "WhatsApp"}
+                                        </span>
+                                    </button>
+                                )}
+                            </div>
+                        );
+                    })()}
                 </div>
             </div>
 
@@ -1094,8 +1260,8 @@ const ProductDetailMiBalon = ({
             </ReactModal>
 
             {/* Float WhatsApp */}
-            {advisors.length > 0 && (
-                <div className="fixed bottom-8 right-8 z-[80] flex flex-col items-end gap-4 scale-75 md:scale-100">
+            {(data?.show_whatsapp === true && advisors.length > 0) && (
+                <div className="fixed bottom-24 lg:bottom-8 right-8 z-[80] flex flex-col items-end gap-4 scale-75 md:scale-100">
                     <AnimatePresence>
                         {isAdvisorDropdownOpen && (
                             <motion.div
@@ -1105,28 +1271,39 @@ const ProductDetailMiBalon = ({
                                 className="bg-white border-4 border-neutral-dark p-6 mb-2 min-w-[280px] shadow-[15px_15px_0px_0px_rgba(0,0,0,0.1)]"
                             >
                                 <h4 className="text-sm  uppercase tracking-widest mb-6 border-b-2 border-neutral-dark pb-4">
-                                    Consultar con Asesor
+                                    {whatsappAction === "quote" ? "Solicitar Cotización" : "Consultar con Asesor"}
                                 </h4>
                                 <div className="space-y-3">
-                                    {advisors.map((adv, idx) => (
-                                        <a
-                                            key={idx}
-                                            href={`https://api.whatsapp.com/send?phone=${adv.phone}&text=${encodeURIComponent(`¡Hola! Tengo dudas sobre: ${currentProduct?.name}`)}`}
-                                            target="_blank"
-                                            className="flex items-center gap-4 p-4 border-2 border-transparent hover:border-neutral-dark hover:bg-gray-50 transition-all group"
-                                        >
-                                            <div className="w-10 h-10 bg-primary text-white flex items-center justify-center  text-sm uppercase">
-                                                {adv.name?.charAt(0)}
-                                            </div>
-                                            <span className="text-sm  tracking-tight group-hover:italic">
-                                                {adv.name}
-                                            </span>
-                                        </a>
-                                    ))}
+                                    {advisors.map((adv, idx) => {
+                                        const msg = whatsappAction === "quote"
+                                            ? `¡Hola! Me gustaría cotizar este producto: ${currentProduct?.name}\n\nCantidad: ${quantity} unidades\n\n¿Podrían enviarme más información y precios?`
+                                            : `¡Hola! Tengo dudas sobre: ${currentProduct?.name}`;
+                                        return (
+                                            <a
+                                                key={idx}
+                                                href={`https://api.whatsapp.com/send?phone=${adv.phone}&text=${encodeURIComponent(msg)}`}
+                                                target="_blank"
+                                                className="flex items-center gap-4 p-4 border-2 border-transparent hover:border-neutral-dark hover:bg-gray-50 transition-all group"
+                                            >
+                                                <div className="w-10 h-10 bg-primary text-white flex items-center justify-center  text-sm uppercase">
+                                                    {adv.name?.charAt(0)}
+                                                </div>
+                                                <span className="text-sm  tracking-tight group-hover:italic">
+                                                    {adv.name}
+                                                </span>
+                                            </a>
+                                        );
+                                    })}
                                 </div>
                             </motion.div>
                         )}
                     </AnimatePresence>
+                    <button
+                        onClick={() => setIsAdvisorDropdownOpen(!isAdvisorDropdownOpen)}
+                        className="w-16 h-16 bg-[#25D366] text-white rounded-full flex items-center justify-center shadow-2xl hover:scale-110 active:scale-95 transition-all duration-300 border-2 border-white"
+                    >
+                        {isAdvisorDropdownOpen ? <X size={28} /> : <WhatsAppIcon className="w-8 h-8" />}
+                    </button>
                 </div>
             )}
 
