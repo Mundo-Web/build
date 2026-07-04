@@ -1259,53 +1259,7 @@ const ProductDetailMiBalon = ({
                 </div>
             </ReactModal>
 
-            {/* Float WhatsApp */}
-            {(data?.show_whatsapp === true && advisors.length > 0) && (
-                <div className="fixed bottom-24 lg:bottom-8 right-8 z-[80] flex flex-col items-end gap-4 scale-75 md:scale-100">
-                    <AnimatePresence>
-                        {isAdvisorDropdownOpen && (
-                            <motion.div
-                                initial={{ opacity: 0, y: 20 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                exit={{ opacity: 0, y: 20 }}
-                                className="bg-white border-4 border-neutral-dark p-6 mb-2 min-w-[280px] shadow-[15px_15px_0px_0px_rgba(0,0,0,0.1)]"
-                            >
-                                <h4 className="text-sm  uppercase tracking-widest mb-6 border-b-2 border-neutral-dark pb-4">
-                                    {whatsappAction === "quote" ? "Solicitar Cotización" : "Consultar con Asesor"}
-                                </h4>
-                                <div className="space-y-3">
-                                    {advisors.map((adv, idx) => {
-                                        const msg = whatsappAction === "quote"
-                                            ? `¡Hola! Me gustaría cotizar este producto: ${currentProduct?.name}\n\nCantidad: ${quantity} unidades\n\n¿Podrían enviarme más información y precios?`
-                                            : `¡Hola! Tengo dudas sobre: ${currentProduct?.name}`;
-                                        return (
-                                            <a
-                                                key={idx}
-                                                href={`https://api.whatsapp.com/send?phone=${adv.phone}&text=${encodeURIComponent(msg)}`}
-                                                target="_blank"
-                                                className="flex items-center gap-4 p-4 border-2 border-transparent hover:border-neutral-dark hover:bg-gray-50 transition-all group"
-                                            >
-                                                <div className="w-10 h-10 bg-primary text-white flex items-center justify-center  text-sm uppercase">
-                                                    {adv.name?.charAt(0)}
-                                                </div>
-                                                <span className="text-sm  tracking-tight group-hover:italic">
-                                                    {adv.name}
-                                                </span>
-                                            </a>
-                                        );
-                                    })}
-                                </div>
-                            </motion.div>
-                        )}
-                    </AnimatePresence>
-                    <button
-                        onClick={() => setIsAdvisorDropdownOpen(!isAdvisorDropdownOpen)}
-                        className="w-16 h-16 bg-[#25D366] text-white rounded-full flex items-center justify-center shadow-2xl hover:scale-110 active:scale-95 transition-all duration-300 border-2 border-white"
-                    >
-                        {isAdvisorDropdownOpen ? <X size={28} /> : <WhatsAppIcon className="w-8 h-8" />}
-                    </button>
-                </div>
-            )}
+
 
             {/* Cart Modal - Mi Balon Styled */}
             <CartModalMiBalon
