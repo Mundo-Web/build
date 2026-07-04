@@ -4657,7 +4657,8 @@
                     "title",
                     "description",
                     "about_url",
-                    "class_card"
+                    "class_card",
+                    "class_title"
                 ],
                 "using": {
                     "model": "Aboutus"
@@ -4670,20 +4671,8 @@
                     "url_imagen",
                     "title",
                     "description",
-                    "about_url"
-                ],
-                "using": {
-                    "model": "Aboutus"
-                }
-            },
-             {
-                "id": "AboutMiBalon",
-                "name": "AboutMiBalon",
-                "data": [
-                    "url_imagen",
-                    "title",
-                    "description",
-                    "about_url"
+                    "about_url",
+                    "class_title"
                 ],
                 "using": {
                     "model": "Aboutus"
@@ -4693,10 +4682,7 @@
                 "id": "AboutMiBalon",
                 "name": "AboutMiBalon",
                 "data": [
-                    "url_imagen",
-                    "title",
-                    "description",
-                    "about_url"
+                    "class_title"
                 ],
                 "using": {
                     "model": "Aboutus"
@@ -4709,7 +4695,8 @@
                     "url_imagen",
                     "title",
                     "description",
-                    "about_url"
+                    "about_url",
+                    "class_title"
                 ],
                 "using": {
                     "model": "Aboutus"
@@ -4722,7 +4709,8 @@
                     "url_imagen",
                     "title",
                     "description",
-                    "about_url"
+                    "about_url",
+                    "class_title"
                 ],
                 "using": {
                     "model": "Aboutus"
@@ -4735,7 +4723,8 @@
                     "url_imagen",
                     "title",
                     "description",
-                    "about_url"
+                    "about_url",
+                    "class_title"
                 ],
                 "using": {
                     "model": "Aboutus"

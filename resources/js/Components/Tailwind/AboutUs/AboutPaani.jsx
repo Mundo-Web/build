@@ -40,7 +40,7 @@ const AboutPaani = ({ data, filteredData, items }) => {
                 whileInView="animate"
                 viewport={{ once: true }}
             >
-                <motion.h2 variants={fadeInUp} className="text-3xl sm:text-4xl lg:text-[40px] 2xl:text-5xl text-center font-medium tracking-normal customtext-neutral-dark leading-tight font-title max-w-3xl 2xl:max-w-4xl mx-auto">
+                <motion.h2 variants={fadeInUp} className={`text-3xl sm:text-4xl lg:text-[40px] 2xl:text-5xl text-center font-medium tracking-normal customtext-neutral-dark leading-tight font-title max-w-3xl 2xl:max-w-4xl mx-auto ${data?.class_title || ""}`}>
                     <TextWithHighlight text={history?.title} />
                 </motion.h2>
             </motion.section>
@@ -52,7 +52,7 @@ const AboutPaani = ({ data, filteredData, items }) => {
                 className="py-10 xl:py-16"
             >
                 <motion.div variants={fadeInUp}>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-5 customtext-neutral-dark text-base md:text-lg"
+                    <div className="columns-1 md:columns-2 gap-5 customtext-neutral-dark text-base md:text-lg prose prose-gray max-w-none ql-editor [&>*]:break-inside-avoid"
                         dangerouslySetInnerHTML={{
                             __html: history?.description?.replace(/<p><br><\/p>/g, '') || ''
                           }}  

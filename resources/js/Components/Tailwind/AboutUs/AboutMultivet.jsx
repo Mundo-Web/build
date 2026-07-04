@@ -108,7 +108,7 @@ const AboutMultivet = ({ data, filteredData, items }) => {
             >
                 <motion.h2
                     variants={fadeInUp}
-                    className="text-3xl  md:text-4xl lg:text-5xl font-title text-center font-bold  customtext-secondary   max-w-5xl mx-auto"
+                    className={`text-3xl md:text-4xl lg:text-5xl font-title text-center font-bold customtext-secondary max-w-5xl mx-auto ${data?.class_title || ""}`}
                 >
                     <TextWithHighlight
                         text={history?.title}
@@ -135,7 +135,7 @@ const AboutMultivet = ({ data, filteredData, items }) => {
                         if (isLongText) {
                             return (
                                 <div
-                                    className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8 lg:gap-12 customtext-neutral-light text-base md:text-lg lg:text-lg leading-relaxed"
+                                    className="columns-1 lg:columns-2 gap-6 md:gap-8 lg:gap-12 customtext-neutral-light text-base md:text-lg lg:text-lg leading-relaxed prose prose-gray max-w-none ql-editor [&>*]:break-inside-avoid"
                                     dangerouslySetInnerHTML={{
                                         __html:
                                             history?.description?.replace(

@@ -123,7 +123,7 @@ const AboutRainstar = ({ data, filteredData, items, generals }) => {
                             )}
                             <SectionHeading>{history?.title}</SectionHeading>
                             <div
-                                className="text-base md:text-lg text-neutral-dark/60 leading-relaxed font-medium"
+                                className="text-base md:text-lg text-neutral-dark/60 leading-relaxed font-medium prose prose-gray max-w-none ql-editor"
                                 dangerouslySetInnerHTML={{
                                     __html:
                                         history?.description?.replace(
@@ -153,7 +153,7 @@ const AboutRainstar = ({ data, filteredData, items, generals }) => {
                                     </h2>
                                 </div>
                                 <div
-                                    className="text-base text-neutral-dark/60 group-hover:text-white/70 transition-colors duration-150 leading-relaxed font-medium"
+                                    className="text-base text-neutral-dark/60 group-hover:text-white/70 transition-colors duration-150 leading-relaxed font-medium prose prose-gray max-w-none ql-editor"
                                     dangerouslySetInnerHTML={{
                                         __html: mision?.description,
                                     }}
@@ -177,7 +177,7 @@ const AboutRainstar = ({ data, filteredData, items, generals }) => {
                                     </h2>
                                 </div>
                                 <div
-                                    className="text-base text-neutral-dark/60 group-hover:text-white/70 transition-colors duration-150 leading-relaxed font-medium"
+                                    className="text-base text-neutral-dark/60 group-hover:text-white/70 transition-colors duration-150 leading-relaxed font-medium prose prose-gray max-w-none ql-editor"
                                     dangerouslySetInnerHTML={{
                                         __html: vision?.description,
                                     }}

@@ -107,7 +107,7 @@ const AboutMiBalon = ({ data, filteredData, items }) => {
             >
                 <motion.h2
                     variants={fadeInUp}
-                    className="text-3xl md:text-4xl lg:text-7xl font-title  text-center text-primary uppercase max-w-5xl mx-auto"
+                    className={`text-3xl md:text-4xl lg:text-7xl font-title  text-center text-primary uppercase max-w-5xl mx-auto ${data?.class_title || ""}`}
                 >
                     <TextWithHighlight
                         text={history?.title}
@@ -132,7 +132,7 @@ const AboutMiBalon = ({ data, filteredData, items }) => {
                         if (isLongText) {
                             return (
                                 <div
-                                    className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8 lg:gap-12 text-neutral-dark text-base md:text-lg leading-relaxed bg-white p-8 md:p-10 rounded-[2rem] shadow-sm"
+                                    className="columns-1 lg:columns-2 gap-6 md:gap-8 lg:gap-12 text-neutral-dark text-base md:text-base bg-white p-8 md:p-10 rounded-[2rem] shadow-sm prose  max-w-none ql-editor [&>*]:break-inside-avoid"
                                     dangerouslySetInnerHTML={{
                                         __html:
                                             history?.description?.replace(
@@ -146,7 +146,7 @@ const AboutMiBalon = ({ data, filteredData, items }) => {
                             return (
                                 <div className="max-w-5xl mx-auto text-center bg-white p-8 md:p-12 rounded-[2rem] shadow-sm">
                                     <div
-                                        className="text-neutral-dark text-base md:text-lg lg:text-xl leading-relaxed"
+                                        className="text-neutral-dark text-base md:text-base  prose  max-w-none ql-editor"
                                         dangerouslySetInnerHTML={{
                                             __html:
                                                 history?.description?.replace(
@@ -173,7 +173,7 @@ const AboutMiBalon = ({ data, filteredData, items }) => {
                     >
                         <motion.h2
                             variants={fadeInUp}
-                            className="text-3xl sm:text-3xl md:text-4xl lg:text-7xl  font-title text-primary max-w-4xl mx-auto text-center uppercase"
+                            className={`text-3xl sm:text-3xl md:text-4xl lg:text-7xl  font-title text-primary max-w-4xl mx-auto text-center uppercase ${data?.class_title || ""}`}
                         >
                             <TextWithHighlight
                                 text={values?.title}
@@ -220,8 +220,8 @@ const AboutMiBalon = ({ data, filteredData, items }) => {
                                                     alt={item?.name}
                                                     className="w-8 h-8 object-contain"
                                                     onError={(e) =>
-                                                        (e.target.src =
-                                                            "/api/cover/thumbnail/null")
+                                                    (e.target.src =
+                                                        "/api/cover/thumbnail/null")
                                                     }
                                                 />
                                             </div>
@@ -230,7 +230,7 @@ const AboutMiBalon = ({ data, filteredData, items }) => {
                                             <h3 className="text-xl lg:text-2xl font-title  text-neutral-dark group-hover:text-primary transition-colors duration-300">
                                                 {item?.name}
                                             </h3>
-                                            <p className="text-gray-600 text-base leading-relaxed">
+                                            <p className="text-neutral-dark text-base ">
                                                 {item?.description}
                                             </p>
                                         </div>
@@ -254,8 +254,8 @@ const AboutMiBalon = ({ data, filteredData, items }) => {
                                     <img
                                         src={`/storage/images/aboutus/${values?.image}`}
                                         onError={(e) =>
-                                            (e.target.src =
-                                                "/api/cover/thumbnail/null")
+                                        (e.target.src =
+                                            "/api/cover/thumbnail/null")
                                         }
                                         alt={values?.title}
                                         className="w-full h-[350px] lg:h-[450px] xl:h-[550px] object-cover rounded-[1.5rem] transition-transform duration-700"
@@ -293,8 +293,8 @@ const AboutMiBalon = ({ data, filteredData, items }) => {
                                                     alt={item?.name}
                                                     className="w-8 h-8 object-contain"
                                                     onError={(e) =>
-                                                        (e.target.src =
-                                                            "/api/cover/thumbnail/null")
+                                                    (e.target.src =
+                                                        "/api/cover/thumbnail/null")
                                                     }
                                                 />
                                             </div>
@@ -303,7 +303,7 @@ const AboutMiBalon = ({ data, filteredData, items }) => {
                                             <h3 className="text-xl lg:text-2xl font-title  text-neutral-dark group-hover:text-primary transition-colors duration-300">
                                                 {item?.name}
                                             </h3>
-                                            <p className="text-gray-600 text-base leading-relaxed">
+                                            <p className="text-neutral-dark text-base leading-relaxed">
                                                 {item?.description}
                                             </p>
                                         </div>
@@ -353,14 +353,14 @@ const AboutMiBalon = ({ data, filteredData, items }) => {
                                 {...cardHover}
                             >
                                 <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-bl-[100px] -z-10 transition-transform duration-500 group-hover:scale-110"></div>
-                                <motion.h3 className="text-3xl lg:text-4xl  text-primary font-title mb-4 md:mb-6 uppercase">
+                                <motion.h3 className={`text-3xl lg:text-4xl  text-primary font-title mb-4 md:mb-6 uppercase ${data?.class_title || ""}`}>
                                     <TextWithHighlight
                                         text={mision?.title}
                                         className="font-title"
                                     />
                                 </motion.h3>
                                 <motion.div
-                                    className="text-gray-600 text-base md:text-lg leading-relaxed prose prose-gray max-w-none"
+                                    className="text-neutral-dark text-base md:text-lg leading-relaxed prose prose-gray max-w-none"
                                     dangerouslySetInnerHTML={{
                                         __html: mision?.description,
                                     }}
@@ -375,14 +375,14 @@ const AboutMiBalon = ({ data, filteredData, items }) => {
                                 {...cardHover}
                             >
                                 <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-bl-[100px] -z-10 transition-transform duration-500 group-hover:scale-110"></div>
-                                <motion.h3 className="text-3xl lg:text-4xl  text-primary font-title mb-4 md:mb-6 uppercase">
+                                <motion.h3 className={`text-3xl lg:text-4xl  text-primary font-title mb-4 md:mb-6 uppercase ${data?.class_title || ""}`}>
                                     <TextWithHighlight
                                         text={vision?.title}
                                         className="font-title"
                                     />
                                 </motion.h3>
                                 <motion.div
-                                    className="text-gray-600 text-base md:text-lg leading-relaxed prose prose-gray max-w-none"
+                                    className="text-neutral-dark text-base md:text-lg leading-relaxed prose prose-gray max-w-none"
                                     dangerouslySetInnerHTML={{
                                         __html: vision?.description,
                                     }}

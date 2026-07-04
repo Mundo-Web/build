@@ -18,6 +18,7 @@ const AboutKatya = ({ data, filteredData, items }) => {
                 data={sectionNosotros}
                 strengths={strengths?.slice(0, 2)} // Solo los primeros 2 strengths
                 button_about={false}
+                class_title={data?.class_title}
             />
 
             {/* SECCIÓN MISIÓN, VISIÓN Y VALORES */}
@@ -32,7 +33,7 @@ const AboutKatya = ({ data, filteredData, items }) => {
 };
 
 // SECTION NOSOTROS QUE DEBE IR
-const HomeSeccionNosotros = ({ data, strengths, button_about = true }) => {
+const HomeSeccionNosotros = ({ data, strengths, button_about = true, class_title }) => {
 
     // Variantes de animación creativas
     const containerVariants = {
@@ -190,7 +191,7 @@ const HomeSeccionNosotros = ({ data, strengths, button_about = true }) => {
 
                         {/* Título principal con animación dramática */}
                         <motion.h2
-                            className="text-4xl lg:text-[60px] customtext-neutral-dark font-bold mb-6 leading-[94%]"
+                            className={`text-4xl lg:text-[60px] customtext-neutral-dark font-bold mb-6 leading-[94%] ${class_title || ""}`}
                             initial={{ opacity: 0, y: 50, scale: 0.9 }}
                             animate={{ opacity: 1, y: 0, scale: 1 }}
                             transition={{

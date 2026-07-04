@@ -86,7 +86,7 @@ const AboutWebQuirurgica = ({ data, filteredData, items }) => {
                         )}
                         <motion.h1 
                             variants={fadeInUp} 
-                            className="text-5xl md:text-6xl lg:text-7xl font-extralight text-primary leading-[1.1] whitespace-pre-line"
+                            className={`text-5xl md:text-6xl lg:text-7xl font-extralight text-primary leading-[1.1] whitespace-pre-line ${data?.class_title || ""}`}
                         >
                             <TextWithHighlight 
                                 text={history?.title || 'Nuestra *Historia*'} 
@@ -103,7 +103,7 @@ const AboutWebQuirurgica = ({ data, filteredData, items }) => {
                         className="mx-auto"
                     >
                         <div 
-                            className="grid grid-cols-1 md:grid-cols-2 gap-8 text-neutral-dark text-lg font-light leading-relaxed prose prose-lg max-w-none"
+                            className="columns-1 md:columns-2 gap-8 text-neutral-dark text-lg font-light leading-relaxed prose prose-lg max-w-none ql-editor [&>*]:break-inside-avoid"
                             dangerouslySetInnerHTML={{
                                 __html: history?.description || ''
                             }}  

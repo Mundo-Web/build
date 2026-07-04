@@ -108,7 +108,7 @@ const AboutAko = ({ data, filteredData, items }) => {
             >
                 <motion.h2 
                     variants={fadeInUp} 
-                    className="text-3xl sm:text-4xl lg:text-[40px] 2xl:text-5xl text-center font-medium tracking-normal customtext-neutral-dark leading-tight font-title"
+                    className={`text-3xl sm:text-4xl lg:text-[40px] 2xl:text-5xl text-center font-medium tracking-normal customtext-neutral-dark leading-tight font-title ${data?.class_title || ""}`}
                 >
                     <TextWithHighlight text={history?.title} color="bg-secondary" />
                 </motion.h2>
@@ -131,7 +131,7 @@ const AboutAko = ({ data, filteredData, items }) => {
                         // Si el texto es largo, usar 2 columnas, si no, centrar en una columna
                         if (isLongText) {
                             return (
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-5 xl:gap-8 customtext-neutral-dark text-base md:text-lg"
+                                <div className="columns-1 md:columns-2 gap-5 xl:gap-8 customtext-neutral-dark text-base md:text-lg prose prose-gray max-w-none ql-editor [&>*]:break-inside-avoid"
                                     dangerouslySetInnerHTML={{
                                         __html: history?.description?.replace(/<p><br><\/p>/g, '') || ''
                                     }}
