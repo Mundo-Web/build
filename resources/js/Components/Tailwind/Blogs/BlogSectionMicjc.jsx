@@ -210,7 +210,7 @@ const BlogSectionMicjc = ({ data, items = [] }) => {
                                                 </span>
 
                                                 {/* Title */}
-                                                <h4 className="text-base md:text-lg font-bold font-paragraph text-neutral-dark mb-2  transition-colors line-clamp-2 leading-snug">
+                                                <h4 className="text-base md:text-lg font-bold font-title text-neutral-dark mb-2  transition-colors line-clamp-2 leading-snug">
                                                     {post.title || post.name}
                                                 </h4>
 

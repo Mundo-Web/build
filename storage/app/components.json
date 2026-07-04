@@ -4493,6 +4493,23 @@
             },
              
             {
+                "id": "BlogMicjc",
+                "name": "Blog Micjc",
+                "image": "blog-micjc.png",
+                "data": [
+                    "title",
+                    "description"
+                ],
+                "using": {
+                    "model": "Post",
+                    "limit": 4,
+                    
+                    "with": [
+                        "category"
+                    ]
+                }
+            },
+            {
                 "id": "BlogMiBalon",
                 "name": "Blog Mi Balón",
                 "image": "blog-mibalon.png",
