@@ -452,6 +452,7 @@ class BasicController extends Controller
         'checkout_culqi_rsa_public_key',
         'checkout_culqi_supports_usd',
         'exchange_rate_usd_pen',
+        'tiny_api_key',
       ])->get()->keyBy('correlative');
     });
 
@@ -507,7 +508,7 @@ class BasicController extends Controller
         'CULQI_RSA_PUBLIC_KEY' => $globalConfig->get('checkout_culqi_rsa_public_key')?->description ?: env('CULQI_RSA_PUBLIC_KEY'),
         'CULQI_SUPPORTS_USD' => ($globalConfig->get('checkout_culqi_supports_usd')?->description ?? '') === 'true',
         'EXCHANGE_RATE' => $exchangeRate,
-        'API_KEY_TINYMCE' => env('API_KEY_TINYMCE', "xiambljzyxjms4y2148wtxxl05f7bcpyt5o949l0c78tfe7c"),
+        'API_KEY_TINYMCE' => $globalConfig->get('tiny_api_key')?->description ?: env('API_KEY_TINYMCE', "xiambljzyxjms4y2148wtxxl05f7bcpyt5o949l0c78tfe7c"),
       ],
       'can_access' => $menus,
       'fillable' => $fillable,
