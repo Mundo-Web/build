@@ -3342,6 +3342,38 @@
                     "button_link",
                     "class"
                 ]
+            },
+            {
+                "id": "BannerProductSwiperMiBalon",
+                "name": "Banner + Carrusel Mi Balón",
+                "image": "product-infinite.png",
+                "data": [
+                    "background",
+                    "bool:image_right:Imagen a la Derecha",
+                    "select:type_card_product:Tipo de Tarjeta de Producto:CardProductMiBalon|Mi Balón,CardProductMicjc|Micjc,CardProductBananaLab|Banana Lab,CardProductMultivet|Multivet,CardProductKatya|Katya,ProductCardColors|Sala Fabulosa,ProductCardColorsBoton|Colors Boton,ProductCardFull|Full,ProductCardSimple|Simple",
+                    "bool:autoplay:Activar Autoplay (Reproducción Automática)",
+                    "bool:loop:Activar Bucle Infinito (Loop)",
+                    "class_container",
+                    "select:type_modal_cart:Tipo de Modal Carrito:CartModal|Normal,CartModalBananaLab|Banana Lab,CartModalIbergruas|Ibergruas,CartModalLaPetaca|La Petaca,CartModalMiBalon|Mi Balón,CartModalRainstar|Rainstar"
+                ],
+                "using": {
+                    "model": "Item",
+                    "filters": [
+                        "featured",
+                        "recommended",
+                        "offering",
+                        "is_new",
+                        "views",
+                        "most_view",
+                        "is_master"
+                    ],
+                    "with": [
+                        "category",
+                        "subcategory",
+                        "brand"
+                    ],
+                    "limit": 12
+                }
             }
         ]
     },

@@ -678,6 +678,11 @@ const Banners = ({ pages, systems: systemsFromProps = [] }) => {
             name: "Banner Solo Imagen (BannerJustImageMicjc)",
             icon: "mdi mdi-image-area",
         },
+        {
+            id: "BannerProductSwiperMiBalon",
+            name: "Banner + Carrusel Mi Balón",
+            icon: "mdi mdi-view-carousel",
+        },
     ];
 
     const normalizePageId = (value) =>

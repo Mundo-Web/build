@@ -41,14 +41,19 @@ const BannerMiBalon = lazy(
 const BannerJustImageMicjc = lazy(
     () => import("./Banners/BannerJustImageMicjc"),
 );
+const BannerProductSwiperMiBalon = lazy(
+    () => import("./Banners/BannerProductSwiperMiBalon"),
+);
 
-const Banner = ({ which, data, items, generals }) => {
+const Banner = ({ which, data, items, generals, cart, setCart }) => {
     const getBanner = () => {
         switch (which) {
             case "BannerPremiumCampaign":
                 return <BannerPremiumCampaign data={data} />;
             case "BannerMiBalon":
                 return <BannerMiBalon data={data} />;
+            case "BannerProductSwiperMiBalon":
+                return <BannerProductSwiperMiBalon data={data} items={items} cart={cart} setCart={setCart} />;
             case "BannerJustImageMicjc":
                 return <BannerJustImageMicjc data={data} />;
 

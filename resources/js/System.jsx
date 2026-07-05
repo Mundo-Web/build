@@ -483,6 +483,8 @@ const System = ({
                         data={dataWithElementId}
                         items={getItems(itemsId)}
                         generals={generals}
+                        cart={cart}
+                        setCart={setCart}
                     />,
                 );
             case "ads":

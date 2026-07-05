@@ -117,7 +117,7 @@ const CategoryBannerMicjc = ({ data, items }) => {
         >
             {/* Contenedor principal idéntico a ProductInfinite.jsx */}
             <div className="relative mx-auto px-[5%] replace-max-w-here 2xl:px-0 2xl:max-w-7xl">
-                <h2 className="text-[36px] leading-tight md:text-5xl text-center font-bold font-title py-4 md:py-8 ">
+                <h2 className="font-bold text-4xl md:text-5xl lg:text-6xl leading-tight text-center font-title py-4 md:py-8 text-neutral-dark">
                     {data?.title}
                 </h2>
                 {/* Renderizado de Rejilla Estática */}
