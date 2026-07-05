@@ -432,7 +432,7 @@ const SliderInteractive = ({ items, data, generals = [] }) => {
             >
                 <div
                     ref={sliderRef}
-                    className={`flex min-h-[calc(100dvh-20dvh)] lg:h-auto ${data?.class_slider || ""}`}
+                    className={`flex  ${data?.class_slider || "min-h-[calc(100dvh-20dvh)] lg:h-auto"}`}
                     style={{
                         transform: `translateX(-${currentIndex * 100}%)`,
                         transition: "transform 0.5s ease-in-out",
