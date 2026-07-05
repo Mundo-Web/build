@@ -1,2 +1,0 @@
-const __vite__mapDeps=(i,m=__vite__mapDeps,d=(m.f||(m.f=["assets/ImageSimple-C5FesKUs.js","assets/vendor-react-DGtfu94Q.js"])))=>i.map(i=>d[i]);
-import{_ as a}from"./preload-helper-DAHR15QK.js";import{j as e,R as m}from"./vendor-react-DGtfu94Q.js";const r=m.lazy(()=>a(()=>import("./ImageSimple-C5FesKUs.js"),__vite__mapDeps([0,1]))),s=({which:a,data:m})=>"ImageSimple"===a?e.jsx(r,{data:m}):e.jsxs("div",{className:"w-full px-[5%] replace-max-w-here p-4 mx-auto",children:["- No Hay componente ",e.jsx("b",{children:a})," -"]});export{s as default};

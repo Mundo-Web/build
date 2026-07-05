@@ -75,12 +75,11 @@
                 "image": "top-bar-copyright.png",
                 "generals": [
                     "copyright"
-                   
                 ],
                 "data": [
                     "class_container",
                     "showJobApplicationButton",
-                     "creditPapayaDigital"
+                    "creditPapayaDigital"
                 ]
             },
             {
@@ -125,7 +124,6 @@
                 ],
                 "data": [
                     "class_content"
-                    
                 ]
             }
         ]
@@ -621,14 +619,12 @@
                 "image": "header-sticky.png",
                 "data": [
                     "class"
-                
                 ],
                 "generals": [
                     "whatsapp_advisors",
                     "email_contact",
                     "phone_contact",
                     "opening_hours"
-                    
                 ]
             },
             {
@@ -783,8 +779,6 @@
                     ]
                 }
             },
-        
-         
             {
                 "id": "SliderSearch",
                 "name": "Search",
@@ -825,7 +819,6 @@
                     "class_title",
                     "class_description",
                     "bool:animation_slider:Animación de Imagen (Efecto Ken Burns)"
-                  
                 ],
                 "using": {
                     "model": "Slider"
@@ -853,7 +846,6 @@
                     "class_description",
                     "class_overlay",
                     "class_content_slider",
-                    
                     "class_container_slider"
                 ],
                 "using": {
@@ -875,7 +867,6 @@
                 ],
                 "using": {
                     "model": "Slider"
-                  
                 },
                 "generals": [
                     "phone_whatsapp",
@@ -911,7 +902,6 @@
                     "message_whatsapp"
                 ]
             },
-         
             {
                 "id": "SliderBananaLab",
                 "name": "SliderBananaLab",
@@ -943,7 +933,6 @@
                     ]
                 }
             },
-
             {
                 "id": "SliderBrandsPaani",
                 "name": "Brand Paani",
@@ -960,8 +949,6 @@
                     ]
                 }
             },
-         
-        
             {
                 "id": "SliderLaPetaca",
                 "name": "Slider - La Petaca Hotel",
@@ -1022,8 +1009,6 @@
                     "atalaya_leads_api_key"
                 ]
             },
-          
-       
             {
                 "id": "SliderPremium",
                 "name": "Slider Premium Rainstarstore",
@@ -1206,7 +1191,6 @@
                 "name": "Producto Catalogo Filtro Dental",
                 "image": "products-list.png",
                 "data": [
-                  
                     "class_title",
                     "title",
                     "class_sort_options",
@@ -1222,20 +1206,12 @@
                     "class_product_container",
                     "class_product_card_container",
                     "class_clear_button",
-
-                  
-                    
-                 
-                   
-                  
-                    
                     "badge_offer_percent",
                     "badge_category_up_name",
                     "badge_brand_up_name",
                     "is_card_content_description",
                     "class_badge_category",
                     "class_button_card_detail"
-                   
                 ],
                 "options": [
                     {
@@ -1297,12 +1273,11 @@
                     }
                 ]
             },
-             {
+            {
                 "id": "CatalogoFiltrosMiBalon",
                 "name": "Producto Catalogo Filtro MiBalon",
                 "image": "products-list.png",
                 "data": [
-                  
                     "class_title",
                     "title",
                     "class_sort_options",
@@ -1597,7 +1572,6 @@
                     }
                 ]
             },
-           
             {
                 "id": "CatalogoFiltrosRainstar",
                 "name": "Producto Catalogo Filtro - Rainstar",
@@ -2219,7 +2193,7 @@
                         "description",
                         "banner"
                     ],
-                      "filters": [
+                    "filters": [
                         "featured"
                     ]
                 }
@@ -2331,12 +2305,11 @@
                 },
                 "generals": []
             },
-             {
+            {
                 "id": "IndicatorHostinfinity",
                 "name": "Indicadores - Hostinfinity (Stats Grid)",
                 "image": "indicator-hostinfinity.png",
                 "data": [
-                 
                     "title",
                     "description",
                     "class_section",
@@ -2346,7 +2319,7 @@
                 ],
                 "using": {
                     "model": "Indicator",
-                    "fields": [   
+                    "fields": [
                         "symbol",
                         "bg_image",
                         "name",
@@ -2360,12 +2333,11 @@
                 },
                 "generals": []
             },
-                         {
+            {
                 "id": "IndicatorHostinfinityImage",
                 "name": "Indicadores - Hostinfinity (Stats Grid) Image",
                 "image": "indicator-hostinfinity.png",
                 "data": [
-                  
                     "title",
                     "description",
                     "class_section",
@@ -2375,7 +2347,7 @@
                 ],
                 "using": {
                     "model": "Indicator",
-                    "fields": [   
+                    "fields": [
                         "symbol",
                         "bg_image",
                         "name",
@@ -2580,7 +2552,7 @@
                 ],
                 "using": {
                     "model": "Item",
-                     "filters": [
+                    "filters": [
                         "featured",
                         "recommended",
                         "offering",
@@ -3017,9 +2989,7 @@
                         "specifications",
                         "attributes",
                         "applications"
-                        
                     ]
-                   
                 },
                 "generals": [
                     "whatsapp_advisors"
@@ -3161,7 +3131,6 @@
                 "data": [
                     "btn_secondary",
                     "overlay"
-                    
                 ]
             },
             {
@@ -3374,7 +3343,6 @@
                     "class"
                 ]
             }
-          
         ]
     },
     {
@@ -3738,14 +3706,13 @@
                     "link_cart",
                     "background"
                 ],
-              
                 "generals": [
                     "phone_whatsapp",
                     "message_whatsapp",
                     "delivery_policy"
                 ]
             },
-              {
+            {
                 "id": "ProductDetailMiBalon",
                 "name": "ProductDetailMiBalon",
                 "image": "product-detail-rainstar.png",
@@ -3769,7 +3736,6 @@
                     "select:related_type_card_product:Tipo de Tarjeta Relacionados:CardProductMiBalon|Mi Balón,CardProductMicjc|Micjc,CardProductBananaLab|Banana Lab,CardProductMultivet|Multivet,CardProductKatya|Katya,ProductCardColors|Sala Fabulosa,ProductCardColorsBoton|Colors Boton,ProductCardFull|Full,ProductCardSimple|Simple",
                     "select:type_modal_cart:Tipo de Modal Carrito:CartModal|Normal,CartModalBananaLab|Banana Lab,CartModalIbergruas|Ibergruas,CartModalLaPetaca|La Petaca,CartModalMiBalon|Mi Balón,CartModalRainstar|Rainstar"
                 ],
-              
                 "generals": [
                     "phone_whatsapp",
                     "message_whatsapp",
@@ -3884,7 +3850,8 @@
                 "name": "StepsSF",
                 "data": [
                     "title",
-                    "class_button"
+                    "class_button",
+                    "select:type_cart_item:Tipo de Tarjeta de Carrito:CardItem|Por Defecto,CardItemMiBalon|Mi Balón"
                 ],
                 "json": {
                     "prefixes": "./prefijocelular.json"
@@ -3910,8 +3877,6 @@
                     "checkout_mercadopago",
                     "checkout_openpay",
                     "shipping_free"
-        
-       
                 ]
             },
             {
@@ -4024,8 +3989,8 @@
                 "name": "Simple",
                 "data": [
                     "redirect"
-                ], 
-                "generals":[
+                ],
+                "generals": [
                     "email_contact",
                     "phone_contact"
                 ]
@@ -4045,7 +4010,7 @@
                     "stores_support",
                     "description"
                 ],
-                "generals":[
+                "generals": [
                     "email_contact",
                     "phone_contact"
                 ]
@@ -4062,7 +4027,6 @@
                     "class_title",
                     "class_description",
                     "class_button_form"
-                 
                 ],
                 "generals": [
                     "email_contact",
@@ -4084,7 +4048,6 @@
                     "class_title",
                     "class_description",
                     "class_button_form"
-                 
                 ],
                 "generals": [
                     "email_contact",
@@ -4130,7 +4093,7 @@
                     "model": "Social"
                 }
             },
-             {
+            {
                 "id": "ContactRainstar",
                 "name": "Contact Rainstar",
                 "image": "contact-rainstar.png",
@@ -4148,7 +4111,6 @@
                     "opening_hours"
                 ]
             },
-           
             {
                 "id": "ContactWebQuirurgica",
                 "name": "Contact WebQuirurgica - Diseño Limpio",
@@ -4156,7 +4118,10 @@
                 "using": {
                     "model": "Service"
                 },
-                "data": ["class_opening_hours_container","class_form_container"],
+                "data": [
+                    "class_opening_hours_container",
+                    "class_form_container"
+                ],
                 "generals": [
                     "email_contact",
                     "phone_contact",
@@ -4202,10 +4167,8 @@
                 "using": {
                     "model": "Faq"
                 }
-                    
-                
             },
-              {
+            {
                 "id": "FaqMiBalon",
                 "name": "MiBalon",
                 "data": [
@@ -4217,8 +4180,6 @@
                 "using": {
                     "model": "Faq"
                 }
-                    
-                
             },
             {
                 "id": "FaqModern",
@@ -4232,7 +4193,7 @@
                     "class_faq_answer",
                     "show_contact_cta"
                 ],
-                  "using": {
+                "using": {
                     "model": "Faq"
                 }
             },
@@ -4248,7 +4209,7 @@
                     "class_faq_answer",
                     "show_contact_cta"
                 ],
-                  "using": {
+                "using": {
                     "model": "Faq"
                 }
             },
@@ -4447,7 +4408,7 @@
                     ]
                 }
             },
-             {
+            {
                 "id": "BlogSectionMiBalon",
                 "name": "BlogSectionMiBalon",
                 "image": "blog-section-mibalon.png",
@@ -4512,7 +4473,6 @@
                     ]
                 }
             },
-             
             {
                 "id": "BlogMicjc",
                 "name": "Blog Micjc",
@@ -4524,7 +4484,6 @@
                 "using": {
                     "model": "Post",
                     "limit": 4,
-                    
                     "with": [
                         "category"
                     ]
@@ -4534,7 +4493,6 @@
                 "id": "BlogMiBalon",
                 "name": "Blog Mi Balón",
                 "image": "blog-mibalon.png",
-               
                 "using": {
                     "model": "Post",
                     "header": 3,
@@ -4544,7 +4502,7 @@
                     ]
                 }
             },
-              {
+            {
                 "id": "BlogRainstar",
                 "name": "Blog - Rainstar Style",
                 "image": "blog-rainstar.png",
@@ -4554,8 +4512,12 @@
                 ],
                 "using": {
                     "model": "Post",
-                    "filters": ["is_published"],
-                    "with": ["category"],
+                    "filters": [
+                        "is_published"
+                    ],
+                    "with": [
+                        "category"
+                    ],
                     "limit": 12
                 },
                 "generals": []
@@ -4681,7 +4643,6 @@
                 "using": {
                     "model": "Aboutus"
                 }
-                
             },
             {
                 "id": "AboutImage",
@@ -4807,7 +4768,6 @@
                     "model": "Aboutus"
                 }
             },
-           
             {
                 "id": "AboutSidebar",
                 "name": "About con Sidebar - Estilo Service",
@@ -4848,7 +4808,6 @@
                 "id": "LoginSimple",
                 "name": "Simple"
             },
-          
             {
                 "id": "LoginRainstar",
                 "name": "Rainstar"
@@ -4863,8 +4822,6 @@
                 "id": "SignUpSimple",
                 "name": "Simple"
             },
-           
-           
             {
                 "id": "SignUpRainstar",
                 "name": "Rainstar"
@@ -4879,7 +4836,6 @@
                 "id": "ForgotPasswordSimple",
                 "name": "Simple"
             },
-          
             {
                 "id": "ForgotPasswordRainstar",
                 "name": "Rainstar"
@@ -4953,7 +4909,6 @@
                 "data": [
                     "class_footer",
                     "logo_footer_content",
-              
                     "class_menu",
                     "class_menu_list",
                     "class_menu_item",
@@ -5257,7 +5212,6 @@
                     "newsletter_placeholder",
                     "newsletter_button",
                     "newsletter_sending"
-                    
                 ],
                 "generals": [
                     "footer_description",
@@ -5293,7 +5247,6 @@
                     "address_label",
                     "email_label",
                     "phone_label"
-              
                 ],
                 "generals": [
                     "footer_description",
@@ -5354,7 +5307,6 @@
                 "data": [
                     "select:correlative:Correlativo:privacy_policy|Política de Privacidad,terms_conditions|Términos y Condiciones,delivery_policy|Políticas de Envío,saleback_policy|Políticas de Devolución y Cambio",
                     "title"
-                 
                 ]
             }
         ]
@@ -5437,28 +5389,24 @@
                 "name": "Multivet",
                 "image": "testimonials-multivet.png",
                 "data": [
-             
                     "title",
                     "subtitle",
                     "star_color",
                     "nav_button_bg",
                     "nav_button_color"
-                    
                 ],
                 "using": {
                     "model": "Testimony"
                 }
             },
-              {
+            {
                 "id": "TestimonialsMiBalon",
                 "name": "MiBalon",
                 "image": "testimonials-mibalon.png",
                 "data": [
-             
                     "title",
                     "subtitle",
                     "star_color"
-                    
                 ],
                 "using": {
                     "model": "Testimony"
@@ -5518,7 +5466,9 @@
             {
                 "id": "TestimonialsTextWebQuirurgica",
                 "name": "Testimonios Escritos - WebQuirurgica",
-                "data": ["class_section"],
+                "data": [
+                    "class_section"
+                ],
                 "generals": [],
                 "using": {
                     "model": "Testimony"
@@ -5612,21 +5562,19 @@
                 "data": [
                     "title",
                     "description"
-                   
                 ],
                 "using": {
                     "model": "Strength"
                 },
                 "generals": []
             },
-              {
+            {
                 "id": "StrengthHostinfinityV2",
                 "name": "Fortalezas Hostinfinity (SaaS) V2",
                 "image": "strength-hostinfinity.png",
                 "data": [
                     "title",
                     "description"
-                   
                 ],
                 "using": {
                     "model": "Strength"
@@ -5675,7 +5623,10 @@
                 ],
                 "using": {
                     "model": "Item",
-                    "with": ["attributes", "applications"]
+                    "with": [
+                        "attributes",
+                        "applications"
+                    ]
                 }
             }
         ]
@@ -5791,7 +5742,6 @@
                 "image": "brand-carousel.png",
                 "data": [
                     "title",
-
                     "class_title",
                     "class_section",
                     "class_content",
@@ -5838,7 +5788,7 @@
                 ],
                 "using": {
                     "model": "Partner",
-                        "fields": [
+                    "fields": [
                         "name",
                         "image"
                     ]
@@ -6056,11 +6006,10 @@
                 "name": "Servicios por Categoría - WebQuirurgica2",
                 "image": "service-webquirurgica.png",
                 "data": [
-                     "class_section",
+                    "class_section",
                     "class_header_container",
                     "class_title",
                     "class_title_highlight",
-                   
                     "class_card",
                     "class_card_icon",
                     "button_card_text",
@@ -6336,7 +6285,6 @@
                 "image": "ad-modal.png",
                 "using": {
                     "model": "Ad"
-                  
                 }
             },
             {
@@ -6470,8 +6418,7 @@
                 },
                 "generals": [
                     "phone_whatsapp",
-                    "hotel_checkin_time", 
-                    
+                    "hotel_checkin_time",
                     "hotel_checkout_time"
                 ]
             },
@@ -6555,6 +6502,4 @@
             }
         ]
     }
-  
 ]
-

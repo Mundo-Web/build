@@ -102,7 +102,7 @@ const CartItemRowMiBalon = ({ setCart, index, ...item }) => {
                     </div>
 
                     <div className="text-right">
-                        <span className="block font-bold text-lg text-primary">
+                        <span className="block font-bold text-lg text-neutral-dark">
                             {CurrencySymbol()}{" "}
                             {Number2Currency(finalPrice * item.quantity)}
                         </span>

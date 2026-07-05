@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Number2Currency, { CurrencySymbol } from "../../../../Utils/Number2Currency.jsx";
 import ButtonPrimary from "./ButtonPrimary";
 import ButtonSecondary from "./ButtonSecondary";
+import CardItemSelector from "./CardItemSelector";
 import CardItem from "./CardItem";
 import DiscountRulesRest from "../../../../Actions/DiscountRulesRest";
 import FreeItemsDisplay from "./FreeItemsDisplay";
@@ -258,9 +259,11 @@ export default function CartStepSF({
                     </div>
                 ) : (
                     cart.map((item, index) => (
-                        <CardItem
+                        <CardItemSelector
                             key={index}
+                            type_cart_item={data?.type_cart_item}
                             {...item}
+                            index={index}
                             setCart={setCart}
                             hasPromotion={hasPromotionAvailable(item.id)}
                             onPromotionClick={handlePromotionClick}

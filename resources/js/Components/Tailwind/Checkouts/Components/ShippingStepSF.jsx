@@ -1978,12 +1978,12 @@ export default function ShippingStepSF({
     // Calcular el total base antes de cupón
     const totalBase = roundToTwoDecimals(
         roundToTwoDecimals(subTotal) +
-            roundToTwoDecimals(igv) +
-            roundToTwoDecimals(perception) +
-            roundToTwoDecimals(packagingAmount) +
-            roundToTwoDecimals(envio) +
-            roundToTwoDecimals(additionalShippingCost) -
-            roundToTwoDecimals(autoDiscountTotal),
+        roundToTwoDecimals(igv) +
+        roundToTwoDecimals(perception) +
+        roundToTwoDecimals(packagingAmount) +
+        roundToTwoDecimals(envio) +
+        roundToTwoDecimals(additionalShippingCost) -
+        roundToTwoDecimals(autoDiscountTotal),
     );
 
     // El descuento del cupón ya viene calculado desde el backend
@@ -2188,7 +2188,7 @@ export default function ShippingStepSF({
                 <div className="lg:col-span-3">
                     {/* Formulario */}
                     <form
-                        className="space-y-6 bg-[#f9f9f9] py-6 px-4 sm:px-6 rounded-2xl font-paragraph"
+                        className="space-y-6 bg-white py-6 px-4 sm:px-6 rounded-2xl font-paragraph"
                         onSubmit={(e) => e.preventDefault()}
                     >
                         <div className="sectionInformation space-y-3.5">
@@ -2258,29 +2258,29 @@ export default function ShippingStepSF({
                                                             formData.phone_prefix,
                                                     )
                                                         ? {
-                                                              value: prefixes.find(
-                                                                  (p) =>
-                                                                      p.realCode ===
-                                                                      formData.phone_prefix,
-                                                              ).realCode,
-                                                              label: `${prefixes.find((p) => p.realCode === formData.phone_prefix).beautyCode}`,
-                                                              flag: prefixes.find(
-                                                                  (p) =>
-                                                                      p.realCode ===
-                                                                      formData.phone_prefix,
-                                                              ).flag,
-                                                              code: prefixes.find(
-                                                                  (p) =>
-                                                                      p.realCode ===
-                                                                      formData.phone_prefix,
-                                                              ).beautyCode,
-                                                              country:
-                                                                  prefixes.find(
-                                                                      (p) =>
-                                                                          p.realCode ===
-                                                                          formData.phone_prefix,
-                                                                  ).country,
-                                                          }
+                                                            value: prefixes.find(
+                                                                (p) =>
+                                                                    p.realCode ===
+                                                                    formData.phone_prefix,
+                                                            ).realCode,
+                                                            label: `${prefixes.find((p) => p.realCode === formData.phone_prefix).beautyCode}`,
+                                                            flag: prefixes.find(
+                                                                (p) =>
+                                                                    p.realCode ===
+                                                                    formData.phone_prefix,
+                                                            ).flag,
+                                                            code: prefixes.find(
+                                                                (p) =>
+                                                                    p.realCode ===
+                                                                    formData.phone_prefix,
+                                                            ).beautyCode,
+                                                            country:
+                                                                prefixes.find(
+                                                                    (p) =>
+                                                                        p.realCode ===
+                                                                        formData.phone_prefix,
+                                                                ).country,
+                                                        }
                                                         : null
                                                 }
                                                 onChange={(selected) =>
@@ -2343,7 +2343,7 @@ export default function ShippingStepSF({
                                                         ) {
                                                             e.target.src =
                                                                 flagServices[
-                                                                    currentIndex
+                                                                currentIndex
                                                                 ];
                                                         } else {
                                                             // Si todos los servicios fallan, ocultar imagen y mostrar fallback
@@ -2430,8 +2430,8 @@ export default function ShippingStepSF({
                                                             state.isSelected
                                                                 ? "#3b82f6"
                                                                 : state.isFocused
-                                                                  ? "#f3f4f6"
-                                                                  : "white",
+                                                                    ? "#f3f4f6"
+                                                                    : "white",
                                                         color: state.isSelected
                                                             ? "white"
                                                             : "#374151",
@@ -2766,7 +2766,7 @@ export default function ShippingStepSF({
                                                         (char, index) => (
                                                             <div
                                                                 key={`char-${index}`}
-                                                                className="flex items-start gap-4 bg-[#F7F9FB] px-4 rounded-xl"
+                                                                className="flex items-start gap-4 bg-white px-4 rounded-xl"
                                                             >
                                                                 <div className="w-5 flex-shrink-0">
                                                                     <svg
@@ -2849,17 +2849,16 @@ export default function ShippingStepSF({
                                             onChange={handleChange}
                                         />
                                         <div
-                                            className={`w-5 h-5 border-2 rounded-full transition-all duration-200 ${
-                                                formData.invoiceType ===
+                                            className={`w-5 h-5 border-2 rounded-full transition-all duration-200 ${formData.invoiceType ===
                                                 "boleta"
-                                                    ? "border-primary bg-primary"
-                                                    : "border-gray-300 bg-white group-hover:border-gray-400"
-                                            }`}
+                                                ? "border-primary bg-primary"
+                                                : "border-gray-300 bg-white group-hover:border-gray-400"
+                                                }`}
                                         >
                                             {formData.invoiceType ===
                                                 "boleta" && (
-                                                <div className="w-2 h-2 bg-white rounded-full absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"></div>
-                                            )}
+                                                    <div className="w-2 h-2 bg-white rounded-full absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"></div>
+                                                )}
                                         </div>
                                     </div>
                                     <span className="ml-3 text-sm font-medium customtext-neutral-dark">
@@ -2880,17 +2879,16 @@ export default function ShippingStepSF({
                                             onChange={handleChange}
                                         />
                                         <div
-                                            className={`w-5 h-5 border-2 rounded-full transition-all duration-200 ${
-                                                formData.invoiceType ===
+                                            className={`w-5 h-5 border-2 rounded-full transition-all duration-200 ${formData.invoiceType ===
                                                 "factura"
-                                                    ? "border-primary bg-primary"
-                                                    : "border-gray-300 bg-white group-hover:border-gray-400"
-                                            }`}
+                                                ? "border-primary bg-primary"
+                                                : "border-gray-300 bg-white group-hover:border-gray-400"
+                                                }`}
                                         >
                                             {formData.invoiceType ===
                                                 "factura" && (
-                                                <div className="w-2 h-2 bg-white rounded-full absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"></div>
-                                            )}
+                                                    <div className="w-2 h-2 bg-white rounded-full absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"></div>
+                                                )}
                                         </div>
                                     </div>
                                     <span className="ml-3 text-sm font-medium customtext-neutral-dark">
@@ -2980,11 +2978,10 @@ export default function ShippingStepSF({
                                     <input
                                         type="text"
                                         placeholder="Código de cupón"
-                                        className={`w-full rounded-l-md border py-3 px-4 text-sm outline-none uppercase focus:border-[#C5B8D4] ${
-                                            couponError
-                                                ? "border-red-500"
-                                                : "border-gray-300"
-                                        }`}
+                                        className={`w-full rounded-l-md border py-3 px-4 text-sm outline-none uppercase focus:border-[#C5B8D4] ${couponError
+                                            ? "border-red-500"
+                                            : "border-gray-300"
+                                            }`}
                                         value={couponCode}
                                         onChange={(e) => {
                                             setCouponCode(e.target.value);
@@ -2999,13 +2996,12 @@ export default function ShippingStepSF({
                                         disabled={couponLoading}
                                     />
                                     <button
-                                        className={`rounded-r-md px-4 py-2 text-sm text-white transition-all duration-300 hover:opacity-90 ${
-                                            couponLoading
-                                                ? "bg-gray-400 cursor-not-allowed"
-                                                : data?.gradient
-                                                  ? "bg-gradient"
-                                                  : "bg-primary"
-                                        }`}
+                                        className={`rounded-r-md px-4 py-2 text-sm text-white transition-all duration-300 hover:opacity-90 ${couponLoading
+                                            ? "bg-gray-400 cursor-not-allowed"
+                                            : data?.gradient
+                                                ? "bg-gradient"
+                                                : "bg-primary"
+                                            }`}
                                         type="button"
                                         onClick={validateCoupon}
                                         disabled={couponLoading}
@@ -3042,7 +3038,7 @@ export default function ShippingStepSF({
                                             <p className="text-xs customtext-neutral-light">
                                                 Descuento:{" "}
                                                 {appliedCoupon.type ===
-                                                "percentage"
+                                                    "percentage"
                                                     ? `${appliedCoupon.value}%`
                                                     : `${CurrencySymbol()} ${Number2Currency(appliedCoupon.value)}`}
                                             </p>
@@ -3133,8 +3129,8 @@ export default function ShippingStepSF({
                                 {selectedOption === "store_pickup"
                                     ? "Retiro en tienda"
                                     : selectedOption === "agency"
-                                      ? "Envío por agencia"
-                                      : "Envío"}
+                                        ? "Envío por agencia"
+                                        : "Envío"}
                             </span>
                             <span className="font-semibold">
                                 {(() => {
@@ -3254,7 +3250,7 @@ export default function ShippingStepSF({
                         </div>
                         <div>
                             <p className="text-sm customtext-neutral-dark">
-                                Al realizar tu pedido, aceptas los 
+                                Al realizar tu pedido, aceptas los
                                 <a
                                     href="#"
                                     onClick={(e) => {
@@ -3268,7 +3264,7 @@ export default function ShippingStepSF({
                                     Términos y Condiciones
                                 </a>
                                 , y que nosotros usaremos sus datos personales
-                                de acuerdo con nuestra 
+                                de acuerdo con nuestra
                                 <a
                                     href="#"
                                     onClick={(e) => {
