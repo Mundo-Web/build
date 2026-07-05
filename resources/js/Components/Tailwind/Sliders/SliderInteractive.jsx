@@ -432,7 +432,7 @@ const SliderInteractive = ({ items, data, generals = [] }) => {
             >
                 <div
                     ref={sliderRef}
-                    className={`flex ${data?.class_slider || ""}`}
+                    className={`flex min-h-[calc(100dvh-20dvh)] lg:h-auto ${data?.class_slider || ""}`}
                     style={{
                         transform: `translateX(-${currentIndex * 100}%)`,
                         transition: "transform 0.5s ease-in-out",
@@ -441,7 +441,7 @@ const SliderInteractive = ({ items, data, generals = [] }) => {
                     {duplicatedItems.map((item, index) => (
                         <div
                             key={`slide-${index}`}
-                            className={`w-full min-h-[calc(100dvh-20dvh)] lg:h-auto flex-shrink-0 relative`}
+                            className={`w-full  flex-shrink-0 relative`}
                         >
                             <AnimatePresence>
                                 {currentIndex === index && (
@@ -740,11 +740,10 @@ const SliderInteractive = ({ items, data, generals = [] }) => {
                             {sortedItems.map((_, index) => (
                                 <div
                                     key={`dot-${index}`}
-                                    className={`inline-flex mx-1 w-3 h-3 rounded-full cursor-pointer transition-all duration-300 ${
-                                        currentIndex === index + 1
-                                            ? variant.active
-                                            : variant.inactive
-                                    }`}
+                                    className={`inline-flex mx-1 w-3 h-3 rounded-full cursor-pointer transition-all duration-300 ${currentIndex === index + 1
+                                        ? variant.active
+                                        : variant.inactive
+                                        }`}
                                     onClick={() => setCurrentIndex(index + 1)}
                                 >
                                     {currentIndex === index + 1 && variant.activeInner && (
