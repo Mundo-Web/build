@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { ArrowUpRight, ShoppingCart } from "lucide-react";
-import CartModal from "../../Components/CartModal";
+import CartModalSelector from "../../Components/CartModalSelector";
 import { CurrencySymbol } from "../../../../Utils/Number2Currency";
 
 const CardProductMicjc = ({ product, setCart, cart, data }) => {
@@ -126,7 +126,7 @@ const CardProductMicjc = ({ product, setCart, cart, data }) => {
                 </div>
             </div>
 
-            <CartModal
+            <CartModalSelector
                 data={data}
                 cart={cart}
                 setCart={setCart}

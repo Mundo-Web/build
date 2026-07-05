@@ -276,7 +276,8 @@
                     "input_search_placeholder",
                     "input_search_label",
                     "input_search_class",
-                    "type_order"
+                    "type_order",
+                    "select:type_modal_cart:Tipo de Modal Carrito:CartModal|Normal,CartModalBananaLab|Banana Lab,CartModalIbergruas|Ibergruas,CartModalLaPetaca|La Petaca,CartModalMiBalon|Mi Balón,CartModalRainstar|Rainstar"
                 ],
                 "using": {
                     "model": "Category",
@@ -2574,7 +2575,8 @@
                     "bool:loop:Activar Bucle Infinito (Loop)",
                     "bool:show_link_catalog:Mostrar Enlace a Todo el Catálogo",
                     "class_container",
-                    "class_title"
+                    "class_title",
+                    "select:type_modal_cart:Tipo de Modal Carrito:CartModal|Normal,CartModalBananaLab|Banana Lab,CartModalIbergruas|Ibergruas,CartModalLaPetaca|La Petaca,CartModalMiBalon|Mi Balón,CartModalRainstar|Rainstar"
                 ],
                 "using": {
                     "model": "Item",
@@ -3764,7 +3766,8 @@
                     "related_limit",
                     "bool:related_loop:Loop en relacionados",
                     "bool:related_autoplay:Autoplay en relacionados",
-                    "select:related_type_card_product:Tipo de Tarjeta Relacionados:CardProductMiBalon|Mi Balón,CardProductMicjc|Micjc,CardProductBananaLab|Banana Lab,CardProductMultivet|Multivet,CardProductKatya|Katya,ProductCardColors|Sala Fabulosa,ProductCardColorsBoton|Colors Boton,ProductCardFull|Full,ProductCardSimple|Simple"
+                    "select:related_type_card_product:Tipo de Tarjeta Relacionados:CardProductMiBalon|Mi Balón,CardProductMicjc|Micjc,CardProductBananaLab|Banana Lab,CardProductMultivet|Multivet,CardProductKatya|Katya,ProductCardColors|Sala Fabulosa,ProductCardColorsBoton|Colors Boton,ProductCardFull|Full,ProductCardSimple|Simple",
+                    "select:type_modal_cart:Tipo de Modal Carrito:CartModal|Normal,CartModalBananaLab|Banana Lab,CartModalIbergruas|Ibergruas,CartModalLaPetaca|La Petaca,CartModalMiBalon|Mi Balón,CartModalRainstar|Rainstar"
                 ],
               
                 "generals": [

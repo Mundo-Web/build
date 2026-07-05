@@ -2,8 +2,7 @@ import React, { useState } from "react";
 import { ArrowUpRight, ShoppingCart } from "lucide-react";
 import CartModal from "../../Components/CartModal";
 import { CurrencySymbol } from "../../../../Utils/Number2Currency";
-import CartModalMiBalon from "../../Components/CartModalMiBalon";
-
+import CartModalSelector from "../../Components/CartModalSelector";
 const CardProductMiBalon = ({ product, setCart, cart, data }) => {
     const [modalOpen, setModalOpen] = useState(false);
 
@@ -107,7 +106,8 @@ const CardProductMiBalon = ({ product, setCart, cart, data }) => {
                 </div>
             </div>
 
-            <CartModalMiBalon
+            <CartModalSelector
+                type_modal_cart="CartModalMiBalon"
                 data={data}
                 cart={cart}
                 setCart={setCart}

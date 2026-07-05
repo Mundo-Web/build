@@ -43,7 +43,6 @@ const ProductCardSelector = ({
     
     // Props comunes para todas las tarjetas
     const commonProps = {
-        key: product.id,
         product: product,
         data: data,
         cart: cart,
@@ -62,6 +61,7 @@ const ProductCardSelector = ({
             case "bananalab":
                 return (
                     <CardProductBananaLab 
+                        key={product?.id}
                         {...commonProps}
                         widthClass="w-full sm:w-full lg:w-full"
                     />
@@ -69,35 +69,39 @@ const ProductCardSelector = ({
             
             case "CardProductMiBalon":
             case "mibalon":
-                return <CardProductMiBalon {...commonProps} />;
+                return <CardProductMiBalon key={product?.id} {...commonProps} />;
+            
+            case "CardProductMiyagui":
+            case "miyagui":
+                return <CardProductMiyagui key={product?.id} {...commonProps} />;
             
             case "CardProductMicjc":
             case "micjc":
-                return <CardProductMicjc {...commonProps} />;
+                return <CardProductMicjc key={product?.id} {...commonProps} />;
             
             case "CardProductMultivet":
             case "multivet":
-                return <CardProductMultivet {...commonProps} />;
+                return <CardProductMultivet key={product?.id} {...commonProps} />;
             
             case "CardProductKatya":
             case "katya":
-                return <CardProductKatya {...commonProps} />;
+                return <CardProductKatya key={product?.id} {...commonProps} />;
             
             case "ProductCardColors":
             case "sala-fabulosa":
-                return <ProductCardColors {...commonProps} />;
+                return <ProductCardColors key={product?.id} {...commonProps} />;
             
             case "ProductCardColorsBoton":
             case "colors-boton":
-                return <ProductCardColorsBoton {...commonProps} />;
+                return <ProductCardColorsBoton key={product?.id} {...commonProps} />;
             
             case "ProductCardFull":
             case "full":
-                return <ProductCardFull {...commonProps} />;
+                return <ProductCardFull key={product?.id} {...commonProps} />;
             
             case "ProductCardSimple":
             case "simple":
-                return <ProductCardSimple {...commonProps} />;
+                return <ProductCardSimple key={product?.id} {...commonProps} />;
             
             // Tarjeta LaPetaca para hoteles/habitaciones
           
@@ -105,6 +109,7 @@ const ProductCardSelector = ({
             
                 return (
                     <LaPetacaCard 
+                        key={product?.id}
                         item={product}
                         index={additionalProps.index || 0}
                     />
@@ -113,10 +118,9 @@ const ProductCardSelector = ({
             // Tarjeta por defecto
             case "ProductCard":
             default:
-                // ProductCard usa handleProductClick en lugar de las props comunes
                 return (
                     <ProductCard 
-                        key={product.id}
+                        key={product?.id}
                         product={product}
                         handleProductClick={handleProductClick}
                         data={data}

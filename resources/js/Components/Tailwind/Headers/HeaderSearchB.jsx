@@ -11,7 +11,7 @@ import {
     CreditCard,
     Home,
 } from "lucide-react";
-import CartModal from "../Components/CartModal";
+import CartModalSelector from "../Components/CartModalSelector";
 import Logout from "../../../Actions/Logout";
 import MobileMenu from "./Components/MobileMenu";
 import ProfileImage from "./Components/ProfileImage";
@@ -1065,7 +1065,7 @@ const HeaderSearchB = ({
                 )}
             </AnimatePresence>
 
-            <CartModal
+            <CartModalSelector
                 data={data}
                 cart={cart}
                 setCart={setCart}

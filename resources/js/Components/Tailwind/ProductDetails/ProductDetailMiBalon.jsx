@@ -32,7 +32,7 @@ import { CurrencySymbol } from "../../../Utils/Number2Currency";
 import General from "../../../Utils/General";
 import ReactModal from "react-modal";
 import TextWithHighlight from "../../../Utils/TextWithHighlight";
-import CartModalMiBalon from "../Components/CartModalMiBalon";
+import CartModalSelector from "../Components/CartModalSelector";
 import ProductSwiperMiBalon from "../Products/ProductSwiperMiBalon";
 const WhatsAppIcon = ({ className }) => (
     <svg className={className} fill="currentColor" viewBox="0 0 24 24">
@@ -1253,6 +1253,7 @@ const ProductDetailMiBalon = ({
                                 loop: data?.related_loop,
                                 autoplay: data?.related_autoplay,
                                 type_card_product: data?.related_type_card_product,
+                                type_modal_cart: data?.type_modal_cart,
                             }}
                             items={relationsItems}
                             cart={cart}
@@ -1300,8 +1301,9 @@ const ProductDetailMiBalon = ({
 
 
 
-            {/* Cart Modal - Mi Balon Styled */}
-            <CartModalMiBalon
+            {/* Cart Modal - Dynamic */}
+            <CartModalSelector
+                type_modal_cart="CartModalMiBalon"
                 cart={cart}
                 data={data}
                 setCart={setCart}
