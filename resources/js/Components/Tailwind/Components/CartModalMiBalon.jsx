@@ -42,7 +42,7 @@ const CartModalMiBalon = ({ data, cart, setCart, modalOpen, setModalOpen }) => {
                         <div className="relative w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center text-primary">
                             <ShoppingBag strokeWidth={2.5} size={24} />
                             {!isEmpty && (
-                                <span className="absolute -top-1 -right-1 w-5 h-5 bg-secondary text-white text-[10px] font-bold rounded-full flex items-center justify-center shadow-md">
+                                <span className="absolute -top-1 -right-1 w-5 h-5 bg-primary text-white text-[10px] font-bold rounded-full flex items-center justify-center shadow-md">
                                     {cart.length}
                                 </span>
                             )}
@@ -113,10 +113,9 @@ const CartModalMiBalon = ({ data, cart, setCart, modalOpen, setModalOpen }) => {
                         <a
                             href={data?.link_cart || "/cart"}
                             className={`group w-full flex items-center justify-center py-4 px-6 transition-all rounded-full border-2 
-                                ${
-                                    isEmpty
-                                        ? "border-gray-200 bg-gray-100 text-gray-400 cursor-not-allowed pointer-events-none"
-                                        : "border-primary bg-primary text-white hover:bg-accent hover:border-accent shadow-lg shadow-primary/30"
+                                ${isEmpty
+                                    ? "border-gray-200 bg-gray-100 text-gray-400 cursor-not-allowed pointer-events-none"
+                                    : "border-primary bg-primary text-white hover:bg-accent hover:border-accent shadow-lg shadow-primary/30"
                                 }`}
                         >
                             <span className="text-sm font-bold tracking-widest uppercase">

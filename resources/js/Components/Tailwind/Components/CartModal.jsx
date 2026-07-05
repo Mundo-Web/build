@@ -32,6 +32,12 @@ const CartModal = ({
 
     const isEmpty = cart.length === 0;
 
+    // Calculate total price if not provided by parent
+    const calculatedTotalPrice = totalPrice || cart.reduce(
+        (acc, item) => acc + Number(item.final_price || item.price || 0) * (item.quantity || 1),
+        0
+    );
+
     return (
         <ReactModal
             isOpen={modalOpen}
@@ -104,7 +110,7 @@ const CartModal = ({
                             Total:
                         </span>
                         <span className="text-xl font-bold text-gray-900">
-                            {CurrencySymbol()} {Number2Currency(totalPrice)}
+                            {CurrencySymbol()} {Number2Currency(calculatedTotalPrice)}
                         </span>
                     </div>
                     <a

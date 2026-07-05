@@ -35,7 +35,7 @@ const CartItemRowMiBalon = ({ setCart, index, ...item }) => {
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, x: 20 }}
             transition={{ delay: index * 0.05 }}
-            className="flex gap-4 p-3 bg-white rounded-2xl shadow-sm border border-gray-100 hover:shadow-md hover:border-primary/20 transition-all duration-300 relative group"
+            className="flex gap-4 p-3 bg-white rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-all duration-300 relative group"
         >
             {/* Image Container */}
             <div className="flex-shrink-0 relative w-24 h-24 overflow-hidden bg-gray-50 rounded-xl">
