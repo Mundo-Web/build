@@ -17,6 +17,8 @@ import MobileMenu from "./Components/MobileMenu";
 import ProfileImage from "./Components/ProfileImage";
 import { motion, AnimatePresence } from "framer-motion";
 import { CurrencySymbol } from "../../../Utils/Number2Currency";
+import TopBar from "../TopBar";
+import Menu from "../Menu";
 
 const HeaderSearchB = ({
     items,
@@ -497,9 +499,25 @@ const HeaderSearchB = ({
         }
     }
     return (
-        <header id={data?.element_id || null} className={`w-full top-0 left-0 z-50 transition-all duration-300 ${isFixed ? "fixed shadow-lg" : "relative "} ${data.backgroundColor || 'bg-white'}`}>
-            <div className={`px-primary   2xl:px-0 2xl:max-w-7xl mx-auto py-4 font-font-secondary text-base font-semibold ${data.backgroundColor || 'bg-white'}`}>
-                <div className="flex items-center justify-between gap-4">
+        <header id={data?.element_id || null} className="relative w-full z-[100]">
+            {data?.type_topbar && data.type_topbar !== 'none' && (
+                <div className="w-full transition-all duration-300">
+                    <TopBar 
+                        which={data.type_topbar} 
+                        data={data} 
+                        items={items} 
+                        generals={generals} 
+                        cart={cart} 
+                        setCart={setCart} 
+                        isUser={isUser} 
+                        pages={pages} 
+                    />
+                </div>
+            )}
+            
+            <div className={`w-full transition-all duration-300 ${isFixed ? 'fixed top-0 left-0 right-0 shadow-lg z-[100]' : 'relative z-[100]'} ${data.backgroundColor || 'bg-white'}`}>
+                <div className="px-primary 2xl:px-0 2xl:max-w-7xl mx-auto py-4 font-font-secondary text-base font-semibold">
+                    <div className="flex items-center justify-between gap-4">
                     {/* Logo */}
                     <a href="/" className="flex items-center gap-2 z-[51]">
                         <img
@@ -1064,6 +1082,20 @@ const HeaderSearchB = ({
                     </motion.div>
                 )}
             </AnimatePresence>
+
+            {data?.type_menu && data.type_menu !== 'none' && (
+                <Menu 
+                    which={data.type_menu} 
+                    data={data} 
+                    items={items} 
+                    generals={generals} 
+                    cart={cart} 
+                    setCart={setCart} 
+                    isUser={isUser} 
+                    pages={pages} 
+                />
+            )}
+            </div>
 
             <CartModalSelector
                 data={data}

@@ -3,23 +3,36 @@ import General from "../../../Utils/General";
 import CintilloScheduler from "../../../Utils/CintilloScheduler";
 import { adjustTextColor } from "../../../Functions/adjustTextColor";
 
-const TopBarMarquee = ({ data }) => {
+const TopBarMarquee = ({ data, generals = null }) => {
     const divRef = useRef(null);
     const [activeCintillos, setActiveCintillos] = useState([]);
 
     const updateActiveCintillos = () => {
         try {
-            const cintilloData = General.get("cintillo");
+            let cintilloData = null;
+            if (generals && Array.isArray(generals) && generals.length > 0) {
+                cintilloData = generals.find(g => g.correlative === "cintillo")?.description;
+            }
+            if (!cintilloData) {
+                cintilloData = General.get("cintillo");
+            }
+            
             let allCintillos = [];
 
             if (cintilloData) {
-                try {
-                    allCintillos = JSON.parse(cintilloData);
-                } catch (e) {
-                    allCintillos = cintilloData
-                        .split(",")
-                        .map((c) => c.trim())
-                        .filter((c) => c.length > 0);
+                if (typeof cintilloData === 'string') {
+                    try {
+                        allCintillos = JSON.parse(cintilloData);
+                    } catch (e) {
+                        allCintillos = cintilloData
+                            .split(",")
+                            .map((c) => c.trim())
+                            .filter((c) => c.length > 0);
+                    }
+                } else if (Array.isArray(cintilloData)) {
+                    allCintillos = cintilloData;
+                } else {
+                    allCintillos = [cintilloData];
                 }
             }
 

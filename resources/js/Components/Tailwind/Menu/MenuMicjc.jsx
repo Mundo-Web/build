@@ -31,35 +31,50 @@ const MenuMicjc = ({ pages = [], items = [], data, visible = false }) => {
         }
     }, [items]);
 
+    const [overlayTop, setOverlayTop] = useState(0);
+
     // Prevenir scroll del body cuando el modal está abierto en desktop
     useEffect(() => {
-        if (isMenuOpen && window.innerWidth >= 1024) {
-            const scrollY = window.scrollY;
-            const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
-
-            document.documentElement.style.overflow = 'hidden';
-            document.body.style.position = 'fixed';
-            document.body.style.top = `-${scrollY}px`;
-            document.body.style.left = '0';
-            document.body.style.right = '0';
-            document.body.style.width = '100%';
-            document.body.style.overflow = 'hidden';
-
-            if (scrollbarWidth > 0) {
-                document.body.style.paddingRight = `${scrollbarWidth}px`;
+        if (isMenuOpen) {
+            if (menuRef.current) {
+                setOverlayTop(menuRef.current.getBoundingClientRect().bottom);
             }
+            
+            if (window.innerWidth >= 1024) {
+                const preventScrollOutside = (e) => {
+                    // Permitir scroll si el target está dentro de un contenedor con scroll interno en el menú
+                    if (menuRef.current && menuRef.current.contains(e.target)) {
+                        let element = e.target;
+                        while (element && element !== menuRef.current) {
+                            // Check if element has scrollable content
+                            const style = window.getComputedStyle(element);
+                            const overflowY = style.getPropertyValue('overflow-y');
+                            if ((overflowY === 'auto' || overflowY === 'scroll') && element.scrollHeight > element.clientHeight) {
+                                return; // Let it scroll
+                            }
+                            element = element.parentElement;
+                        }
+                    }
+                    e.preventDefault();
+                };
 
-            return () => {
-                document.documentElement.style.overflow = '';
-                document.body.style.position = '';
-                document.body.style.top = '';
-                document.body.style.left = '';
-                document.body.style.right = '';
-                document.body.style.width = '';
-                document.body.style.overflow = '';
-                document.body.style.paddingRight = '';
-                window.scrollTo(0, scrollY);
-            };
+                window.addEventListener('wheel', preventScrollOutside, { passive: false });
+                window.addEventListener('touchmove', preventScrollOutside, { passive: false });
+                
+                // Prevenir scroll con teclado (flechas, espacio, etc)
+                const preventKeyScroll = (e) => {
+                    if (['ArrowUp', 'ArrowDown', 'Space', 'PageUp', 'PageDown'].includes(e.code)) {
+                        preventScrollOutside(e);
+                    }
+                };
+                window.addEventListener('keydown', preventKeyScroll, { passive: false });
+
+                return () => {
+                    window.removeEventListener('wheel', preventScrollOutside);
+                    window.removeEventListener('touchmove', preventScrollOutside);
+                    window.removeEventListener('keydown', preventKeyScroll);
+                };
+            }
         }
     }, [isMenuOpen]);
 
@@ -114,7 +129,7 @@ const MenuMicjc = ({ pages = [], items = [], data, visible = false }) => {
             {isMenuOpen && (
                 <div
                     className="fixed inset-0 bg-black/20 backdrop-blur-sm z-40 transition-opacity duration-300"
-                    style={{ top: menuRef.current ? menuRef.current.offsetTop + menuRef.current.offsetHeight : '0' }}
+                    style={{ top: `${overlayTop}px` }}
                     onClick={() => setIsMenuOpen(false)}
                 />
             )}
@@ -190,7 +205,7 @@ const MenuMicjc = ({ pages = [], items = [], data, visible = false }) => {
                         <div className="flex items-center justify-between h-auto">
                             <div className="flex items-center gap-8">
                                 {/* Botón Categorías (Estilo aliexpress - morado sólido al abrir) */}
-                                {data?.showCategories && (
+                                {data?.showCategories !== false && (
                                     <button
                                         onClick={() => setIsMenuOpen(!isMenuOpen)}
                                         className={`flex items-center gap-2.5 px-5 py-2.5 rounded-t-xl font-bold text-sm transition-all duration-300 border ${isMenuOpen
@@ -215,7 +230,7 @@ const MenuMicjc = ({ pages = [], items = [], data, visible = false }) => {
                                             <li key={page.path}>
                                                 <a
                                                     href={page.path}
-                                                    className="relative px-3.5 py-2 rounded-lg font-semibold text-neutral-600 hover:text-neutral-900 hover:bg-neutral-50/50 transition-all duration-200"
+                                                    className="relative block px-3.5 py-2 rounded-lg font-semibold text-neutral-600 hover:text-neutral-900 hover:bg-neutral-50/50 transition-all duration-200"
                                                 >
                                                     {page.name}
                                                 </a>

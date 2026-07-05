@@ -8,11 +8,11 @@ import tagsItemsRest from "../../../Utils/Services/tagsItemsRest";
 import useCintillos from "../../../Hooks/useCintillos";
 
 
-const TopBarPages = ({ items, data, pages = [] }) => {
+const TopBarPages = ({ items, data, pages = [], generals = [] }) => {
   const sectionRef = useRef(null);
   const [show, setShow] = useState(true);
   const lastScroll = useRef(0);
-  const { hasActiveCintillos } = useCintillos();
+  const { hasActiveCintillos } = useCintillos(generals);
 
   useEffect(() => {
 
@@ -134,7 +134,7 @@ const TopBarPages = ({ items, data, pages = [] }) => {
         </div>
         <p className={`  text-xs ${data?.cintillo_mobile || "hidden md:block"}`}>{data?.isCopyright ?
           ` Copyright © ${new Date().getFullYear()} ${Global.APP_NAME}. Reservados todos los derechos.`
-          : hasActiveCintillos ? <AnimatedCintillo /> : null}</p>
+          : hasActiveCintillos ? <AnimatedCintillo generals={generals} /> : null}</p>
 
 
       </div>

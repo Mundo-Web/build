@@ -29,7 +29,7 @@ const TopBar = ({
     const getTopBar = () => {
         switch (which) {
             case "TopBarSimple":
-                return <TopBarSimple key="TopBarSimple" data={data} />;
+                return <TopBarSimple key="TopBarSimple" data={data} generals={generals} />;
             case "TopBarSocials":
                 return (
                     <TopBarSocials
@@ -92,11 +92,11 @@ const TopBar = ({
                     />
                 );
             case "TopBarPages":
-                return <TopBarPages items={items} data={data} pages={pages} />;
+                return <TopBarPages items={items} data={data} pages={pages} generals={generals} />;
             case "TopBarAddress":
-                return <TopBarAddress key="TopBarAddress" data={data} />;
+                return <TopBarAddress key="TopBarAddress" data={data} generals={generals} />;
             case "TopBarMarquee":
-                return <TopBarMarquee key="TopBarMarquee" data={data} />;
+                return <TopBarMarquee key="TopBarMarquee" data={data} generals={generals} />;
             default:
                 return (
                     <div className="w-full px-[5%] replace-max-w-here p-4 mx-auto">

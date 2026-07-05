@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import General from '../../../Utils/General';
 import CintilloScheduler from '../../../Utils/CintilloScheduler';
 
-const AnimatedCintillo = ({ className = "" }) => {
+const AnimatedCintillo = ({ className = "", generals = null }) => {
     const [currentIndex, setCurrentIndex] = useState(0);
     const [isVisible, setIsVisible] = useState(true);
     const [activeCintillos, setActiveCintillos] = useState([]);
@@ -10,22 +10,41 @@ const AnimatedCintillo = ({ className = "" }) => {
     // Función para actualizar los cintillos activos
     const updateActiveCintillos = () => {
         try {
-            // Obtener los cintillos de la configuración general
-            const cintilloData = General.get("cintillo");
+            // Obtener los cintillos de la configuración general o del prop
+            let cintilloData = null;
+            if (generals && Array.isArray(generals) && generals.length > 0) {
+                cintilloData = generals.find(g => g.correlative === "cintillo")?.description;
+            }
+            if (!cintilloData) {
+                cintilloData = General.get("cintillo");
+            }
             let allCintillos = [];
             
             if (cintilloData) {
-                // Intentar parsear como JSON (nuevo formato)
-                try {
-                    allCintillos = JSON.parse(cintilloData);
-                } catch (e) {
-                    // Si falla, usar formato legacy (string separado por comas)
-                    allCintillos = cintilloData.split(',').map(c => c.trim()).filter(c => c.length > 0);
+                if (typeof cintilloData === 'string') {
+                    // Intentar parsear como JSON (nuevo formato)
+                    try {
+                        allCintillos = JSON.parse(cintilloData);
+                    } catch (e) {
+                        // Si falla, usar formato legacy (string separado por comas)
+                        allCintillos = cintilloData.split(',').map(c => c.trim()).filter(c => c.length > 0);
+                    }
+                } else if (Array.isArray(cintilloData)) {
+                    allCintillos = cintilloData;
+                } else {
+                    allCintillos = [cintilloData];
                 }
             }
             
             // Filtrar solo los cintillos que deben mostrarse
             const filtered = CintilloScheduler.filterActiveCintillos(allCintillos);
+            
+            console.log("CINTILLOS DEBUG:", {
+                raw_cintilloData: cintilloData,
+                allCintillos_parsed: allCintillos,
+                filtered_active: filtered,
+                generals_prop_length: generals?.length
+            });
             
             setActiveCintillos(filtered);
             
@@ -67,9 +86,9 @@ const AnimatedCintillo = ({ className = "" }) => {
         return () => clearInterval(interval);
     }, [activeCintillos.length]);
 
-    // Si no hay cintillos activos, no renderizar nada
+    // Si no hay cintillos activos, mostrar mensaje debug
     if (activeCintillos.length === 0) {
-        return null;
+        return <span className={className}>[DEBUG: No hay cintillos activos tras filtrado]</span>;
     }
 
     // Si solo hay un cintillo, mostrarlo sin animación

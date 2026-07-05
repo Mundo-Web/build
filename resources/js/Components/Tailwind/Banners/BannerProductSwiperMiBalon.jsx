@@ -16,6 +16,7 @@ const BannerProductSwiperMiBalon = ({ items = [], data, setCart, cart }) => {
     const isImageRight = data?.image_right === true || data?.image_right === 'true';
     const backgroundUrl = resolveSystemAsset(data?.background);
 
+
     return (
         <section
             id={data?.element_id || null}

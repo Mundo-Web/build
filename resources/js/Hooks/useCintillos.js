@@ -6,24 +6,36 @@ import CintilloScheduler from '../Utils/CintilloScheduler';
  * Hook personalizado para manejar cintillos activos
  * @returns {Object} - { hasActiveCintillos: boolean, activeCintillos: array }
  */
-const useCintillos = () => {
+const useCintillos = (generals = null) => {
     const [hasActiveCintillos, setHasActiveCintillos] = useState(false);
     const [activeCintillos, setActiveCintillos] = useState([]);
     
     const updateActiveCintillos = () => {
         try {
-            // Obtener los cintillos de la configuración general
-            const cintilloData = General.get("cintillo");
+            // Obtener los cintillos de la configuración general o del prop
+            let cintilloData = null;
+            if (generals && Array.isArray(generals) && generals.length > 0) {
+                cintilloData = generals.find(g => g.correlative === "cintillo")?.description;
+            }
+            if (!cintilloData) {
+                cintilloData = General.get("cintillo");
+            }
             
             let allCintillos = [];
             
             if (cintilloData) {
-                // Intentar parsear como JSON (nuevo formato)
-                try {
-                    allCintillos = JSON.parse(cintilloData);
-                } catch (e) {
-                    // Si falla, usar formato legacy (string separado por comas)
-                    allCintillos = cintilloData.split(',').map(c => c.trim()).filter(c => c.length > 0);
+                if (typeof cintilloData === 'string') {
+                    // Intentar parsear como JSON (nuevo formato)
+                    try {
+                        allCintillos = JSON.parse(cintilloData);
+                    } catch (e) {
+                        // Si falla, usar formato legacy (string separado por comas)
+                        allCintillos = cintilloData.split(',').map(c => c.trim()).filter(c => c.length > 0);
+                    }
+                } else if (Array.isArray(cintilloData)) {
+                    allCintillos = cintilloData;
+                } else {
+                    allCintillos = [cintilloData];
                 }
             }
             
