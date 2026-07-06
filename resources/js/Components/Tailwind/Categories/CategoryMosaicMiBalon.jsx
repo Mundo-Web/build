@@ -3,6 +3,7 @@ import { ArrowUpRight, Trophy } from "lucide-react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, A11y, Keyboard } from "swiper/modules";
 import "swiper/css";
+import TextWithHighlight from "../../../Utils/TextWithHighlight";
 
 const CategoryMosaicMiBalon = ({ items, data }) => {
     if (!items || items.length === 0) return null;
@@ -69,8 +70,7 @@ const CategoryMosaicMiBalon = ({ items, data }) => {
                 <h2
                     className={`text-4xl md:text-7xl font-title text-neutral-dark   mb-4 ${data?.class_title || ""}`}
                 >
-                    Nuestras{" "}
-                    <span className="text-primary font-title">Disciplinas</span>
+                    <TextWithHighlight text={data?.title || "Nuestras *Disciplinas*"} color="bg-primary" ></TextWithHighlight>
                 </h2>
                 <p
                     className={`text-gray-500 max-w-2xl mx-auto ${data?.class_description || ""}`}
@@ -136,11 +136,10 @@ const CategoryMosaicMiBalon = ({ items, data }) => {
                         {items.map((_, idx) => (
                             <div
                                 key={idx}
-                                className={`h-2 transition-all duration-500 rounded-full ${
-                                    idx === activeIndex
-                                        ? "w-8 bg-primary shadow-lg"
-                                        : "w-2 bg-neutral-300"
-                                }`}
+                                className={`h-2 transition-all duration-500 rounded-full ${idx === activeIndex
+                                    ? "w-8 bg-primary shadow-lg"
+                                    : "w-2 bg-neutral-300"
+                                    }`}
                             />
                         ))}
                     </div>
