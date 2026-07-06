@@ -78,7 +78,7 @@ const ProductSwiperBanners = ({ items = [], data = {} }) => {
                         {bannerItems.map((item, index) => (
                             <SwiperSlide key={index} className="h-auto">
                                 <a
-                                    href={`/producto/${item.slug}`}
+                                    href={`/product/${item.slug}`}
                                     className="relative block group overflow-hidden rounded-[1.5rem] md:rounded-[2rem] shadow-md hover:shadow-xl transition-all duration-300"
                                 >
                                     <img
