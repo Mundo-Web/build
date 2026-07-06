@@ -87,6 +87,7 @@ class Item extends Model
         'atributo',
         'valor',
         'is_taxable',
+        'is_custom_relations',
     ];
 
     protected $casts = [
@@ -111,6 +112,7 @@ class Item extends Model
         'is_attributes' => 'boolean',
         'is_master' => 'boolean',
         'file_catalogo_general' => 'boolean',
+        'is_custom_relations' => 'boolean',
         'faqs' => 'array',
     ];
 

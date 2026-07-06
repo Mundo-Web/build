@@ -1360,8 +1360,8 @@ const Items = ({
                                         borderRadius: "4px",
                                     }}
                                     onError={(e) =>
-                                        (e.target.src =
-                                            "/api/cover/thumbnail/null")
+                                    (e.target.src =
+                                        "/api/cover/thumbnail/null")
                                     }
                                 />,
                             );
@@ -1385,8 +1385,8 @@ const Items = ({
                                         borderRadius: "4px",
                                     }}
                                     onError={(e) =>
-                                        (e.target.src =
-                                            "/api/cover/thumbnail/null")
+                                    (e.target.src =
+                                        "/api/cover/thumbnail/null")
                                     }
                                 />,
                             );
@@ -1907,7 +1907,7 @@ const Items = ({
                                 Características
                             </button>
                         </li>
-                        <li className="nav-item" role="presentation">
+                        <li className="nav-item" role="presentation" hidden={!Fillable.has("items", "is_custom_relations")}>
                             <button
                                 className="nav-link"
                                 id="related-tab"
@@ -2110,25 +2110,25 @@ const Items = ({
                                                 "items",
                                                 "is_master",
                                             ) && (
-                                                <div className="mb-3">
-                                                    <SwitchFormGroup
-                                                        label="Tiene Variantes"
-                                                        checked={isMaster}
-                                                        onChange={(e) =>
-                                                            setIsMaster(
-                                                                e.target
-                                                                    .checked,
-                                                            )
-                                                        }
-                                                    />
-                                                    <small className="text-muted d-block mt-1">
-                                                        Activa esta opción para
-                                                        generar múltiples
-                                                        variantes (talla, color,
-                                                        etc.) de este producto.
-                                                    </small>
-                                                </div>
-                                            )}
+                                                    <div className="mb-3">
+                                                        <SwitchFormGroup
+                                                            label="Tiene Variantes"
+                                                            checked={isMaster}
+                                                            onChange={(e) =>
+                                                                setIsMaster(
+                                                                    e.target
+                                                                        .checked,
+                                                                )
+                                                            }
+                                                        />
+                                                        <small className="text-muted d-block mt-1">
+                                                            Activa esta opción para
+                                                            generar múltiples
+                                                            variantes (talla, color,
+                                                            etc.) de este producto.
+                                                        </small>
+                                                    </div>
+                                                )}
                                             <InputFormGroup
                                                 eRef={skuRef}
                                                 label="SKU"
@@ -2435,13 +2435,13 @@ const Items = ({
                                                     "items",
                                                     "provider_price",
                                                 ) && (
-                                                    <InputFormGroup
-                                                        eRef={providerPriceRef}
-                                                        label="Precio del Proveedor (Sugerido)"
-                                                        type="number"
-                                                        step="0.01"
-                                                    />
-                                                )}
+                                                        <InputFormGroup
+                                                            eRef={providerPriceRef}
+                                                            label="Precio del Proveedor (Sugerido)"
+                                                            type="number"
+                                                            step="0.01"
+                                                        />
+                                                    )}
                                                 <InputFormGroup
                                                     eRef={discountRef}
                                                     label="Precio con Descuento"
@@ -2554,15 +2554,15 @@ const Items = ({
                                                     {gallery.filter(
                                                         (img) => !img.toDelete,
                                                     ).length > 0 && (
-                                                        <span className="badge bg-primary ms-2">
-                                                            {
-                                                                gallery.filter(
-                                                                    (img) =>
-                                                                        !img.toDelete,
-                                                                ).length
-                                                            }
-                                                        </span>
-                                                    )}
+                                                            <span className="badge bg-primary ms-2">
+                                                                {
+                                                                    gallery.filter(
+                                                                        (img) =>
+                                                                            !img.toDelete,
+                                                                    ).length
+                                                                }
+                                                            </span>
+                                                        )}
                                                 </label>
 
                                                 <input
@@ -2651,12 +2651,12 @@ const Items = ({
                                                                         cursor: "grab",
                                                                         transform:
                                                                             draggedIndex ===
-                                                                            originalIndex
+                                                                                originalIndex
                                                                                 ? "scale(1.05)"
                                                                                 : "scale(1)",
                                                                         opacity:
                                                                             draggedIndex ===
-                                                                            originalIndex
+                                                                                originalIndex
                                                                                 ? 0.8
                                                                                 : 1,
                                                                         border: "3px solid transparent",
@@ -2868,19 +2868,19 @@ const Items = ({
                                                 {gallery.filter(
                                                     (img) => !img.toDelete,
                                                 ).length === 0 && (
-                                                    <div className="text-center py-4 text-muted">
-                                                        <i className="fas fa-images fa-3x mb-3 opacity-50"></i>
-                                                        <p className="mb-1">
-                                                            No hay imágenes en
-                                                            la galería
-                                                        </p>
-                                                        <small>
-                                                            Arrastra archivos
-                                                            aquí o haz clic en
-                                                            "Agregar Imagen"
-                                                        </small>
-                                                    </div>
-                                                )}
+                                                        <div className="text-center py-4 text-muted">
+                                                            <i className="fas fa-images fa-3x mb-3 opacity-50"></i>
+                                                            <p className="mb-1">
+                                                                No hay imágenes en
+                                                                la galería
+                                                            </p>
+                                                            <small>
+                                                                Arrastra archivos
+                                                                aquí o haz clic en
+                                                                "Agregar Imagen"
+                                                            </small>
+                                                        </div>
+                                                    )}
                                             </div>
 
                                             {/* PDFs múltiples con ordenamiento */}
@@ -2900,15 +2900,15 @@ const Items = ({
                                                     {pdfs.filter(
                                                         (pdf) => !pdf.toDelete,
                                                     ).length > 0 && (
-                                                        <span className="badge bg-danger ms-2">
-                                                            {
-                                                                pdfs.filter(
-                                                                    (pdf) =>
-                                                                        !pdf.toDelete,
-                                                                ).length
-                                                            }
-                                                        </span>
-                                                    )}
+                                                            <span className="badge bg-danger ms-2">
+                                                                {
+                                                                    pdfs.filter(
+                                                                        (pdf) =>
+                                                                            !pdf.toDelete,
+                                                                    ).length
+                                                                }
+                                                            </span>
+                                                        )}
                                                 </label>
 
                                                 <input
@@ -2967,12 +2967,12 @@ const Items = ({
                                                                         cursor: "grab",
                                                                         opacity:
                                                                             draggedPdfIndex ===
-                                                                            originalIndex
+                                                                                originalIndex
                                                                                 ? 0.5
                                                                                 : 1,
                                                                         backgroundColor:
                                                                             draggedPdfIndex ===
-                                                                            originalIndex
+                                                                                originalIndex
                                                                                 ? "#f8f9fa"
                                                                                 : "white",
                                                                         transition:
@@ -3089,15 +3089,15 @@ const Items = ({
                                                         (video) =>
                                                             !video.toDelete,
                                                     ).length > 0 && (
-                                                        <span className="badge bg-success ms-2">
-                                                            {
-                                                                videos.filter(
-                                                                    (video) =>
-                                                                        !video.toDelete,
-                                                                ).length
-                                                            }
-                                                        </span>
-                                                    )}
+                                                            <span className="badge bg-success ms-2">
+                                                                {
+                                                                    videos.filter(
+                                                                        (video) =>
+                                                                            !video.toDelete,
+                                                                    ).length
+                                                                }
+                                                            </span>
+                                                        )}
                                                 </label>
 
                                                 {/* Lista de videos con drag & drop */}
@@ -3147,12 +3147,12 @@ const Items = ({
                                                                         cursor: "grab",
                                                                         opacity:
                                                                             draggedVideoIndex ===
-                                                                            originalIndex
+                                                                                originalIndex
                                                                                 ? 0.5
                                                                                 : 1,
                                                                         backgroundColor:
                                                                             draggedVideoIndex ===
-                                                                            originalIndex
+                                                                                originalIndex
                                                                                 ? "#f8f9fa"
                                                                                 : "white",
                                                                         transition:
@@ -3433,22 +3433,22 @@ const Items = ({
                                                         <div className="d-flex align-items-center gap-2">
                                                             {itemAttributes.length >
                                                                 0 && (
-                                                                <span
-                                                                    className="badge bg-white text-primary fw-bold px-3 py-2"
-                                                                    style={{
-                                                                        fontSize:
-                                                                            "0.85rem",
-                                                                    }}
-                                                                >
-                                                                    {
-                                                                        itemAttributes.length
-                                                                    }{" "}
-                                                                    {itemAttributes.length ===
-                                                                    1
-                                                                        ? "atributo"
-                                                                        : "atributos"}
-                                                                </span>
-                                                            )}
+                                                                    <span
+                                                                        className="badge bg-white text-primary fw-bold px-3 py-2"
+                                                                        style={{
+                                                                            fontSize:
+                                                                                "0.85rem",
+                                                                        }}
+                                                                    >
+                                                                        {
+                                                                            itemAttributes.length
+                                                                        }{" "}
+                                                                        {itemAttributes.length ===
+                                                                            1
+                                                                            ? "atributo"
+                                                                            : "atributos"}
+                                                                    </span>
+                                                                )}
                                                             <button
                                                                 type="button"
                                                                 className="btn btn-light btn-sm fw-semibold d-flex align-items-center gap-2"
@@ -3489,7 +3489,7 @@ const Items = ({
                                                     }}
                                                 >
                                                     {itemAttributes.length ===
-                                                    0 ? (
+                                                        0 ? (
                                                         <div className="text-center py-5">
                                                             <div className="mb-4">
                                                                 <div
@@ -3573,19 +3573,19 @@ const Items = ({
                                                                                 attr.attribute_id,
                                                                         );
                                                                     const typeIcons =
-                                                                        {
-                                                                            text: "fa-font",
-                                                                            number: "fa-hashtag",
-                                                                            select: "fa-list-ul",
-                                                                            color: "fa-palette",
-                                                                        };
+                                                                    {
+                                                                        text: "fa-font",
+                                                                        number: "fa-hashtag",
+                                                                        select: "fa-list-ul",
+                                                                        color: "fa-palette",
+                                                                    };
                                                                     const typeColors =
-                                                                        {
-                                                                            text: "#3b82f6",
-                                                                            number: "#10b981",
-                                                                            select: "#f59e0b",
-                                                                            color: "#ec4899",
-                                                                        };
+                                                                    {
+                                                                        text: "#3b82f6",
+                                                                        number: "#10b981",
+                                                                        select: "#f59e0b",
+                                                                        color: "#ec4899",
+                                                                    };
                                                                     return (
                                                                         <div
                                                                             key={
@@ -3596,19 +3596,19 @@ const Items = ({
                                                                                 borderColor:
                                                                                     selectedAttr
                                                                                         ? typeColors[
-                                                                                              selectedAttr
-                                                                                                  .type
-                                                                                          ] +
-                                                                                          "40"
+                                                                                        selectedAttr
+                                                                                            .type
+                                                                                        ] +
+                                                                                        "40"
                                                                                         : "#e5e7eb",
                                                                                 borderLeftWidth:
                                                                                     "4px",
                                                                                 borderLeftColor:
                                                                                     selectedAttr
                                                                                         ? typeColors[
-                                                                                              selectedAttr
-                                                                                                  .type
-                                                                                          ]
+                                                                                        selectedAttr
+                                                                                            .type
+                                                                                        ]
                                                                                         : "#e5e7eb",
                                                                                 transition:
                                                                                     "all 0.2s ease",
@@ -3627,16 +3627,16 @@ const Items = ({
                                                                                             backgroundColor:
                                                                                                 selectedAttr
                                                                                                     ? typeColors[
-                                                                                                          selectedAttr
-                                                                                                              .type
-                                                                                                      ] +
-                                                                                                      "15"
+                                                                                                    selectedAttr
+                                                                                                        .type
+                                                                                                    ] +
+                                                                                                    "15"
                                                                                                     : "#f3f4f6",
                                                                                             color: selectedAttr
                                                                                                 ? typeColors[
-                                                                                                      selectedAttr
-                                                                                                          .type
-                                                                                                  ]
+                                                                                                selectedAttr
+                                                                                                    .type
+                                                                                                ]
                                                                                                 : "#9ca3af",
                                                                                             fontSize:
                                                                                                 "0.85rem",
@@ -3684,18 +3684,18 @@ const Items = ({
                                                                                             newAttrs[
                                                                                                 index
                                                                                             ] =
-                                                                                                {
-                                                                                                    ...newAttrs[
-                                                                                                        index
-                                                                                                    ],
-                                                                                                    attribute_id:
-                                                                                                        e
-                                                                                                            .target
-                                                                                                            .value,
-                                                                                                    attribute:
-                                                                                                        foundAttr,
-                                                                                                    value: "",
-                                                                                                };
+                                                                                            {
+                                                                                                ...newAttrs[
+                                                                                                index
+                                                                                                ],
+                                                                                                attribute_id:
+                                                                                                    e
+                                                                                                        .target
+                                                                                                        .value,
+                                                                                                attribute:
+                                                                                                    foundAttr,
+                                                                                                value: "",
+                                                                                            };
                                                                                             setItemAttributes(
                                                                                                 newAttrs,
                                                                                             );
@@ -3719,9 +3719,9 @@ const Items = ({
                                                                                                             i,
                                                                                                         ) =>
                                                                                                             i !==
-                                                                                                                index &&
+                                                                                                            index &&
                                                                                                             ia.attribute_id ===
-                                                                                                                a.id,
+                                                                                                            a.id,
                                                                                                     ),
                                                                                             )
                                                                                             .map(
@@ -3768,8 +3768,8 @@ const Items = ({
                                                                                                 style={{
                                                                                                     backgroundColor:
                                                                                                         typeColors[
-                                                                                                            selectedAttr
-                                                                                                                .type
+                                                                                                        selectedAttr
+                                                                                                            .type
                                                                                                         ] +
                                                                                                         "20",
                                                                                                     color: typeColors[
@@ -3790,7 +3790,7 @@ const Items = ({
                                                                                     </label>
                                                                                     {selectedAttr?.type ===
                                                                                         "select" &&
-                                                                                    selectedAttr?.options ? (
+                                                                                        selectedAttr?.options ? (
                                                                                         <select
                                                                                             className="form-select"
                                                                                             value={
@@ -3841,7 +3841,7 @@ const Items = ({
                                                                                             )}
                                                                                         </select>
                                                                                     ) : selectedAttr?.type ===
-                                                                                      "color" ? (
+                                                                                        "color" ? (
                                                                                         <div className="d-flex gap-2 align-items-center">
                                                                                             <input
                                                                                                 type="color"
@@ -3908,7 +3908,7 @@ const Items = ({
                                                                                         <input
                                                                                             type={
                                                                                                 selectedAttr?.type ===
-                                                                                                "number"
+                                                                                                    "number"
                                                                                                     ? "number"
                                                                                                     : "text"
                                                                                             }
@@ -4068,10 +4068,10 @@ const Items = ({
                                 <div className="card-body">
                                     <div className="alert alert-info">
                                         <i className="fa fa-info-circle me-2"></i>
-                                        Aquí puedes elegir manualmente qué productos aparecerán como "Relacionados" o "También te puede interesar" en el detalle de este producto. 
+                                        Aquí puedes elegir manualmente qué productos aparecerán como "Relacionados" o "También te puede interesar" en el detalle de este producto.
                                         Esta selección tiene <strong>prioridad máxima</strong> sobre los Grupos y las sugerencias automáticas de la misma categoría.
                                     </div>
-                                    
+
                                     <SelectAPIFormGroup
                                         id="manual-related"
                                         eRef={manualRelatedRef}
@@ -4161,9 +4161,9 @@ const Items = ({
                     excelTemplate={
                         Array.isArray(generals)
                             ? generals.find(
-                                  (g) =>
-                                      g.correlative === "excel_import_template",
-                              )?.description
+                                (g) =>
+                                    g.correlative === "excel_import_template",
+                            )?.description
                             : null
                     }
                 />
