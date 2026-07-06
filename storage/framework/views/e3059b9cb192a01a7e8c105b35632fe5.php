@@ -33,6 +33,7 @@ $isCheckout = ($page->correlative ?? '') === 'checkout' ||
         $pageImageRaw = $item->image ? asset("storage/images/{$snake_case}/{$item->image}") : ($generals->where('correlative', 'og_image')->first()?->description ?? '');
         $pageImage = $pageImageRaw ? (filter_var($pageImageRaw, FILTER_VALIDATE_URL) ? $pageImageRaw : asset('assets/resources/' . $pageImageRaw)) : '';
         $pageUrl = $item->canonical_url ?? url()->current();
+        $pageAuthor = (isset($item->author) && $item->author) ? $item->author : ($generals->where('correlative', 'meta_author')->first()?->description ?? 'Powered by Mundo Web');
 
         $ogTitle = $pageTitle;
         $ogDescription = $pageDescription;
@@ -51,6 +52,7 @@ $isCheckout = ($page->correlative ?? '') === 'checkout' ||
         $pageTitle = $data['name'] ?? $siteTitle;
         $pageDescription = $data['description'] ?? $siteDescription;
         $pageKeywords = isset($data['keywords']) ? implode(', ', $data['keywords']) : $siteKeywords;
+        $pageAuthor = $generals->where('correlative', 'meta_author')->first()?->description ?? 'Powered by Mundo Web';
 
         $ogTitle = $generals->where('correlative', 'og_title')->first()?->description ?? $pageTitle;
         $ogDescription = $generals->where('correlative', 'og_description')->first()?->description ?? $pageDescription;
@@ -306,7 +308,7 @@ $isCheckout = ($page->correlative ?? '') === 'checkout' ||
     <?php if($pageKeywords): ?>
     <meta name="keywords" content="<?php echo $pageKeywords; ?>">
     <?php endif; ?>
-    <meta name="author" content="Powered by Mundo Web">
+    <meta name="author" content="<?php echo htmlspecialchars($pageAuthor, ENT_QUOTES, 'UTF-8'); ?>">
     <link rel="canonical" href="<?php echo $canonicalUrl; ?>">
     <meta name="robots" content="index, follow">
 

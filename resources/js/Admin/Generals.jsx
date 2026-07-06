@@ -170,6 +170,7 @@ const Generals = ({
             "site_title",
             "site_description",
             "site_keywords",
+            "meta_author",
             "og_title",
             "og_description",
             "og_image",
@@ -385,6 +386,7 @@ const Generals = ({
                 "site_title",
                 "site_description",
                 "site_keywords",
+                "meta_author",
                 "og_title",
                 "og_description",
                 "og_image",
@@ -788,6 +790,9 @@ const Generals = ({
                 ?.description ?? "",
         siteKeywords:
             generals.find((x) => x.correlative == "site_keywords")
+                ?.description ?? "",
+        metaAuthor:
+            generals.find((x) => x.correlative == "meta_author")
                 ?.description ?? "",
         ogTitle:
             generals.find((x) => x.correlative == "og_title")?.description ??
@@ -1915,6 +1920,11 @@ const Generals = ({
                 correlative: "site_keywords",
                 name: "Palabras Clave",
                 description: formData.siteKeywords || "",
+            },
+            {
+                correlative: "meta_author",
+                name: "Autor del Sitio (meta author)",
+                description: formData.metaAuthor || "",
             },
             {
                 correlative: "og_title",
@@ -6371,6 +6381,29 @@ const Generals = ({
                                             </small>
                                         </div>
                                     </ConditionalSeoField>
+
+<ConditionalSeoField correlative="meta_author">
+    <div className="mb-3">
+        <label className="form-label">
+            Autor del Sitio (Meta Author)
+        </label>
+        <input
+            type="text"
+            className="form-control"
+            placeholder="Ej. Nombre de la empresa o redactor principal"
+            value={formData.metaAuthor || ""}
+            onChange={(e) =>
+                setFormData({
+                    ...formData,
+                    metaAuthor: e.target.value,
+                })
+            }
+        />
+        <small className="text-muted">
+            Nombre que aparecerá en la etiqueta meta autor de la página
+        </small>
+    </div>
+</ConditionalSeoField>
 
                                     <ConditionalSeoField correlative="canonical_url">
                                         <div className="mb-3">
