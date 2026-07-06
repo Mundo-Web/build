@@ -83,6 +83,12 @@ const Items = ({
     const applicationsRef = useRef();
     const fileCatalogoGeneralRef = useRef();
 
+    // Campos SEO
+    const metaTitleRef = useRef();
+    const metaDescriptionRef = useRef();
+    const metaKeywordsRef = useRef();
+    const [productFaqs, setProductFaqs] = useState([]);
+
     const [isEditing, setIsEditing] = useState(false);
     const [selectedCategory, setSelectedCategory] = useState(null);
     const [selectedCollection, setSelectedCollection] = useState(null);
@@ -403,6 +409,14 @@ const Items = ({
             discountRef.current.value = data?.discount || 0;
         if (weightRef.current) weightRef.current.value = data?.weight || 0;
 
+        // SEO
+        if (metaTitleRef.current) metaTitleRef.current.value = data?.meta_title || "";
+        if (metaDescriptionRef.current) metaDescriptionRef.current.value = data?.meta_description || "";
+        if (metaKeywordsRef.current) metaKeywordsRef.current.value = data?.meta_keywords || "";
+        // FAQs del producto
+        const loadedFaqs = Array.isArray(data?.faqs) ? data.faqs : [];
+        setProductFaqs(loadedFaqs);
+
         SetSelectValue(tagsRef.current, data?.tags ?? [], "id", "name");
 
         if (bannerRef.current) bannerRef.current.value = null;
@@ -589,6 +603,10 @@ const Items = ({
                 "",
             stock: stockRef.current?.value || 0,
             agrupador: agrupadorRef.current?.value || "",
+            meta_title: metaTitleRef.current?.value || "",
+            meta_description: metaDescriptionRef.current?.value || "",
+            meta_keywords: metaKeywordsRef.current?.value || "",
+            faqs: productFaqs.filter(f => f.question?.trim() && f.answer?.trim()),
             features: cleanFeatures,
             specifications: cleanSpecs,
             weight: weightRef.current?.value || 0,
@@ -618,7 +636,7 @@ const Items = ({
         const formData = new FormData();
 
         for (const key in request) {
-            if (key === "features" || key === "specifications") {
+            if (key === "features" || key === "specifications" || key === "faqs") {
                 formData.append(key, JSON.stringify(request[key]));
             } else if (key === "tags") {
                 // Asegurar que tags sea un array
@@ -1909,10 +1927,168 @@ const Items = ({
                                 Relacionados
                             </button>
                         </li>
+                        <li className="nav-item" role="presentation">
+                            <button
+                                className="nav-link text-start"
+                                id="seo-tab"
+                                data-bs-toggle="pill"
+                                data-bs-target="#seo"
+                                type="button"
+                                role="tab"
+                                aria-controls="seo"
+                                aria-selected="false"
+                                style={{
+                                    borderRadius: "6px",
+                                    fontWeight: "500",
+                                    transition: "all 0.3s ease",
+                                }}
+                            >
+                                <i className="fas fa-search me-2"></i>
+                                SEO
+                            </button>
+                        </li>
                     </ul>
 
                     {/* Contenido de las Pestañas */}
                     <div className="tab-content">
+                        {/* Pestaña: SEO */}
+                        <div
+                            className="tab-pane fade"
+                            id="seo"
+                            role="tabpanel"
+                            aria-labelledby="seo-tab"
+                        >
+                            <div className="card border-0 shadow-sm">
+                                <div className="card-header">
+                                    <h6 className="mb-0">
+                                        <i className="fas fa-search me-2"></i>
+                                        Optimización para Buscadores (SEO)
+                                    </h6>
+                                </div>
+                                <div className="card-body">
+                                    <div className="row g-3">
+                                        <div className="col-12">
+                                            <div className="form-group mb-3">
+                                                <label className="form-label text-muted fw-semibold">
+                                                    Título SEO (Meta Title)
+                                                </label>
+                                                <input
+                                                    type="text"
+                                                    ref={metaTitleRef}
+                                                    className="form-control form-control-sm"
+                                                    placeholder="Ej: Zapatillas Deportivas Nike - Comprar Online"
+                                                    maxLength={70}
+                                                />
+                                                <small className="text-muted d-block mt-1">Recomendado: Máx 60-70 caracteres. Si se deja vacío, usará el nombre del producto.</small>
+                                            </div>
+                                        </div>
+                                        <div className="col-12">
+                                            <div className="form-group mb-3">
+                                                <label className="form-label text-muted fw-semibold">
+                                                    Descripción SEO (Meta Description)
+                                                </label>
+                                                <textarea
+                                                    ref={metaDescriptionRef}
+                                                    className="form-control form-control-sm"
+                                                    rows="3"
+                                                    placeholder="Breve resumen del producto que aparecerá en los resultados de Google..."
+                                                    maxLength={160}
+                                                ></textarea>
+                                                <small className="text-muted d-block mt-1">Recomendado: Entre 150-160 caracteres. Atrae a los clientes a hacer clic.</small>
+                                            </div>
+                                        </div>
+                                        <div className="col-12">
+                                            <div className="form-group">
+                                                <label className="form-label text-muted fw-semibold">
+                                                    Palabras Clave (Meta Keywords)
+                                                </label>
+                                                <input
+                                                    type="text"
+                                                    ref={metaKeywordsRef}
+                                                    className="form-control form-control-sm"
+                                                    placeholder="zapatillas, nike, deporte, correr (separadas por comas)"
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* FAQs del Producto */}
+                            <div className="card border-0 shadow-sm mt-3">
+                                <div className="card-header d-flex justify-content-between align-items-center">
+                                    <h6 className="mb-0">
+                                        <i className="fas fa-question-circle me-2"></i>
+                                        Preguntas Frecuentes del Producto (FAQ Schema)
+                                    </h6>
+                                    <button
+                                        type="button"
+                                        className="btn btn-sm btn-primary"
+                                        onClick={() => setProductFaqs(prev => [...prev, { question: '', answer: '' }])}
+                                    >
+                                        <i className="fas fa-plus me-1"></i> Añadir Pregunta
+                                    </button>
+                                </div>
+                                <div className="card-body">
+                                    <div className="alert alert-info mb-3 py-2">
+                                        <i className="fas fa-info-circle me-2"></i>
+                                        Estas preguntas aparecerán en el <strong>Schema FAQPage</strong> de este producto en Google. Si no defines ninguna, se usarán las preguntas globales del módulo FAQs.
+                                    </div>
+                                    {productFaqs.length === 0 && (
+                                        <div className="text-center py-4 text-muted">
+                                            <i className="fas fa-question-circle d-block mb-2" style={{ fontSize: '2rem', opacity: 0.3 }}></i>
+                                            <small>Sin FAQs específicas. Se usarán los FAQs globales del sitio.</small>
+                                        </div>
+                                    )}
+                                    {productFaqs.map((faq, idx) => (
+                                        <div key={idx} className="border rounded p-3 mb-3 position-relative" style={{ background: '#f8f9fa' }}>
+                                            <button
+                                                type="button"
+                                                className="btn btn-xs btn-soft-danger position-absolute"
+                                                style={{ top: '8px', right: '8px' }}
+                                                onClick={() => setProductFaqs(prev => prev.filter((_, i) => i !== idx))}
+                                                title="Eliminar pregunta"
+                                            >
+                                                <i className="fas fa-times"></i>
+                                            </button>
+                                            <div className="mb-2">
+                                                <label className="form-label text-muted fw-semibold small mb-1">
+                                                    Pregunta #{idx + 1}
+                                                </label>
+                                                <input
+                                                    type="text"
+                                                    className="form-control form-control-sm"
+                                                    placeholder="Ej: ¿Cuál es el material de este producto?"
+                                                    value={faq.question}
+                                                    onChange={e => {
+                                                        const updated = [...productFaqs];
+                                                        updated[idx] = { ...updated[idx], question: e.target.value };
+                                                        setProductFaqs(updated);
+                                                    }}
+                                                />
+                                            </div>
+                                            <div>
+                                                <label className="form-label text-muted fw-semibold small mb-1">
+                                                    Respuesta
+                                                </label>
+                                                <textarea
+                                                    className="form-control form-control-sm"
+                                                    rows="2"
+                                                    placeholder="Escribe la respuesta clara y detallada..."
+                                                    value={faq.answer}
+                                                    onChange={e => {
+                                                        const updated = [...productFaqs];
+                                                        updated[idx] = { ...updated[idx], answer: e.target.value };
+                                                        setProductFaqs(updated);
+                                                    }}
+                                                />
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+
                         {/* Pestaña: Información Básica */}
                         <div
                             className="tab-pane fade show active"

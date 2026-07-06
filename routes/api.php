@@ -262,6 +262,8 @@ Route::get('/items/masters', [ItemController::class, 'getMasters']);
 Route::get('/items/tags', [ItemController::class, 'getTags']);
 Route::get('/items/variants/{agrupador}', [ItemController::class, 'getVariants']);
 Route::get('/catalog/context', [App\Http\Controllers\CatalogController::class, 'context']);
+Route::get('/products-feed.json', [App\Http\Controllers\CatalogController::class, 'productsFeed']);
+
 
 // ====================================
 // Hotel Public APIs
@@ -819,8 +821,9 @@ Route::middleware('auth')->group(function () {
     Route::post('/generals', [AdminGeneralController::class, 'save']);
     Route::post('/generals/paginate', [AdminGeneralController::class, 'paginate']);
     Route::post('/generals/visibility', [AdminGeneralController::class, 'updateVisibility']);
-    Route::post('/generals/generate-robots', [AdminGeneralController::class, 'generateRobotsTxt']);
+     Route::post('/generals/generate-robots', [AdminGeneralController::class, 'generateRobotsTxt']);
     Route::post('/generals/generate-sitemap', [AdminGeneralController::class, 'generateSitemap']);
+    Route::post('/generals/generate-llms', [AdminGeneralController::class, 'generateLlmsTxt']);
     Route::patch('/generals/status', [AdminGeneralController::class, 'status']);
     Route::patch('/generals/{field}', [AdminGeneralController::class, 'boolean']);
     Route::delete('/generals/{id}', [AdminGeneralController::class, 'delete']);

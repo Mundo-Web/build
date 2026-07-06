@@ -325,6 +325,12 @@ class ItemController extends BasicController
                 $agrupador = (string) Str::uuid();
             }
 
+            $faqsRaw = $request->input('faqs');
+            $faqs = null;
+            if ($faqsRaw) {
+                $faqs = is_string($faqsRaw) ? json_decode($faqsRaw, true) : $faqsRaw;
+            }
+
             // Crear o actualizar el elemento - Preparar datos
             $data = [
                 'category_id' => $request->input('category_id'),
@@ -355,6 +361,10 @@ class ItemController extends BasicController
                 'discount_percent' => ($request->input('price') > 0 && $request->input('discount') > 0)
                     ? round((1 - ($request->input('discount') / $request->input('price'))) * 100)
                     : 0,
+                'meta_title' => $request->input('meta_title'),
+                'meta_description' => $request->input('meta_description'),
+                'meta_keywords' => $request->input('meta_keywords'),
+                'faqs' => $faqs,
             ];
 
             // Solo actualizar provider_id y review_status si vienen en el request

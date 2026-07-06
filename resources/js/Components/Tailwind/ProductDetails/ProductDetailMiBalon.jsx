@@ -476,7 +476,11 @@ const ProductDetailMiBalon = ({
         <main className="bg-white min-h-screen text-neutral-dark py-16 px-4 md:px-6 2xl:px-0">
             <div className="container mx-auto 2xl:max-w-7xl">
                 {/* Desktop View */}
-                <div className="hidden md:grid grid-cols-12 gap-12">
+                <article
+                    itemScope={true}
+                    itemType="https://schema.org/Product"
+                    className="hidden md:grid grid-cols-12 gap-12"
+                >
                     {/* Left Column: Images */}
                     <div className="col-span-12 lg:col-span-7 flex gap-6">
                         {/* Gallery Thumbnails on the side */}
@@ -506,6 +510,8 @@ const ProductDetailMiBalon = ({
                                     return (
                                         <div
                                             key={i}
+                                            role="button"
+                                            aria-label={`Ver imagen ${i + 1} de ${currentProduct?.name || 'producto'}`}
                                             onClick={() =>
                                                 setActiveImage(imgUrl)
                                             }
@@ -513,6 +519,7 @@ const ProductDetailMiBalon = ({
                                         >
                                             <img
                                                 src={`/storage/images/item/${imgUrl}`}
+                                                alt={`${currentProduct?.name || item?.name || 'Producto'} - Vista ${i + 1}`}
                                                 className="w-full h-full object-contain object-top"
                                                 onError={(e) =>
                                                 (e.target.src =
@@ -555,7 +562,8 @@ const ProductDetailMiBalon = ({
                                             ease: "easeInOut",
                                         }}
                                         src={`/storage/images/item/${activeImage?.url || activeImage || currentProduct?.image}`}
-                                        alt={currentProduct?.name || item?.name}
+                                        alt={currentProduct?.name || item?.name || "Imagen principal del producto"}
+                                        itemProp="image"
                                         className="w-full h-full object-contain object-top"
                                         style={
                                             isZoomEnabled
@@ -604,19 +612,19 @@ const ProductDetailMiBalon = ({
                     </div>
 
                     {/* Right Column: Info */}
-                    <div className="col-span-12 lg:col-span-5 space-y-8">
+                    <section className="col-span-12 lg:col-span-5 space-y-8">
                         <motion.div
                             initial={{ opacity: 0, x: 50 }}
                             animate={{ opacity: 1, x: 0 }}
                             className="space-y-6"
                         >
                             <div className="space-y-4">
-                                <span className="text-sm   text-neutral-dark/60">
-                                    {currentProduct?.brand?.name ||
+                                <span itemProp="brand" itemScope={true} itemType="https://schema.org/Brand" className="text-sm   text-neutral-dark/60">
+                                    <span itemProp="name">{currentProduct?.brand?.name ||
                                         currentProduct?.category?.name ||
-                                        "COLECCIÓN PREMIUM"}
+                                        "COLECCIÓN PREMIUM"}</span>
                                 </span>
-                                <h1 className={` text-4xl md:text-5xl lg:text-6xl font-title uppercase tracking-tight leading-[1] text-neutral-dark ${data?.class_title}`}>
+                                <h1 itemProp="name" className={` text-4xl md:text-5xl lg:text-6xl font-title uppercase tracking-tight leading-[1] text-neutral-dark ${data?.class_title}`}>
                                     <TextWithHighlight
                                         text={currentProduct?.name}
                                         className="font-title"
@@ -624,14 +632,16 @@ const ProductDetailMiBalon = ({
                                     />
                                 </h1>
                                 <p className="text-sm font-medium tracking-normal text-neutral-dark/40 border-l border-neutral-dark/20 pl-4">
-                                    Código: {currentProduct?.sku}
+                                    Código: <span itemProp="sku">{currentProduct?.sku}</span>
                                 </p>
                             </div>
 
-                            <div className="flex items-center gap-6 py-4">
+                            <div itemProp="offers" itemScope={true} itemType="https://schema.org/Offer" className="flex items-center gap-6 py-4">
+                                <meta itemProp="priceCurrency" content="PEN" />
+                                <link itemProp="availability" href={currentProduct?.stock > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock"} />
                                 <span className="text-5xl font-title uppercase  text-neutral-dark">
                                     {CurrencySymbol()}{" "}
-                                    {currentProduct?.final_price}
+                                    <span itemProp="price" content={currentProduct?.final_price || currentProduct?.price}>{currentProduct?.final_price}</span>
                                 </span>
                                 {currentProduct?.price >
                                     currentProduct?.final_price && (
@@ -863,7 +873,7 @@ const ProductDetailMiBalon = ({
                                 })()}
                             </div>
                         </motion.div>
-                    </div>
+                    </section>
 
                     {/* Specifications & Description */}
                     <div className="col-span-12 grid grid-cols-1 lg:grid-cols-2 gap-24  border-t border-black/5 pt-10">
@@ -873,6 +883,7 @@ const ProductDetailMiBalon = ({
                                 <Plus size={14} className="opacity-20" />
                             </h2>
                             <div
+                                itemProp="description"
                                 className="text-base font-normal leading-relaxed prose prose-neutral max-w-none text-neutral-dark/80"
                                 dangerouslySetInnerHTML={{
                                     __html:
@@ -998,7 +1009,7 @@ const ProductDetailMiBalon = ({
                             </div>
                         </div>
                     )}
-                </div>
+                </article>
 
                 {/* Mobile View */}
                 <div className="md:hidden space-y-12 pb-24">
@@ -1016,6 +1027,7 @@ const ProductDetailMiBalon = ({
                                 </div>
                                 <button
                                     onClick={handleShare}
+                                    aria-label="Compartir producto"
                                     className="p-3 bg-gray-50 rounded-full text-neutral-dark active:scale-90 transition-transform"
                                 >
                                     <Share2 className="w-5 h-5 stroke-[1.5]" />
@@ -1061,6 +1073,7 @@ const ProductDetailMiBalon = ({
                                     <SwiperSlide key={i}>
                                         <img
                                             src={`/storage/images/item/${img?.url || img}`}
+                                            alt={`${currentProduct?.name || item?.name || 'Producto'} - imagen ${i + 1}`}
                                             className="w-full h-full object-cover object-top"
                                             onError={(e) =>
                                             (e.target.src =
@@ -1146,6 +1159,7 @@ const ProductDetailMiBalon = ({
                                 01 / DESCRIPCIÓN
                             </h2>
                             <div
+                                itemProp="description"
                                 className="text-sm font-medium tracking-[0.1em] leading-loose text-neutral-dark"
                                 dangerouslySetInnerHTML={{
                                     __html: currentProduct?.description,

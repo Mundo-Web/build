@@ -183,6 +183,23 @@ const Generals = ({
             "favicon",
             "canonical_url",
             "robots_additional_rules",
+            "llms_site_niche",
+            "llms_target_audience",
+            "llms_geo_service_area",
+            "llms_technical_summary",
+            "llms_include_feed",
+            "llms_include_popular",
+            "llms_include_new",
+            "llms_include_devoluciones",
+            "llms_include_privacidad",
+            "llms_include_terminos",
+            "llms_include_faqs",
+            "llms_url_devoluciones",
+            "llms_url_privacidad",
+            "llms_url_terminos",
+            "llms_url_catalogo",
+            "llms_url_populares",
+            "llms_url_nuevos",
         ],
         hotel: ["hotel_checkin_time", "hotel_checkout_time"],
         pixels: [
@@ -378,6 +395,23 @@ const Generals = ({
                 "twitter_card",
                 "favicon",
                 "canonical_url",
+                "llms_site_niche",
+                "llms_target_audience",
+                "llms_geo_service_area",
+                "llms_technical_summary",
+                "llms_include_feed",
+                "llms_include_popular",
+                "llms_include_new",
+                "llms_include_devoluciones",
+                "llms_include_privacidad",
+                "llms_include_terminos",
+                "llms_include_faqs",
+                "llms_url_devoluciones",
+                "llms_url_privacidad",
+                "llms_url_terminos",
+                "llms_url_catalogo",
+                "llms_url_populares",
+                "llms_url_nuevos",
             ];
             seoFields.forEach((field) => {
                 // Si no existe en allGenerals, habilitarlo por defecto
@@ -792,6 +826,57 @@ const Generals = ({
         robotsAdditionalRules:
             generals.find((x) => x.correlative == "robots_additional_rules")
                 ?.description ?? "",
+        llmsSiteNiche:
+            generals.find((x) => x.correlative == "llms_site_niche")
+                ?.description ?? "",
+        llmsTargetAudience:
+            generals.find((x) => x.correlative == "llms_target_audience")
+                ?.description ?? "",
+        llmsGeoServiceArea:
+            generals.find((x) => x.correlative == "llms_geo_service_area")
+                ?.description ?? "",
+        llmsTechnicalSummary:
+            generals.find((x) => x.correlative == "llms_technical_summary")
+                ?.description ?? "",
+        llmsIncludeFeed:
+            generals.find((x) => x.correlative == "llms_include_feed")
+                ?.description !== "false",
+        llmsIncludePopular:
+            generals.find((x) => x.correlative == "llms_include_popular")
+                ?.description !== "false",
+        llmsIncludeNew:
+            generals.find((x) => x.correlative == "llms_include_new")
+                ?.description !== "false",
+        llmsIncludeDevoluciones:
+            generals.find((x) => x.correlative == "llms_include_devoluciones")
+                ?.description !== "false",
+        llmsIncludePrivacidad:
+            generals.find((x) => x.correlative == "llms_include_privacidad")
+                ?.description !== "false",
+        llmsIncludeTerminos:
+            generals.find((x) => x.correlative == "llms_include_terminos")
+                ?.description !== "false",
+        llmsIncludeFaqs:
+            generals.find((x) => x.correlative == "llms_include_faqs")
+                ?.description !== "false",
+        llmsUrlDevoluciones:
+            generals.find((x) => x.correlative == "llms_url_devoluciones")
+                ?.description ?? "/nosotros",
+        llmsUrlPrivacidad:
+            generals.find((x) => x.correlative == "llms_url_privacidad")
+                ?.description ?? "/nosotros",
+        llmsUrlTerminos:
+            generals.find((x) => x.correlative == "llms_url_terminos")
+                ?.description ?? "/nosotros",
+        llmsUrlCatalogo:
+            generals.find((x) => x.correlative == "llms_url_catalogo")
+                ?.description ?? "/catalogo",
+        llmsUrlPopulares:
+            generals.find((x) => x.correlative == "llms_url_populares")
+                ?.description ?? "/catalogo",
+        llmsUrlNuevos:
+            generals.find((x) => x.correlative == "llms_url_nuevos")
+                ?.description ?? "/catalogo",
         tinyApiKey:
             generals.find((x) => x.correlative == "tiny_api_key")
                 ?.description ?? "",
@@ -1912,6 +1997,91 @@ const Generals = ({
                 correlative: "robots_additional_rules",
                 name: "Reglas Adicionales robots.txt",
                 description: formData.robotsAdditionalRules || "",
+            },
+            {
+                correlative: "llms_site_niche",
+                name: "Nicho o Sector comercial (llms.txt)",
+                description: formData.llmsSiteNiche || "",
+            },
+            {
+                correlative: "llms_target_audience",
+                name: "Público objetivo (llms.txt)",
+                description: formData.llmsTargetAudience || "",
+            },
+            {
+                correlative: "llms_geo_service_area",
+                name: "Área geográfica de servicio - GEO (llms.txt)",
+                description: formData.llmsGeoServiceArea || "",
+            },
+            {
+                correlative: "llms_technical_summary",
+                name: "Resumen técnico de la plataforma (llms.txt)",
+                description: formData.llmsTechnicalSummary || "",
+            },
+            {
+                correlative: "llms_include_feed",
+                name: "Incluir Feed de Productos (llms.txt)",
+                description: String(formData.llmsIncludeFeed !== false),
+            },
+            {
+                correlative: "llms_include_popular",
+                name: "Incluir Productos Populares (llms.txt)",
+                description: String(formData.llmsIncludePopular !== false),
+            },
+            {
+                correlative: "llms_include_new",
+                name: "Incluir Nuevos Lanzamientos (llms.txt)",
+                description: String(formData.llmsIncludeNew !== false),
+            },
+            {
+                correlative: "llms_include_devoluciones",
+                name: "Incluir Política de Devoluciones (llms.txt)",
+                description: String(formData.llmsIncludeDevoluciones !== false),
+            },
+            {
+                correlative: "llms_include_privacidad",
+                name: "Incluir Política de Privacidad (llms.txt)",
+                description: String(formData.llmsIncludePrivacidad !== false),
+            },
+            {
+                correlative: "llms_include_terminos",
+                name: "Incluir Términos de Servicio (llms.txt)",
+                description: String(formData.llmsIncludeTerminos !== false),
+            },
+            {
+                correlative: "llms_include_faqs",
+                name: "Incluir FAQs (llms.txt)",
+                description: String(formData.llmsIncludeFaqs !== false),
+            },
+            {
+                correlative: "llms_url_devoluciones",
+                name: "URL Política de Devoluciones (llms.txt)",
+                description: formData.llmsUrlDevoluciones || "/nosotros",
+            },
+            {
+                correlative: "llms_url_privacidad",
+                name: "URL Política de Privacidad (llms.txt)",
+                description: formData.llmsUrlPrivacidad || "/nosotros",
+            },
+            {
+                correlative: "llms_url_terminos",
+                name: "URL Términos de Servicio (llms.txt)",
+                description: formData.llmsUrlTerminos || "/nosotros",
+            },
+            {
+                correlative: "llms_url_catalogo",
+                name: "URL Catálogo de Servicios/Productos (llms.txt)",
+                description: formData.llmsUrlCatalogo || "/catalogo",
+            },
+            {
+                correlative: "llms_url_populares",
+                name: "URL Productos Populares (llms.txt)",
+                description: formData.llmsUrlPopulares || "/catalogo",
+            },
+            {
+                correlative: "llms_url_nuevos",
+                name: "URL Nuevos Lanzamientos (llms.txt)",
+                description: formData.llmsUrlNuevos || "/catalogo",
             },
             {
                 correlative: "additional_shipping_costs",
@@ -6591,6 +6761,329 @@ const Generals = ({
                                             </small>
                                         </div>
                                     </ConditionalSeoField>
+                                </div>
+                            </div>
+
+                            {/* llms.txt / AI SEO & Geotargeting Configuration */}
+                            <div className="row mt-4">
+                                <div className="col-12">
+                                    <hr />
+                                    <h6 className="mb-3">
+                                        <i className="fas fa-brain me-2 text-info"></i>
+                                        Configuración de llms.txt (AI SEO & Geotargeting)
+                                    </h6>
+                                    <p className="text-muted small mb-4">
+                                        Configure los datos y decida qué secciones e hipervínculos incluir en su archivo <code>llms.txt</code> para Agentes de Inteligencia Artificial (LLMs) y buscadores modernos.
+                                    </p>
+                                </div>
+
+                                <div className="col-md-6">
+                                    <h5 className="mb-3 text-secondary"><i className="fas fa-id-card me-2"></i>Información Comercial</h5>
+                                    
+                                    <ConditionalSeoField correlative="llms_site_niche">
+                                        <div className="mb-3">
+                                            <label className="form-label">Nicho o Sector Comercial</label>
+                                            <input
+                                                type="text"
+                                                className="form-control"
+                                                placeholder="Ej. Tienda de venta de balones y equipamiento deportivo"
+                                                value={formData.llmsSiteNiche || ""}
+                                                onChange={(e) => setFormData({ ...formData, llmsSiteNiche: e.target.value })}
+                                            />
+                                        </div>
+                                    </ConditionalSeoField>
+
+                                    <ConditionalSeoField correlative="llms_target_audience">
+                                        <div className="mb-3">
+                                            <label className="form-label">Público Objetivo e Idioma</label>
+                                            <input
+                                                type="text"
+                                                className="form-control"
+                                                placeholder="Ej. Deportistas y aficionados al fútbol en Perú, habla hispana"
+                                                value={formData.llmsTargetAudience || ""}
+                                                onChange={(e) => setFormData({ ...formData, llmsTargetAudience: e.target.value })}
+                                            />
+                                        </div>
+                                    </ConditionalSeoField>
+
+                                    <ConditionalSeoField correlative="llms_geo_service_area">
+                                        <div className="mb-3">
+                                            <label className="form-label">Área Geográfica de Cobertura (GEO)</label>
+                                            <input
+                                                type="text"
+                                                className="form-control"
+                                                placeholder="Ej. Lima y todo el territorio de Perú, envíos nacionales"
+                                                value={formData.llmsGeoServiceArea || ""}
+                                                onChange={(e) => setFormData({ ...formData, llmsGeoServiceArea: e.target.value })}
+                                            />
+                                        </div>
+                                    </ConditionalSeoField>
+
+                                    <ConditionalSeoField correlative="llms_technical_summary">
+                                        <div className="mb-3">
+                                            <label className="form-label">Resumen de Servicios para IA</label>
+                                            <textarea
+                                                className="form-control"
+                                                rows="3"
+                                                placeholder="Ej. Plataforma de comercio electrónico (e-commerce) especializada en la venta de balones..."
+                                                value={formData.llmsTechnicalSummary || ""}
+                                                onChange={(e) => setFormData({ ...formData, llmsTechnicalSummary: e.target.value })}
+                                            />
+                                        </div>
+                                    </ConditionalSeoField>
+                                </div>
+
+                                <div className="col-md-6">
+                                    <h5 className="mb-3 text-secondary"><i className="fas fa-list-ul me-2"></i>Inclusiones y Enlaces</h5>
+
+                                    {formData.is_ecommerce && (
+                                        <div className="card bg-light p-3 mb-3 border-0">
+                                            <h6 className="mb-2 text-dark font-weight-bold"><i className="fas fa-shopping-cart me-2"></i>Configuración de Catálogo (E-commerce)</h6>
+                                            
+                                            <ConditionalSeoField correlative="llms_include_feed">
+                                                <div className="mb-2">
+                                                    <label className="form-label small">Incluir Feed de Productos (JSON)</label>
+                                                    <select
+                                                        className="form-select form-select-sm"
+                                                        value={formData.llmsIncludeFeed ? "true" : "false"}
+                                                        onChange={(e) => setFormData({ ...formData, llmsIncludeFeed: e.target.value === "true" })}
+                                                    >
+                                                        <option value="true">Habilitado (Mostrar enlace a /api/products-feed.json)</option>
+                                                        <option value="false">Deshabilitado</option>
+                                                    </select>
+                                                </div>
+                                            </ConditionalSeoField>
+
+                                            <ConditionalSeoField correlative="llms_include_popular">
+                                                <div className="mb-2">
+                                                    <label className="form-label small">Incluir Productos Populares</label>
+                                                    <div className="row g-2">
+                                                        <div className="col-4">
+                                                            <select
+                                                                className="form-select form-select-sm"
+                                                                value={formData.llmsIncludePopular ? "true" : "false"}
+                                                                onChange={(e) => setFormData({ ...formData, llmsIncludePopular: e.target.value === "true" })}
+                                                            >
+                                                                <option value="true">Incluir</option>
+                                                                <option value="false">Omitir</option>
+                                                            </select>
+                                                        </div>
+                                                        <div className="col-8">
+                                                            <input
+                                                                type="text"
+                                                                className="form-control form-control-sm"
+                                                                placeholder="URL (Ej. /catalogo)"
+                                                                disabled={!formData.llmsIncludePopular}
+                                                                value={formData.llmsUrlPopulares}
+                                                                onChange={(e) => setFormData({ ...formData, llmsUrlPopulares: e.target.value })}
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </ConditionalSeoField>
+
+                                            <ConditionalSeoField correlative="llms_include_new">
+                                                <div className="mb-2">
+                                                    <label className="form-label small">Incluir Nuevos Lanzamientos</label>
+                                                    <div className="row g-2">
+                                                        <div className="col-4">
+                                                            <select
+                                                                className="form-select form-select-sm"
+                                                                value={formData.llmsIncludeNew ? "true" : "false"}
+                                                                onChange={(e) => setFormData({ ...formData, llmsIncludeNew: e.target.value === "true" })}
+                                                            >
+                                                                <option value="true">Incluir</option>
+                                                                <option value="false">Omitir</option>
+                                                            </select>
+                                                        </div>
+                                                        <div className="col-8">
+                                                            <input
+                                                                type="text"
+                                                                className="form-control form-control-sm"
+                                                                placeholder="URL (Ej. /catalogo)"
+                                                                disabled={!formData.llmsIncludeNew}
+                                                                value={formData.llmsUrlNuevos}
+                                                                onChange={(e) => setFormData({ ...formData, llmsUrlNuevos: e.target.value })}
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </ConditionalSeoField>
+                                        </div>
+                                    )}
+
+                                    {!formData.is_ecommerce && (
+                                        <ConditionalSeoField correlative="llms_url_catalogo">
+                                            <div className="mb-3">
+                                                <label className="form-label">URL del Catálogo de Servicios</label>
+                                                <input
+                                                    type="text"
+                                                    className="form-control"
+                                                    placeholder="/catalogo"
+                                                    value={formData.llmsUrlCatalogo}
+                                                    onChange={(e) => setFormData({ ...formData, llmsUrlCatalogo: e.target.value })}
+                                                />
+                                            </div>
+                                        </ConditionalSeoField>
+                                    )}
+
+                                    <div className="card bg-light p-3 mb-3 border-0">
+                                        <h6 className="mb-2 text-dark font-weight-bold"><i className="fas fa-shield-alt me-2"></i>Políticas y Términos</h6>
+                                        
+                                        <ConditionalSeoField correlative="llms_include_devoluciones">
+                                            <div className="mb-2">
+                                                <label className="form-label small">Política de Devoluciones</label>
+                                                <div className="row g-2">
+                                                    <div className="col-4">
+                                                        <select
+                                                            className="form-select form-select-sm"
+                                                            value={formData.llmsIncludeDevoluciones ? "true" : "false"}
+                                                            onChange={(e) => setFormData({ ...formData, llmsIncludeDevoluciones: e.target.value === "true" })}
+                                                        >
+                                                            <option value="true">Incluir</option>
+                                                            <option value="false">Omitir</option>
+                                                        </select>
+                                                    </div>
+                                                    <div className="col-8">
+                                                        <input
+                                                            type="text"
+                                                            className="form-control form-control-sm"
+                                                            placeholder="URL (Ej. /nosotros)"
+                                                            disabled={!formData.llmsIncludeDevoluciones}
+                                                            value={formData.llmsUrlDevoluciones}
+                                                            onChange={(e) => setFormData({ ...formData, llmsUrlDevoluciones: e.target.value })}
+                                                        />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </ConditionalSeoField>
+
+                                        <ConditionalSeoField correlative="llms_include_privacidad">
+                                            <div className="mb-2">
+                                                <label className="form-label small">Política de Privacidad</label>
+                                                <div className="row g-2">
+                                                    <div className="col-4">
+                                                        <select
+                                                            className="form-select form-select-sm"
+                                                            value={formData.llmsIncludePrivacidad ? "true" : "false"}
+                                                            onChange={(e) => setFormData({ ...formData, llmsIncludePrivacidad: e.target.value === "true" })}
+                                                        >
+                                                            <option value="true">Incluir</option>
+                                                            <option value="false">Omitir</option>
+                                                        </select>
+                                                    </div>
+                                                    <div className="col-8">
+                                                        <input
+                                                            type="text"
+                                                            className="form-control form-control-sm"
+                                                            placeholder="URL (Ej. /nosotros)"
+                                                            disabled={!formData.llmsIncludePrivacidad}
+                                                            value={formData.llmsUrlPrivacidad}
+                                                            onChange={(e) => setFormData({ ...formData, llmsUrlPrivacidad: e.target.value })}
+                                                        />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </ConditionalSeoField>
+
+                                        <ConditionalSeoField correlative="llms_include_terminos">
+                                            <div className="mb-2">
+                                                <label className="form-label small">Términos de Servicio</label>
+                                                <div className="row g-2">
+                                                    <div className="col-4">
+                                                        <select
+                                                            className="form-select form-select-sm"
+                                                            value={formData.llmsIncludeTerminos ? "true" : "false"}
+                                                            onChange={(e) => setFormData({ ...formData, llmsIncludeTerminos: e.target.value === "true" })}
+                                                        >
+                                                            <option value="true">Incluir</option>
+                                                            <option value="false">Omitir</option>
+                                                        </select>
+                                                    </div>
+                                                    <div className="col-8">
+                                                        <input
+                                                            type="text"
+                                                            className="form-control form-control-sm"
+                                                            placeholder="URL (Ej. /nosotros)"
+                                                            disabled={!formData.llmsIncludeTerminos}
+                                                            value={formData.llmsUrlTerminos}
+                                                            onChange={(e) => setFormData({ ...formData, llmsUrlTerminos: e.target.value })}
+                                                        />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </ConditionalSeoField>
+                                    </div>
+
+                                    <ConditionalSeoField correlative="llms_include_faqs">
+                                        <div className="mb-3">
+                                            <label className="form-label">Incluir Preguntas Frecuentes (FAQ)</label>
+                                            <select
+                                                className="form-select"
+                                                value={formData.llmsIncludeFaqs ? "true" : "false"}
+                                                onChange={(e) => setFormData({ ...formData, llmsIncludeFaqs: e.target.value === "true" })}
+                                            >
+                                                <option value="true">Habilitado (Mostrar listado de FAQs de base de datos)</option>
+                                                <option value="false">Deshabilitado (Ocultar)</option>
+                                            </select>
+                                        </div>
+                                    </ConditionalSeoField>
+                                </div>
+
+                                <div className="col-12 mb-3">
+                                    <div className="d-flex gap-2">
+                                        <button
+                                            type="button"
+                                            className="btn btn-info text-white"
+                                            onClick={async () => {
+                                                try {
+                                                    setIsLoading(true);
+                                                    const response = await fetch(
+                                                        "/api/admin/generals/generate-llms",
+                                                        {
+                                                            method: "POST",
+                                                            headers: {
+                                                                "Content-Type": "application/json",
+                                                                Accept: "application/json",
+                                                            },
+                                                        }
+                                                    );
+                                                    const data = await response.json();
+                                                    if (data.success) {
+                                                        toast.success(
+                                                            "llms.txt generado exitosamente"
+                                                        );
+                                                    } else {
+                                                        toast.error(
+                                                            data.message || "Error al generar llms.txt"
+                                                        );
+                                                    }
+                                                } catch (error) {
+                                                    toast.error("Error al generar llms.txt");
+                                                    console.error(error);
+                                                } finally {
+                                                    setIsLoading(false);
+                                                }
+                                            }}
+                                            disabled={isLoading}
+                                        >
+                                            <i className="fas fa-brain me-2"></i>
+                                            {isLoading ? "Generando..." : "Generar llms.txt"}
+                                        </button>
+
+                                        <a
+                                            href="/llms.txt"
+                                            target="_blank"
+                                            className="btn btn-outline-info"
+                                        >
+                                            <i className="fas fa-external-link-alt me-2"></i>
+                                            Ver llms.txt
+                                        </a>
+                                    </div>
+                                    <small className="text-muted mt-2 d-block">
+                                        <i className="fas fa-info-circle me-1"></i>
+                                        Recuerda hacer click en el botón <b>Guardar Cambios</b> de arriba antes de generar el archivo para incluir las últimas respuestas.
+                                    </small>
                                 </div>
                             </div>
 

@@ -55,6 +55,7 @@ composer.lock
 /storage/app/*_backup.sql
 /public/sitemap.xml
 /public/robots.txt
+/public/llms.txt
 /.env-useTunnel
 /vite.config-useTunnel.js
 /lapetaca

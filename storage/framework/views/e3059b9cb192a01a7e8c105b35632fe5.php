@@ -71,6 +71,11 @@ $isCheckout = ($page->correlative ?? '') === 'checkout' ||
     }
     $twitterSite = $generals->where('correlative', 'twitter_site')->first()?->description ?? '@rainstarstore';
     $twitterCreator = $generals->where('correlative', 'twitter_creator')->first()?->description ?? '@rainstarstore';
+
+    // FAQs para schema FAQPage (global en todas las páginas)
+    $globalFaqs = \Illuminate\Support\Facades\Cache::remember('global_faqs_blade', 3600, function () {
+        return \App\Models\Faq::where('status', true)->get(['question', 'answer']);
+    });
     ?>
 
     <?php
@@ -247,6 +252,42 @@ $isCheckout = ($page->correlative ?? '') === 'checkout' ||
 
     }
     </script>
+
+    <?php
+    // FAQs para schema: usar FAQs del producto en páginas de detalle si existen, sino globales
+    $faqsToRender = collect([]);
+    if ($isDetailPage && isset($item) && $modelName === 'Item') {
+        $productFaqs = $item->faqs ?? null;
+        if (!empty($productFaqs) && is_array($productFaqs)) {
+            $faqsToRender = collect($productFaqs)->filter(fn($f) => !empty($f['question']) && !empty($f['answer']));
+        }
+    }
+    // Fallback: FAQs globales si no hay específicos
+    if ($faqsToRender->isEmpty()) {
+        $faqsToRender = $globalFaqs->map(fn($f) => ['question' => $f->question, 'answer' => $f->answer]);
+    }
+    ?>
+    <?php if($faqsToRender->isNotEmpty()): ?>
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": <?php
+            $faqEntities = $faqsToRender->map(function ($faq) {
+                return [
+                    '@type' => 'Question',
+                    'name' => $faq['question'],
+                    'acceptedAnswer' => [
+                        '@type' => 'Answer',
+                        'text' => strip_tags($faq['answer'] ?? '')
+                    ]
+                ];
+            })->values()->all();
+            echo json_encode($faqEntities, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+        ?>
+    }
+    </script>
+    <?php endif; ?>
     <link rel="shortcut icon" href="/assets/resources/icon.png?v=<?php echo e($version); ?>" type="image/png">
     <link rel="preload" href="/assets/resources/logo.png?v=<?php echo e($version); ?>" as="image" type="image/png">
     

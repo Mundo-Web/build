@@ -114,4 +114,31 @@ class CatalogController extends Controller
 
         return response()->json($response);
     }
+
+    public function productsFeed()
+    {
+        $products = \App\Models\Item::where('status', 1)
+            ->where('visible', 1)
+            ->select('sku', 'name', 'slug', 'price', 'discount', 'final_price', 'stock', 'sold_out')
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'sku' => $item->sku,
+                    'name' => $item->name,
+                    'url' => url('/product/' . $item->slug),
+                    'price' => (float) $item->price,
+                    'discount' => (float) $item->discount,
+                    'final_price' => (float) $item->final_price,
+                    'in_stock' => $item->stock > 0 && !$item->sold_out,
+                    'stock_qty' => (int) $item->stock
+                ];
+            });
+
+        return response()->json([
+            'store_name' => env('APP_NAME'),
+            'feed_generated_at' => now()->toIso8601String(),
+            'products_count' => $products->count(),
+            'products' => $products
+        ], 200, [], JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);
+    }
 }

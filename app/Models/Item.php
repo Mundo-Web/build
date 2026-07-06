@@ -77,6 +77,12 @@ class Item extends Model
         'is_applications',
         'is_attributes',
 
+        // Campos SEO
+        'meta_title',
+        'meta_description',
+        'meta_keywords',
+        'faqs',
+
         // Campos virtuales para importación y manejo dinámico
         'atributo',
         'valor',
@@ -105,6 +111,7 @@ class Item extends Model
         'is_attributes' => 'boolean',
         'is_master' => 'boolean',
         'file_catalogo_general' => 'boolean',
+        'faqs' => 'array',
     ];
 
     static function getForeign(Builder $builder, string $model, $relation)

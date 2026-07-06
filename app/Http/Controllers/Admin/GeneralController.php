@@ -61,12 +61,16 @@ class GeneralController extends BasicController
                 foreach ($body as $record) {
                     $correlative = $record['correlative'] ?? null;
                     if ($correlative && isset($record['name'])) {
-                        General::updateOrCreate([
-                            'correlative' => $correlative
-                        ], [
+                        $dataToSave = [
                             'name' => $record['name'],
                             'description' => $record['description'] ?? ''
-                        ]);
+                        ];
+                        if (!General::where('correlative', $correlative)->exists()) {
+                            $dataToSave['status'] = 1;
+                        }
+                        General::updateOrCreate([
+                            'correlative' => $correlative
+                        ], $dataToSave);
                         $processedCount++;
                     }
                 }
@@ -74,12 +78,16 @@ class GeneralController extends BasicController
                 // Formato anterior - cada clave es un correlativo y el valor es un objeto
                 foreach ($body as $correlative => $record) {
                     if (is_array($record) && isset($record['name'])) {
-                        General::updateOrCreate([
-                            'correlative' => $correlative
-                        ], [
+                        $dataToSave = [
                             'name' => $record['name'],
                             'description' => $record['description'] ?? ''
-                        ]);
+                        ];
+                        if (!General::where('correlative', $correlative)->exists()) {
+                            $dataToSave['status'] = 1;
+                        }
+                        General::updateOrCreate([
+                            'correlative' => $correlative
+                        ], $dataToSave);
                         $processedCount++;
                     }
                 }
@@ -263,4 +271,179 @@ class GeneralController extends BasicController
         });
         return response($response->toArray(), $response->status);
     }
+
+    public function generateLlmsTxt(Request $request): HttpResponse|ResponseFactory
+    {
+        $response = Response::simpleTryCatch(function () use ($request) {
+            $generals = General::whereIn('correlative', [
+                'is_ecommerce',
+                'site_title',
+                'site_description',
+                'llms_site_niche',
+                'llms_target_audience',
+                'llms_geo_service_area',
+                'llms_technical_summary',
+                'address',
+                'location',
+                'phone_contact',
+                'email_contact',
+                'site_keywords',
+                'privacy_policy',
+                'terms_conditions',
+                'saleback_policy',
+                'llms_include_feed',
+                'llms_include_popular',
+                'llms_include_new',
+                'llms_include_devoluciones',
+                'llms_include_privacidad',
+                'llms_include_terminos',
+                'llms_include_faqs',
+                'llms_url_devoluciones',
+                'llms_url_privacidad',
+                'llms_url_terminos',
+                'llms_url_catalogo',
+                'llms_url_populares',
+                'llms_url_nuevos'
+            ])->get()->keyBy('correlative');
+
+            $isEcommerce = $generals->get('is_ecommerce')?->description === 'true';
+            $title = $generals->get('site_title')?->description ?: env('APP_NAME');
+            $desc = $generals->get('site_description')?->description ?: 'Sitio web corporativo';
+            $niche = $generals->get('llms_site_niche')?->description ?: 'E-commerce';
+            $audience = $generals->get('llms_target_audience')?->description ?: 'Público general';
+            $geoArea = $generals->get('llms_geo_service_area')?->description ?: 'Global';
+            $techSummary = $generals->get('llms_technical_summary')?->description ?: '';
+            $address = $generals->get('address')?->description ?: '';
+            $location = $generals->get('location')?->description ?: '';
+            $phone = $generals->get('phone_contact')?->description ?: '';
+            $email = $generals->get('email_contact')?->description ?: '';
+            $keywords = $generals->get('site_keywords')?->description ?: '';
+
+            // Toggles
+            $includeFeed = $generals->get('llms_include_feed')?->description !== 'false';
+            $includePopular = $generals->get('llms_include_popular')?->description !== 'false';
+            $includeNew = $generals->get('llms_include_new')?->description !== 'false';
+            $includeDevoluciones = $generals->get('llms_include_devoluciones')?->description !== 'false';
+            $includePrivacidad = $generals->get('llms_include_privacidad')?->description !== 'false';
+            $includeTerminos = $generals->get('llms_include_terminos')?->description !== 'false';
+            $includeFaqs = $generals->get('llms_include_faqs')?->description !== 'false';
+
+            // URLs
+            $urlDevoluciones = $generals->get('llms_url_devoluciones')?->description ?: '/nosotros';
+            $urlPrivacidad = $generals->get('llms_url_privacidad')?->description ?: '/nosotros';
+            $urlTerminos = $generals->get('llms_url_terminos')?->description ?: '/nosotros';
+            $urlCatalogo = $generals->get('llms_url_catalogo')?->description ?: '/catalogo';
+            $urlPopulares = $generals->get('llms_url_populares')?->description ?: '/catalogo';
+            $urlNuevos = $generals->get('llms_url_nuevos')?->description ?: '/catalogo';
+
+            // URL format helper
+            $formatUrl = function ($url) {
+                if (empty($url)) {
+                    return url('/');
+                }
+                if (filter_var($url, FILTER_VALIDATE_URL)) {
+                    return $url;
+                }
+                return url('/' . ltrim($url, '/'));
+            };
+
+            $content = "# {$title}\n\n";
+            $content .= "> {$desc}\n\n";
+
+            if ($techSummary) {
+                $content .= "## Resumen Técnico de la Plataforma\n";
+                $content .= "{$techSummary}\n\n";
+            }
+
+            if ($isEcommerce) {
+                $hasCatalog = ($includeFeed || $includePopular || $includeNew);
+                if ($hasCatalog) {
+                    $content .= "## Catálogo de productos y precios\n";
+                    if ($includeFeed) {
+                        $content .= "- [Datos completos de productos](" . url('/api/products-feed.json') . "): Todos los SKUs, precios y estado del inventario en formato JSON (AI-friendly feed).\n";
+                    }
+                    if ($includePopular) {
+                        $content .= "- [Productos populares](" . $formatUrl($urlPopulares) . "): Selección curada de los favoritos de esta temporada.\n";
+                    }
+                    if ($includeNew) {
+                        $content .= "- [Nuevos lanzamientos](" . $formatUrl($urlNuevos) . "): Últimos lanzamientos de productos.\n";
+                    }
+                    $content .= "\n";
+                }
+            } else {
+                $content .= "## Servicios y Oferta\n";
+                $content .= "- [Nuestros Servicios](" . $formatUrl($urlCatalogo) . "): Catálogo de servicios y soluciones ofrecidas.\n";
+                $content .= "- [Sobre Nosotros](" . url('/nosotros') . "): Información sobre nuestra historia, misión y propuesta de valor.\n\n";
+            }
+
+            $hasPolicies = ($includeDevoluciones || $includePrivacidad || $includeTerminos);
+            if ($hasPolicies) {
+                $content .= "## Políticas y términos\n";
+                if ($includeDevoluciones) {
+                    $content .= "- [Política de devoluciones](" . $formatUrl($urlDevoluciones) . "): Información sobre devoluciones y garantía comercial.\n";
+                }
+                if ($includePrivacidad) {
+                    $content .= "- [Política de privacidad](" . $formatUrl($urlPrivacidad) . "): Términos de privacidad y protección de datos.\n";
+                }
+                if ($includeTerminos) {
+                    $content .= "- [Términos de servicio](" . $formatUrl($urlTerminos) . "): Explicación de los términos de uso.\n";
+                }
+                $content .= "\n";
+            }
+
+            $content .= "## Geotargeting y Ubicación (GEO)\n";
+            $content .= "- **Área de Servicio**: {$geoArea}\n";
+            if ($address) {
+                $content .= "- **Dirección Física**: {$address}\n";
+            }
+            if ($location) {
+                $content .= "- **Coordenadas Geográficas (Lat, Lng)**: {$location}\n";
+            }
+            $content .= "\n";
+
+            $content .= "## Soporte y documentación\n";
+            $content .= "- [Información de contacto](" . url('/contacto') . "): Datos de contacto de atención al cliente.\n";
+            if ($phone) {
+                $content .= "  - **Teléfono**: {$phone}\n";
+            }
+            if ($email) {
+                $content .= "  - **Correo Electrónico**: {$email}\n";
+            }
+            
+            // Cargar FAQs de base de datos
+            if ($includeFaqs) {
+                $faqs = \App\Models\Faq::where('status', 1)->get();
+                if ($faqs->isNotEmpty()) {
+                    $content .= "\n### Preguntas Frecuentes (FAQ)\n";
+                    foreach ($faqs as $faq) {
+                        $content .= "- **Pregunta**: " . strip_tags($faq->question) . "\n";
+                        $content .= "  - **Respuesta**: " . strip_tags($faq->answer) . "\n";
+                    }
+                }
+            }
+            $content .= "\n";
+
+            $content .= "## Especificaciones SEO & Técnicas\n";
+            if ($keywords) {
+                $content .= "- **Palabras Clave**: {$keywords}\n";
+            }
+            $content .= "- **Sitemap**: " . url('/sitemap.xml') . "\n";
+            $content .= "- **Robots.txt**: " . url('/robots.txt') . "\n";
+
+            $filePath = public_path('llms.txt');
+            file_put_contents($filePath, $content);
+
+            Log::info('GeneralController generateLlmsTxt - llms.txt generado exitosamente');
+
+            return [
+                'success' => true,
+                'message' => 'llms.txt generado exitosamente',
+                'file_path' => $filePath,
+                'url' => url('/llms.txt')
+            ];
+        });
+        return response($response->toArray(), $response->status);
+    }
+
+
 }

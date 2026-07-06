@@ -145,6 +145,8 @@ const FooterRainstar = ({ pages = [], generals = [], data, socials = [] }) => {
                                     <Tippy key={index} content={social.name}>
                                         <a
                                             href={social.link}
+                                            aria-label={`${social.name} para ${Global.APP_NAME}`}
+
                                             target="_blank"
                                             rel="noopener noreferrer"
                                             className="w-10 h-10 rounded-full border border-white flex items-center justify-center hover:bg-white hover:text-black transition-all duration-500 group"
@@ -152,6 +154,11 @@ const FooterRainstar = ({ pages = [], generals = [], data, socials = [] }) => {
                                             <i
                                                 className={`${social.icon} text-base group-hover:scale-110 transition-transform`}
                                             ></i>
+
+                                            {/* Texto invisible para diseño, pero visible para SEO y Accesibilidad */}
+                                            <span className="sr-only">
+                                                Visitar el perfil de {social.name} de {Global.APP_NAME}
+                                            </span>
                                         </a>
                                     </Tippy>
                                 ))}
