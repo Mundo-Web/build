@@ -450,11 +450,11 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
     }, [isDragging, isZoomEnabled, lastMousePosition]);
 
     return (
-        <>
+        <div className="bg-sections-color">
             {/* Versión Mobile */}
             <div
                 id={data?.element_id || null}
-                className="px-primary md:hidden bg-gray-50 min-h-screen"
+                className="px-primary md:hidden   min-h-screen"
             >
                 {/* Header Estilo App */}
                 <div className="sticky top-0 bg-white shadow-sm z-20">
@@ -462,9 +462,9 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                         {/* <button onClick={() => window.history.back()} className="text-gray-600">
                             <ChevronLeft size={24} />
                         </button>*/}
-                        <h1 className="text-lg font-bold flex-1 line-clamp-5">
+                        <span className="text-lg font-bold flex-1 line-clamp-5">
                             {item?.name}
-                        </h1>
+                        </span>
                     </div>
                 </div>
 
@@ -503,11 +503,12 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                                         <div className="w-full h-full bg-gray-100 flex items-center justify-center">
                                             <img
                                                 src={`/storage/images/item/${img?.url || img}`}
+                                                alt={`${item?.name || "Imagen del producto"} - Vista ${i + 1}`}
                                                 className="w-full h-full object-cover aspect-square"
                                                 loading="lazy"
                                                 onError={(e) =>
-                                                    (e.target.src =
-                                                        "/api/cover/thumbnail/null")
+                                                (e.target.src =
+                                                    "/api/cover/thumbnail/null")
                                                 }
                                             />
                                         </div>
@@ -519,6 +520,7 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                         <div className="absolute top-1/2 w-full flex justify-between px-2 transform -translate-y-1/2 z-10">
                             <button
                                 ref={navigationPrevRef}
+                                aria-label="Anterior imagen"
                                 className="w-8 h-8 flex items-center justify-center rounded-full bg-white/80 shadow-lg hover:scale-110 transition-transform"
                             >
                                 <ChevronLeft
@@ -528,6 +530,7 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                             </button>
                             <button
                                 ref={navigationNextRef}
+                                aria-label="Siguiente imagen"
                                 className="w-8 h-8 flex items-center justify-center rounded-full bg-white/80 shadow-lg hover:scale-110 transition-transform"
                             >
                                 <ChevronRight
@@ -576,6 +579,7 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                                     onClick={() =>
                                         setQuantity(Math.max(1, quantity - 1))
                                     }
+                                    aria-label="Disminuir cantidad"
                                     className="w-8 h-8 rounded-full bg-secondary customtext-primary flex items-center justify-center"
                                 >
                                     -
@@ -587,6 +591,7 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                                     onClick={() =>
                                         setQuantity(Math.min(10, quantity + 1))
                                     }
+                                    aria-label="Aumentar cantidad"
                                     className="w-8 h-8 rounded-full bg-secondary customtext-primary flex items-center justify-center"
                                 >
                                     +
@@ -604,17 +609,17 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                                     onClick={() =>
                                         setExpanded(!expandedSpecificationMain)
                                     }
+                                    aria-label="Mostrar u ocultar especificaciones técnicas"
                                     className="w-full p-4 flex justify-between items-center"
                                 >
                                     <span className="font-medium">
                                         Especificaciones técnicas
                                     </span>
                                     <ChevronDown
-                                        className={`transform transition-transform ${
-                                            expandedSpecificationMain
-                                                ? "rotate-180"
-                                                : ""
-                                        }`}
+                                        className={`transform transition-transform ${expandedSpecificationMain
+                                            ? "rotate-180"
+                                            : ""
+                                            }`}
                                     />
                                 </button>
                             </div>
@@ -638,15 +643,15 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                             <div className="border-b">
                                 <button
                                     onClick={() => setIsExpanded(!isExpanded)}
+                                    aria-label="Mostrar u ocultar descripción del producto"
                                     className="w-full p-4 flex justify-between items-center"
                                 >
                                     <span className="font-medium">
                                         Descripción del producto
                                     </span>
                                     <ChevronDown
-                                        className={`transform transition-transform ${
-                                            isExpanded ? "rotate-180" : ""
-                                        }`}
+                                        className={`transform transition-transform ${isExpanded ? "rotate-180" : ""
+                                            }`}
                                     />
                                 </button>
                             </div>
@@ -672,146 +677,148 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                     {/* Complementary Products Mobile */}
                     {(associatedItems.length > 0 ||
                         availableCombos.length > 0) && (
-                        <div className="mt-8">
-                            <div className="flex items-center gap-2 mb-6">
-                                <ShoppingCart className="w-6 h-6 customtext-primary" />
-                                <h2 className="text-base font-semibold">
-                                    Completa tu compra con estos productos
-                                </h2>
-                            </div>
+                            <div className="mt-8">
+                                <div className="flex items-center gap-2 mb-6">
+                                    <ShoppingCart className="w-6 h-6 customtext-primary" />
+                                    <h2 className="text-base font-semibold">
+                                        Completa tu compra con estos productos
+                                    </h2>
+                                </div>
 
-                            {/* Mostrar combos disponibles */}
-                            {availableCombos.length > 0 && (
-                                <div className="mb-6">
-                                    {availableCombos.map((combo, index) => (
-                                        <div
-                                            key={`combo-mobile-${combo.id}`}
-                                            className="border rounded-lg p-4 mb-4 bg-gay-50"
-                                        >
-                                            {/* Mostrar productos del combo */}
-                                            <div className="flex gap-4 mb-4">
-                                                <div className="w-full flex gap-2 overflow-x-auto">
-                                                    {combo.combo_items?.map(
-                                                        (
-                                                            comboItem,
-                                                            itemIndex,
-                                                        ) => (
-                                                            <div
-                                                                key={itemIndex}
-                                                                className="flex items-center gap-2"
-                                                            >
-                                                                <img
-                                                                    src={`/storage/images/item/${comboItem.image}`}
-                                                                    className="rounded-lg aspect-square w-16 h-16 object-cover bg-white"
-                                                                    onError={(
-                                                                        e,
-                                                                    ) =>
+                                {/* Mostrar combos disponibles */}
+                                {availableCombos.length > 0 && (
+                                    <div className="mb-6">
+                                        {availableCombos.map((combo, index) => (
+                                            <div
+                                                key={`combo-mobile-${combo.id}`}
+                                                className="border rounded-lg p-4 mb-4 bg-gay-50"
+                                            >
+                                                {/* Mostrar productos del combo */}
+                                                <div className="flex gap-4 mb-4">
+                                                    <div className="w-full flex gap-2 overflow-x-auto">
+                                                        {combo.combo_items?.map(
+                                                            (
+                                                                comboItem,
+                                                                itemIndex,
+                                                            ) => (
+                                                                <div
+                                                                    key={itemIndex}
+                                                                    className="flex items-center gap-2"
+                                                                >
+                                                                    <img
+                                                                        src={`/storage/images/item/${comboItem.image}`}
+                                                                        className="rounded-lg aspect-square w-16 h-16 object-cover bg-white"
+                                                                        onError={(
+                                                                            e,
+                                                                        ) =>
                                                                         (e.target.src =
                                                                             "/api/cover/thumbnail/null")
-                                                                    }
-                                                                    alt={
-                                                                        comboItem.name
-                                                                    }
-                                                                />
-                                                                {itemIndex <
-                                                                    combo
-                                                                        .combo_items
-                                                                        .length -
+                                                                        }
+                                                                        alt={
+                                                                            comboItem.name
+                                                                        }
+                                                                    />
+                                                                    {itemIndex <
+                                                                        combo
+                                                                            .combo_items
+                                                                            .length -
                                                                         1 && (
-                                                                    <span className="text-lg font-bold customtext-primary flex items-center justify-center">
-                                                                        <Plus
-                                                                            size={
-                                                                                16
-                                                                            }
-                                                                        />
-                                                                    </span>
-                                                                )}
-                                                            </div>
-                                                        ),
-                                                    )}
+                                                                            <span className="text-lg font-bold customtext-primary flex items-center justify-center">
+                                                                                <Plus
+                                                                                    size={
+                                                                                        16
+                                                                                    }
+                                                                                />
+                                                                            </span>
+                                                                        )}
+                                                                </div>
+                                                            ),
+                                                        )}
+                                                    </div>
                                                 </div>
-                                            </div>
 
-                                            {/* Lista detallada de productos */}
-                                            {combo.combo_items?.map(
-                                                (comboItem, itemIndex) => (
-                                                    <div
-                                                        key={itemIndex}
-                                                        className="flex mt-2 gap-4 p-3 border rounded-lg items-center bg-white"
-                                                    >
-                                                        <CheckSquare className="w-4 h-4 customtext-primary" />
-                                                        <div className="flex-1 font-semibold">
-                                                            <p className="text-sm text-gray-700 font-medium">
-                                                                {comboItem.name}
+                                                {/* Lista detallada de productos */}
+                                                {combo.combo_items?.map(
+                                                    (comboItem, itemIndex) => (
+                                                        <div
+                                                            key={itemIndex}
+                                                            className="flex mt-2 gap-4 p-3 border rounded-lg items-center bg-white"
+                                                        >
+                                                            <CheckSquare className="w-4 h-4 customtext-primary" />
+                                                            <div className="flex-1 font-semibold">
+                                                                <p className="text-sm text-gray-700 font-medium">
+                                                                    {comboItem.name}
+                                                                </p>
+                                                                <span className="text-xs text-gray-500">
+                                                                    Cantidad:{" "}
+                                                                    {comboItem.quantity ||
+                                                                        1}
+                                                                </span>
+                                                            </div>
+                                                            <p className="font-bold text-gray-700 text-sm">
+                                                                {CurrencySymbol()}{" "}
+                                                                {parseFloat(
+                                                                    comboItem.price,
+                                                                ).toFixed(2)}
                                                             </p>
-                                                            <span className="text-xs text-gray-500">
-                                                                Cantidad:{" "}
-                                                                {comboItem.quantity ||
-                                                                    1}
+                                                        </div>
+                                                    ),
+                                                )}
+
+                                                {/* Total y botón */}
+                                                <div className="w-full flex flex-col justify-start items-start bg-blue-100 p-4 rounded-lg mt-4">
+                                                    {combo.discount > 0 && (
+                                                        <div className="flex items-center gap-2 mb-1">
+                                                            <span className="text-xs customtext-primary line-through">
+                                                                {CurrencySymbol()}{" "}
+                                                                {parseFloat(
+                                                                    combo.price,
+                                                                ).toFixed(2)}
+                                                            </span>
+                                                            <span className="bg-red-500 text-white text-xs px-2 py-1 rounded-lg">
+                                                                -
+                                                                {
+                                                                    combo.discount_percent
+                                                                }
+                                                                %
                                                             </span>
                                                         </div>
-                                                        <p className="font-bold text-gray-700 text-sm">
-                                                            {CurrencySymbol()}{" "}
-                                                            {parseFloat(
-                                                                comboItem.price,
-                                                            ).toFixed(2)}
-                                                        </p>
-                                                    </div>
-                                                ),
-                                            )}
-
-                                            {/* Total y botón */}
-                                            <div className="w-full flex flex-col justify-start items-start bg-blue-100 p-4 rounded-lg mt-4">
-                                                {combo.discount > 0 && (
-                                                    <div className="flex items-center gap-2 mb-1">
-                                                        <span className="text-xs customtext-primary line-through">
-                                                            {CurrencySymbol()}{" "}
-                                                            {parseFloat(
-                                                                combo.price,
-                                                            ).toFixed(2)}
-                                                        </span>
-                                                        <span className="bg-red-500 text-white text-xs px-2 py-1 rounded-lg">
-                                                            -
-                                                            {
-                                                                combo.discount_percent
-                                                            }
-                                                            %
-                                                        </span>
-                                                    </div>
-                                                )}
-                                                <span className="text-xs font-semibold customtext-primary">
-                                                    {combo.discount > 0
-                                                        ? "Precio con descuento"
-                                                        : "Precio del combo"}
-                                                </span>
-                                                <p className="font-bold mb-2 customtext-primary text-2xl ">
-                                                    {CurrencySymbol()}{" "}
-                                                    {parseFloat(
-                                                        combo.final_price ||
+                                                    )}
+                                                    <span className="text-xs font-semibold customtext-primary">
+                                                        {combo.discount > 0
+                                                            ? "Precio con descuento"
+                                                            : "Precio del combo"}
+                                                    </span>
+                                                    <p className="font-bold mb-2 customtext-primary text-2xl ">
+                                                        {CurrencySymbol()}{" "}
+                                                        {parseFloat(
+                                                            combo.final_price ||
                                                             combo.price,
-                                                    ).toFixed(2)}
-                                                </p>
-                                                <button
-                                                    onClick={() =>
-                                                        addComboToCart(combo)
-                                                    }
-                                                    className="bg-primary text-white text-sm font-semibold w-full py-3 px-6 rounded-xl hover:bg-primary transition-all duration-300 hover:shadow-md"
-                                                >
-                                                    Agregar combo completo
-                                                </button>
+                                                        ).toFixed(2)}
+                                                    </p>
+                                                    <button
+                                                        onClick={() =>
+                                                            addComboToCart(combo)
+                                                        }
+                                                        aria-label={`Agregar combo completo - ${combo.name}`}
+                                                        className="bg-primary text-white text-sm font-semibold w-full py-3 px-6 rounded-xl hover:bg-primary transition-all duration-300 hover:shadow-md"
+                                                    >
+                                                        Agregar combo completo
+                                                    </button>
+                                                </div>
                                             </div>
-                                        </div>
-                                    ))}
-                                </div>
-                            )}
-                        </div>
-                    )}
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                        )}
 
                     {/* Entrega y Soporte */}
                     {/* Delivery Options - Mejoradas */}
                     <div className="border rounded-lg overflow-hidden flex flex-col mt-8 justify-center">
                         <button
                             onClick={() => setDeliveryPolicyModalOpen(true)}
+                            aria-label="Consultar políticas de envío a domicilio"
                             className="w-full p-6 hover:bg-gray-50 transition-colors duration-200 flex items-center gap-4"
                         >
                             <div className="flex gap-2 items-center">
@@ -831,6 +838,7 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
 
                         <button
                             onClick={handleStoreListModal}
+                            aria-label="Consultar tiendas disponibles para retiro"
                             className="w-full p-6 hover:bg-gray-50 transition-colors duration-200 flex items-center gap-4"
                         >
                             <div className="flex gap-2 items-center">
@@ -884,12 +892,14 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                                 onAddClicked(item);
                                 window.location.href = "/cart";
                             }}
+                            aria-label="Comprar ahora"
                             className="flex-1 bg-primary text-white py-3 rounded-xl font-medium active:scale-95 transition-transform"
                         >
                             Comprar ahora
                         </button>
                         <button
                             onClick={() => onAddClicked(item)}
+                            aria-label="Añadir al carrito"
                             className="flex-1 bg-gray-100 customtext-primary py-3 rounded-xl font-medium border border-primary active:scale-95 transition-transform"
                         >
                             Añadir al carrito
@@ -899,7 +909,11 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
             </div>
 
             {/* Desktop View */}
-            <div className="px-primary mx-auto py-12  2xl:px-0 2xl:max-w-7xl bg-sections-color hidden md:block ">
+            <article
+                itemScope={true}
+                itemType="https://schema.org/Product"
+                className="px-primary mx-auto py-12  2xl:px-0 2xl:max-w-7xl bg-sections-color hidden md:block "
+            >
                 <div className="bg-white rounded-xl p-4 md:p-8">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                         {/* Left Column - Images and Delivery Options */}
@@ -917,9 +931,9 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                                         item?.category?.name
                                     )}
                                 </p>
-                                <h1 className="customtext-neutral-dark text-[28px] md:text-[40px] font-bold mt-2">
+                                <p className="customtext-neutral-dark text-[28px] md:text-[40px] font-bold mt-2">
                                     {item?.name}
-                                </h1>
+                                </p>
                             </div>
 
                             {/* Product Images */}
@@ -933,19 +947,19 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                                                 type: "main",
                                             })
                                         }
-                                        className={`w-16 h-16  rounded-lg p-1 border-2 ${
-                                            selectedImage.url === item?.image
-                                                ? "border-primary "
-                                                : "border-gray-200"
-                                        }`}
+                                        aria-label="Ver miniatura principal"
+                                        className={`w-16 h-16  rounded-lg p-1 border-2 ${selectedImage.url === item?.image
+                                            ? "border-primary "
+                                            : "border-gray-200"
+                                            }`}
                                     >
                                         <img
                                             src={`/storage/images/item/${item?.image}`}
-                                            alt="Main Thumbnail"
+                                            alt={`${item?.name || "Imagen principal del producto"} - Miniatura 1`}
                                             className="w-full h-full object-cover rounded-lg aspect-square"
                                             onError={(e) =>
-                                                (e.target.src =
-                                                    "/api/cover/thumbnail/null")
+                                            (e.target.src =
+                                                "/api/cover/thumbnail/null")
                                             }
                                         />
                                     </button>
@@ -967,20 +981,20 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                                                         type: "gallery",
                                                     })
                                                 }
-                                                className={`w-16 h-16 border-2 rounded-lg p-1 ${
-                                                    selectedImage.url ===
+                                                aria-label={`Ver miniatura ${index + 2}`}
+                                                className={`w-16 h-16 border-2 rounded-lg p-1 ${selectedImage.url ===
                                                     image.url
-                                                        ? "border-primary"
-                                                        : "border-gray-200"
-                                                }`}
+                                                    ? "border-primary"
+                                                    : "border-gray-200"
+                                                    }`}
                                             >
                                                 <img
                                                     src={`/storage/images/item/${image?.url}`}
-                                                    alt={`Thumbnail ${index + 1}`}
+                                                    alt={`${item?.name || "Imagen del producto"} - Miniatura ${index + 2}`}
                                                     className="w-full h-full object-cover rounded-lg aspect-square"
                                                     onError={(e) =>
-                                                        (e.target.src =
-                                                            "/api/cover/thumbnail/null")
+                                                    (e.target.src =
+                                                        "/api/cover/thumbnail/null")
                                                     }
                                                 />
                                             </button>
@@ -992,11 +1006,11 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                                     {/* Zoom Icon */}
                                     <button
                                         onClick={handleZoomClick}
-                                        className={`absolute top-3 right-3 z-10 p-2 rounded-full shadow-lg transition-all duration-200 ${
-                                            isZoomEnabled
-                                                ? "bg-primary text-white opacity-100"
-                                                : "bg-white/90 hover:bg-white text-gray-700 hover:text-primary group-hover:opacity-100 opacity-60"
-                                        }`}
+                                        aria-label={isZoomEnabled ? "Desactivar zoom de imagen" : "Activar zoom de imagen"}
+                                        className={`absolute top-3 right-3 z-10 p-2 rounded-full shadow-lg transition-all duration-200 ${isZoomEnabled
+                                            ? "bg-primary text-white opacity-100"
+                                            : "bg-white/90 hover:bg-white text-gray-700 hover:text-primary group-hover:opacity-100 opacity-60"
+                                            }`}
                                         title={
                                             isZoomEnabled
                                                 ? "Desactivar zoom"
@@ -1007,13 +1021,12 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                                     </button>
 
                                     <div
-                                        className={`relative overflow-hidden rounded-lg select-none ${
-                                            isZoomEnabled
-                                                ? isDragging
-                                                    ? "cursor-grabbing"
-                                                    : "cursor-grab"
-                                                : "cursor-pointer"
-                                        }`}
+                                        className={`relative overflow-hidden rounded-lg select-none ${isZoomEnabled
+                                            ? isDragging
+                                                ? "cursor-grabbing"
+                                                : "cursor-grab"
+                                            : "cursor-pointer"
+                                            }`}
                                         onMouseMove={handleMouseMove}
                                         onMouseDown={handleMouseDown}
                                         onMouseUp={handleMouseUp}
@@ -1034,25 +1047,26 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                                                     : `/storage/images/item/${selectedImage?.url}`
                                             }
                                             onError={(e) =>
-                                                (e.target.src =
-                                                    "/api/cover/thumbnail/null")
+                                            (e.target.src =
+                                                "/api/cover/thumbnail/null")
                                             }
-                                            alt="Product main"
+                                            alt={item?.name || "Imagen principal del producto"}
+                                            itemProp="image"
                                             className="w-full rounded-lg object-cover aspect-square"
                                             style={{
                                                 ...(isZoomEnabled
                                                     ? {
-                                                          transform: `scale(2.5)`,
-                                                          transformOrigin: `${zoomPosition.x}% ${zoomPosition.y}%`,
-                                                          transition: isDragging
-                                                              ? "none"
-                                                              : "transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), transform-origin 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
-                                                      }
+                                                        transform: `scale(2.5)`,
+                                                        transformOrigin: `${zoomPosition.x}% ${zoomPosition.y}%`,
+                                                        transition: isDragging
+                                                            ? "none"
+                                                            : "transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), transform-origin 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+                                                    }
                                                     : {
-                                                          transform: "scale(1)",
-                                                          transition:
-                                                              "transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)",
-                                                      }),
+                                                        transform: "scale(1)",
+                                                        transition:
+                                                            "transform 0.4s cubic-bezier(0.4, 0, 0.2, 1)",
+                                                    }),
                                                 userSelect: "none",
                                                 pointerEvents: "auto",
                                             }}
@@ -1156,7 +1170,7 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                                                                 Math.max(
                                                                     1,
                                                                     quantity -
-                                                                        1,
+                                                                    1,
                                                                 ),
                                                             )
                                                         }
@@ -1176,7 +1190,7 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                                                                 Math.min(
                                                                     10,
                                                                     quantity +
-                                                                        1,
+                                                                    1,
                                                                 ),
                                                             )
                                                         }
@@ -1211,15 +1225,14 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                             {/* Specifications */}
                             <div className="block lg:hidden flex-1 w-full ">
                                 <div className="bg-[#F7F9FB] rounded-lg p-6">
-                                    <h3 className="font-medium text-sm mb-4">
+                                    <h2 className="font-medium text-sm mb-4">
                                         Especificaciones principales
-                                    </h3>
+                                    </h2>
                                     <ul
-                                        className={`space-y-2  customtext-neutral-light mb-4 transition-all duration-300 ${
-                                            expandedSpecificationMain
-                                                ? "max-h-full"
-                                                : "max-h-24 overflow-hidden"
-                                        }`}
+                                        className={`space-y-2  customtext-neutral-light mb-4 transition-all duration-300 ${expandedSpecificationMain
+                                            ? "max-h-full"
+                                            : "max-h-24 overflow-hidden"
+                                            }`}
                                         style={{ listStyleType: "disc" }}
                                     >
                                         {item?.specifications.map(
@@ -1306,8 +1319,8 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                                                                         onError={(
                                                                             e,
                                                                         ) =>
-                                                                            (e.target.src =
-                                                                                "/api/cover/thumbnail/null")
+                                                                        (e.target.src =
+                                                                            "/api/cover/thumbnail/null")
                                                                         }
                                                                         alt={
                                                                             comboItem.name
@@ -1317,15 +1330,15 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                                                                         combo
                                                                             .combo_items
                                                                             .length -
-                                                                            1 && (
-                                                                        <span className="text-lg font-bold customtext-primary">
-                                                                            <Plus
-                                                                                size={
-                                                                                    16
-                                                                                }
-                                                                            />
-                                                                        </span>
-                                                                    )}
+                                                                        1 && (
+                                                                            <span className="text-lg font-bold customtext-primary">
+                                                                                <Plus
+                                                                                    size={
+                                                                                        16
+                                                                                    }
+                                                                                />
+                                                                            </span>
+                                                                        )}
                                                                 </div>
                                                             ),
                                                         )}
@@ -1390,7 +1403,7 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                                                         {CurrencySymbol()}{" "}
                                                         {parseFloat(
                                                             combo.final_price ||
-                                                                combo.price,
+                                                            combo.price,
                                                         ).toFixed(2)}
                                                     </p>
                                                     <button
@@ -1422,19 +1435,20 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                                                         >
                                                             <img
                                                                 src={`/storage/images/item/${product?.image}`}
+                                                                alt={product?.name || "Producto asociado"}
                                                                 className=" rounded-lg aspect-square w-24 h-24 object-cover bg-[#F7F9FB]"
                                                                 onError={(e) =>
-                                                                    (e.target.src =
-                                                                        "/api/cover/thumbnail/null")
+                                                                (e.target.src =
+                                                                    "/api/cover/thumbnail/null")
                                                                 }
                                                             />
                                                             {index <
                                                                 associatedItems.length -
-                                                                    1 && (
-                                                                <span className="text-2xl font-bold">
-                                                                    <Plus />
-                                                                </span>
-                                                            )}
+                                                                1 && (
+                                                                    <span className="text-2xl font-bold">
+                                                                        <Plus />
+                                                                    </span>
+                                                                )}
                                                         </div>
                                                     ),
                                                 )}
@@ -1478,7 +1492,7 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                                                 {CurrencySymbol()}{" "}
                                                 {total.toFixed(2)}
                                             </p>
-                                            <button
+                                            <button aria-label="Agregar todos los productos asociados al carrito"
                                                 onClick={() =>
                                                     addAssociatedItems()
                                                 }
@@ -1492,7 +1506,7 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                             </div>
                             {/* Delivery Options - Mejoradas */}
                             <div className="border rounded-lg overflow-hidden flex justify-center">
-                                <button
+                                <button aria-label="Consultar políticas de envío a domicilio"
                                     onClick={() =>
                                         setDeliveryPolicyModalOpen(true)
                                     }
@@ -1513,7 +1527,7 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                                     </div>
                                 </button>
 
-                                <button
+                                <button aria-label="Consultar tiendas disponibles para retiro"
                                     onClick={handleStoreListModal}
                                     className="w-full p-6 hover:bg-gray-50 transition-colors duration-200 flex items-center gap-4"
                                 >
@@ -1568,17 +1582,17 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                             <div className="mb-6">
                                 <p className="customtext-neutral-light text-sm">
                                     {item?.brand?.name ? (
-                                        <>
+                                        <span itemProp="brand" itemScope={true} itemType="https://schema.org/Brand">
                                             Marca:{" "}
-                                            <span className="customtext-neutral-dark">
+                                            <span itemProp="name" className="customtext-neutral-dark">
                                                 {item?.brand?.name}
                                             </span>
-                                        </>
+                                        </span>
                                     ) : (
                                         item?.category?.name
                                     )}
                                 </p>
-                                <h1 className="customtext-neutral-dark text-[40px] font-bold mt-2">
+                                <h1 itemProp="name" className="customtext-neutral-dark text-[40px] font-bold mt-2">
                                     {item?.name}
                                 </h1>
                             </div>
@@ -1587,7 +1601,7 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                             <div className="flex customtext-neutral-light items-center gap-8 text-sm mb-6">
                                 <span className="customtext-neutral-light text-sm">
                                     SKU:{" "}
-                                    <span className="customtext-neutral-dark">
+                                    <span itemProp="sku" className="customtext-neutral-dark">
                                         {item?.sku}
                                     </span>
                                 </span>
@@ -1604,21 +1618,20 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                                 {/* Specifications */}
                                 <div className="flex-1 w-7/12 ">
                                     <div className="bg-[#F7F9FB] rounded-lg p-6">
-                                        <h3 className="font-medium text-sm mb-4">
+                                        <h2 className="font-medium text-sm mb-4">
                                             Especificaciones principales
-                                        </h3>
+                                        </h2>
                                         <ul
-                                            className={`space-y-2  customtext-neutral-light mb-4 transition-all duration-300 ${
-                                                expandedSpecificationMain
-                                                    ? "max-h-full"
-                                                    : "max-h-28 overflow-hidden"
-                                            }`}
+                                            className={`space-y-2  customtext-neutral-light mb-4 transition-all duration-300 ${expandedSpecificationMain
+                                                ? "max-h-full"
+                                                : "max-h-28 overflow-hidden"
+                                                }`}
                                             style={{ listStyleType: "disc" }}
                                         >
                                             {item?.specifications.map(
                                                 (spec, index) =>
                                                     spec.type ===
-                                                        "principal" && (
+                                                    "principal" && (
                                                         <li
                                                             key={index}
                                                             className="flex gap-2 items-start"
@@ -1629,7 +1642,7 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                                                     ),
                                             )}
                                         </ul>
-                                        <button
+                                        <button aria-label="Mostrar más o menos especificaciones principales"
                                             className="customtext-primary text-sm font-semibold hover:underline flex items-center gap-1 transition-all duration-300"
                                             onClick={() =>
                                                 setExpanded(
@@ -1650,7 +1663,9 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                                 </div>
 
                                 {/* Price Section */}
-                                <div className=" w-5/12 ">
+                                <div itemProp="offers" itemScope={true} itemType="https://schema.org/Offer" className=" w-5/12 ">
+                                    <meta itemProp="priceCurrency" content="PEN" />
+                                    <link itemProp="availability" href={item?.stock > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock"} />
                                     {item?.discount > 0 &&
                                         item?.price > item?.final_price && (
                                             <p className="text-sm customtext-neutral-light mb-1">
@@ -1665,7 +1680,7 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                                     <div className="flex items-center gap-4 relative ">
                                         <span className="text-[36px] font-bold ">
                                             {CurrencySymbol()}{" "}
-                                            {item?.final_price}
+                                            <span itemProp="price" content={item?.final_price || item?.price}>{item?.final_price}</span>
                                         </span>
                                         {item?.discount > 0 &&
                                             item?.price > item?.final_price && (
@@ -1693,10 +1708,11 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                                                                 Math.max(
                                                                     1,
                                                                     quantity -
-                                                                        1,
+                                                                    1,
                                                                 ),
                                                             )
                                                         }
+                                                        aria-label="Disminuir cantidad del producto"
                                                         className="w-10 h-10 flex items-center justify-center hover:bg-gray-100 active:bg-gray-200 transition-colors duration-200 customtext-neutral-dark font-semibold text-lg"
                                                         disabled={quantity <= 1}
                                                     >
@@ -1707,13 +1723,13 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                                                             {quantity}
                                                         </span>
                                                     </div>
-                                                    <button
+                                                    <button aria-label="Aumentar cantidad del producto"
                                                         onClick={() =>
                                                             setQuantity(
                                                                 Math.min(
                                                                     10,
                                                                     quantity +
-                                                                        1,
+                                                                    1,
                                                                 ),
                                                             )
                                                         }
@@ -1733,7 +1749,7 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                                     </div>
 
                                     {/* Add to Cart */}
-                                    <button
+                                    <button aria-label="Agregar producto al carrito"
                                         onClick={() => {
                                             onAddClicked(item);
                                             setModalOpen(!modalOpen);
@@ -1748,152 +1764,152 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                             {/* Complementary Products */}
                             {(associatedItems.length > 0 ||
                                 availableCombos.length > 0) && (
-                                <div className="mt-8 ">
-                                    <div className="flex items-center gap-2 mb-6">
-                                        <ShoppingCart className="w-6 h-6 customtext-primary" />
-                                        <h2 className="text-base font-semibold">
-                                            Completa tu compra con estos
-                                            productos
-                                        </h2>
-                                    </div>
+                                    <div className="mt-8 ">
+                                        <div className="flex items-center gap-2 mb-6">
+                                            <ShoppingCart className="w-6 h-6 customtext-primary" />
+                                            <h2 className="text-base font-semibold">
+                                                Completa tu compra con estos
+                                                productos
+                                            </h2>
+                                        </div>
 
-                                    {/* Mostrar combos disponibles */}
-                                    {availableCombos.length > 0 && (
-                                        <div className="mb-6">
-                                            {availableCombos.map((combo) => (
-                                                <div
-                                                    key={`combo-desktop-${combo.id}`}
-                                                    className="border rounded-lg p-6 mb-4 bg-gray-50"
-                                                >
-                                                    {/* Mostrar productos del combo en fila */}
-                                                    <div className="flex gap-4 mb-4">
-                                                        <div className="w-2/3 flex gap-2">
-                                                            {combo.combo_items?.map(
-                                                                (
-                                                                    comboItem,
-                                                                    itemIndex,
-                                                                ) => (
-                                                                    <div
-                                                                        key={
-                                                                            itemIndex
-                                                                        }
-                                                                        className="flex items-center gap-2"
-                                                                    >
-                                                                        <img
-                                                                            src={`/storage/images/item/${comboItem.image}`}
-                                                                            className="rounded-lg aspect-square w-24 h-24 object-cover bg-white"
-                                                                            onError={(
-                                                                                e,
-                                                                            ) =>
+                                        {/* Mostrar combos disponibles */}
+                                        {availableCombos.length > 0 && (
+                                            <div className="mb-6">
+                                                {availableCombos.map((combo) => (
+                                                    <div
+                                                        key={`combo-desktop-${combo.id}`}
+                                                        className="border rounded-lg p-6 mb-4 bg-gray-50"
+                                                    >
+                                                        {/* Mostrar productos del combo en fila */}
+                                                        <div className="flex gap-4 mb-4">
+                                                            <div className="w-2/3 flex gap-2">
+                                                                {combo.combo_items?.map(
+                                                                    (
+                                                                        comboItem,
+                                                                        itemIndex,
+                                                                    ) => (
+                                                                        <div
+                                                                            key={
+                                                                                itemIndex
+                                                                            }
+                                                                            className="flex items-center gap-2"
+                                                                        >
+                                                                            <img
+                                                                                src={`/storage/images/item/${comboItem.image}`}
+                                                                                className="rounded-lg aspect-square w-24 h-24 object-cover bg-white"
+                                                                                onError={(
+                                                                                    e,
+                                                                                ) =>
                                                                                 (e.target.src =
                                                                                     "/api/cover/thumbnail/null")
-                                                                            }
-                                                                            alt={
-                                                                                comboItem.name
-                                                                            }
-                                                                        />
-                                                                        {itemIndex <
-                                                                            combo
-                                                                                .combo_items
-                                                                                .length -
+                                                                                }
+                                                                                alt={
+                                                                                    comboItem.name
+                                                                                }
+                                                                            />
+                                                                            {itemIndex <
+                                                                                combo
+                                                                                    .combo_items
+                                                                                    .length -
                                                                                 1 && (
-                                                                            <span className="text-2xl font-bold customtext-primary">
-                                                                                <Plus />
+                                                                                    <span className="text-2xl font-bold customtext-primary">
+                                                                                        <Plus />
+                                                                                    </span>
+                                                                                )}
+                                                                        </div>
+                                                                    ),
+                                                                )}
+                                                            </div>
+
+                                                            {/* Sección de precio y botón */}
+                                                            <div className="w-1/3 flex flex-col justify-between items-end bg-blue-100 p-4 rounded-lg">
+                                                                {combo.discount >
+                                                                    0 && (
+                                                                        <div className="flex items-center gap-2 mb-1">
+                                                                            <span className="text-sm customtext-primary line-through">
+                                                                                {CurrencySymbol()}{" "}
+                                                                                {parseFloat(
+                                                                                    combo.price,
+                                                                                ).toFixed(
+                                                                                    2,
+                                                                                )}
                                                                             </span>
-                                                                        )}
-                                                                    </div>
-                                                                ),
-                                                            )}
+                                                                            <span className="bg-red-500 text-white text-xs px-2 py-1 rounded-lg">
+                                                                                -
+                                                                                {
+                                                                                    combo.discount_percent
+                                                                                }
+                                                                                %
+                                                                            </span>
+                                                                        </div>
+                                                                    )}
+                                                                <span className="text-xs font-semibold customtext-primary">
+                                                                    {combo.discount >
+                                                                        0
+                                                                        ? "Precio con descuento"
+                                                                        : "Precio del combo"}
+                                                                </span>
+                                                                <p className="font-bold mb-2 customtext-primary text-xl">
+                                                                    {CurrencySymbol()}{" "}
+                                                                    {parseFloat(
+                                                                        combo.final_price ||
+                                                                        combo.price,
+                                                                    ).toFixed(2)}
+                                                                </p>
+                                                                <button
+                                                                    onClick={() =>
+                                                                        addComboToCart(
+                                                                            combo,
+                                                                        )
+                                                                    }
+                                                                    className="bg-primary text-white text-sm font-semibold w-full py-3 rounded-xl hover:bg-accent transition-all duration-300 hover:shadow-md"
+                                                                >
+                                                                    Agregar combo
+                                                                </button>
+                                                            </div>
                                                         </div>
 
-                                                        {/* Sección de precio y botón */}
-                                                        <div className="w-1/3 flex flex-col justify-between items-end bg-blue-100 p-4 rounded-lg">
-                                                            {combo.discount >
-                                                                0 && (
-                                                                <div className="flex items-center gap-2 mb-1">
-                                                                    <span className="text-sm customtext-primary line-through">
+                                                        {/* Lista detallada de productos */}
+                                                        {combo.combo_items?.map(
+                                                            (
+                                                                comboItem,
+                                                                itemIndex,
+                                                            ) => (
+                                                                <div
+                                                                    key={itemIndex}
+                                                                    className="flex mt-2 gap-4 p-4 border rounded-lg items-center bg-white"
+                                                                >
+                                                                    <CheckSquare className="w-5 h-5 customtext-primary" />
+                                                                    <div className="flex-1 font-semibold">
+                                                                        <p className="text-sm text-gray-700 font-medium">
+                                                                            {
+                                                                                comboItem.name
+                                                                            }
+                                                                        </p>
+                                                                        <span className="text-xs text-gray-500">
+                                                                            Cantidad:{" "}
+                                                                            {comboItem.quantity ||
+                                                                                1}
+                                                                        </span>
+                                                                    </div>
+                                                                    <p className="font-bold text-gray-700">
                                                                         {CurrencySymbol()}{" "}
                                                                         {parseFloat(
-                                                                            combo.price,
+                                                                            comboItem.price,
                                                                         ).toFixed(
                                                                             2,
                                                                         )}
-                                                                    </span>
-                                                                    <span className="bg-red-500 text-white text-xs px-2 py-1 rounded-lg">
-                                                                        -
-                                                                        {
-                                                                            combo.discount_percent
-                                                                        }
-                                                                        %
-                                                                    </span>
-                                                                </div>
-                                                            )}
-                                                            <span className="text-xs font-semibold customtext-primary">
-                                                                {combo.discount >
-                                                                0
-                                                                    ? "Precio con descuento"
-                                                                    : "Precio del combo"}
-                                                            </span>
-                                                            <p className="font-bold mb-2 customtext-primary text-xl">
-                                                                {CurrencySymbol()}{" "}
-                                                                {parseFloat(
-                                                                    combo.final_price ||
-                                                                        combo.price,
-                                                                ).toFixed(2)}
-                                                            </p>
-                                                            <button
-                                                                onClick={() =>
-                                                                    addComboToCart(
-                                                                        combo,
-                                                                    )
-                                                                }
-                                                                className="bg-primary text-white text-sm font-semibold w-full py-3 rounded-xl hover:bg-accent transition-all duration-300 hover:shadow-md"
-                                                            >
-                                                                Agregar combo
-                                                            </button>
-                                                        </div>
-                                                    </div>
-
-                                                    {/* Lista detallada de productos */}
-                                                    {combo.combo_items?.map(
-                                                        (
-                                                            comboItem,
-                                                            itemIndex,
-                                                        ) => (
-                                                            <div
-                                                                key={itemIndex}
-                                                                className="flex mt-2 gap-4 p-4 border rounded-lg items-center bg-white"
-                                                            >
-                                                                <CheckSquare className="w-5 h-5 customtext-primary" />
-                                                                <div className="flex-1 font-semibold">
-                                                                    <p className="text-sm text-gray-700 font-medium">
-                                                                        {
-                                                                            comboItem.name
-                                                                        }
                                                                     </p>
-                                                                    <span className="text-xs text-gray-500">
-                                                                        Cantidad:{" "}
-                                                                        {comboItem.quantity ||
-                                                                            1}
-                                                                    </span>
                                                                 </div>
-                                                                <p className="font-bold text-gray-700">
-                                                                    {CurrencySymbol()}{" "}
-                                                                    {parseFloat(
-                                                                        comboItem.price,
-                                                                    ).toFixed(
-                                                                        2,
-                                                                    )}
-                                                                </p>
-                                                            </div>
-                                                        ),
-                                                    )}
-                                                </div>
-                                            ))}
-                                        </div>
-                                    )}
-                                </div>
-                            )}
+                                                            ),
+                                                        )}
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
                         </div>
                     </div>
                 </div>
@@ -1905,22 +1921,20 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                         </h2>
                         <div
                             ref={specificationsRef}
-                            className={`space-y-1 transition-all duration-300 ${
-                                !isSpecificationsExpanded
-                                    ? "max-h-[400px] overflow-hidden"
-                                    : ""
-                            }`}
+                            className={`space-y-1 transition-all duration-300 ${!isSpecificationsExpanded
+                                ? "max-h-[400px] overflow-hidden"
+                                : ""
+                                }`}
                         >
                             {item?.specifications.map(
                                 (spec, index) =>
                                     spec.type === "general" && (
                                         <div
                                             key={index}
-                                            className={`flex gap-4 px-4 py-1 ${
-                                                index % 2 === 0
-                                                    ? "bg-[#F7F9FB]"
-                                                    : "bg-white"
-                                            }`}
+                                            className={`flex gap-4 px-4 py-1 ${index % 2 === 0
+                                                ? "bg-[#F7F9FB]"
+                                                : "bg-white"
+                                                }`}
                                         >
                                             <div className="customtext-neutral-light min-w-56 max-w-56">
                                                 {spec.title}
@@ -1945,11 +1959,10 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                                     ? "Ver menos"
                                     : "Ver más especificaciones"}
                                 <ChevronDown
-                                    className={`transform transition-transform ${
-                                        isSpecificationsExpanded
-                                            ? "rotate-180"
-                                            : ""
-                                    }`}
+                                    className={`transform transition-transform ${isSpecificationsExpanded
+                                        ? "rotate-180"
+                                        : ""
+                                        }`}
                                 />
                             </button>
                         )}
@@ -1962,16 +1975,16 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                         </h2>
                         <div
                             ref={descriptionRef}
-                            className={`space-y-2 transition-all duration-300 ${
-                                !isExpanded
-                                    ? "max-h-[400px] overflow-hidden"
-                                    : ""
-                            }`}
+                            className={`space-y-2 transition-all duration-300 ${!isExpanded
+                                ? "max-h-[400px] overflow-hidden"
+                                : ""
+                                }`}
                         >
                             <h3 className="text-xl font-semibold customtext-neutral-dark mb-4">
                                 Acerca de este artículo
                             </h3>
                             <div
+                                itemProp="description"
                                 className="customtext-neutral-dark prose prose-base"
                                 dangerouslySetInnerHTML={{
                                     __html: item?.description,
@@ -1997,15 +2010,14 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                             >
                                 {isExpanded ? "Ver menos" : "Ver más"}
                                 <ChevronDown
-                                    className={`transform transition-transform ${
-                                        isExpanded ? "rotate-180" : ""
-                                    }`}
+                                    className={`transform transition-transform ${isExpanded ? "rotate-180" : ""
+                                        }`}
                                 />
                             </button>
                         )}
                     </div>
                 </div>
-            </div>
+            </article>
             {relationsItems.length > 0 && (
                 <ProductInfinite
                     data={{ ...data, title: "Productos relacionados" }}
@@ -2059,7 +2071,7 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
 
                         {/* Footer */}
                         <div className="flex justify-end p-6 border-t border-gray-200">
-                            <button
+                            <button aria-label="Cerrar modal de políticas de envío"
                                 onClick={() =>
                                     setDeliveryPolicyModalOpen(false)
                                 }
@@ -2161,35 +2173,34 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                                                     </h3>
                                                     {/* Badge del tipo de establecimiento */}
                                                     <span
-                                                        className={`px-2 py-1 rounded-full text-xs font-medium ${
-                                                            store.type ===
+                                                        className={`px-2 py-1 rounded-full text-xs font-medium ${store.type ===
                                                             "tienda"
-                                                                ? "bg-green-100 text-green-800"
+                                                            ? "bg-green-100 text-green-800"
+                                                            : store.type ===
+                                                                "oficina"
+                                                                ? "bg-blue-100 customtext-primary"
                                                                 : store.type ===
-                                                                    "oficina"
-                                                                  ? "bg-blue-100 customtext-primary"
-                                                                  : store.type ===
-                                                                      "almacen"
+                                                                    "almacen"
                                                                     ? "bg-yellow-100 text-yellow-800"
                                                                     : store.type ===
                                                                         "showroom"
-                                                                      ? "bg-purple-100 text-purple-800"
-                                                                      : "bg-gray-100 text-gray-800"
-                                                        }`}
+                                                                        ? "bg-purple-100 text-purple-800"
+                                                                        : "bg-gray-100 text-gray-800"
+                                                            }`}
                                                     >
                                                         {store.type === "tienda"
                                                             ? "Tienda"
                                                             : store.type ===
                                                                 "oficina"
-                                                              ? "Oficina"
-                                                              : store.type ===
-                                                                  "almacen"
-                                                                ? "Almacén"
+                                                                ? "Oficina"
                                                                 : store.type ===
-                                                                    "showroom"
-                                                                  ? "Showroom"
-                                                                  : store.type ||
-                                                                    "Otro"}
+                                                                    "almacen"
+                                                                    ? "Almacén"
+                                                                    : store.type ===
+                                                                        "showroom"
+                                                                        ? "Showroom"
+                                                                        : store.type ||
+                                                                        "Otro"}
                                                     </span>
                                                 </div>
                                             </div>
@@ -2237,10 +2248,10 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                                                                 try {
                                                                     const hours =
                                                                         typeof store.business_hours ===
-                                                                        "string"
+                                                                            "string"
                                                                             ? JSON.parse(
-                                                                                  store.business_hours,
-                                                                              )
+                                                                                store.business_hours,
+                                                                            )
                                                                             : store.business_hours;
 
                                                                     const today =
@@ -2252,22 +2263,22 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                                                                             },
                                                                         );
                                                                     const todayMap =
-                                                                        {
-                                                                            lunes: "Lunes",
-                                                                            martes: "Martes",
-                                                                            miércoles:
-                                                                                "Miércoles",
-                                                                            jueves: "Jueves",
-                                                                            viernes:
-                                                                                "Viernes",
-                                                                            sábado: "Sábado",
-                                                                            domingo:
-                                                                                "Domingo",
-                                                                        };
+                                                                    {
+                                                                        lunes: "Lunes",
+                                                                        martes: "Martes",
+                                                                        miércoles:
+                                                                            "Miércoles",
+                                                                        jueves: "Jueves",
+                                                                        viernes:
+                                                                            "Viernes",
+                                                                        sábado: "Sábado",
+                                                                        domingo:
+                                                                            "Domingo",
+                                                                    };
 
                                                                     const todaySpanish =
                                                                         todayMap[
-                                                                            today.toLowerCase()
+                                                                        today.toLowerCase()
                                                                         ] ||
                                                                         today;
                                                                     const todaySchedule =
@@ -2294,7 +2305,7 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                                                                                     new Date();
                                                                                 const currentTime =
                                                                                     now.getHours() *
-                                                                                        60 +
+                                                                                    60 +
                                                                                     now.getMinutes();
                                                                                 const [
                                                                                     openHour,
@@ -2320,17 +2331,17 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                                                                                         );
                                                                                 const openTime =
                                                                                     openHour *
-                                                                                        60 +
+                                                                                    60 +
                                                                                     openMin;
                                                                                 const closeTime =
                                                                                     closeHour *
-                                                                                        60 +
+                                                                                    60 +
                                                                                     closeMin;
                                                                                 return (
                                                                                     currentTime >=
-                                                                                        openTime &&
+                                                                                    openTime &&
                                                                                     currentTime <=
-                                                                                        closeTime
+                                                                                    closeTime
                                                                                 );
                                                                             })();
 
@@ -2342,11 +2353,10 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                                                                                     }
                                                                                 </span>
                                                                                 <span
-                                                                                    className={`px-2 py-1 rounded-full text-xs font-medium ${
-                                                                                        isOpen
-                                                                                            ? "bg-green-100 text-green-800"
-                                                                                            : "bg-red-100 text-red-800"
-                                                                                    }`}
+                                                                                    className={`px-2 py-1 rounded-full text-xs font-medium ${isOpen
+                                                                                        ? "bg-green-100 text-green-800"
+                                                                                        : "bg-red-100 text-red-800"
+                                                                                        }`}
                                                                                 >
                                                                                     {isOpen
                                                                                         ? "Abierto"
@@ -2385,7 +2395,7 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                                 {stores.length > 0 &&
                                     `${stores.length} tienda${stores.length !== 1 ? "s" : ""} disponible${stores.length !== 1 ? "s" : ""}`}
                             </p>
-                            <button
+                            <button aria-label="Cerrar modal de tiendas disponibles"
                                 onClick={() => setStoreListModalOpen(false)}
                                 className="px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors duration-200 font-medium"
                             >
@@ -2403,7 +2413,7 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                 modalOpen={modalOpen}
                 setModalOpen={setModalOpen}
             />
-        </>
+        </div>
     );
 };
 export default ProductDetail;
