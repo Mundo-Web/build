@@ -1330,7 +1330,8 @@
                     "is_card_content_description",
                     "class_badge_category",
                     "class_button_card_detail",
-                    "bool:is_master:Productos usan producto maestro"
+                    "bool:is_master:Productos usan producto maestro",
+                    "select:type_modal_cart:Tipo de Modal Carrito:CartModal|Normal,CartModalBananaLab|Banana Lab,CartModalIbergruas|Ibergruas,CartModalLaPetaca|La Petaca,CartModalMiBalon|Mi Balón,CartModalRainstar|Rainstar"
                 ],
                 "options": [
                     {
