@@ -117,6 +117,13 @@ class CatalogController extends Controller
 
     public function productsFeed()
     {
+        $filePath = public_path('products-feed.json');
+        if (file_exists($filePath)) {
+            return response(file_get_contents($filePath), 200, [
+                'Content-Type' => 'application/json'
+            ]);
+        }
+
         $products = \App\Models\Item::where('status', 1)
             ->where('visible', 1)
             ->select('sku', 'name', 'slug', 'price', 'discount', 'final_price', 'stock', 'sold_out', 'image', 'description', 'summary', 'meta_title', 'meta_description')

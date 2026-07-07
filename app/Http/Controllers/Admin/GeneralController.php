@@ -360,7 +360,7 @@ class GeneralController extends BasicController
                 if ($hasCatalog) {
                     $content .= "## Catálogo de productos y precios\n";
                     if ($includeFeed) {
-                        $content .= "- [Datos completos de productos](" . url('/api/products-feed.json') . "): Todos los SKUs, precios y estado del inventario en formato JSON (AI-friendly feed).\n";
+                        $content .= "- [Datos completos de productos](" . url('/products-feed.json') . "): Todos los SKUs, precios y estado del inventario en formato JSON (AI-friendly feed).\n";
                     }
                     if ($includePopular) {
                         $content .= "- [Productos populares](" . $formatUrl($urlPopulares) . "): Selección curada de los favoritos de esta temporada.\n";
@@ -430,6 +430,13 @@ class GeneralController extends BasicController
             $content .= "- **Sitemap**: " . url('/sitemap.xml') . "\n";
             $content .= "- **Robots.txt**: " . url('/robots.txt') . "\n";
 
+            // Regenerar también el feed de productos estático
+            try {
+                \Artisan::call('products-feed:generate');
+            } catch (\Exception $e) {
+                Log::error('Error al generar products-feed.json desde generateLlmsTxt: ' . $e->getMessage());
+            }
+
             $filePath = public_path('llms.txt');
             file_put_contents($filePath, $content);
 
@@ -437,7 +444,7 @@ class GeneralController extends BasicController
 
             return [
                 'success' => true,
-                'message' => 'llms.txt generado exitosamente',
+                'message' => 'llms.txt y feed de productos generados exitosamente',
                 'file_path' => $filePath,
                 'url' => url('/llms.txt')
             ];
