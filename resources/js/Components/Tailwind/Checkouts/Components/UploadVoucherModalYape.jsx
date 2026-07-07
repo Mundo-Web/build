@@ -14,10 +14,10 @@ import { CircleX } from "lucide-react";
 
 const salesRest = new SalesRest()
 
-export default function UploadVoucherModalYape({ 
-    isOpen, 
-    onClose, 
-    onUpload, 
+export default function UploadVoucherModalYape({
+    isOpen,
+    onClose,
+    onUpload,
     paymentMethod,
     cart = [],
     subTotal,
@@ -36,7 +36,7 @@ export default function UploadVoucherModalYape({
     const [saving, setSaving] = useState(false);
     const [voucher, setVoucher] = useState('');
     const fileInputRef = useRef(null);
-    
+
     const handleUploadClick = () => {
         if (!voucher) {
             fileInputRef.current?.click();
@@ -61,7 +61,7 @@ export default function UploadVoucherModalYape({
 
     const handlePayment = async () => {
         if (saving) return;
-        
+
         if (!voucher) {
             toast.error('Error al subir comprobante', {
                 description: `Por favor, sube tu comprobante de pago`,
@@ -71,9 +71,9 @@ export default function UploadVoucherModalYape({
             });
             return;
         }
-    
+
         setSaving(true);
-        
+
         try {
             const updatedRequest = {
                 ...request,
@@ -81,13 +81,13 @@ export default function UploadVoucherModalYape({
                 // Asegurar que delivery_type tenga un valor por defecto
                 delivery_type: request.delivery_type || 'domicilio',
                 // Asegurar que applied_promotions sea JSON string si existe
-                applied_promotions: request.applied_promotions 
-                    ? (typeof request.applied_promotions === 'string' 
-                        ? request.applied_promotions 
+                applied_promotions: request.applied_promotions
+                    ? (typeof request.applied_promotions === 'string'
+                        ? request.applied_promotions
                         : JSON.stringify(request.applied_promotions))
                     : null
             };
-            
+
             const formData = new FormData();
             Object.keys(updatedRequest).forEach(key => {
                 const value = updatedRequest[key];
@@ -99,9 +99,9 @@ export default function UploadVoucherModalYape({
                     }
                 }
             });
-    
+
             const result = await salesRest.save(formData);
-            
+
             if (result) {
                 Local.delete(`${Global.APP_CORRELATIVE}_cart`)
                 location.href = `${location.origin}/cart?code=${result.code}`;
@@ -121,9 +121,9 @@ export default function UploadVoucherModalYape({
 
 
     const handleUpload = async () => {
-        
+
         if (saving) return; // Evita múltiples ejecuciones
-        
+
         if (!voucher) {
             toast.success('Error al subir comprobante', {
                 description: `Por favor, sube tu comprobante de pago`,
@@ -133,28 +133,28 @@ export default function UploadVoucherModalYape({
             });
             return;
         }
-    
+
         setSaving(true); // Deshabilita el botón
-        
+
         try {
             const updatedRequest = {
                 ...request,
                 payment_proof: voucher,
             };
-            
+
             const formData = new FormData();
             Object.keys(updatedRequest).forEach(key => {
                 formData.append(key, updatedRequest[key]);
             });
-    
+
             const result = await salesRest.save(formData);
-            
+
             if (result) {
                 Local.delete(`${Global.APP_CORRELATIVE}_cart`)
                 location.href = `${location.origin}/cart?code=${result.code}`;
             }
         } catch (error) {
-            console.error("Error al procesar el pago:", );
+            console.error("Error al procesar el pago:",);
             toast.success('Error al procesar el pago:', {
                 description: `Ocurrió un error al procesar tu pago`,
                 icon: <CircleX className="h-5 w-5 text-red-500" />,
@@ -172,7 +172,7 @@ export default function UploadVoucherModalYape({
         } else {
             document.body.style.overflow = "";
         }
-    
+
         return () => {
             document.body.style.overflow = "";
         };
@@ -183,16 +183,16 @@ export default function UploadVoucherModalYape({
             isOpen={isOpen}
             onRequestClose={onClose}
             className="absolute left-1/2 -translate-x-1/2 bg-[#f5f5f5] rounded-2xl shadow-lg w-[95%] max-w-lg top-1/2 -translate-y-1/2 overflow-hidden font-paragraph"
-            overlayClassName="fixed inset-0 bg-black bg-opacity-50 z-50"
+            overlayClassName="fixed inset-0 bg-black bg-opacity-50 z-[999]"
             ariaHideApp={false}
         >
-            <div className="py-6 px-10 flex flex-col gap-3 max-h-[90vh] md:max-h-[95vh] overflow-y-auto">
+            <div className="py-6 px-10 flex flex-col gap-3 max-h-[90vh] md:max-h-[80vh] overflow-y-auto">
 
                 <div className="flex justify-center items-center z-40">
                     <a href="/" className="flex items-center gap-2">
                         <img src={`/assets/resources/logo.png?v=${crypto.randomUUID()}`} alt={Global.APP_NAME} className="h-14 object-contain object-center" onError={(e) => {
-                        e.target.onerror = null;
-                        e.target.src = '/assets/img/logo-bk.svg';
+                            e.target.onerror = null;
+                            e.target.src = '/assets/img/logo-bk.svg';
                         }} />
                     </a>
                 </div>
@@ -202,17 +202,17 @@ export default function UploadVoucherModalYape({
                 </h2>
 
                 <p className="customtext-primary text-sm 2xl:text-base text-center">{General.get('checkout_dwallet_description')}</p>
-       
+
 
                 <div className="w-full flex flex-row items-center justify-center my-1">
                     <Tippy content='Escanee codigo QR'>
-                            <img src={`/assets/resources/${General.get('checkout_dwallet_qr')}`} 
-                                alt={General.get('checkout_dwallet_name')} 
-                                className="h-40 w-auto object-cover"
-                                onError={(e) => {
-                                    e.currentTarget.src = "/assets/img/salafabulosa/logoyape.png"; // Ruta de fallback
-                                }} 
-                            />
+                        <img src={`/assets/resources/${General.get('checkout_dwallet_qr')}`}
+                            alt={General.get('checkout_dwallet_name')}
+                            className="h-40 w-auto object-cover"
+                            onError={(e) => {
+                                e.currentTarget.src = "/assets/img/salafabulosa/logoyape.png"; // Ruta de fallback
+                            }}
+                        />
                     </Tippy>
                 </div>
 
@@ -236,15 +236,15 @@ export default function UploadVoucherModalYape({
                                             {item.name}
                                         </h3>
 
-                                       {item?.color && (
+                                        {item?.color && (
 
-                                         <p className="text-xs 2xl:text-sm customtext-neutral-light opacity-70">
-                                            Color:{" "}
-                                            <span className="customtext-neutral-dark">
-                                                {item.color}
-                                            </span>
-                                        </p>
-                                       )}
+                                            <p className="text-xs 2xl:text-sm customtext-neutral-light opacity-70">
+                                                Color:{" "}
+                                                <span className="customtext-neutral-dark">
+                                                    {item.color}
+                                                </span>
+                                            </p>
+                                        )}
                                         <p className="text-xs 2xl:text-sm customtext-neutral-light opacity-70">
                                             Cantidad:{" "}
                                             <span className="customtext-neutral-dark">
@@ -273,47 +273,47 @@ export default function UploadVoucherModalYape({
                             </span>
                         </div>
                         {coupon && (
-                                <div className="mb-2 mt-2 flex justify-between items-center border-b pb-2 text-sm font-bold">
-                                    <span>
-                                        Cupón aplicado{" "}
-                                        <Tippy content="Eliminar">
-                                            <i
-                                                className="mdi mdi-close text-red-500 cursor-pointer"
-                                                onClick={() =>
-                                                    setCoupon(null)
-                                                }
-                                            ></i>
-                                        </Tippy>
-                                        <small className="block text-xs font-light">
-                                            {coupon.code}{" "}
-                                            <Tippy
-                                                content={
-                                                    coupon.description
-                                                }
-                                            >
-                                                <i className="mdi mdi-information-outline ms-1"></i>
-                                            </Tippy>{" "}
-                                            ({coupon.type === 'percentage' 
-                                                ? `${coupon.value}%`
-                                                    : `${CurrencySymbol()} ${Number2Currency(coupon.value)}`})
-                                        </small>
-                                    </span>
-                                    <span>
-                                        {CurrencySymbol()} -{Number2Currency(
-                                            descuentofinal
-                                        )}
-                                    </span>
+                            <div className="mb-2 mt-2 flex justify-between items-center border-b pb-2 text-sm font-bold">
+                                <span>
+                                    Cupón aplicado{" "}
+                                    <Tippy content="Eliminar">
+                                        <i
+                                            className="mdi mdi-close text-red-500 cursor-pointer"
+                                            onClick={() =>
+                                                setCoupon(null)
+                                            }
+                                        ></i>
+                                    </Tippy>
+                                    <small className="block text-xs font-light">
+                                        {coupon.code}{" "}
+                                        <Tippy
+                                            content={
+                                                coupon.description
+                                            }
+                                        >
+                                            <i className="mdi mdi-information-outline ms-1"></i>
+                                        </Tippy>{" "}
+                                        ({coupon.type === 'percentage'
+                                            ? `${coupon.value}%`
+                                            : `${CurrencySymbol()} ${Number2Currency(coupon.value)}`})
+                                    </small>
+                                </span>
+                                <span>
+                                    {CurrencySymbol()} -{Number2Currency(
+                                        descuentofinal
+                                    )}
+                                </span>
+                            </div>
+                        )}
+                        {autoDiscounts && autoDiscounts.length > 0 && (
+                            <div className="mb-2 mt-2 border-b pb-2">
+
+                                <div className="flex justify-between items-center text-sm font-bold text-green-600 mt-1 pt-1 border-t">
+                                    <span>Total descuentos automáticos:</span>
+                                    <span>{CurrencySymbol()} -{Number2Currency(autoDiscountTotal)}</span>
                                 </div>
-                            )}
-                            {autoDiscounts && autoDiscounts.length > 0 && (
-                                <div className="mb-2 mt-2 border-b pb-2">
-                                   
-                                    <div className="flex justify-between items-center text-sm font-bold text-green-600 mt-1 pt-1 border-t">
-                                        <span>Total descuentos automáticos:</span>
-                                        <span>{CurrencySymbol()} -{Number2Currency(autoDiscountTotal)}</span>
-                                    </div>
-                                </div>
-                            )}
+                            </div>
+                        )}
                         <div className="flex justify-between text-sm 2xl:text-base">
                             <span className="customtext-neutral-dark">Envío</span>
                             <span className="font-semibold">
@@ -343,8 +343,8 @@ export default function UploadVoucherModalYape({
 
                     {/* <VoucherUpload voucher={voucher} setVoucher={setVoucher} /> */}
 
-                     {/* Hidden file input */}
-                     <input
+                    {/* Hidden file input */}
+                    <input
                         type="file"
                         ref={fileInputRef}
                         onChange={handleFileChange}
@@ -352,12 +352,12 @@ export default function UploadVoucherModalYape({
                         className="hidden"
                     />
 
-                     {/* File preview area */}
-                     {voucher && (
+                    {/* File preview area */}
+                    {voucher && (
                         <div className="bg-[#f1f1f1] p-4 rounded-lg border border-dashed">
                             <div className="flex items-center justify-between">
                                 <span className="text-sm truncate">{voucher.name}</span>
-                                <button 
+                                <button
                                     onClick={handleRemoveFile}
                                     className="text-red-500 hover:text-red-700"
                                 >
@@ -366,16 +366,16 @@ export default function UploadVoucherModalYape({
                             </div>
                             {voucher.type.startsWith('image/') && (
                                 <div className="mt-2">
-                                    <img 
-                                        src={URL.createObjectURL(voucher)} 
-                                        alt="Voucher preview" 
+                                    <img
+                                        src={URL.createObjectURL(voucher)}
+                                        alt="Voucher preview"
                                         className="max-h-28 mx-auto"
                                     />
                                 </div>
                             )}
                         </div>
                     )}
-                    
+
                     {/* <div className="pt-2 space-y-3">
                         <button
                             onClick={handleUpload}
@@ -400,17 +400,16 @@ export default function UploadVoucherModalYape({
                         <button
                             onClick={handleUploadClick}
                             disabled={saving}
-                            className={`w-full bg-primary text-white text-sm 2xl:text-base py-3 rounded-3xl font-medium ${
-                                saving ? "opacity-70 cursor-not-allowed" : ""
-                            }`}
+                            className={`w-full bg-primary text-white text-sm 2xl:text-base py-3 rounded-3xl font-medium ${saving ? "opacity-70 cursor-not-allowed" : ""
+                                }`}
                         >
-                            {saving 
-                                ? "Procesando..." 
-                                : voucher 
-                                    ? "Confirmar pago" 
+                            {saving
+                                ? "Procesando..."
+                                : voucher
+                                    ? "Confirmar pago"
                                     : "Subir la captura del pago"}
                         </button>
-                        
+
                         <button
                             onClick={onClose}
                             className="w-full border border-primary text-sm 2xl:text-base py-3 rounded-3xl font-medium"

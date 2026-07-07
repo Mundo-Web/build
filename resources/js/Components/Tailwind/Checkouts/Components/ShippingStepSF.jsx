@@ -2017,7 +2017,7 @@ export default function ShippingStepSF({
                 isOpen={showLoginModal}
                 onRequestClose={() => setShowLoginModal(false)}
                 className="modal-content max-w-md mx-auto mt-20 bg-white rounded-lg p-6"
-                overlayClassName="modal-overlay fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+                overlayClassName="modal-overlay fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[999]"
             >
                 <div className="text-center">
                     <h2 className="text-2xl font-bold mb-4">
