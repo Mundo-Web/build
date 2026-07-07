@@ -119,19 +119,43 @@ class CatalogController extends Controller
     {
         $products = \App\Models\Item::where('status', 1)
             ->where('visible', 1)
-            ->select('sku', 'name', 'slug', 'price', 'discount', 'final_price', 'stock', 'sold_out')
+            ->select('sku', 'name', 'slug', 'price', 'discount', 'final_price', 'stock', 'sold_out', 'image', 'description', 'summary', 'meta_title', 'meta_description')
             ->get()
             ->map(function ($item) {
-                return [
+                $imageUrl = null;
+                if ($item->image) {
+                    if (filter_var($item->image, FILTER_VALIDATE_URL)) {
+                        $imageUrl = $item->image;
+                    } else {
+                        $imageUrl = url('/storage/images/item/' . $item->image);
+                    }
+                }
+
+                $rawDescription = $item->description ?: ($item->summary ?: $item->meta_description);
+                $description = $rawDescription ? strip_tags($rawDescription) : '';
+                if ($description) {
+                    $description = \Illuminate\Support\Str::limit($description, 250);
+                }
+
+                $name = $item->name ?: $item->meta_title;
+
+                $productData = [
                     'sku' => $item->sku,
-                    'name' => $item->name,
+                    'name' => $name,
+                    'description' => $description,
+                    'image_url' => $imageUrl,
                     'url' => url('/product/' . $item->slug),
                     'price' => (float) $item->price,
                     'discount' => (float) $item->discount,
                     'final_price' => (float) $item->final_price,
-                    'in_stock' => $item->stock > 0 && !$item->sold_out,
-                    'stock_qty' => (int) $item->stock
+                    'in_stock' => !$item->sold_out,
                 ];
+
+                if ($item->stock > 0) {
+                    $productData['stock_qty'] = (int) $item->stock;
+                }
+
+                return $productData;
             });
 
         return response()->json([
