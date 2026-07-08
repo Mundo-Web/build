@@ -55,14 +55,14 @@ const BannerPublicitario = ({ data }) => {
                                 className={`md:order-1 md:w-5/12 z-10 ${data?.class_right || 'text-white'}`}
                             >
                                 <div className={`max-w-sm ${data?.class_content_right || ''}`}>
-                                    <motion.h1
+                                    <motion.h2
                                         initial={{ y: 50, opacity: 0 }}
                                         animate={{ y: 0, opacity: 1 }}
                                         transition={{ duration: 0.8, delay: 1 }}
                                         className="text-[40px] leading-tight md:text-6xl font-bold mb-4 font-title"
                                     >
                                         {data?.name}
-                                    </motion.h1>
+                                    </motion.h2>
                                     <motion.p
                                         initial={{ y: 50, opacity: 0 }}
                                         animate={{ y: 0, opacity: 1 }}
