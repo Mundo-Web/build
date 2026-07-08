@@ -50,6 +50,8 @@ const Sliders = () => {
     const [buttonNewTab, setButtonNewTab] = useState(false);
     const [buttonSecondaryNewTab, setButtonSecondaryNewTab] = useState(false);
     const [showContent, setShowContent] = useState(true);
+    const [isSeo, setIsSeo] = useState(false);
+    const [seoH1, setSeoH1] = useState("");
 
     const onModalOpen = (data) => {
         if (data?.id) setIsEditing(true);
@@ -137,6 +139,8 @@ const Sliders = () => {
             data?.secondary_button_new_tab === true || data?.secondary_button_new_tab === 1,
         );
         setShowContent(data?.show_content !== false && data?.show_content !== 0);
+        setIsSeo(data?.is_seo === true || data?.is_seo === 1);
+        setSeoH1(data?.seo_h1 ?? "");
 
         $(modalRef.current).modal("show");
     };
@@ -191,6 +195,12 @@ const Sliders = () => {
                 ? durationRef.current.value * 1000
                 : null;
         request.show_content = showContent ? 1 : 0;
+        if (Fillable.has("sliders", "is_seo")) {
+            request.is_seo = isSeo ? 1 : 0;
+        }
+        if (Fillable.has("sliders", "seo_h1")) {
+            request.seo_h1 = isSeo ? seoH1 : "";
+        }
 
         // Media fields
         request.bg_type = activeTab;
@@ -270,6 +280,15 @@ const Sliders = () => {
             value,
         });
         if (!result) return;
+        $(gridRef.current).dxDataGrid("instance").refresh();
+    };
+
+    const onIsSeoChange = async ({ id, value }) => {
+        const result = await slidersRest.boolean({
+            id,
+            field: "is_seo",
+            value,
+        });
         $(gridRef.current).dxDataGrid("instance").refresh();
     };
 
@@ -444,6 +463,26 @@ const Sliders = () => {
                                     onError={(e) =>
                                         (e.target.src =
                                             "/api/cover/thumbnail/null")
+                                    }
+                                />,
+                            );
+                        },
+                    },
+                    Fillable.has("sliders", "is_seo") && {
+                        dataField: "is_seo",
+                        caption: "H1 SEO",
+                        dataType: "boolean",
+                        cellTemplate: (container, { data }) => {
+                            $(container).empty();
+                            ReactAppend(
+                                container,
+                                <SwitchFormGroup
+                                    checked={data.is_seo == 1}
+                                    onChange={() =>
+                                        onIsSeoChange({
+                                            id: data.id,
+                                            value: !data.is_seo,
+                                        })
                                     }
                                 />,
                             );
@@ -1191,7 +1230,7 @@ const Sliders = () => {
                                     type="number"
                                 />
                             )}
-                            <div className="col-sm-6">
+                            <div className="col-sm-6 mb-3">
                                 <label className="form-label">
                                     Mostrar Contenido (Título, descripción y botones)
                                 </label>
@@ -1213,6 +1252,40 @@ const Sliders = () => {
                                     </label>
                                 </div>
                             </div>
+                            {Fillable.has("sliders", "is_seo") && (
+                                <div className="col-sm-6 mb-3">
+                                    <label className="form-label">
+                                        Establecer como H1 SEO
+                                    </label>
+                                    <div className="form-check form-switch">
+                                        <input
+                                            className="form-check-input"
+                                            type="checkbox"
+                                            checked={isSeo}
+                                            onChange={(e) => {
+                                                setIsSeo(e.target.checked);
+                                                if (!e.target.checked) setSeoH1("");
+                                            }}
+                                            style={{
+                                                width: "50px",
+                                                height: "25px",
+                                            }}
+                                        />
+                                        <label className="form-check-label ms-2">
+                                            {isSeo ? "Sí" : "No"}
+                                        </label>
+                                    </div>
+                                </div>
+                            )}
+                            {isSeo && Fillable.has("sliders", "seo_h1") && (
+                                <InputFormGroup
+                                    label="Texto para H1 SEO (Visualmente oculto con sr-only)"
+                                    value={seoH1}
+                                    onChange={(e) => setSeoH1(e.target.value)}
+                                    col="col-12"
+                                    required
+                                />
+                            )}
                         </div>
                     </div>
                 </div>

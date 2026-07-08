@@ -12,11 +12,22 @@ DirectoryIndex index.php
     RewriteRule (?i)(wp-admin|wp-login|wp-content|wp-includes|xmlrpc\.php) - [F,L]
     RewriteRule (?i)(phpmyadmin|adminer\.php) - [F,L]
 
-    # Si la petición ya viene con /public/, no hagas nada
+    # =========================================================================
+    # 3. ¡SOLUCIÓN PARA GOOGLE! REDIRECCIÓN 301 EXTERNA
+    # Si Google o un usuario intentan entrar escribiendo "/public/" en la URL,
+    # los redirige automáticamente al link limpio sin "/public/".
+    # Usamos THE_REQUEST para asegurarnos de que solo afecte a peticiones externas reales.
+    # =========================================================================
+    RewriteCond %{THE_REQUEST} \s/public/(\S*) [NC]
+    RewriteRule ^public/(.*)$ /$1 [R=301,L]
+
+    # 4. FILTRO INTERNO: Si la redirección interna de Laravel ya se ejecutó, no hagas nada
+    # Esto evita que el servidor entre en un bucle infinito.
     RewriteCond %{REQUEST_URI} ^/public/ [NC]
     RewriteRule ^ - [L]
 
-    # Redirecciona todo lo demás a la carpeta /public/
+    # 5. Redirecciona internamente todo lo demás a la carpeta /public/
+    # El usuario ve el link limpio en su navegador, pero Laravel lee la carpeta public por detrás.
     RewriteRule ^(.*)$ public/$1 [L]
 </IfModule>
 

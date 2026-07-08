@@ -40,6 +40,8 @@ class Slider extends Model
         'status',
         'order_index',
         'duration',
+        'is_seo',
+        'seo_h1',
     ];
 
     protected $casts = [
@@ -50,5 +52,6 @@ class Slider extends Model
         'show_content' => 'boolean',
         'button_new_tab' => 'boolean',
         'secondary_button_new_tab' => 'boolean',
+        'is_seo' => 'boolean',
     ];
 }

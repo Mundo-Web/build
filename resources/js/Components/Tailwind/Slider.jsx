@@ -36,6 +36,8 @@ const SliderLaPetacaContact = React.lazy(() => import("./Sliders/SliderLaPetacaC
 
 
 const Slider = ({ which, data, sliders, generals = [] }) => {
+    const seoSlider = sliders?.find((slide) => (slide.is_seo === true || slide.is_seo === 1) && slide.seo_h1);
+
     const getSlider = () => {
         switch (which) {
             case "SliderPremium":
@@ -139,7 +141,12 @@ const Slider = ({ which, data, sliders, generals = [] }) => {
                 );
         }
     };
-    return getSlider();
+    return (
+        <>
+            {seoSlider && <h1 className="sr-only">{seoSlider.seo_h1}</h1>}
+            {getSlider()}
+        </>
+    );
 };
 
 export default Slider;
