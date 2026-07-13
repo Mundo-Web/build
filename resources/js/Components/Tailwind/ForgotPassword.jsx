@@ -3,18 +3,21 @@ import React from "react";
 const ForgotPasswordSimple = React.lazy(
     () => import("./ForgotPassword/ForgotPasswordSimple"),
 );
-
 const ForgotPasswordRainstar = React.lazy(
     () => import("./ForgotPassword/ForgotPasswordRainstar"),
+);
+const ForgotPasswordTwenty = React.lazy(
+    () => import("./ForgotPassword/ForgotPasswordTwenty"),
 );
 const ForgotPassword = ({ data, which }) => {
     const getForgotPassword = () => {
         switch (which) {
             case "ForgotPasswordSimple":
                 return <ForgotPasswordSimple data={data} />;
-
             case "ForgotPasswordRainstar":
                 return <ForgotPasswordRainstar data={data} />;
+            case "ForgotPasswordTwenty":
+                return <ForgotPasswordTwenty data={data} />;
             default:
                 return (
                     <div className="w-full px-[5%] replace-max-w-here p-4 mx-auto">

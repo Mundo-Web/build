@@ -1,17 +1,18 @@
 import React from "react";
 
 const SignUpSimple = React.lazy(() => import("./Signup/SignUpSimple"));
-
 const SignUpRainstar = React.lazy(() => import("./Signup/SignUpRainstar"));
+const SignUpTwenty = React.lazy(() => import("./Signup/SignUpTwenty"));
 
 const Signup = ({ data, which }) => {
     const getSignup = () => {
         switch (which) {
             case "SignUpSimple":
                 return <SignUpSimple data={data} />;
-
             case "SignUpRainstar":
                 return <SignUpRainstar data={data} />;
+            case "SignUpTwenty":
+                return <SignUpTwenty data={data} />;
 
             default:
                 return (

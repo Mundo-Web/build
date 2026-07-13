@@ -5187,6 +5187,10 @@
       {
         "id": "LoginRainstar",
         "name": "Rainstar"
+      },
+      {
+        "id": "LoginTwenty",
+        "name": "Twenty"
       }
     ]
   },
@@ -5201,6 +5205,10 @@
       {
         "id": "SignUpRainstar",
         "name": "Rainstar"
+      },
+      {
+        "id": "SignUpTwenty",
+        "name": "Twenty"
       }
     ]
   },
@@ -5215,6 +5223,10 @@
       {
         "id": "ForgotPasswordRainstar",
         "name": "Rainstar"
+      },
+      {
+        "id": "ForgotPasswordTwenty",
+        "name": "Twenty"
       }
     ]
   },
@@ -5229,6 +5241,10 @@
       {
         "id": "ResetPasswordRainstar",
         "name": "Rainstar"
+      },
+      {
+        "id": "ResetPasswordTwenty",
+        "name": "Twenty"
       }
     ]
   },
@@ -5239,6 +5255,10 @@
       {
         "id": "UnsubscribeSimple",
         "name": "Simple"
+      },
+      {
+        "id": "UnsubscribeTwenty",
+        "name": "Twenty"
       }
     ]
   },
