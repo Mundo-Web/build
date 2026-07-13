@@ -1,0 +1,3327 @@
+import { useCallback, useEffect, useState, useRef } from "react";
+import Number2Currency, {
+    CurrencySymbol,
+} from "../../../../Utils/Number2Currency";
+import ubigeoData from "../../../../../../storage/app/utils/ubigeo.json";
+import DeliveryPricesRest from "../../../../Actions/DeliveryPricesRest";
+import { processCulqiPayment } from "../../../../Actions/culqiPayment";
+import { processMercadoPagoPayment } from "../../../../Actions/mercadoPagoPayment";
+import { processOpenPayPayment } from "../../../../Actions/openPayPayment";
+import ButtonPrimary from "./ButtonPrimary";
+import ButtonSecondary from "./ButtonSecondary";
+import InputForm from "./InputFormTwenty";
+import SelectForm from "./SelectFormTwenty";
+import OptionCard from "./OptionCardTwenty";
+import StorePickupSelector from "./StorePickupSelector";
+import {
+    CheckCircleIcon,
+    CircleX,
+    InfoIcon,
+    UserRoundX,
+    AlertTriangle,
+    CheckCircle,
+    XCircle,
+} from "lucide-react";
+import { Notify } from "sode-extend-react";
+import { renderToString } from "react-dom/server";
+import { debounce } from "lodash";
+import { useUbigeo } from "../../../../Utils/useUbigeo";
+import AsyncSelect from "react-select/async";
+import Select from "react-select";
+import PaymentModalTwenty from "./PaymentModalTwenty";
+import OpenPayCardModalTwenty from "./OpenPayCardModalTwenty";
+import UploadVoucherModalYapeTwenty from "./UploadVoucherModalYapeTwenty";
+import UploadVoucherModalBancsTwenty from "./UploadVoucherModalBancsTwenty";
+import { toast } from "sonner";
+import Global from "../../../../Utils/Global";
+import General from "../../../../Utils/General";
+import CouponsRest from "../../../../Actions/CouponsRest";
+import Tippy from "@tippyjs/react";
+import ReactModal from "react-modal";
+import DiscountRulesRest from "../../../../Actions/DiscountRulesRest";
+
+export default function ShippingStepTwenty({
+    cart,
+    setSale,
+    setCode,
+    setDelivery,
+    setCart,
+    onContinue,
+    noContinue,
+    subTotal,
+    igv,
+    totalFinal,
+    user,
+    setEnvio,
+    envio,
+    prefixes,
+    ubigeos = [],
+    contacts,
+    totalPrice,
+    descuentofinal,
+    setDescuentoFinal,
+    data, // Para gradientes
+    openModal,
+    setCouponDiscount: setParentCouponDiscount,
+    setCouponCode: setParentCouponCode,
+    automaticDiscounts = [], // Se usará como reglas, no como descuentos ya calculados
+    automaticDiscountTotal = 0,
+    totalWithoutDiscounts,
+    perception = 0,
+    packagingAmount = 0,
+    selectedPackaging = null,
+    conversionScripts,
+    setConversionScripts,
+    onPurchaseComplete,
+    // Props para costos adicionales de envío
+    additionalShippingCost,
+    setAdditionalShippingCost,
+    additionalShippingDescription,
+    setAdditionalShippingDescription,
+    selectedDeliveryMethod,
+    setSelectedDeliveryMethod,
+    calculateAdditionalShippingCost,
+}) {
+    // Función para formatear el número de teléfono evitando duplicación de prefijos
+    const formatPhoneNumber = (phonePrefix, phoneNumber) => {
+        if (!phoneNumber) return "";
+
+        // Si el número ya comienza con el prefijo, no lo agregamos de nuevo
+        if (phoneNumber.startsWith(phonePrefix)) {
+            return phoneNumber;
+        }
+
+        // Si no, concatenamos el prefijo
+        return `${phonePrefix}${phoneNumber}`;
+    };
+
+    // Función para limpiar el número de teléfono del usuario removiendo prefijos duplicados
+    const cleanPhoneNumber = (phoneNumber, phonePrefix) => {
+        if (!phoneNumber) return "";
+
+        // Si el número comienza con el prefijo, lo removemos
+        if (phoneNumber.startsWith(phonePrefix)) {
+            return phoneNumber.substring(phonePrefix.length);
+        }
+
+        return phoneNumber;
+    };
+
+    const couponRef = useRef(null);
+    const [coupon, setCoupon] = useState(null);
+    const [selectedUbigeo, setSelectedUbigeo] = useState(null);
+    const [defaultUbigeoOption, setDefaultUbigeoOption] = useState(null);
+
+    // Estados para los descuentos automáticos calculados
+    const [autoDiscounts, setAutoDiscounts] = useState([]);
+    const [autoDiscountTotal, setAutoDiscountTotal] = useState(0);
+
+    // Get free items from automatic discounts calculados
+    const freeItems = autoDiscounts.reduce((items, discount) => {
+        if (discount.free_items && Array.isArray(discount.free_items)) {
+            return items.concat(discount.free_items);
+        }
+        return items;
+    }, []);
+
+    // Función para calcular todos los descuentos automáticos
+    const calculateAutomaticDiscounts = async (cart, rules) => {
+        if (!cart || cart.length === 0) {
+            return { discounts: [], total: 0 };
+        }
+
+        try {
+            const result = await DiscountRulesRest.applyToCart(
+                cart,
+                totalWithoutDiscounts,
+            );
+
+            if (result.success && result.data) {
+                const discounts = DiscountRulesRest.formatDiscounts(
+                    result.data.applied_discounts,
+                );
+                const discountAmount = result.data.total_discount || 0;
+
+                return {
+                    discounts: result.data.applied_discounts,
+                    total: discountAmount,
+                };
+            }
+        } catch (error) {
+            console.error("❌ Error calculating automatic discounts:", error);
+        }
+
+        return { discounts: [], total: 0 };
+    };
+
+    // Recalcular descuentos automáticos cuando cambie el carrito o las reglas
+    useEffect(() => {
+        if (cart && cart.length > 0 && totalWithoutDiscounts) {
+            calculateAutomaticDiscounts(cart, automaticDiscounts).then(
+                (result) => {
+                    setAutoDiscounts(result.discounts);
+                    setAutoDiscountTotal(result.total);
+                },
+            );
+        } else {
+            setAutoDiscounts([]);
+            setAutoDiscountTotal(0);
+        }
+    }, [cart, automaticDiscounts, totalWithoutDiscounts]);
+
+    // Tipos de documentos como en ComplaintStech
+    const typesDocument = [
+        { value: "dni", label: "DNI" },
+        { value: "ruc", label: "RUC" },
+        { value: "ce", label: "CE" },
+        { value: "pasaporte", label: "Pasaporte" },
+    ];
+
+    const [formData, setFormData] = useState(() => {
+        const initialPhonePrefix = user?.phone_prefix || "51";
+        const initialPhone = cleanPhoneNumber(
+            user?.phone || "",
+            initialPhonePrefix,
+        );
+
+        return {
+            name: user?.name || "",
+            lastname: user?.lastname || "",
+            email: user?.email || "",
+            phone_prefix: initialPhonePrefix, //telf
+            phone: initialPhone, //telf
+            documentType: user?.document_type?.toLowerCase() || "dni",
+            document: user?.document_number || "",
+            department: user?.department || "",
+            province: user?.province || "",
+            district: user?.district || "",
+            address: user?.address || "",
+            number: user?.number || "",
+            comment: user?.comment || "",
+            reference: user?.reference || "",
+            shippingOption: "delivery", // Valor predeterminado
+            ubigeo: user?.ubigeo || null,
+            invoiceType: user?.invoiceType || "boleta", // Nuevo campo para tipo de comprobante
+            businessName: user?.businessName || "", // Nuevo campo para Razón Social
+        };
+    });
+
+    // Efecto para actualizar formData cuando cambien los datos del usuario
+    useEffect(() => {
+        if (user) {
+            const userPhonePrefix = user.phone_prefix || "51";
+            const cleanedPhone = cleanPhoneNumber(
+                user.phone || "",
+                userPhonePrefix,
+            );
+
+            setFormData((prev) => ({
+                ...prev,
+                name: user.name || "",
+                lastname: user.lastname || "",
+                email: user.email || "",
+                phone_prefix: userPhonePrefix,
+                phone: cleanedPhone,
+                documentType: user.document_type?.toLowerCase() || "dni",
+                document: user.document_number || "",
+                department: user.department || "",
+                province: user.province || "",
+                district: user.district || "",
+                address: user.address || "",
+                number: user.number || "",
+                comment: user.comment || "",
+                reference: user.reference || "",
+                ubigeo: user.ubigeo || null,
+                invoiceType: user.invoiceType || "boleta",
+                businessName: user.businessName || "",
+            }));
+        }
+    }, [user]);
+
+    useEffect(() => {
+        if (user?.ubigeo) {
+            // Si tiene ubigeo pero no tiene los campos de texto, buscarlos
+            if (!user?.district || !user?.province || !user?.department) {
+                // Buscar la ubicación usando el ubigeo
+                fetch(`/api/ubigeo/find/${user.ubigeo}`)
+                    .then((response) => response.json())
+                    .then((data) => {
+                        if (data && data.distrito) {
+                            const defaultOption = {
+                                value: user.ubigeo,
+                                label: `${data.distrito}, ${data.provincia}, ${data.departamento}`,
+                                data: {
+                                    reniec: user.ubigeo,
+                                    departamento: data.departamento,
+                                    provincia: data.provincia,
+                                    distrito: data.distrito,
+                                },
+                            };
+
+                            setDefaultUbigeoOption(defaultOption);
+                            setSelectedUbigeo(defaultOption);
+                            handleUbigeoChange(defaultOption);
+                        } else {
+                            console.log(
+                                "❌ ShippingStepSF - No se encontró ubicación para ubigeo:",
+                                user.ubigeo,
+                            );
+                        }
+                    })
+                    .catch((error) => {
+                        console.error(
+                            "❌ ShippingStepSF - Error al buscar ubicación:",
+                            error,
+                        );
+                    });
+            } else {
+                // Si tiene todos los datos, usarlos directamente
+                const defaultOption = {
+                    value: user.ubigeo,
+                    label: `${user.district}, ${user.province}, ${user.department}`,
+                    data: {
+                        reniec: user.ubigeo,
+                        departamento: user.department,
+                        provincia: user.province,
+                        distrito: user.district,
+                    },
+                };
+
+                setDefaultUbigeoOption(defaultOption);
+                setSelectedUbigeo(defaultOption);
+                handleUbigeoChange(defaultOption);
+            }
+        } else {
+            console.log("❌ ShippingStepSF - Usuario sin ubigeo registrado");
+        }
+    }, [user]);
+
+    const getContact = (correlative) => {
+        return (
+            contacts.find((contact) => contact.correlative === correlative)
+                ?.description || ""
+        );
+    };
+
+    // Verificar si hay métodos de pago disponibles
+    const hasPaymentMethods = (() => {
+        const ischeckmpobject = contacts?.find(
+            (x) => x.correlative === "checkout_mercadopago",
+        );
+        const ischeckopenpayobject = contacts?.find(
+            (x) => x.correlative === "checkout_openpay",
+        );
+        const ischeckculqiobject = contacts?.find(
+            (x) => x.correlative === "checkout_culqi",
+        );
+
+        return (
+            ischeckmpobject?.description === "true" ||
+            ischeckopenpayobject?.description === "true" ||
+            ischeckculqiobject?.description === "true" ||
+            General.get("checkout_dwallet") === "true" ||
+            General.get("checkout_transfer") === "true"
+        );
+    })();
+
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setFormData((prev) => ({ ...prev, [name]: value }));
+
+        // Si cambia el tipo de comprobante, actualizar el tipo de documento por defecto
+        if (name === "invoiceType") {
+            setFormData((prev) => ({
+                ...prev,
+                documentType: value === "factura" ? "ruc" : "dni",
+                document: "",
+                businessName: value === "factura" ? prev.businessName : "",
+            }));
+        }
+    };
+
+    // Estados para manejar los valores seleccionados
+    const [loading, setLoading] = useState(false);
+    const [paymentLoading, setPaymentLoading] = useState(false);
+    const [shippingOptions, setShippingOptions] = useState([]);
+    const [selectedOption, setSelectedOption] = useState(null);
+    const [costsGet, setCostsGet] = useState(null);
+    const [errors, setErrors] = useState({});
+    const [searchInput, setSearchInput] = useState("");
+    const [expandedCharacteristics, setExpandedCharacteristics] =
+        useState(false);
+
+    // Estados para cupones mejorados
+    const [couponCode, setCouponCode] = useState("");
+    const [appliedCoupon, setAppliedCoupon] = useState(null);
+    // El descuento del cupón se calcula sobre el total real, no solo el subtotal
+    const [couponDiscount, setCouponDiscount] = useState(0); // solo para compatibilidad visual
+    const [couponLoading, setCouponLoading] = useState(false);
+    const [couponError, setCouponError] = useState("");
+
+    // Estados para retiro en tienda
+    const [selectedStore, setSelectedStore] = useState(null);
+    const [showStoreSelector, setShowStoreSelector] = useState(false);
+
+    // Estado para modal de login
+    const [showLoginModal, setShowLoginModal] = useState(false);
+
+    // Estado para la comisión del método de pago
+    const [paymentCommission, setPaymentCommission] = useState(0);
+    const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(null);
+
+    // Cargar los departamentos al iniciar el componente
+    const numericSubTotal =
+        typeof subTotal === "number" ? subTotal : parseFloat(subTotal) || 0;
+    const numericIgv = typeof igv === "number" ? igv : parseFloat(igv) || 0;
+    const hasShippingFree = parseFloat(getContact("shipping_free"));
+
+    const subFinal =
+        numericSubTotal + numericIgv - descuentofinal - autoDiscountTotal;
+
+    // Debug: Verificar que la configuración de costos adicionales se cargue correctamente
+    useEffect(() => {
+        console.log(
+            "🔍 Configuración de costos adicionales:",
+            General.additional_shipping_costs,
+        );
+        console.log("📦 Subtotal actual:", subTotal);
+    }, []);
+
+    // Función de validación mejorada con alertas específicas
+    const validateForm = () => {
+        const newErrors = {};
+
+        // Validación de campos obligatorios
+        if (!formData.name) newErrors.name = "Nombre es requerido";
+        if (!formData.lastname) newErrors.lastname = "Apellido es requerido";
+        if (!formData.email) newErrors.email = "Email es requerido";
+        if (!formData.phone) newErrors.phone = "Teléfono es requerido";
+        if (!formData.ubigeo) newErrors.ubigeo = "Ubicación es requerida";
+        if (!formData.address) newErrors.address = "Dirección es requerida";
+        if (!formData.number) newErrors.number = "Número es requerido";
+        if (!formData.document) newErrors.document = "Documento es requerido";
+
+        // Validación de email
+        if (formData.email && !/\S+@\S+\.\S+/.test(formData.email)) {
+            newErrors.email = "Email inválido";
+        }
+
+        // Validación de documento según tipo
+        if (formData.document) {
+            if (
+                formData.documentType === "dni" &&
+                formData.document.length !== 8
+            ) {
+                newErrors.document = "DNI debe tener 8 dígitos";
+            } else if (
+                formData.documentType === "ruc" &&
+                formData.document.length !== 11
+            ) {
+                newErrors.document = "RUC debe tener 11 dígitos";
+            }
+        }
+
+        // Validación de razón social para factura
+        if (formData.invoiceType === "factura" && !formData.businessName) {
+            newErrors.businessName = "Razón social es requerida para factura";
+        }
+
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
+    };
+
+    // Función para manejar la selección de tienda
+    const handleStoreSelect = (store) => {
+        setSelectedStore(store);
+        // No ocultamos el selector para que el usuario pueda ver todas las opciones
+        setFormData((prev) => ({
+            ...prev,
+            shippingOption: "pickup",
+            address: store.address,
+            department: store.department,
+            province: store.province,
+            district: store.district,
+        }));
+    };
+
+    // Función para enfocar el primer campo con error y hacer scroll suave
+    const focusFirstError = (errors) => {
+        const firstErrorKey = Object.keys(errors)[0];
+
+        setTimeout(() => {
+            let targetElement = null;
+
+            if (firstErrorKey === "ubigeo") {
+                targetElement = document.getElementById(
+                    "ubigeo-select-container",
+                );
+            } else if (firstErrorKey === "phone_prefix") {
+                targetElement = document
+                    .querySelector('[name="phone_prefix"]')
+                    ?.closest(".flex");
+            } else {
+                targetElement = document.querySelector(
+                    `[name="${firstErrorKey}"]`,
+                );
+            }
+
+            if (targetElement) {
+                highlightElement(targetElement);
+
+                // Scroll suave al elemento
+                targetElement.scrollIntoView({
+                    behavior: "smooth",
+                    block: "center",
+                });
+
+                // Enfocar si es un input
+                if (
+                    ["INPUT", "SELECT", "TEXTAREA"].includes(
+                        targetElement.tagName,
+                    )
+                ) {
+                    targetElement.focus();
+                }
+            }
+        }, 100);
+    };
+
+    // Función auxiliar para agregar efecto visual temporal a un elemento
+    const highlightElement = (element) => {
+        element.classList.add("highlight-error");
+        setTimeout(() => element.classList.remove("highlight-error"), 2000);
+    };
+
+    const handleUbigeoChange = async (selected) => {
+        if (!selected) return;
+
+        setErrors((prev) => ({ ...prev, ubigeo: "" }));
+        const { data } = selected;
+
+        setFormData((prev) => ({
+            ...prev,
+            department: data.departamento,
+            province: data.provincia,
+            district: data.distrito,
+            ubigeo: data.reniec || data.inei,
+        }));
+
+        setLoading(true);
+        try {
+            // Calcular el total del carrito para la lógica condicional
+            const cartTotal = cart.reduce(
+                (sum, item) => sum + item.final_price * item.quantity,
+                0,
+            );
+
+            const response = await DeliveryPricesRest.getShippingCost({
+                ubigeo: data.reniec || data.inei,
+                cart_total: cartTotal, // Enviar el total del carrito
+            });
+
+            const options = [];
+
+            // 1. ENVÍO GRATIS: SOLO para zonas con is_free=true Y que califiquen por monto
+            if (
+                response.data.is_free &&
+                response.data.qualifies_free_shipping
+            ) {
+                options.push({
+                    type: "free",
+                    price: 0,
+                    description: response.data.standard.description,
+                    deliveryType: response.data.standard.type,
+                    characteristics: response.data.standard.characteristics,
+                });
+            }
+
+            // 2. ENVÍO NORMAL: Si existe standard Y está habilitado (is_standard), agregarlo (excepto para zonas is_free que califican para gratis)
+            if (response.data.is_standard && response.data.standard) {
+                // Solo agregar envío normal si NO es zona gratis que califica, o si es zona gratis que NO califica
+                if (
+                    !response.data.is_free ||
+                    (response.data.is_free &&
+                        !response.data.qualifies_free_shipping)
+                ) {
+                    // Limpiar cualquier mención de "envío gratis" en la descripción si NO es zona is_free
+                    let cleanDescription = response.data.standard.description;
+                    if (!response.data.is_free) {
+                        // Para zonas que NO son is_free, remover cualquier mención de envío gratis
+                        cleanDescription = cleanDescription
+                            .replace(/envío gratis.*?/gi, "")
+                            .replace(/envio gratis.*?/gi, "")
+                            .replace(/gratis.*?compras.*?/gi, "")
+                            .replace(/mayor.*?200.*?/gi, "")
+                            .replace(/200.*?mayor.*?/gi, "")
+                            .replace(/\s+/g, " ") // Limpiar espacios extras
+                            .trim();
+
+                        // Si queda vacío, usar una descripción por defecto
+                        if (!cleanDescription) {
+                            cleanDescription = "Delivery a domicilio";
+                        }
+                    }
+
+                    options.push({
+                        type: "standard",
+                        price: response.data.standard.price,
+                        description: cleanDescription,
+                        deliveryType: response.data.standard.type,
+                        characteristics: response.data.standard.characteristics,
+                    });
+                }
+            }
+
+            // 3. ENVÍO EXPRESS: Si existe express, siempre agregarlo
+            if (response.data.express && response.data.express.price > 0) {
+                options.push({
+                    type: "express",
+                    price: response.data.express.price,
+                    description: response.data.express.description,
+                    deliveryType: response.data.express.type,
+                    characteristics: response.data.express.characteristics,
+                });
+            }
+
+            // 4. ENVÍO AGENCIA: Si existe agency, agregarlo
+            if (response.data.is_agency && response.data.agency) {
+                const agencyPrice = response.data.agency.price || 0;
+                const isPaymentOnDelivery =
+                    response.data.agency.payment_on_delivery || false;
+                const needsConsultation =
+                    response.data.needs_consultation || false;
+
+                options.push({
+                    type: "agency",
+                    price: agencyPrice,
+                    description: response.data.agency.description,
+                    deliveryType: response.data.agency.type,
+                    characteristics: response.data.agency.characteristics,
+                    paymentOnDelivery: isPaymentOnDelivery,
+                    showConsultButton: needsConsultation, // Mostrar botón de consulta si no tiene cobertura
+                });
+            }
+
+            // 5. RETIRO EN TIENDA: Si está disponible, agregarlo
+            if (response.data.is_store_pickup && response.data.store_pickup) {
+                options.push({
+                    type: "store_pickup",
+                    price: 0,
+                    description: response.data.store_pickup.description,
+                    deliveryType: response.data.store_pickup.type,
+                    characteristics: response.data.store_pickup.characteristics,
+                    selectedStores: response.data.store_pickup.selected_stores, // IDs de tiendas específicas o null/[] para todas
+                });
+            }
+
+            if (options.length === 0) {
+                throw new Error("No hay opciones de envío disponibles");
+            }
+
+            setShippingOptions(options);
+            setSelectedOption(options[0]?.type || null);
+            setEnvio(options[0]?.price || 0);
+
+            // Calcular costo adicional para la primera opción seleccionada automáticamente
+            // Usamos subTotal + igv (total) para comparar contra el monto mínimo de la regla
+            try {
+                if (options[0]?.type && calculateAdditionalShippingCost) {
+                    const totalAmount = parseFloat(subTotal) + parseFloat(igv);
+                    const additionalCost = calculateAdditionalShippingCost(
+                        options[0].type,
+                        totalAmount,
+                    );
+                    setAdditionalShippingCost(additionalCost.cost);
+                    setAdditionalShippingDescription(
+                        additionalCost.description,
+                    );
+                    setSelectedDeliveryMethod(options[0].type);
+                }
+            } catch (additionalCostError) {
+                console.error(
+                    "Error calculando costo adicional:",
+                    additionalCostError,
+                );
+                // No hacer nada, continuar sin costo adicional
+            }
+        } catch (error) {
+            console.error("Error al obtener precios de envío:", error);
+            toast.error("Sin cobertura", {
+                description: `No realizamos envíos a esta ubicación`,
+                icon: <CircleX className="h-5 w-5 text-red-500" />,
+                duration: 3000,
+                position: "top-right",
+            });
+
+            setShippingOptions([]);
+            setSelectedOption(null);
+            setEnvio(0);
+            setAdditionalShippingCost(0);
+            setAdditionalShippingDescription("");
+            setSelectedDeliveryMethod(null);
+        }
+        setLoading(false);
+    };
+
+    useEffect(() => {
+        if (selectedUbigeo) {
+            handleUbigeoChange(selectedUbigeo);
+        }
+    }, [cart, subTotal, descuentofinal]);
+
+    const loadOptions = useCallback(
+        debounce((inputValue, callback) => {
+            if (inputValue.length < 3) {
+                callback([]);
+                return;
+            }
+
+            fetch(`/api/ubigeo/search?q=${encodeURIComponent(inputValue)}`)
+                .then((response) => {
+                    if (!response.ok) throw new Error("Error en la respuesta");
+                    return response.json();
+                })
+                .then((data) => {
+                    const options = data.map((item) => ({
+                        value: item.reniec,
+                        label: `${item.distrito}, ${item.provincia}, ${item.departamento}`,
+                        data: {
+                            inei: item.inei,
+                            reniec: item.reniec,
+                            departamento: item.departamento,
+                            provincia: item.provincia,
+                            distrito: item.distrito,
+                        },
+                    }));
+                    callback(options);
+                })
+                .catch((error) => {
+                    console.error("Error:", error);
+                    callback([]);
+                });
+        }, 300),
+        [],
+    );
+
+    // Filtrar provincias cuando se selecciona un departamento
+    // useEffect(() => {
+    //     if (departamento) {
+    //         const filteredProvincias = [
+    //             ...new Set(
+    //                 ubigeoData
+    //                     .filter((item) => item.departamento === departamento)
+    //                     .map((item) => item.provincia)
+    //             ),
+    //         ];
+    //         setProvincias(filteredProvincias);
+    //         setProvincia(""); // Reiniciar provincia
+    //         setDistrito(""); // Reiniciar distrito
+    //         setDistritos([]); // Limpiar distritos
+    //         setFormData((prev) => ({
+    //             ...prev,
+    //             department: departamento,
+    //             province: "",
+    //             district: "",
+    //         }));
+    //     }
+    // }, [departamento]);
+
+    // Filtrar distritos cuando se selecciona una provincia
+    // useEffect(() => {
+    //     if (provincia) {
+    //         const filteredDistritos = ubigeoData
+    //             .filter(
+    //                 (item) =>
+    //                     item.departamento === departamento &&
+    //                     item.provincia === provincia
+    //             )
+    //             .map((item) => item.distrito);
+    //         setDistritos(filteredDistritos);
+    //         setDistrito(""); // Reiniciar distrito
+    //         setFormData((prev) => ({
+    //             ...prev,
+    //             province: provincia,
+    //             district: "",
+    //         }));
+    //     }
+    // }, [provincia]);
+
+    // Consultar el precio de envío cuando se selecciona un distrito
+    // useEffect(() => {
+    //     if (distrito) {
+    //         setFormData((prev) => ({ ...prev, district: distrito }));
+
+    //         // Llamar a la API para obtener el precio de envío
+    //         const fetchShippingCost = async () => {
+    //             try {
+    //                 const response = await DeliveryPricesRest.getShippingCost({
+    //                     department: departamento,
+    //                     district: distrito,
+    //                 });
+    //                 setEnvio(response.data.price);
+    //                 if (Number2Currency(response.data.price) > 0) {
+    //                     setSelectedOption("express");
+    //                 } else {
+    //                     setSelectedOption("free");
+    //                 }
+    //             } catch (error) {
+    //                 console.error("Error fetching shipping cost:", error);
+    //                 alert("No se pudo obtener el costo de envío.");
+    //             }
+    //         };
+
+    //         fetchShippingCost();
+    //     }
+    // }, [distrito]);
+
+    const handlePayment = async (e) => {
+        if (e && e.preventDefault) {
+            e.preventDefault();
+        }
+
+        if (!user) {
+            setShowLoginModal(true);
+            return;
+        }
+
+        if (!validateForm()) {
+            focusFirstError(errors);
+            return;
+        }
+
+        if (!selectedOption) {
+            toast.error("Seleccione envío", {
+                description: `Debe elegir un método de envío`,
+                icon: <CircleX className="h-5 w-5 text-red-500" />,
+                duration: 3000,
+                position: "bottom-center",
+            });
+            return;
+        }
+
+        if (!window.MercadoPago) {
+            console.error("❌ MercadoPago aún no se ha cargado.");
+            return;
+        }
+
+        try {
+            // Obtener el delivery_type del shipping option seleccionado
+            const selectedShippingOption = shippingOptions.find(
+                (option) => option.type === selectedOption,
+            );
+            const deliveryType = selectedShippingOption
+                ? selectedShippingOption.deliveryType
+                : "domicilio";
+
+            const request = {
+                user_id: user?.id || "",
+                name: formData?.name || "",
+                lastname: formData?.lastname || "",
+                fullname: `${formData?.name} ${formData?.lastname}`,
+                phone_prefix: formData?.phone_prefix || "51",
+                email: formData?.email || "",
+                phone: formatPhoneNumber(
+                    formData.phone_prefix || "51",
+                    formData.phone,
+                ),
+                country: "Perú",
+                department: formData?.department || "",
+                province: formData?.province || "",
+                district: formData?.district || "",
+                ubigeo: formData?.ubigeo || "",
+                address: formData?.address || "",
+                number: formData?.number || "",
+                comment: formData?.comment || "",
+                reference: formData?.reference || "",
+                amount: finalTotalWithCoupon || 0,
+                delivery: envio,
+                delivery_type: deliveryType, // Agregar delivery_type
+                // Costos adicionales de envío
+                additional_shipping_cost: roundToTwoDecimals(
+                    additionalShippingCost || 0,
+                ),
+                additional_shipping_description:
+                    additionalShippingDescription || "",
+                cart: cart,
+                invoiceType: formData.invoiceType || "",
+                documentType: formData.documentType || "",
+                document: formData.document || "",
+                businessName: formData.businessName || "",
+                // Agregar descuentos automáticos
+                automatic_discounts: autoDiscounts,
+                automatic_discount_total: autoDiscountTotal,
+                applied_promotions: autoDiscounts,
+                promotion_discount: autoDiscountTotal || 0,
+                coupon_id: coupon ? coupon.id : null,
+                coupon_discount: descuentofinal || 0,
+                total_amount: finalTotalWithCoupon || 0,
+            };
+
+            const response = await processMercadoPagoPayment(request);
+            const data = response;
+
+            if (data.status) {
+                setSale(data.sale);
+                setDelivery(data.delivery);
+                setCode(data.code);
+
+                // Ejecutar scripts de conversión si existen
+                if (data.conversion_scripts) {
+                    // Guardar en el estado si se proporcionó la función
+                    if (setConversionScripts) {
+                        setConversionScripts(data.conversion_scripts);
+                    }
+
+                    // Ejecutar directamente
+                    if (Array.isArray(data.conversion_scripts)) {
+                        data.conversion_scripts.forEach((script) => {
+                            try {
+                                eval(script);
+                            } catch (error) {
+                                console.error(
+                                    "Error executing conversion script:",
+                                    error,
+                                );
+                            }
+                        });
+                    }
+                }
+
+                // Llamar callback de compra completada
+                if (onPurchaseComplete) {
+                    onPurchaseComplete(data);
+                }
+            } else {
+                toast.error("Error en el Pago", {
+                    description: "El pago ha sido rechazado",
+                    icon: <CircleX className="h-5 w-5 text-red-500" />,
+                    duration: 3000,
+                    position: "bottom-center",
+                });
+            }
+        } catch (error) {
+            toast.error("Error en el Pago", {
+                description: "No se llegó a procesar el pago",
+                icon: <CircleX className="h-5 w-5 text-red-500" />,
+                duration: 3000,
+                position: "bottom-center",
+            });
+        }
+    };
+
+    const [showPaymentModal, setShowPaymentModal] = useState(false);
+    const [showOpenPayModal, setShowOpenPayModal] = useState(false);
+    const [openPayTokenData, setOpenPayTokenData] = useState(null);
+    const [showVoucherModal, setShowVoucherModal] = useState(false);
+    const [showVoucherModalBancs, setShowVoucherModalBancs] = useState(false);
+    const [currentPaymentMethod, setCurrentPaymentMethod] = useState(null);
+    const [paymentRequest, setPaymentRequest] = useState(null);
+
+    const handleContinueClick = (e) => {
+        e.preventDefault();
+
+        if (e && e.preventDefault) {
+            e.preventDefault();
+        }
+
+        if (!user) {
+            setShowLoginModal(true);
+            return;
+        }
+
+        if (!validateForm()) {
+            focusFirstError(errors);
+            return;
+        }
+
+        if (!selectedOption) {
+            toast.error("Seleccione envío", {
+                description: `Debe elegir un método de envío`,
+                icon: <CircleX className="h-5 w-5 text-red-500" />,
+                duration: 3000,
+                position: "bottom-center",
+            });
+            return;
+        }
+
+        setShowPaymentModal(true);
+    };
+
+    const validateFormOld = () => {
+        const newErrors = {};
+
+        // Validación de campos
+        if (!formData.name) newErrors.name = "Nombre es requerido";
+        if (!formData.lastname) newErrors.lastname = "Apellido es requerido";
+        if (!formData.email) newErrors.email = "Email es requerido";
+        if (!formData.phone) newErrors.phone = "Teléfono es requerido";
+        if (!formData.ubigeo) newErrors.ubigeo = "Ubigeo es requerido";
+        if (!formData.address) newErrors.address = "Dirección es requerida";
+        if (!formData.document) newErrors.document = "Documento es requerido";
+        if (!formData.number) newErrors.number = "Numero es requerido";
+
+        setErrors(newErrors);
+
+        // Función de smooth scroll personalizada
+        const smoothScroll = (targetElement, duration = 800) => {
+            const targetPosition =
+                targetElement.getBoundingClientRect().top +
+                window.pageYOffset -
+                window.innerHeight / 2 +
+                targetElement.offsetHeight / 2;
+
+            const startPosition = window.pageYOffset;
+            let startTime = null;
+
+            const animation = (currentTime) => {
+                if (startTime === null) startTime = currentTime;
+                const timeElapsed = currentTime - startTime;
+
+                const easeInOutQuad = (t, b, c, d) => {
+                    t /= d / 2;
+                    if (t < 1) return (c / 2) * t * t + b;
+                    t--;
+                    return (-c / 2) * (t * (t - 2) - 1) + b;
+                };
+
+                const run = easeInOutQuad(
+                    timeElapsed,
+                    startPosition,
+                    targetPosition - startPosition,
+                    duration,
+                );
+                window.scrollTo(0, run);
+
+                if (timeElapsed < duration) {
+                    requestAnimationFrame(animation);
+                } else {
+                    if (
+                        ["INPUT", "SELECT", "TEXTAREA"].includes(
+                            targetElement.tagName,
+                        )
+                    ) {
+                        targetElement.focus();
+                    }
+                }
+            };
+
+            requestAnimationFrame(animation);
+        };
+
+        // Si hay errores, hacer scroll al primero
+        if (Object.keys(newErrors).length > 0) {
+            const firstErrorKey = Object.keys(newErrors)[0];
+
+            setTimeout(() => {
+                let targetElement = null;
+
+                if (firstErrorKey === "ubigeo") {
+                    targetElement = document.getElementById(
+                        "ubigeo-select-container",
+                    );
+                } else if (firstErrorKey === "phone_prefix") {
+                    targetElement = document
+                        .querySelector('[name="phone_prefix"]')
+                        ?.closest(".flex");
+                } else {
+                    targetElement = document.querySelector(
+                        `[name="${firstErrorKey}"]`,
+                    );
+                }
+
+                if (targetElement) {
+                    // Aplicar clase de error temporal
+                    targetElement.classList.add("highlight-error");
+                    setTimeout(
+                        () => targetElement.classList.remove("highlight-error"),
+                        2000,
+                    );
+
+                    // Scroll personalizado
+                    smoothScroll(targetElement, 600);
+                }
+            }, 100);
+        }
+
+        return Object.keys(newErrors).length === 0;
+    };
+
+    const handlePaymentComplete = async (paymentMethod) => {
+        // Cambiado de 'method' a 'paymentMethod'
+        try {
+            // Establecer la comisión según el método de pago seleccionado
+            let commission = 0;
+            switch (paymentMethod) {
+                case "tarjeta":
+                    commission = parseFloat(
+                        Global.get("checkout_mercadopago_commission") || 0,
+                    );
+                    break;
+                case "culqi":
+                    commission = parseFloat(
+                        Global.get("checkout_culqi_commission") || 0,
+                    );
+                    break;
+                case "openpay":
+                    commission = parseFloat(
+                        Global.get("checkout_openpay_commission") || 0,
+                    );
+                    break;
+                case "yape":
+                    commission = parseFloat(
+                        Global.get("checkout_dwallet_commission") || 0,
+                    );
+                    break;
+                case "transferencia":
+                    commission = parseFloat(
+                        Global.get("checkout_transfer_commission") || 0,
+                    );
+                    break;
+                default:
+                    commission = 0;
+            }
+            setPaymentCommission(commission);
+            setSelectedPaymentMethod(paymentMethod);
+
+            setShowPaymentModal(false);
+            setCurrentPaymentMethod(paymentMethod);
+
+            // Si es OpenPay, abrir el modal para capturar datos de tarjeta
+            if (paymentMethod === "openpay") {
+                setShowOpenPayModal(true);
+                return; // Detener aquí, el modal manejará el resto
+            }
+
+            if (paymentMethod === "tarjeta") {
+                // Procesar pago con tarjeta (MercadoPago)
+                if (!window.MercadoPago) {
+                    console.error("❌ MercadoPago aún no se ha cargado.");
+                    return;
+                }
+
+                // Obtener el delivery_type del shipping option seleccionado
+                const selectedShippingOption = shippingOptions.find(
+                    (option) => option.type === selectedOption,
+                );
+                const deliveryType = selectedShippingOption
+                    ? selectedShippingOption.deliveryType
+                    : "domicilio";
+
+                // Calcular el total con comisión
+                const mercadopagoCommission = parseFloat(
+                    Global.get("checkout_mercadopago_commission") || 0,
+                );
+                const totalBeforeCommissionCalc = Math.max(
+                    0,
+                    roundToTwoDecimals(totalBase - calculatedCouponDiscount),
+                );
+                const commissionAmount = roundToTwoDecimals(
+                    totalBeforeCommissionCalc * (mercadopagoCommission / 100),
+                );
+                const finalTotalWithCommission = Math.max(
+                    0,
+                    roundToTwoDecimals(
+                        totalBeforeCommissionCalc + commissionAmount,
+                    ),
+                );
+
+                const request = {
+                    user_id: user?.id || "",
+                    name: formData?.name || "",
+                    lastname: formData?.lastname || "",
+                    fullname: `${formData?.name} ${formData?.lastname}`,
+                    phone_prefix: formData?.phone_prefix || "51",
+                    email: formData?.email || "",
+                    phone: formatPhoneNumber(
+                        formData.phone_prefix || "51",
+                        formData.phone,
+                    ),
+                    country: "Perú",
+                    department: formData?.department || "",
+                    province: formData?.province || "",
+                    district: formData?.district || "",
+                    ubigeo: formData?.ubigeo || "",
+                    address: formData?.address || "",
+                    number: formData?.number || "",
+                    comment: formData?.comment || "",
+                    reference: formData?.reference || "",
+                    amount: formatAmountForAPI(finalTotalWithCommission),
+                    perception_amount: formatAmountForAPI(perception),
+                    packaging_amount: formatAmountForAPI(packagingAmount),
+                    packaging_id: selectedPackaging?.id || null,
+                    delivery: formatAmountForAPI(envio),
+                    delivery_type: deliveryType, // Agregar delivery_type
+                    // Costos adicionales de envío
+                    additional_shipping_cost: formatAmountForAPI(
+                        additionalShippingCost,
+                    ),
+                    additional_shipping_description:
+                        additionalShippingDescription || "",
+                    cart: cart,
+                    invoiceType: formData.invoiceType || "",
+                    documentType: formData.documentType || "",
+                    document: formData.document || "",
+                    businessName: formData.businessName || "",
+                    payment_method: paymentMethod || null,
+                    // Cupón aplicado
+                    coupon_id: appliedCoupon ? appliedCoupon.id : null,
+                    coupon_discount: formatAmountForAPI(
+                        calculatedCouponDiscount,
+                    ),
+                    // Comisión del método de pago
+                    payment_commission: formatAmountForAPI(commissionAmount),
+                    payment_commission_percentage: formatAmountForAPI(
+                        mercadopagoCommission,
+                    ),
+                    // Descuentos automáticos
+                    automatic_discounts: autoDiscounts,
+                    automatic_discount_total:
+                        formatAmountForAPI(autoDiscountTotal),
+                    applied_promotions: autoDiscounts,
+                    promotion_discount: formatAmountForAPI(autoDiscountTotal),
+                    total_amount: formatAmountForAPI(finalTotalWithCommission),
+                    perception_amount: formatAmountForAPI(perception),
+                    packaging_amount: formatAmountForAPI(packagingAmount),
+                    packaging_id: selectedPackaging?.id || null,
+                };
+
+                try {
+                    const response = await processMercadoPagoPayment(request);
+                    const data = response;
+
+                    if (data.status) {
+                        setSale(data.sale);
+                        setDelivery(data.delivery);
+                        setCode(data.code);
+
+                        // Ejecutar scripts de conversión si existen
+                        if (
+                            conversionScripts &&
+                            Array.isArray(conversionScripts)
+                        ) {
+                            conversionScripts.forEach((script) => {
+                                try {
+                                    eval(script);
+                                } catch (error) {
+                                    console.error(
+                                        "Error executing conversion script:",
+                                        error,
+                                    );
+                                }
+                            });
+                        }
+
+                        // Llamar callback de compra completada
+                        if (onPurchaseComplete) {
+                            onPurchaseComplete(data);
+                        }
+                    } else {
+                        toast.error("Error en el Pago", {
+                            description: `El pago ha sido rechazado`,
+                            icon: <CircleX className="h-5 w-5 text-red-500" />,
+                            duration: 3000,
+                            position: "bottom-center",
+                        });
+                    }
+                } catch (error) {
+                    toast.error("Error en el Pago", {
+                        description: `No se llegó a procesar el pago`,
+                        icon: <CircleX className="h-5 w-5 text-red-500" />,
+                        duration: 3000,
+                        position: "bottom-center",
+                    });
+                }
+            } else if (paymentMethod === "culqi") {
+                // Procesar pago con Culqi
+                setPaymentLoading(true);
+
+                try {
+                    // Verificar que Culqi esté habilitado
+                    if (!Global.CULQI_ENABLED) {
+                        toast.error("Método de pago no disponible", {
+                            description:
+                                "El procesamiento de pagos con Culqi está temporalmente deshabilitado",
+                            icon: <CircleX className="h-5 w-5 text-red-500" />,
+                            duration: 4000,
+                            position: "top-center",
+                        });
+                        setPaymentLoading(false);
+                        return;
+                    }
+
+                    if (!Global.CULQI_PUBLIC_KEY) {
+                        toast.error("Error de configuración", {
+                            description:
+                                "El sistema de pagos Culqi no está configurado correctamente",
+                            icon: <CircleX className="h-5 w-5 text-red-500" />,
+                            duration: 4000,
+                            position: "top-center",
+                        });
+                        setPaymentLoading(false);
+                        return;
+                    }
+
+                    // Obtener el delivery_type del shipping option seleccionado
+                    const selectedShippingOption = shippingOptions.find(
+                        (option) => option.type === selectedOption,
+                    );
+                    const deliveryType = selectedShippingOption
+                        ? selectedShippingOption.deliveryType
+                        : "domicilio";
+
+                    // Calcular el total con comisión
+                    const culqiCommission = parseFloat(
+                        Global.get("checkout_culqi_commission") || 0,
+                    );
+                    const totalBeforeCommissionCalc = Math.max(
+                        0,
+                        roundToTwoDecimals(
+                            totalBase - calculatedCouponDiscount,
+                        ),
+                    );
+                    const commissionAmount = roundToTwoDecimals(
+                        totalBeforeCommissionCalc * (culqiCommission / 100),
+                    );
+                    const finalTotalWithCommission = Math.max(
+                        0,
+                        roundToTwoDecimals(
+                            totalBeforeCommissionCalc + commissionAmount,
+                        ),
+                    );
+
+                    const request = {
+                        user_id: user?.id || "",
+                        name: formData?.name || "",
+                        lastname: formData?.lastname || "",
+                        fullname: `${formData?.name} ${formData?.lastname}`,
+                        phone_prefix: formData?.phone_prefix || "51",
+                        email: formData?.email || "",
+                        phone: formatPhoneNumber(
+                            formData.phone_prefix || "51",
+                            formData.phone,
+                        ),
+                        country: "Perú",
+                        department: formData?.department || "",
+                        province: formData?.province || "",
+                        district: formData?.district || "",
+                        ubigeo: formData?.ubigeo || "",
+                        address: formData?.address || "",
+                        number: formData?.number || "",
+                        comment: formData?.comment || "",
+                        reference: formData?.reference || "",
+                        amount: formatAmountForAPI(finalTotalWithCommission),
+                        perception_amount: formatAmountForAPI(perception),
+                        packaging_amount: formatAmountForAPI(packagingAmount),
+                        packaging_id: selectedPackaging?.id || null,
+                        delivery: formatAmountForAPI(envio),
+                        perception_amount: formatAmountForAPI(perception),
+                        packaging_amount: formatAmountForAPI(packagingAmount),
+                        packaging_id: selectedPackaging?.id || null,
+                        delivery_type: deliveryType,
+                        // Costos adicionales de envío
+                        additional_shipping_cost: formatAmountForAPI(
+                            additionalShippingCost,
+                        ),
+                        additional_shipping_description:
+                            additionalShippingDescription || "",
+                        cart: cart,
+                        invoiceType: formData.invoiceType || "",
+                        documentType: formData.documentType || "",
+                        document: formData.document || "",
+                        businessName: formData.businessName || "",
+                        payment_method: "culqi",
+                        // Cupón aplicado
+                        coupon_id: appliedCoupon ? appliedCoupon.id : null,
+                        coupon_discount: formatAmountForAPI(
+                            calculatedCouponDiscount,
+                        ),
+                        // Comisión del método de pago
+                        payment_commission:
+                            formatAmountForAPI(commissionAmount),
+                        payment_commission_percentage:
+                            formatAmountForAPI(culqiCommission),
+                        // Descuentos automáticos
+                        automatic_discounts: autoDiscounts,
+                        automatic_discount_total:
+                            formatAmountForAPI(autoDiscountTotal),
+                        applied_promotions: autoDiscounts,
+                        promotion_discount:
+                            formatAmountForAPI(autoDiscountTotal),
+                        total_amount: formatAmountForAPI(
+                            finalTotalWithCommission,
+                        ),
+                    };
+
+                    const response = await processCulqiPayment(request);
+
+                    if (response.status) {
+                        setSale(response.sale);
+                        setDelivery(response.delivery);
+                        setCode(response.code);
+
+                        // Capturar scripts de conversión si están disponibles
+                        if (response.conversion_scripts) {
+                            setConversionScripts(response.conversion_scripts);
+
+                            // Llamar al callback de compra completada si está disponible
+                            if (onPurchaseComplete) {
+                                try {
+                                    await onPurchaseComplete(
+                                        response.sale_id,
+                                        response.conversion_scripts,
+                                    );
+                                } catch (callbackError) {
+                                    console.error(
+                                        "❌ Error en callback onPurchaseComplete:",
+                                        callbackError,
+                                    );
+                                }
+                            }
+                        }
+
+                        setCart([]);
+                        onContinue();
+                    } else {
+                        toast.error("Error en el pago", {
+                            description: response.message || "Pago rechazado",
+                            icon: <CircleX className="h-5 w-5 text-red-500" />,
+                            duration: 3000,
+                            position: "bottom-center",
+                        });
+                    }
+                } catch (error) {
+                    console.error("💥 Error en pago Culqi:", error);
+                    // No mostrar error si el usuario canceló el pago
+                    if (error !== "Pago cancelado por el usuario") {
+                        toast.error("Error en el Pago", {
+                            description:
+                                error.message ||
+                                error ||
+                                "No se pudo procesar el pago",
+                            icon: <CircleX className="h-5 w-5 text-red-500" />,
+                            duration: 3000,
+                            position: "bottom-center",
+                        });
+                    }
+                } finally {
+                    setPaymentLoading(false);
+                }
+            } else if (paymentMethod === "yape") {
+                // Obtener el delivery_type del shipping option seleccionado
+                const selectedShippingOption = shippingOptions.find(
+                    (option) => option.type === selectedOption,
+                );
+                const deliveryType = selectedShippingOption
+                    ? selectedShippingOption.deliveryType
+                    : "domicilio";
+
+                // Calcular el total con comisión
+                const yapeCommission = parseFloat(
+                    Global.get("checkout_dwallet_commission") || 0,
+                );
+                const totalBeforeCommissionCalc = Math.max(
+                    0,
+                    roundToTwoDecimals(totalBase - calculatedCouponDiscount),
+                );
+                const commissionAmount = roundToTwoDecimals(
+                    totalBeforeCommissionCalc * (yapeCommission / 100),
+                );
+                const finalTotalWithCommission = Math.max(
+                    0,
+                    roundToTwoDecimals(
+                        totalBeforeCommissionCalc + commissionAmount,
+                    ),
+                );
+
+                const request = {
+                    user_id: user?.id || "",
+                    name: formData?.name || "",
+                    lastname: formData?.lastname || "",
+                    fullname: `${formData?.name} ${formData?.lastname}`,
+                    phone_prefix: formData?.phone_prefix || "51",
+                    email: formData?.email || "",
+                    phone: formatPhoneNumber(
+                        formData.phone_prefix || "51",
+                        formData.phone,
+                    ),
+                    country: "Perú",
+                    department: formData?.department || "",
+                    province: formData?.province || "",
+                    district: formData?.district || "",
+                    ubigeo: formData?.ubigeo || "",
+                    address: formData?.address || "",
+                    number: formData?.number || "",
+                    comment: formData?.comment || "",
+                    reference: formData?.reference || "",
+                    amount: formatAmountForAPI(finalTotalWithCommission),
+                    perception_amount: formatAmountForAPI(perception),
+                    packaging_amount: formatAmountForAPI(packagingAmount),
+                    packaging_id: selectedPackaging?.id || null,
+                    delivery: formatAmountForAPI(envio),
+                    delivery_type: deliveryType, // Agregar delivery_type
+                    // Costos adicionales de envío
+                    additional_shipping_cost: formatAmountForAPI(
+                        additionalShippingCost,
+                    ),
+                    additional_shipping_description:
+                        additionalShippingDescription || "",
+                    details: JSON.stringify(
+                        cart.map((item) => ({
+                            id: item.id || item.item_id,
+                            quantity: item.quantity,
+                            price: item.final_price || item.price,
+                            type: item.type || 'item'
+                        })),
+                    ),
+                    invoiceType: formData.invoiceType || "",
+                    documentType: formData.documentType || "",
+                    document: formData.document || "",
+                    businessName: formData.businessName || "",
+                    payment_method: paymentMethod || null,
+                    payment_proof: null,
+                    // Cupón aplicado
+                    coupon_id: appliedCoupon ? appliedCoupon.id : null,
+                    coupon_discount: formatAmountForAPI(
+                        calculatedCouponDiscount,
+                    ),
+                    // Comisión del método de pago
+                    payment_commission: formatAmountForAPI(commissionAmount),
+                    payment_commission_percentage:
+                        formatAmountForAPI(yapeCommission),
+                    // Descuentos automáticos
+                    automatic_discounts: autoDiscounts,
+                    automatic_discount_total:
+                        formatAmountForAPI(autoDiscountTotal),
+                    applied_promotions: autoDiscounts,
+                    promotion_discount: formatAmountForAPI(autoDiscountTotal),
+                    total_amount: formatAmountForAPI(finalTotalWithCommission),
+                    igv_amount: formatAmountForAPI(igv), // ENVIAR EL IGV CALCULADO
+                    perception_amount: formatAmountForAPI(perception),
+                    packaging_amount: formatAmountForAPI(packagingAmount),
+                    packaging_id: selectedPackaging?.id || null,
+                };
+
+                setPaymentRequest(request);
+                setShowVoucherModal(true);
+            } else if (paymentMethod === "transferencia") {
+                // Obtener el delivery_type del shipping option seleccionado
+                const selectedShippingOption = shippingOptions.find(
+                    (option) => option.type === selectedOption,
+                );
+                const deliveryType = selectedShippingOption
+                    ? selectedShippingOption.deliveryType
+                    : "domicilio";
+
+                // Calcular el total con comisión
+                const transferenciaCommission = parseFloat(
+                    Global.get("checkout_transfer_commission") || 0,
+                );
+                const totalBeforeCommissionCalc = Math.max(
+                    0,
+                    roundToTwoDecimals(totalBase - calculatedCouponDiscount),
+                );
+                const commissionAmount = roundToTwoDecimals(
+                    totalBeforeCommissionCalc * (transferenciaCommission / 100),
+                );
+                const finalTotalWithCommission = Math.max(
+                    0,
+                    roundToTwoDecimals(
+                        totalBeforeCommissionCalc + commissionAmount,
+                    ),
+                );
+
+                const request = {
+                    user_id: user?.id || "",
+                    name: formData?.name || "",
+                    lastname: formData?.lastname || "",
+                    fullname: `${formData?.name} ${formData?.lastname}`,
+                    phone_prefix: formData?.phone_prefix || "51",
+                    email: formData?.email || "",
+                    phone: formatPhoneNumber(
+                        formData.phone_prefix || "51",
+                        formData.phone,
+                    ),
+                    country: "Perú",
+                    department: formData?.department || "",
+                    province: formData?.province || "",
+                    district: formData?.district || "",
+                    ubigeo: formData?.ubigeo || "",
+                    address: formData?.address || "",
+                    number: formData?.number || "",
+                    comment: formData?.comment || "",
+                    reference: formData?.reference || "",
+                    amount: formatAmountForAPI(finalTotalWithCommission),
+                    perception_amount: formatAmountForAPI(perception),
+                    packaging_amount: formatAmountForAPI(packagingAmount),
+                    packaging_id: selectedPackaging?.id || null,
+                    delivery: formatAmountForAPI(envio),
+                    delivery_type: deliveryType, // Agregar delivery_type
+                    // Costos adicionales de envío
+                    additional_shipping_cost: formatAmountForAPI(
+                        additionalShippingCost,
+                    ),
+                    additional_shipping_description:
+                        additionalShippingDescription || "",
+                    details: JSON.stringify(
+                        cart.map((item) => ({
+                            id: item.id || item.item_id,
+                            quantity: item.quantity,
+                            price: item.final_price || item.price,
+                            type: item.type || 'item'
+                        })),
+                    ),
+                    invoiceType: formData.invoiceType || "",
+                    documentType: formData.documentType || "",
+                    document: formData.document || "",
+                    businessName: formData.businessName || "",
+                    payment_method: paymentMethod || null,
+                    payment_proof: null,
+                    // Cupón aplicado
+                    coupon_id: appliedCoupon ? appliedCoupon.id : null,
+                    coupon_discount: formatAmountForAPI(
+                        calculatedCouponDiscount,
+                    ),
+                    // Comisión del método de pago
+                    payment_commission: formatAmountForAPI(commissionAmount),
+                    payment_commission_percentage: formatAmountForAPI(
+                        transferenciaCommission,
+                    ),
+                    // Descuentos automáticos
+                    automatic_discounts: autoDiscounts,
+                    automatic_discount_total:
+                        formatAmountForAPI(autoDiscountTotal),
+                    applied_promotions: autoDiscounts,
+                    promotion_discount: formatAmountForAPI(autoDiscountTotal),
+                    total_amount: formatAmountForAPI(finalTotalWithCommission),
+                    igv_amount: formatAmountForAPI(igv), // ENVIAR EL IGV CALCULADO
+                    perception_amount: formatAmountForAPI(perception),
+                    packaging_amount: formatAmountForAPI(packagingAmount),
+                    packaging_id: selectedPackaging?.id || null,
+                };
+                setPaymentRequest(request);
+                setShowVoucherModalBancs(true);
+            }
+        } catch (error) {
+            console.error("Error en el pago:", error);
+            toast.error("Error en el Pago", {
+                description: `No se llegó a procesar el pago`,
+                icon: <CircleX className="h-5 w-5 text-red-500" />,
+                duration: 3000,
+                position: "bottom-center",
+            });
+        }
+    };
+
+    // Función para manejar el token de OpenPay
+    const handleOpenPayTokenCreated = async (tokenData) => {
+        try {
+            console.log("💳 Token de OpenPay recibido:", tokenData);
+
+            setOpenPayTokenData(tokenData);
+            setShowOpenPayModal(false);
+            setPaymentLoading(true);
+
+            const selectedShippingOption = shippingOptions.find(
+                (option) => option.type === selectedOption,
+            );
+            const deliveryType = selectedShippingOption
+                ? selectedShippingOption.deliveryType
+                : "domicilio";
+
+            // Calcular el total con comisión
+            console.log("🧮 [OpenPay] Calculando montos:");
+            console.log("   - subTotal:", subTotal, typeof subTotal);
+            console.log("   - igv:", igv, typeof igv);
+            console.log("   - envio:", envio, typeof envio);
+            console.log(
+                "   - autoDiscountTotal:",
+                autoDiscountTotal,
+                typeof autoDiscountTotal,
+            );
+            console.log(
+                "   - totalBase (calculado):",
+                totalBase,
+                typeof totalBase,
+            );
+            console.log(
+                "   - calculatedCouponDiscount:",
+                calculatedCouponDiscount,
+                typeof calculatedCouponDiscount,
+            );
+
+            const openpayCommission = parseFloat(
+                Global.get("checkout_openpay_commission") || 0,
+            );
+            const totalBeforeCommissionCalc = Math.max(
+                0,
+                roundToTwoDecimals(totalBase - calculatedCouponDiscount),
+            );
+            const commissionAmount = roundToTwoDecimals(
+                totalBeforeCommissionCalc * (openpayCommission / 100),
+            );
+            const finalTotalWithCommission = Math.max(
+                0,
+                roundToTwoDecimals(
+                    totalBeforeCommissionCalc + commissionAmount,
+                ),
+            );
+
+            console.log("   - openpayCommission:", openpayCommission + "%");
+            console.log(
+                "   - totalBeforeCommissionCalc:",
+                totalBeforeCommissionCalc,
+            );
+            console.log("   - commissionAmount:", commissionAmount);
+            console.log(
+                "   - finalTotalWithCommission:",
+                finalTotalWithCommission,
+            );
+
+            const request = {
+                user_id: user?.id || "",
+                name: formData?.name || "",
+                lastname: formData?.lastname || "",
+                fullname: `${formData?.name} ${formData?.lastname}`,
+                phone_prefix: formData?.phone_prefix || "51",
+                email: formData?.email || "",
+                phone: formatPhoneNumber(
+                    formData.phone_prefix || "51",
+                    formData.phone,
+                ),
+                country: "Perú",
+                department: formData?.department || "",
+                province: formData?.province || "",
+                district: formData?.district || "",
+                ubigeo: formData?.ubigeo || "",
+                address: formData?.address || "",
+                number: formData?.number || "",
+                comment: formData?.comment || "",
+                reference: formData?.reference || "",
+                amount: formatAmountForAPI(finalTotalWithCommission),
+                perception_amount: formatAmountForAPI(perception),
+                packaging_amount: formatAmountForAPI(packagingAmount),
+                packaging_id: selectedPackaging?.id || null,
+                delivery: formatAmountForAPI(envio),
+                perception_amount: formatAmountForAPI(perception),
+                packaging_amount: formatAmountForAPI(packagingAmount),
+                packaging_id: selectedPackaging?.id || null,
+                delivery_type: deliveryType,
+                // Costos adicionales de envío
+                additional_shipping_cost: formatAmountForAPI(
+                    additionalShippingCost,
+                ),
+                additional_shipping_description:
+                    additionalShippingDescription || "",
+                cart: cart,
+                invoiceType: formData.invoiceType || "",
+                documentType: formData.documentType || "",
+                document: formData.document || "",
+                businessName: formData.businessName || "",
+                payment_method: "openpay",
+                source_id: tokenData.token, // OpenPay usa 'source_id' en lugar de 'token'
+                device_session_id: tokenData.device_session_id,
+                // Cupón aplicado
+                coupon_id: appliedCoupon ? appliedCoupon.id : null,
+                coupon_discount: formatAmountForAPI(calculatedCouponDiscount),
+                // Comisión del método de pago
+                payment_commission: formatAmountForAPI(commissionAmount),
+                payment_commission_percentage:
+                    formatAmountForAPI(openpayCommission),
+                // Descuentos automáticos
+                automatic_discounts: autoDiscounts,
+                automatic_discount_total: formatAmountForAPI(autoDiscountTotal),
+                applied_promotions: autoDiscounts,
+                promotion_discount: formatAmountForAPI(autoDiscountTotal),
+                total_amount: formatAmountForAPI(finalTotalWithCommission),
+                perception_amount: formatAmountForAPI(perception),
+                packaging_amount: formatAmountForAPI(packagingAmount),
+                packaging_id: selectedPackaging?.id || null,
+            };
+
+            console.log("📤 [OpenPay] Valores antes de enviar:");
+            console.log(
+                "   - amount:",
+                request.amount,
+                "(tipo:",
+                typeof request.amount,
+                ")",
+            );
+            console.log(
+                "   - delivery:",
+                request.delivery,
+                "(tipo:",
+                typeof request.delivery,
+                ")",
+            );
+            console.log("   - coupon_discount:", request.coupon_discount);
+            console.log("   - commission:", request.payment_commission);
+            console.log("📤 Enviando request completo al backend:", request);
+
+            const response = await processOpenPayPayment(request);
+            console.log("📥 Respuesta del backend:", response);
+
+            if (response && response.status) {
+                // Guardar los datos de la venta
+                setSale(response.sale);
+                setDelivery(response.delivery);
+                setCode(response.code);
+
+                // Limpiar el carrito
+                setCart([]);
+                localStorage.removeItem("cart");
+
+                // Ejecutar scripts de conversión si existen
+                if (response.conversion_scripts) {
+                    // Guardar en el estado si se proporcionó la función
+                    if (setConversionScripts) {
+                        setConversionScripts(response.conversion_scripts);
+                    }
+
+                    // Ejecutar directamente
+                    if (Array.isArray(response.conversion_scripts)) {
+                        response.conversion_scripts.forEach((script) => {
+                            try {
+                                eval(script);
+                            } catch (error) {
+                                console.error(
+                                    "Error executing conversion script:",
+                                    error,
+                                );
+                            }
+                        });
+                    }
+                }
+
+                // Llamar callback de compra completada
+                if (onPurchaseComplete) {
+                    onPurchaseComplete(response);
+                }
+
+                // Mostrar mensaje de éxito
+                toast.success("¡Pago exitoso!", {
+                    description: "Tu pedido ha sido procesado correctamente",
+                    icon: <CheckCircle className="h-5 w-5 text-green-500" />,
+                    duration: 2000,
+                    position: "bottom-center",
+                });
+
+                // Navegar a la página de éxito después de un breve delay
+                setTimeout(() => {
+                    onContinue(); // Esto navega a la página de confirmación
+                }, 1500);
+            } else {
+                console.error("❌ Error: Respuesta sin status true", response);
+                toast.error("Error en el Pago", {
+                    description:
+                        response?.message || "El pago ha sido rechazado",
+                    icon: <CircleX className="h-5 w-5 text-red-500" />,
+                    duration: 4000,
+                    position: "bottom-center",
+                });
+                setPaymentLoading(false);
+            }
+        } catch (error) {
+            console.error(
+                "❌ Error en OpenPay handleOpenPayTokenCreated:",
+                error,
+            );
+            toast.error("Error en el Pago", {
+                description:
+                    error.message || error || "No se llegó a procesar el pago",
+                icon: <CircleX className="h-5 w-5 text-red-500" />,
+                duration: 4000,
+                position: "bottom-center",
+            });
+            setPaymentLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        // Limpiar errores cuando los campos son modificados
+        setErrors((prev) => {
+            const newErrors = { ...prev };
+            Object.keys(formData).forEach((key) => {
+                if (formData[key]) delete newErrors[key];
+            });
+            return newErrors;
+        });
+    }, [formData]);
+
+    // Función para validar cupón
+    const validateCoupon = async () => {
+        if (!couponCode.trim()) {
+            setCouponError("Ingrese un código de cupón");
+            return;
+        }
+
+        setCouponLoading(true);
+        setCouponError("");
+
+        try {
+            // Mostrar información sobre el cupón antes de validar
+            if (couponCode.toUpperCase() === "TEST50" && subTotal < 100) {
+                toast.warning("Información importante", {
+                    description: `El cupón TEST50 requiere un monto mínimo de ${CurrencySymbol()} 100.00. Tu carrito actual: ${CurrencySymbol()} ${Number2Currency(subTotal)}`,
+                    icon: <AlertTriangle className="h-5 w-5 text-yellow-500" />,
+                    duration: 5000,
+                    position: "bottom-center",
+                });
+            }
+
+            // Extraer IDs de categorías y productos del carrito
+            const categoryIds = [
+                ...new Set(
+                    cart.map((item) => item.category_id).filter(Boolean),
+                ),
+            ];
+            const productIds = [
+                ...new Set(
+                    cart.map((item) => item.id || item.item_id).filter(Boolean),
+                ),
+            ];
+
+            const response = await CouponsRest.validateCoupon({
+                code: couponCode.trim(),
+                cart_total: subTotal,
+                category_ids: categoryIds,
+                product_ids: productIds,
+            });
+
+            // Manejar diferentes estructuras de respuesta
+            const data = response.data || response; // response.data para nueva estructura, response para estructura anterior
+
+            if (data && data.valid) {
+                setAppliedCoupon(data.coupon);
+                // Redondear el descuento a 2 decimales para evitar problemas de precisión
+                const roundedDiscount = Math.round(data.discount * 100) / 100;
+                setCouponDiscount(roundedDiscount);
+                setCouponCode("");
+
+                // Actualizar estados del padre si existen
+                if (setParentCouponCode) setParentCouponCode(data.coupon.code);
+                if (setParentCouponDiscount)
+                    setParentCouponDiscount(roundedDiscount);
+
+                toast.success("Cupón aplicado", {
+                    description: `Descuento de ${CurrencySymbol()} ${Number2Currency(roundedDiscount)} aplicado`,
+                    icon: (
+                        <CheckCircleIcon className="h-5 w-5 text-green-500" />
+                    ),
+                    duration: 3000,
+                    position: "bottom-center",
+                });
+            } else {
+                const errorMessage =
+                    data?.message ||
+                    "Cupón inválido o no aplicable a estos productos";
+                setCouponError(errorMessage);
+
+                // Mejorar el mensaje de error para casos específicos
+                let toastMessage = errorMessage;
+                if (errorMessage.includes("monto mínimo")) {
+                    toastMessage = `${errorMessage} Tu carrito actual: ${CurrencySymbol()} ${Number2Currency(subTotal)}`;
+                }
+
+                toast.error("Cupón inválido", {
+                    description: toastMessage,
+                    icon: <CircleX className="h-5 w-5 text-red-500" />,
+                    duration: 4000,
+                    position: "bottom-center",
+                });
+            }
+        } catch (error) {
+            console.error("Error validating coupon:", error);
+            const errorMessage =
+                error.response?.data?.message || "Error al validar el cupón";
+            setCouponError(errorMessage);
+
+            toast.error("Error de validación", {
+                description: errorMessage,
+                icon: <CircleX className="h-5 w-5 text-red-500" />,
+                duration: 3000,
+                position: "bottom-center",
+            });
+        } finally {
+            setCouponLoading(false);
+        }
+    };
+
+    // Función para remover cupón
+    const removeCoupon = () => {
+        setAppliedCoupon(null);
+        setCouponCode("");
+        setCouponDiscount(0);
+        setCouponError("");
+
+        // Actualizar estados del padre si existen
+        if (setParentCouponCode) setParentCouponCode("");
+        if (setParentCouponDiscount) setParentCouponDiscount(0);
+
+        toast.success("Cupón removido", {
+            description: "El cupón ha sido removido del pedido",
+            icon: <InfoIcon className="h-5 w-5 text-blue-500" />,
+            duration: 2000,
+            position: "bottom-center",
+        });
+    };
+
+    // Función auxiliar para redondear valores monetarios con mayor precisión
+    const roundToTwoDecimals = (num) => {
+        return Math.round((parseFloat(num) + Number.EPSILON) * 100) / 100;
+    };
+
+    // Función para formatear montos para enviar al backend (evita problemas de precisión flotante)
+    const formatAmountForAPI = (num) => {
+        return parseFloat(parseFloat(num || 0).toFixed(2));
+    };
+
+    // Calcular el total base antes de cupón
+    const totalBase = roundToTwoDecimals(
+        roundToTwoDecimals(subTotal) +
+        roundToTwoDecimals(igv) +
+        roundToTwoDecimals(perception) +
+        roundToTwoDecimals(packagingAmount) +
+        roundToTwoDecimals(envio) +
+        roundToTwoDecimals(additionalShippingCost) -
+        roundToTwoDecimals(autoDiscountTotal),
+    );
+
+    // El descuento del cupón ya viene calculado desde el backend
+    let calculatedCouponDiscount = couponDiscount || 0;
+
+    // Calcular comisión del método de pago (sobre el total antes de la comisión)
+    const totalBeforeCommission = Math.max(
+        0,
+        roundToTwoDecimals(totalBase - calculatedCouponDiscount),
+    );
+    const calculatedCommission = roundToTwoDecimals(
+        totalBeforeCommission * (paymentCommission / 100),
+    );
+
+    // Sincronizar el estado para mantener compatibilidad visual
+    useEffect(() => {
+        if (setParentCouponDiscount) {
+            setParentCouponDiscount(calculatedCouponDiscount);
+        }
+    }, [appliedCoupon, couponDiscount, setParentCouponDiscount]);
+
+    const finalTotalWithCoupon = Math.max(
+        0,
+        roundToTwoDecimals(totalBeforeCommission + calculatedCommission),
+    );
+
+    // Componente Modal de Login
+    const LoginModal = () => {
+        return (
+            <ReactModal
+                isOpen={showLoginModal}
+                onRequestClose={() => setShowLoginModal(false)}
+                className="modal-content max-w-md w-full bg-black border border-white/20 p-8 rounded-none text-white relative outline-none"
+                overlayClassName="modal-overlay fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-[999]"
+            >
+                <div className="text-center">
+                    <h2 className="text-xl font-paragraph font-bold uppercase tracking-widest mb-4">
+                        Iniciar Sesión Requerido
+                    </h2>
+                    <p className="text-xs font-paragraph uppercase tracking-wider text-white/50 mb-6">
+                        Debe iniciar sesión para continuar con su compra
+                    </p>
+                    <div className="flex gap-4 justify-center">
+                        <button
+                            onClick={() => setShowLoginModal(false)}
+                            className="px-6 py-2.5 bg-transparent border border-white/20 text-white/60 hover:text-white hover:border-white text-xs font-paragraph uppercase tracking-widest rounded-none transition-all duration-300"
+                        >
+                            Cancelar
+                        </button>
+                        <button
+                            onClick={() => {
+                                setShowLoginModal(false);
+                                window.location.href = "/iniciar-sesion";
+                            }}
+                            className="px-6 py-2.5 bg-white text-black hover:bg-white/90 text-xs font-paragraph uppercase tracking-widest rounded-none transition-all duration-300 font-bold"
+                        >
+                            Iniciar Sesión
+                        </button>
+                    </div>
+                </div>
+            </ReactModal>
+        );
+    };
+
+    const selectStyles = (hasError) => ({
+        control: (base) => ({
+            ...base,
+            backgroundColor: "black",
+            border: `1px solid ${hasError ? "#ef4444" : "rgba(255, 255, 255, 0.2)"}`,
+            boxShadow: "none",
+            minHeight: "50px",
+            "&:hover": { borderColor: hasError ? "#ef4444" : "white" },
+            borderRadius: "0px",
+            padding: "2px 8px",
+            color: "white",
+        }),
+        placeholder: (base) => ({
+            ...base,
+            color: "rgba(255, 255, 255, 0.3)",
+        }),
+        singleValue: (base) => ({
+            ...base,
+            color: "white",
+        }),
+        input: (base) => ({
+            ...base,
+            color: "white",
+        }),
+        menu: (base) => ({
+            ...base,
+            backgroundColor: "black",
+            border: "1px solid rgba(255, 255, 255, 0.2)",
+            zIndex: 9999,
+            marginTop: "4px",
+            borderRadius: "0px",
+        }),
+        option: (base, state) => ({
+            ...base,
+            color: state.isSelected ? "black" : "white",
+            backgroundColor: state.isSelected ? "white" : "black",
+            "&:hover": {
+                backgroundColor: state.isSelected ? "white" : "rgba(255, 255, 255, 0.1)",
+                color: state.isSelected ? "black" : "white",
+            },
+            padding: "12px 16px",
+            cursor: "pointer",
+        }),
+    });
+
+    const customStyles = {
+        control: (provided, state) => ({
+            ...provided,
+            backgroundColor: "black",
+            padding: "0.5rem",
+            borderColor: state.isFocused ? "white" : "rgba(255, 255, 255, 0.2)",
+            borderRadius: "0px",
+            boxShadow: "none",
+            "&:hover": {
+                borderColor: "white",
+            },
+        }),
+        input: (provided) => ({
+            ...provided,
+            color: "white",
+        }),
+        placeholder: (base) => ({
+            ...base,
+            color: "rgba(255, 255, 255, 0.3)",
+        }),
+        option: (provided, state) => ({
+            ...provided,
+            backgroundColor: state.isSelected ? "white" : "black",
+            color: state.isSelected ? "black" : "white",
+            "&:hover": {
+                backgroundColor: state.isSelected ? "white" : "rgba(255, 255, 255, 0.1)",
+                color: state.isSelected ? "black" : "white",
+            },
+            cursor: "pointer",
+        }),
+        singleValue: (provided) => ({
+            ...provided,
+            color: "white",
+        }),
+    };
+
+    useEffect(() => {
+        if (coupon) {
+            let descuento = 0;
+            if (coupon.type === "percentage") {
+                descuento = totalPrice * (coupon.amount / 100);
+            } else {
+                descuento = coupon.amount;
+            }
+            setDescuentoFinal(descuento);
+        } else {
+            setDescuentoFinal(0);
+        }
+    }, [totalPrice, coupon]);
+
+    const onCouponApply = (e) => {
+        e.preventDefault();
+        const coupon = (couponRef.current.value || "").trim().toUpperCase();
+        if (!coupon) return;
+        couponRest
+            .save({
+                coupon,
+                amount: totalPrice,
+                email: "basiliohinostroza2003bradneve@gmail.com",
+            })
+            .then((result) => {
+                // let descuento = 0;
+                // if (result && result.id) {
+                //     if (result.type == 'percentage') {
+                //         descuento = totalPrice * (result.amount / 100)
+                //     } else {
+                //         descuento = result.amount
+                //     }
+                //     setDescuentoFinal(descuento);
+                //     setCoupon(result);
+                // } else {
+                //     setCoupon(null);
+                // }
+                if (result && result.id) {
+                    setCoupon(result);
+                } else {
+                    setCoupon(null);
+                    setDescuentoFinal(0);
+                }
+            });
+    };
+
+    const onCouponKeyDown = (e) => {
+        if (e.key == "Enter") onCouponApply(e);
+    };
+
+    return (
+        <>
+            <style jsx>{`
+                .highlight-error {
+                    animation: highlight 2s ease-in-out;
+                    border: 2px solid #ef4444 !important;
+                    box-shadow: 0 0 10px rgba(239, 68, 68, 0.3) !important;
+                }
+
+                @keyframes highlight {
+                    0% {
+                        transform: scale(1);
+                    }
+                    50% {
+                        transform: scale(1.02);
+                    }
+                    100% {
+                        transform: scale(1);
+                    }
+                }
+
+                .modal-overlay {
+                    z-index: 9999;
+                }
+
+                .modal-content {
+                    max-height: 90vh;
+                    overflow-y: auto;
+                }
+            `}</style>
+
+            <div className="grid grid-cols-1 lg:grid-cols-5 gap-y-8 lg:gap-8 ">
+                <div className="lg:col-span-3">
+                    {/* Formulario */}
+                    <form
+                        className="space-y-6 bg-black border border-white/10 py-8 px-6 rounded-none font-paragraph text-white"
+                        onSubmit={(e) => e.preventDefault()}
+                    >
+                        <div className="sectionInformation space-y-3.5">
+                            <h3
+                                className="block text-xs font-paragraph uppercase tracking-widest text-white mb-4"
+                            >
+                                Información del contacto
+                            </h3>
+                            <div className="grid lg:grid-cols-2 gap-4">
+                                {/* Nombres */}
+
+                                <InputForm
+                                    type="text"
+                                    label="Nombres"
+                                    name="name"
+                                    value={formData.name}
+                                    error={errors.name}
+                                    onChange={handleChange}
+                                    placeholder="Nombres"
+                                    required
+                                />
+                                {/* Apellidos */}
+                                <InputForm
+                                    label="Apellidos"
+                                    type="text"
+                                    name="lastname"
+                                    value={formData.lastname}
+                                    error={errors.lastname}
+                                    onChange={handleChange}
+                                    placeholder="Apellidos"
+                                    required
+                                />
+                            </div>
+
+                            <div className="grid lg:grid-cols-2 gap-4 ">
+                                {/* Correo electrónico */}
+                                <InputForm
+                                    label="Correo electrónico"
+                                    type="email"
+                                    name="email"
+                                    value={formData.email}
+                                    error={errors.email}
+                                    onChange={handleChange}
+                                    placeholder="Ej. hola@gmail.com"
+                                    required
+                                />
+
+                                {/* Celular */}
+                                <div className="w-full">
+                                    <label
+                                        htmlFor="phone"
+                                        className="block text-sm 2xl:text-base mb-1 text-white"
+                                    >
+                                        Celular{" "}
+                                        <span className="text-red-500 ml-1">
+                                            *
+                                        </span>
+                                    </label>
+                                    <div className="flex gap-2 w-full">
+                                        <div className="max-w-[120px]">
+                                            <Select
+                                                name="phone_prefix"
+                                                value={
+                                                    prefixes.find(
+                                                        (p) =>
+                                                            p.realCode ===
+                                                            formData.phone_prefix,
+                                                    )
+                                                        ? {
+                                                            value: prefixes.find(
+                                                                (p) =>
+                                                                    p.realCode ===
+                                                                    formData.phone_prefix,
+                                                            ).realCode,
+                                                            label: `${prefixes.find((p) => p.realCode === formData.phone_prefix).beautyCode}`,
+                                                            flag: prefixes.find(
+                                                                (p) =>
+                                                                    p.realCode ===
+                                                                    formData.phone_prefix,
+                                                            ).flag,
+                                                            code: prefixes.find(
+                                                                (p) =>
+                                                                    p.realCode ===
+                                                                    formData.phone_prefix,
+                                                            ).beautyCode,
+                                                            country:
+                                                                prefixes.find(
+                                                                    (p) =>
+                                                                        p.realCode ===
+                                                                        formData.phone_prefix,
+                                                                ).country,
+                                                        }
+                                                        : null
+                                                }
+                                                onChange={(selected) =>
+                                                    setFormData((prev) => ({
+                                                        ...prev,
+                                                        phone_prefix:
+                                                            selected?.value ||
+                                                            "",
+                                                    }))
+                                                }
+                                                options={prefixes
+                                                    .sort((a, b) =>
+                                                        a.country.localeCompare(
+                                                            b.country,
+                                                        ),
+                                                    )
+                                                    .map((prefix) => ({
+                                                        value: prefix.realCode,
+                                                        label: prefix.beautyCode,
+                                                        flag: prefix.flag,
+                                                        code: prefix.beautyCode,
+                                                        country: prefix.country,
+                                                    }))}
+                                                formatOptionLabel={({
+                                                    flag,
+                                                    code,
+                                                    country,
+                                                }) => {
+                                                    // Buscar el país en el array de prefijos para obtener el código ISO
+                                                    const prefix =
+                                                        prefixes.find(
+                                                            (p) =>
+                                                                p.country ===
+                                                                country,
+                                                        );
+                                                    const countryCode =
+                                                        prefix?.isoCode?.ISO1?.toLowerCase() ||
+                                                        country
+                                                            .toLowerCase()
+                                                            .substring(0, 2);
+
+                                                    // Lista de servicios de banderas ordenados por prioridad
+                                                    const flagServices = [
+                                                        `https://flagsapi.com/${countryCode.toUpperCase()}/flat/24.png`,
+                                                        `https://flagcdn.com/${countryCode}.svg`,
+                                                        `https://purecatamphetamine.github.io/country-flag-icons/3x2/${countryCode.toUpperCase()}.svg`,
+                                                        `https://cdn.jsdelivr.net/gh/hampusborgos/country-flags@main/svg/${countryCode}.svg`,
+                                                        `https://raw.githubusercontent.com/lipis/flag-icons/main/flags/4x3/${countryCode}.svg`,
+                                                    ];
+
+                                                    let currentIndex = 0;
+
+                                                    const handleImageError = (
+                                                        e,
+                                                    ) => {
+                                                        currentIndex++;
+                                                        if (
+                                                            currentIndex <
+                                                            flagServices.length
+                                                        ) {
+                                                            e.target.src =
+                                                                flagServices[
+                                                                currentIndex
+                                                                ];
+                                                        } else {
+                                                            // Si todos los servicios fallan, ocultar imagen y mostrar fallback
+                                                            e.target.style.display =
+                                                                "none";
+                                                            const fallback =
+                                                                e.target
+                                                                    .nextElementSibling;
+                                                            if (
+                                                                fallback &&
+                                                                fallback.classList.contains(
+                                                                    "flag-fallback",
+                                                                )
+                                                            ) {
+                                                                fallback.style.display =
+                                                                    "flex";
+                                                            }
+                                                        }
+                                                    };
+
+                                                    return (
+                                                        <div className="flex items-center gap-2">
+                                                            <img
+                                                                src={
+                                                                    flagServices[0]
+                                                                }
+                                                                alt={`Bandera de ${country}`}
+                                                                className="w-6 h-4 object-cover rounded-sm flex-shrink-0 border border-gray-200"
+                                                                onError={
+                                                                    handleImageError
+                                                                }
+                                                                style={{
+                                                                    minWidth:
+                                                                        "24px",
+                                                                    minHeight:
+                                                                        "16px",
+                                                                }}
+                                                            />
+                                                            <div
+                                                                className="flag-fallback w-6 h-4 bg-gray-200 rounded-sm flex items-center justify-center flex-shrink-0 border border-gray-300"
+                                                                style={{
+                                                                    display:
+                                                                        "none",
+                                                                    minWidth:
+                                                                        "24px",
+                                                                    minHeight:
+                                                                        "16px",
+                                                                }}
+                                                            >
+                                                                <span className="text-xs text-gray-500">
+                                                                    {countryCode.toUpperCase()}
+                                                                </span>
+                                                            </div>
+                                                            <span className="font-medium text-sm">
+                                                                {code}
+                                                            </span>
+                                                        </div>
+                                                    );
+                                                }}
+                                                placeholder="País"
+                                                isClearable={false}
+                                                isSearchable={true}
+                                                styles={{
+                                                    control: (base) => ({
+                                                        ...base,
+                                                        backgroundColor: "black",
+                                                        minHeight: "48px",
+                                                        border: "1px solid rgba(255, 255, 255, 0.2)",
+                                                        borderRadius: "0px",
+                                                        fontSize: "14px",
+                                                        color: "white",
+                                                        "&:hover": {
+                                                            borderColor: "white",
+                                                        },
+                                                        "&:focus-within": {
+                                                            borderColor: "white",
+                                                            boxShadow: "none",
+                                                        },
+                                                    }),
+                                                    singleValue: (base) => ({
+                                                        ...base,
+                                                        display: "flex",
+                                                        alignItems: "center",
+                                                        gap: "6px",
+                                                        color: "white",
+                                                    }),
+                                                    input: (base) => ({
+                                                        ...base,
+                                                        color: "white",
+                                                    }),
+                                                    option: (base, state) => ({
+                                                        ...base,
+                                                        backgroundColor: state.isSelected ? "white" : "black",
+                                                        color: state.isSelected ? "black" : "white",
+                                                        "&:hover": {
+                                                            backgroundColor: state.isSelected ? "white" : "rgba(255, 255, 255, 0.1)",
+                                                            color: state.isSelected ? "black" : "white",
+                                                        },
+                                                        padding: "8px 12px",
+                                                        cursor: "pointer",
+                                                    }),
+                                                    menu: (base) => ({
+                                                        ...base,
+                                                        backgroundColor: "black",
+                                                        border: "1px solid rgba(255, 255, 255, 0.2)",
+                                                        borderRadius: "0px",
+                                                        zIndex: 9999,
+                                                    }),
+                                                }}
+                                                filterOption={(
+                                                    option,
+                                                    inputValue,
+                                                ) => {
+                                                    return (
+                                                        option.data.country
+                                                            .toLowerCase()
+                                                            .includes(
+                                                                inputValue.toLowerCase(),
+                                                            ) ||
+                                                        option.data.code
+                                                            .toLowerCase()
+                                                            .includes(
+                                                                inputValue.toLowerCase(),
+                                                            )
+                                                    );
+                                                }}
+                                            />
+                                        </div>
+                                        <div className="flex-1">
+                                            <InputForm
+                                                type="text"
+                                                id="phone"
+                                                name="phone"
+                                                value={formData.phone}
+                                                error={errors.phone}
+                                                onChange={handleChange}
+                                                placeholder="000 000 000"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="w-full border-t border-white/10"></div>
+
+                        <div className="sectionDelivery space-y-3.5">
+                            <h3
+                                className="block text-xs font-paragraph uppercase tracking-widest text-white mb-4"
+                            >
+                                Dirección de envío
+                            </h3>
+
+                            <div
+                                id="ubigeo-select-container"
+                                className="form-group"
+                            >
+                                <label
+                                    className="block text-[10px] font-paragraph uppercase tracking-widest text-white/50 mb-2"
+                                >
+                                    Distrito / Provincia / Departamento
+                                    (Ubicación de entrega)
+                                    <span className="text-red-500 ml-1">*</span>
+                                </label>
+                                <AsyncSelect
+                                    name="ubigeo"
+                                    cacheOptions
+                                    value={selectedUbigeo}
+                                    loadOptions={loadOptions}
+                                    onChange={(selected) => {
+                                        setSelectedUbigeo(selected);
+                                        handleUbigeoChange(selected);
+                                        setSearchInput(""); // Limpiar input al seleccionar
+                                    }}
+                                    inputValue={searchInput}
+                                    onInputChange={(value, { action }) => {
+                                        if (action === "input-change")
+                                            setSearchInput(value);
+                                    }}
+                                    onMenuOpen={() => {
+                                        if (selectedUbigeo) {
+                                            setSelectedUbigeo(null);
+                                            setSearchInput("");
+                                        }
+                                    }}
+                                    placeholder="Buscar por distrito | provincia | departamento ..."
+                                    loadingMessage={() =>
+                                        "Buscando ubicaciones..."
+                                    }
+                                    noOptionsMessage={({ inputValue }) =>
+                                        inputValue.length < 3
+                                            ? "Buscar por distrito | provincia | departamento ..."
+                                            : "No se encontraron resultados"
+                                    }
+                                    isLoading={loading}
+                                    styles={selectStyles(!!errors.ubigeo)}
+                                    formatOptionLabel={({ data }) => (
+                                        <div className="text-sm py-1">
+                                            <div className="font-medium">
+                                                {data.distrito}
+                                            </div>
+                                            <div className="text-gray-500">
+                                                {data.provincia},{" "}
+                                                {data.departamento}
+                                            </div>
+                                        </div>
+                                    )}
+                                    className="w-full rounded-xl transition-all duration-300"
+                                    menuPortalTarget={document.body}
+                                    isClearable={true}
+                                />
+                                {errors.ubigeo && (
+                                    <div className="text-red-500 text-sm mt-1">
+                                        {errors.ubigeo}
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Departamento */}
+                            {/* <SelectForm
+                                label="Departamento"
+                                options={departamentos}
+                                placeholder="Selecciona un Departamento"
+                                onChange={(value) => {
+                                    setDepartamento(value);
+                                    setFormData((prev) => ({
+                                        ...prev,
+                                        department: departamento,
+                                    }));
+                                }}
+                            /> */}
+
+                            {/* Provincia */}
+                            {/* <SelectForm
+                                disabled={!departamento}
+                                label="Provincia"
+                                options={provincias}
+                                placeholder="Selecciona una Provincia"
+                                onChange={(value) => {
+                                    setProvincia(value);
+                                    setFormData((prev) => ({
+                                        ...prev,
+                                        province: provincia,
+                                    }));
+                                }}
+                            /> */}
+
+                            {/* Distrito */}
+
+                            {/* <SelectForm
+                                disabled={!provincia}
+                                label="Distrito"
+                                options={distritos}
+                                placeholder="Selecciona un Distrito"
+                                onChange={(value) => {
+                                    setDistrito(value);
+                                    setFormData((prev) => ({
+                                        ...prev,
+                                        district: distrito,
+                                    }));
+                                }}
+                            /> */}
+
+                            {/* Dirección */}
+                            <InputForm
+                                label="Avenida / Calle / Jirón"
+                                type="text"
+                                name="address"
+                                value={formData.address}
+                                error={errors.address}
+                                onChange={handleChange}
+                                placeholder="Ingresa el nombre de la calle"
+                                required
+                            />
+
+                            <div className="grid lg:grid-cols-2 gap-4">
+                                <InputForm
+                                    label="Número"
+                                    type="text"
+                                    name="number"
+                                    value={formData.number}
+                                    error={errors.number}
+                                    onChange={handleChange}
+                                    placeholder="Ingresa el número de la calle"
+                                    required
+                                />
+
+                                <InputForm
+                                    label="Dpto./ Interior/ Piso/ Lote/ Bloque"
+                                    type="text"
+                                    name="comment"
+                                    value={formData.comment}
+                                    onChange={handleChange}
+                                    placeholder="Ej. Casa 3, Dpto 101"
+                                />
+                            </div>
+
+                            {/* Referencia */}
+
+                            {/* <InputForm
+                                label="Referencia"
+                                type="text"
+                                name="reference"
+                                value={formData.reference}
+                                onChange={handleChange}
+                                placeholder="Ejem. Altura de la avenida..."
+                            /> */}
+
+                            {shippingOptions.length > 0 && (
+                                <div className="space-y-4">
+                                    <h3 className="block text-xs font-paragraph uppercase tracking-widest text-white mb-4">
+                                        Método de envío
+                                    </h3>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        {shippingOptions.map((option) => {
+                                            // Generar mensaje personalizado para consulta de envío
+                                            const ubigeoInfo =
+                                                selectedUbigeo?.data;
+                                            const location = ubigeoInfo
+                                                ? `${ubigeoInfo.distrito}, ${ubigeoInfo.provincia}, ${ubigeoInfo.departamento}`
+                                                : "mi ubicación";
+                                            const consultMessage = `Hola, necesito consultar el costo de envío para: ${location}. ¿Me pueden ayudar?`;
+
+                                            return (
+                                                <OptionCard
+                                                    key={option.type}
+                                                    title={option.deliveryType}
+                                                    price={option.price}
+                                                    description={
+                                                        option.description
+                                                    }
+                                                    selected={
+                                                        selectedOption ===
+                                                        option.type
+                                                    }
+                                                    paymentOnDelivery={
+                                                        option.paymentOnDelivery ||
+                                                        false
+                                                    }
+                                                    showConsultButton={
+                                                        option.showConsultButton ||
+                                                        false
+                                                    }
+                                                    advisors={
+                                                        General.whatsapp_advisors ||
+                                                        []
+                                                    }
+                                                    class_advisors="rounded-full"
+                                                    consultMessage={
+                                                        consultMessage
+                                                    }
+                                                    onSelect={() => {
+                                                        setSelectedOption(
+                                                            option.type,
+                                                        );
+                                                        setEnvio(option.price);
+
+                                                        // Calcular costo adicional basado en el método de envío
+                                                        // Usamos subTotal + igv (total) para comparar contra el monto mínimo de la regla
+                                                        try {
+                                                            if (
+                                                                calculateAdditionalShippingCost
+                                                            ) {
+                                                                const totalAmount =
+                                                                    parseFloat(
+                                                                        subTotal,
+                                                                    ) +
+                                                                    parseFloat(
+                                                                        igv,
+                                                                    );
+                                                                const additionalCost =
+                                                                    calculateAdditionalShippingCost(
+                                                                        option.type,
+                                                                        totalAmount,
+                                                                    );
+                                                                setAdditionalShippingCost(
+                                                                    additionalCost.cost,
+                                                                );
+                                                                setAdditionalShippingDescription(
+                                                                    additionalCost.description,
+                                                                );
+                                                                setSelectedDeliveryMethod(
+                                                                    option.type,
+                                                                );
+                                                            }
+                                                        } catch (additionalCostError) {
+                                                            console.error(
+                                                                "Error calculando costo adicional:",
+                                                                additionalCostError,
+                                                            );
+                                                        }
+
+                                                        // Si selecciona retiro en tienda, mostrar selector
+                                                        if (
+                                                            option.type ===
+                                                            "store_pickup"
+                                                        ) {
+                                                            setShowStoreSelector(
+                                                                true,
+                                                            );
+                                                        } else {
+                                                            setShowStoreSelector(
+                                                                false,
+                                                            );
+                                                            setSelectedStore(
+                                                                null,
+                                                            );
+                                                        }
+                                                    }}
+                                                />
+                                            );
+                                        })}
+                                    </div>
+
+                                    {selectedOption &&
+                                        shippingOptions.length > 0 && (
+                                            <div className="space-y-4 mt-4">
+                                                {shippingOptions
+                                                    .find(
+                                                        (o) =>
+                                                            o.type ===
+                                                            selectedOption,
+                                                    )
+                                                    ?.characteristics?.map(
+                                                        (char, index) => (
+                                                            <div
+                                                                key={`char-${index}`}
+                                                                className="flex items-start gap-3 bg-neutral-900 border border-white/10 p-3 rounded-none"
+                                                            >
+                                                                <div className="w-4 h-4 flex-shrink-0 mt-0.5">
+                                                                    <svg
+                                                                        xmlns="http://www.w3.org/2000/svg"
+                                                                        width="16"
+                                                                        height="16"
+                                                                        viewBox="0 0 24 24"
+                                                                        fill="none"
+                                                                        stroke="currentColor"
+                                                                        strokeWidth="2"
+                                                                        strokeLinecap="round"
+                                                                        strokeLinejoin="round"
+                                                                        className="lucide lucide-info text-white"
+                                                                    >
+                                                                        <circle
+                                                                            cx="12"
+                                                                            cy="12"
+                                                                            r="10"
+                                                                        />
+                                                                        <path d="M12 16v-4" />
+                                                                        <path d="M12 8h.01" />
+                                                                    </svg>
+                                                                </div>
+                                                                <div className="flex-1">
+                                                                    <p className="text-xs font-paragraph text-white/70">
+                                                                        {char}
+                                                                    </p>
+                                                                </div>
+                                                            </div>
+                                                        ),
+                                                    )}
+                                            </div>
+                                        )}
+
+                                    {/* Selector de tiendas para retiro en tienda */}
+                                    {showStoreSelector &&
+                                        selectedOption === "store_pickup" && (
+                                            <StorePickupSelector
+                                                ubigeo={
+                                                    selectedUbigeo?.data
+                                                        ?.reniec ||
+                                                    selectedUbigeo?.data?.inei
+                                                }
+                                                onStoreSelect={
+                                                    handleStoreSelect
+                                                }
+                                                selectedStore={selectedStore}
+                                                specificStores={
+                                                    shippingOptions.find(
+                                                        (o) =>
+                                                            o.type ===
+                                                            "store_pickup",
+                                                    )?.selectedStores
+                                                }
+                                            />
+                                        )}
+                                </div>
+                            )}
+                        </div>
+
+                        <div className="w-full border-t border-white/10"></div>
+
+                        {/* Tipo de comprobante */}
+                        <div className="space-y-2">
+                            <label className="block text-[10px] font-paragraph uppercase tracking-widest text-white/50 mb-2">
+                                Tipo de comprobante
+                            </label>
+                            <div className="flex gap-4">
+                                <label className="inline-flex items-center cursor-pointer group">
+                                    <div className="relative">
+                                        <input
+                                            type="radio"
+                                            className="sr-only"
+                                            name="invoiceType"
+                                            value="boleta"
+                                            checked={
+                                                formData.invoiceType ===
+                                                "boleta"
+                                            }
+                                            onChange={handleChange}
+                                        />
+                                        <div
+                                            className={`w-4 h-4 border transition-all duration-200 rounded-none flex items-center justify-center ${formData.invoiceType ===
+                                                "boleta"
+                                                ? "border-white bg-white/10"
+                                                : "border-white/20 bg-transparent group-hover:border-white/40"
+                                                }`}
+                                        >
+                                            {formData.invoiceType ===
+                                                "boleta" && (
+                                                    <div className="w-2 h-2 bg-white rounded-none"></div>
+                                                )}
+                                        </div>
+                                    </div>
+                                    <span className="ml-2.5 text-xs font-paragraph uppercase tracking-widest text-white">
+                                        Boleta
+                                    </span>
+                                </label>
+                                <label className="inline-flex items-center cursor-pointer group">
+                                    <div className="relative">
+                                        <input
+                                            type="radio"
+                                            className="sr-only"
+                                            name="invoiceType"
+                                            value="factura"
+                                            checked={
+                                                formData.invoiceType ===
+                                                "factura"
+                                            }
+                                            onChange={handleChange}
+                                        />
+                                        <div
+                                            className={`w-4 h-4 border transition-all duration-200 rounded-none flex items-center justify-center ${formData.invoiceType ===
+                                                "factura"
+                                                ? "border-white bg-white/10"
+                                                : "border-white/20 bg-transparent group-hover:border-white/40"
+                                                }`}
+                                        >
+                                            {formData.invoiceType ===
+                                                "factura" && (
+                                                    <div className="w-2 h-2 bg-white rounded-none"></div>
+                                                )}
+                                        </div>
+                                    </div>
+                                    <span className="ml-2.5 text-xs font-paragraph uppercase tracking-widest text-white">
+                                        Factura
+                                    </span>
+                                </label>
+                            </div>
+                        </div>
+
+                        {/* Documento */}
+                        <InputForm
+                            label={
+                                formData.documentType === "dni" ? "DNI" : "RUC"
+                            }
+                            type="text"
+                            name="document"
+                            value={formData.document}
+                            error={errors.document}
+                            onChange={handleChange}
+                            placeholder={`Ingrese su ${formData.documentType === "dni" ? "DNI" : "RUC"}`}
+                            maxLength={
+                                formData.documentType === "dni" ? "8" : "11"
+                            }
+                            required
+                        />
+
+                        {/* Razón Social (solo para factura) */}
+                        {formData.invoiceType === "factura" && (
+                            <InputForm
+                                label="Razón Social"
+                                type="text"
+                                name="businessName"
+                                value={formData.businessName}
+                                onChange={handleChange}
+                                placeholder="Ingrese la razón social"
+                            />
+                        )}
+                    </form>
+                </div>
+                {/* Resumen de compra */}
+                <div className="bg-black    col-span-2 h-max font-paragraph text-white">
+                    <h3 className="text-xs font-paragraph uppercase tracking-widest text-white mb-6 pb-4 border-b border-white/10">
+                        Resumen de compra
+                    </h3>
+
+                    <div className="space-y-4 border-b border-white/10 pb-6">
+                        {cart.map((item) => (
+                            <div key={item.id} className="rounded-none bg-transparent">
+                                <div className="flex items-center gap-4">
+                                    <div className="w-16 h-16 flex-shrink-0 border border-white/10 overflow-hidden">
+                                        <img
+                                            src={`/storage/images/item/${item.image}`}
+                                            alt={item.name}
+                                            className="w-full h-full object-cover"
+                                            onError={(e) => (e.target.src = "/api/cover/thumbnail/null")}
+                                        />
+                                    </div>
+                                    <div className="flex-1">
+                                        <h3 className="font-paragraph font-semibold text-white text-sm leading-tight mb-1">
+                                            {item.name}
+                                        </h3>
+
+                                        {item?.color && (
+                                            <p className="text-[10px] font-paragraph uppercase tracking-wider text-white/50">
+                                                Color: {item.color}
+                                            </p>
+                                        )}
+                                        <p className="text-[10px] font-paragraph uppercase tracking-wider text-white">
+                                            Cantidad: {item.quantity}
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+
+                    {/* Sección de cupón siempre visible */}
+                    <div className="mt-6">
+                        {!appliedCoupon ? (
+                            <div>
+                                <div className="flex">
+                                    <input
+                                        type="text"
+                                        placeholder="Código de cupón"
+                                        className={`w-full bg-transparent border py-2.5 px-4 text-xs font-paragraph uppercase tracking-wider rounded-none text-white focus:border-white placeholder:text-white/30 focus:ring-0 focus:outline-none ${couponError ? "border-red-500" : "border-white/20"
+                                            }`}
+                                        value={couponCode}
+                                        onChange={(e) => {
+                                            setCouponCode(e.target.value);
+                                            setCouponError("");
+                                        }}
+                                        onKeyDown={(e) => {
+                                            if (e.key === "Enter") {
+                                                e.preventDefault();
+                                                validateCoupon();
+                                            }
+                                        }}
+                                        disabled={couponLoading}
+                                    />
+                                    <button
+                                        className="bg-white text-black hover:bg-white/90 text-xs font-paragraph uppercase tracking-widest px-6 py-2.5 rounded-none transition-all duration-300 disabled:bg-white/20 disabled:text-white"
+                                        type="button"
+                                        onClick={validateCoupon}
+                                        disabled={couponLoading}
+                                    >
+                                        {couponLoading ? "..." : "Aplicar"}
+                                    </button>
+                                </div>
+                            </div>
+                        ) : (
+                            <div className="bg-white/5 border border-white/10 rounded-none p-4">
+                                <div className="flex items-center justify-between">
+                                    <div className="flex items-center space-x-3">
+                                        <div className="w-6 h-6 bg-white text-black rounded-none flex items-center justify-center flex-shrink-0">
+                                            <svg
+                                                className="w-4 h-4"
+                                                fill="none"
+                                                stroke="currentColor"
+                                                viewBox="0 0 24 24"
+                                            >
+                                                <path
+                                                    strokeLinecap="round"
+                                                    strokeLinejoin="round"
+                                                    strokeWidth="2.5"
+                                                    d="M5 13l4 4L19 7"
+                                                ></path>
+                                            </svg>
+                                        </div>
+                                        <div>
+                                            <p className="text-xs font-paragraph font-bold uppercase tracking-wider text-white">
+                                                Cupón: {appliedCoupon.code}
+                                            </p>
+                                            <p className="text-[10px] font-paragraph uppercase tracking-wider text-white/50">
+                                                Descuento:{" "}
+                                                {appliedCoupon.type === "percentage"
+                                                    ? `${appliedCoupon.value}%`
+                                                    : `${CurrencySymbol()} ${Number2Currency(appliedCoupon.value)}`}
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <button
+                                        onClick={removeCoupon}
+                                        className="text-red-400 hover:text-red-300 transition-colors"
+                                        title="Remover cupón"
+                                    >
+                                        <XCircle size={18} />
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+
+                    {couponError && (
+                        <div className="mt-2 text-red-500 text-[10px] font-paragraph uppercase tracking-wider">
+                            {couponError}
+                        </div>
+                    )}
+
+                    <div className="space-y-4 mt-6">
+                        <div className="flex justify-between border-b border-white/5 pb-2">
+                            <span className="text-[10px] font-paragraph uppercase tracking-widest text-white">
+                                Subtotal
+                            </span>
+                            <span className="font-paragraph font-bold text-sm text-white">
+                                {CurrencySymbol()} {Number2Currency(subTotal)}
+                            </span>
+                        </div>
+                        <div className="flex flex-col gap-2 border-b border-white/5 pb-2">
+                            <div className="flex justify-between items-center">
+                                <span className="text-[10px] font-paragraph uppercase tracking-widest text-white">IGV (18%)</span>
+                                <span className="font-paragraph font-bold text-sm text-white">
+                                    {CurrencySymbol()} {Number2Currency(igv)}
+                                </span>
+                            </div>
+                            {perception > 0 && (
+                                <div className="flex justify-between items-center">
+                                    <span className="text-[10px] font-paragraph uppercase tracking-widest text-white">
+                                        Percepción
+                                    </span>
+                                    <span className="font-paragraph font-bold text-sm text-white">
+                                        {CurrencySymbol()} {Number2Currency(perception)}
+                                    </span>
+                                </div>
+                            )}
+                            {packagingAmount > 0 && (
+                                <div className="flex justify-between items-center">
+                                    <span className="text-[10px] font-paragraph uppercase tracking-widest text-white">
+                                        Empaque ({selectedPackaging?.name})
+                                    </span>
+                                    <span className="font-paragraph font-bold text-sm text-white">
+                                        {CurrencySymbol()} {Number2Currency(packagingAmount)}
+                                    </span>
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Mostrar descuentos automáticos en el resumen */}
+                        {autoDiscountTotal > 0 && (
+                            <div className="flex justify-between text-green-400 border-b border-white/5 pb-2">
+                                <span className="text-[10px] font-paragraph uppercase tracking-widest text-green-400/70">Descuentos automáticos</span>
+                                <span className="font-paragraph font-bold text-sm text-green-400">
+                                    -{CurrencySymbol()} {Number2Currency(autoDiscountTotal)}
+                                </span>
+                            </div>
+                        )}
+
+                        {appliedCoupon && (
+                            <div className="flex justify-between text-green-400 border-b border-white/5 pb-2">
+                                <span className="text-[10px] font-paragraph uppercase tracking-widest text-green-400/70">
+                                    Descuento cupón ({appliedCoupon.code})
+                                </span>
+                                <span className="font-paragraph font-bold text-sm text-green-400">
+                                    -{CurrencySymbol()} {Number2Currency(calculatedCouponDiscount)}
+                                </span>
+                            </div>
+                        )}
+                        <div className="flex justify-between border-b border-white/5 pb-2">
+                            <span className="text-[10px] font-paragraph uppercase tracking-widest text-white">
+                                {selectedOption === "store_pickup"
+                                    ? "Retiro en tienda"
+                                    : selectedOption === "agency"
+                                        ? "Envío por agencia"
+                                        : "Envío"}
+                            </span>
+                            <span className="font-paragraph font-bold text-sm text-white">
+                                {(() => {
+                                    if (selectedOption === "store_pickup") {
+                                        return "Gratis";
+                                    }
+
+                                    const agencyOption = shippingOptions.find(
+                                        (o) => o.type === "agency"
+                                    );
+                                    if (
+                                        selectedOption === "agency" &&
+                                        agencyOption?.paymentOnDelivery
+                                    ) {
+                                        return "Pago en destino";
+                                    }
+
+                                    if (
+                                        selectedOption === "agency" &&
+                                        !agencyOption?.paymentOnDelivery &&
+                                        envio > 0
+                                    ) {
+                                        return `${CurrencySymbol()} ${Number2Currency(envio)}`;
+                                    }
+
+                                    if (selectedOption === "free" || envio === 0) {
+                                        return "Gratis";
+                                    }
+
+                                    return `${CurrencySymbol()} ${Number2Currency(envio)}`;
+                                })()}
+                            </span>
+                        </div>
+
+                        {/* Mostrar costos adicionales de envío con descripción */}
+                        {additionalShippingCost > 0 && (
+                            <div className="flex justify-between text-red-400 border-b border-white/5 pb-2">
+                                <div className="flex flex-col">
+                                    <span className="text-[10px] font-paragraph uppercase tracking-widest text-red-400/70">
+                                        Costo adicional
+                                    </span>
+                                    <span className="text-[9px] text-white font-paragraph uppercase tracking-wider">
+                                        ({additionalShippingDescription})
+                                    </span>
+                                </div>
+                                <span className="font-paragraph font-bold text-sm text-red-400">
+                                    +{CurrencySymbol()} {Number2Currency(additionalShippingCost)}
+                                </span>
+                            </div>
+                        )}
+
+                        {/* Mostrar comisión del método de pago */}
+                        {paymentCommission > 0 && selectedPaymentMethod && (
+                            <div className="flex justify-between text-yellow-500 border-b border-white/5 pb-2">
+                                <span className="text-[10px] font-paragraph uppercase tracking-widest text-yellow-500/70">Comisión ({paymentCommission}%)</span>
+                                <span className="font-paragraph font-bold text-sm text-yellow-500">
+                                    +{CurrencySymbol()} {Number2Currency(calculatedCommission)}
+                                </span>
+                            </div>
+                        )}
+
+                        <div className="py-3 border-y border-white/20 mt-6">
+                            <div className="flex justify-between font-bold text-lg items-center">
+                                <span className="text-xs font-paragraph uppercase tracking-widest text-white">Total</span>
+                                <span className="text-xl font-paragraph text-white">
+                                    {CurrencySymbol()}{" "}
+                                    {Number2Currency(
+                                        appliedCoupon ? finalTotalWithCoupon : totalFinal
+                                    )}
+                                </span>
+                            </div>
+                        </div>
+                        <div className="space-y-2 pt-4">
+                            <button
+                                className={`w-full py-4 px-6 rounded-none font-bold font-paragraph text-xs uppercase tracking-widest transition-all duration-300 ${!hasPaymentMethods
+                                    ? "opacity-50 cursor-not-allowed bg-neutral-800 text-white"
+                                    : "bg-white text-black hover:bg-white/90"
+                                    }`}
+                                onClick={handleContinueClick}
+                                disabled={!hasPaymentMethods}
+                                title={
+                                    !hasPaymentMethods
+                                        ? "No hay métodos de pago disponibles"
+                                        : ""
+                                }
+                            >
+                                Continuar
+                            </button>
+                            <div id="mercadopago-button-container"></div>
+                            <button
+                                type="button"
+                                className="w-full py-4 px-6 bg-transparent border border-white/20 text-white/60 hover:text-white hover:border-white transition-all duration-300 rounded-none font-paragraph text-xs uppercase tracking-widest"
+                                onClick={noContinue}
+                            >
+                                Cancelar
+                            </button>
+                        </div>
+                        <div>
+                            <p className="text-[10px] font-paragraph text-white/30 uppercase tracking-wide leading-relaxed">
+                                Al realizar tu pedido, aceptas los{" "}
+                                <a
+                                    href="#"
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        openModal && openModal("terms_conditions");
+                                    }}
+                                    className="text-white underline decoration-white/20 hover:decoration-white font-bold"
+                                >
+                                    Términos y Condiciones
+                                </a>
+                                , y que nosotros usaremos sus datos personales de acuerdo con nuestra{" "}
+                                <a
+                                    href="#"
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        openModal && openModal("privacy_policy");
+                                    }}
+                                    className="text-white underline decoration-white/20 hover:decoration-white font-bold"
+                                >
+                                    Política de Privacidad
+                                </a>
+                                .
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <PaymentModalTwenty
+                isOpen={showPaymentModal}
+                contacts={contacts}
+                onClose={() => setShowPaymentModal(false)}
+                onPaymentComplete={handlePaymentComplete}
+            />
+
+            <OpenPayCardModalTwenty
+                isOpen={showOpenPayModal}
+                onClose={() => setShowOpenPayModal(false)}
+                onTokenCreated={handleOpenPayTokenCreated}
+            />
+
+            <UploadVoucherModalYapeTwenty
+                isOpen={showVoucherModal}
+                cart={cart}
+                subTotal={subTotal}
+                igv={igv}
+                totalFinal={appliedCoupon ? finalTotalWithCoupon : totalFinal}
+                envio={envio}
+                request={paymentRequest}
+                onClose={() => setShowVoucherModal(false)}
+                paymentMethod={currentPaymentMethod}
+                coupon={appliedCoupon}
+                descuentofinal={calculatedCouponDiscount}
+                autoDiscounts={autoDiscounts}
+                autoDiscountTotal={autoDiscountTotal}
+                packagingAmount={packagingAmount}
+                selectedPackaging={selectedPackaging}
+            />
+
+            <UploadVoucherModalBancsTwenty
+                isOpen={showVoucherModalBancs}
+                cart={cart}
+                subTotal={subTotal}
+                igv={igv}
+                totalFinal={appliedCoupon ? finalTotalWithCoupon : totalFinal}
+                envio={envio}
+                contacts={contacts}
+                request={paymentRequest}
+                onClose={() => setShowVoucherModalBancs(false)}
+                paymentMethod={currentPaymentMethod}
+                coupon={appliedCoupon}
+                descuentofinal={calculatedCouponDiscount}
+                autoDiscounts={autoDiscounts}
+                autoDiscountTotal={autoDiscountTotal}
+                packagingAmount={packagingAmount}
+                selectedPackaging={selectedPackaging}
+            />
+
+            <LoginModal />
+        </>
+    );
+}

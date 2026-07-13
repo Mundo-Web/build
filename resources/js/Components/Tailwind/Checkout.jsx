@@ -16,6 +16,9 @@ const CheckoutStepsRooms = React.lazy(
 const CheckoutStepsRainstar = React.lazy(
     () => import("./Checkouts/CheckoutStepsRainstar"),
 );
+const CheckoutStepsTwenty = React.lazy(
+    () => import("./Checkouts/CheckoutStepsTwenty"),
+);
 const Checkout = ({
     which,
     data,
@@ -125,6 +128,20 @@ const Checkout = ({
                         items={items}
                         generals={generals}
                         categorias={categorias}
+                    />
+                );
+            case "CheckoutStepsTwenty":
+                return (
+                    <CheckoutStepsTwenty
+                        data={data}
+                        cart={cart}
+                        setCart={setCart}
+                        user={isUser}
+                        ubigeos={ubigeos}
+                        prefixes={prefixes}
+                        contacts={contacts}
+                        items={items}
+                        generals={generals}
                     />
                 );
             default:
