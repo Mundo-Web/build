@@ -698,7 +698,7 @@
                         "subcategories"
                     ]
                 },
-                   "generals": [
+                "generals": [
                     "phone_whatsapp",
                     "message_whatsapp",
                     "cintillo"
@@ -2078,7 +2078,6 @@
                 ],
                 "using": {
                     "model": "Category"
-                    
                 }
             },
             {
@@ -3957,6 +3956,36 @@
             {
                 "id": "ScrapingProductDetail",
                 "name": "ScrapingProductDetail"
+            },
+            {
+                "id": "ProductDetailTwenty",
+                "name": "ProductDetailTwenty",
+                "image": "product-detail-rainstar.png",
+                "data": [
+                    "link_cart",
+                    "class_title",
+                    "background",
+                    "bool:buyButton:Mostrar botón Comprar ahora",
+                    "bool:cartButton:Mostrar botón Al Carrito",
+                    "bool:showDeliveryPolicy:Mostrar Políticas de Envío",
+                    "bool:show_whatsapp:Mostrar botón WhatsApp",
+                    "bool:quoteButton:Tipo de mensaje WhatsApp (activado = Cotización, desactivado = Consulta)",
+                    "related_title",
+                    "related_description",
+                    "related_class_container",
+                    "related_class_title",
+                    "select:related_filter:Filtro Relacionados Automáticos:category_id|Por Categoría,collection_id|Por Colección,brand_id|Por Marca",
+                    "related_limit",
+                    "bool:related_loop:Loop en relacionados",
+                    "bool:related_autoplay:Autoplay en relacionados",
+                    "select:related_type_card_product:Tipo de Tarjeta Relacionados:CardProductTwenty|Twenty,CardProductMiBalon|Mi Balón,CardProductMicjc|Micjc,CardProductBananaLab|Banana Lab,CardProductMultivet|Multivet,CardProductKatya|Katya,ProductCardColors|Sala Fabulosa,ProductCardColorsBoton|Colors Boton,ProductCardFull|Full,ProductCardSimple|Simple",
+                    "select:type_modal_cart:Tipo de Modal Carrito:CartModal|Normal,CartModalBananaLab|Banana Lab,CartModalIbergruas|Ibergruas,CartModalLaPetaca|La Petaca,CartModalMiBalon|Mi Balón,CartModalRainstar|Rainstar,CartTwenty|Twenty"
+                ],
+                "generals": [
+                    "phone_whatsapp",
+                    "message_whatsapp",
+                    "delivery_policy"
+                ]
             }
         ]
     },

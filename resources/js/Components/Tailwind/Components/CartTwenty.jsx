@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import ReactModal from "react-modal";
-import CartItemRowMiBalon from "./CartItemRowMiBalon";
+import CartItemRowTwenty from "./CartItemRowTwenty";
 import Number2Currency, { CurrencySymbol } from "../../../Utils/Number2Currency";
 import { motion, AnimatePresence } from "framer-motion";
 import { ShoppingBag, X, ArrowRight, ShoppingCart } from "lucide-react";
@@ -81,13 +81,11 @@ const CartTwenty = ({ data, cart, setCart, modalOpen, setModalOpen }) => {
                         ) : (
                             <div className="space-y-4">
                                 {cart.map((item, index) => (
-                                    <CartItemRowMiBalon
+                                    <CartItemRowTwenty
                                         key={item.id}
                                         {...item}
                                         setCart={setCart}
                                         index={index}
-                                        isDark={true}
-                                        roundedNull={true}
                                     />
                                 ))}
                             </div>

@@ -51,6 +51,9 @@ const ProductDetailRainstar = React.lazy(
 const ProductDetailMiBalon = React.lazy(
     () => import("./ProductDetails/ProductDetailMiBalon"),
 );
+const ProductDetailTwenty = React.lazy(
+    () => import("./ProductDetails/ProductDetailTwenty"),
+);
 const ProductDetail = ({
     which,
     item,
@@ -264,6 +267,18 @@ const ProductDetail = ({
                         data={data}
                         generals={generals}
                         onViewUpdate={handleViewUpdate}
+                    />
+                );
+            case "ProductDetailTwenty":
+                return (
+                    <ProductDetailTwenty
+                        item={item}
+                        cart={cart}
+                        setCart={setCart}
+                        data={data}
+                        generals={generals}
+                        favorites={favorites}
+                        setFavorites={setFavorites}
                     />
                 );
             default:

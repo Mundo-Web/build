@@ -179,7 +179,7 @@ const ContactTwenty = ({ data, generals = [] }) => {
                     >
                         <div className="mb-8 text-left">
                             <h2
-                                className={`text-3xl md:text-4xl lg:text-6xl font-title uppercase text-white mb-6 ${data?.class_title || ""}`}
+                                className={`text-3xl md:text-4xl lg:text-7xl font-title uppercase text-white mb-6 ${data?.class_title || ""}`}
                             >
                                 <TextWithHighlight
                                     text={

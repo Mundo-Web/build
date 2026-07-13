@@ -29,7 +29,7 @@ const FaqTwenty = ({ data, faqs }) => {
             <div className="mx-auto max-w-5xl">
                 <div className="text-center mb-12">
                     <h2
-                        className={`text-3xl md:text-4xl lg:text-6xl  text-white mb-6 ${data?.class_title || ""}`}
+                        className={`text-3xl md:text-4xl lg:text-7xl  text-white mb-6 ${data?.class_title || ""}`}
                     >
                         <TextWithHighlight
                             text={data?.title || "Preguntas *frecuentes*"}
@@ -66,12 +66,12 @@ const FaqTwenty = ({ data, faqs }) => {
                                     className="w-full flex items-center justify-between p-6 md:p-8 text-left focus:outline-none group"
                                 >
                                     <h3
-                                        className={`text-lg md:text-xl font-title uppercase text-white group-hover:text-twenty transition-colors pr-8 ${data?.class_faq_question || ""}`}
+                                        className={`text-lg md:text-lg font-bold  text-white group-hover:text-twenty transition-colors pr-8 ${data?.class_faq_question || ""}`}
                                     >
                                         {faq.question}
                                     </h3>
                                     <div
-                                        className={`flex-shrink-0 w-8 h-8 rounded-none border border-white/10 flex items-center justify-center transition-colors duration-300 bg-neutral-950 group-hover:border-white ${isExpanded ? "bg-white text-black border-white" : "text-white"}`}
+                                        className={`flex-shrink-0 w-8 h-8 rounded-none border border-white/10 flex items-center justify-center transition-colors duration-300 bg-neutral-950 group-hover:border-white ${isExpanded ? "bg-white text-white border-white" : "text-white"}`}
                                     >
                                         {isExpanded ? (
                                             <Minus className="w-4 h-4" />
