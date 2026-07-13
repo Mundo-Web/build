@@ -14,6 +14,7 @@ const AboutWebQuirurgica = React.lazy(
 );
 const AboutRainstar = React.lazy(() => import("./AboutUs/AboutRainstar"));
 const AboutMiBalon = React.lazy(() => import("./AboutUs/AboutMiBalon"));
+const AboutTwenty = React.lazy(() => import("./AboutUs/AboutTwenty"));
 
 const AboutUs = ({ data, which, filteredData, items, generals }) => {
     const getAboutUs = () => {
@@ -106,6 +107,14 @@ const AboutUs = ({ data, which, filteredData, items, generals }) => {
             case "AboutMiBalon":
                 return (
                     <AboutMiBalon
+                        data={data}
+                        filteredData={filteredData}
+                        items={items}
+                    />
+                );
+            case "AboutTwenty":
+                return (
+                    <AboutTwenty
                         data={data}
                         filteredData={filteredData}
                         items={items}

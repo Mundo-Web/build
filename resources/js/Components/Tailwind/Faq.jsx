@@ -8,6 +8,7 @@ const FaqWebQuirurgica = React.lazy(() => import("./Faqs/FaqWebQuirurgica"));
 const FaqHostinfinity = React.lazy(() => import("./Faqs/FaqHostinfinity"));
 const FaqRainstar = React.lazy(() => import("./Faqs/FaqRainstar"));
 const FaqMiBalon = React.lazy(() => import("./Faqs/FaqMiBalon"));
+const FaqTwenty = React.lazy(() => import("./Faqs/FaqTwenty"));
 
 const Faq = ({ which, data, faqs }) => {
     const getFaq = () => {
@@ -29,6 +30,8 @@ const Faq = ({ which, data, faqs }) => {
             case "FaqMiBalon":
             case "FaqMibalon":
                 return <FaqMiBalon data={data} faqs={faqs} />;
+            case "FaqTwenty":
+                return <FaqTwenty data={data} faqs={faqs} />;
             default:
                 return (
                     <div className="w-full px-[5%] replace-max-w-here p-4 mx-auto">

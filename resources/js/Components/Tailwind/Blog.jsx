@@ -22,6 +22,7 @@ const BlogWebQuirurgica = React.lazy(() => import("./Blogs/BlogWebQuirurgica"));
 const BlogRainstar = React.lazy(() => import("./Blogs/BlogRainstar"));
 const BlogMiBalon = React.lazy(() => import("./Blogs/BlogMiBalon"));
 const BlogMicjc = React.lazy(() => import("./Blogs/BlogMicjc"));
+const BlogTwenty = React.lazy(() => import("./Blogs/BlogTwenty"));
 const BlogSectionMiBalon = React.lazy(() => import("./Blogs/BlogSectionMiBalon"));
 const BlogSectionMicjc = React.lazy(() => import("./Blogs/BlogSectionMicjc"));
 const BlogSectionTwenty = React.lazy(() => import("./Blogs/BlogSectionTwenty"));
@@ -38,7 +39,9 @@ const Blog = ({
     const getLimit = (componentName, componentData) => {
         if (componentData?.limit) return parseInt(componentData.limit);
         switch (componentName) {
-            case "BlogMicjc": return 4;
+            case "BlogMicjc":
+            case "BlogTwenty":
+                return 4;
             // case "BlogSimple": return 6;
             default: return 4;
         }
@@ -226,6 +229,16 @@ const Blog = ({
             case "BlogMicjc":
                 return (
                     <BlogMicjc
+                        data={data}
+                        headerPosts={headerPosts}
+                        postsLatest={latestPosts}
+                        filteredData={filteredData}
+                        filterProps={filterProps}
+                    />
+                );
+            case "BlogTwenty":
+                return (
+                    <BlogTwenty
                         data={data}
                         headerPosts={headerPosts}
                         postsLatest={latestPosts}

@@ -4270,6 +4270,27 @@
                 ]
             },
             {
+                "id": "ContactTwenty",
+                "name": "Contact Twenty (Streetwear)",
+                "data": [
+                    "redirect",
+                    "class_section",
+                    "title",
+                    "description",
+                    "class_form_container",
+                    "class_title",
+                    "class_description",
+                    "class_button_form"
+                ],
+                "generals": [
+                    "email_contact",
+                    "address",
+                    "phone_contact",
+                    "location",
+                    "atalaya_leads_api_key"
+                ]
+            },
+            {
                 "id": "ContactHuaillys",
                 "name": "Contact Huaillys",
                 "image": "contact-huaillys.png",
@@ -4385,6 +4406,20 @@
                 "name": "MiBalon",
                 "data": [
                     "title",
+                    "class_card_container",
+                    "class_faq_answer",
+                    "class_title"
+                ],
+                "using": {
+                    "model": "Faq"
+                }
+            },
+            {
+                "id": "FaqTwenty",
+                "name": "Faq Twenty (Streetwear)",
+                "data": [
+                    "title",
+                    "description",
                     "class_card_container",
                     "class_faq_answer",
                     "class_title"
@@ -4722,6 +4757,22 @@
                 }
             },
             {
+                "id": "BlogTwenty",
+                "name": "Blog Twenty (Streetwear)",
+                "image": "blog-twenty.png",
+                "data": [
+                    "title",
+                    "description"
+                ],
+                "using": {
+                    "model": "Post",
+                    "limit": 4,
+                    "with": [
+                        "category"
+                    ]
+                }
+            },
+            {
                 "id": "BlogMiBalon",
                 "name": "Blog Mi Balón",
                 "image": "blog-mibalon.png",
@@ -4918,6 +4969,16 @@
             {
                 "id": "AboutMiBalon",
                 "name": "AboutMiBalon",
+                "data": [
+                    "class_title"
+                ],
+                "using": {
+                    "model": "Aboutus"
+                }
+            },
+            {
+                "id": "AboutTwenty",
+                "name": "AboutTwenty",
                 "data": [
                     "class_title"
                 ],

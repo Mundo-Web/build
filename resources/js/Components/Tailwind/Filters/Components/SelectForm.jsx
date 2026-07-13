@@ -15,6 +15,9 @@ const SelectForm = ({
     generalIcon,
     classNameDropdown = "",
     classNameIcon,
+    classNameOption = "",
+    classNameSearchContainer = "",
+    classNameSearchInput = "",
 }) => {
     const [isOpen, setIsOpen] = useState(false);
     const [selectedOption, setSelectedOption] = useState(null);
@@ -112,7 +115,7 @@ const SelectForm = ({
                 <div
                     className={`absolute z-20 w-full mt-1 bg-white rounded-lg shadow-lg max-h-60 overflow-auto ${classNameDropdown}`}
                 >
-                    <div className="sticky top-0 bg-white p-2">
+                    <div className={`sticky top-0 bg-white p-2 ${classNameSearchContainer}`}>
                         <div className="relative">
                             <Search
                                 className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
@@ -120,7 +123,7 @@ const SelectForm = ({
                             />
                             <input
                                 type="text"
-                                className={`w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900`}
+                                className={`w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 ${classNameSearchInput}`}
                                 placeholder="Search options..."
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
@@ -132,7 +135,7 @@ const SelectForm = ({
                             <li
                                 key={option.value}
                                 className={`px-4 py-2 cursor-pointer flex items-center justify-between 
-                                    ${selectedOption && selectedOption.value === option.value ? "bg-primary text-white" : "text-gray-900 hover:bg-gray-100"}`}
+                                    ${selectedOption && selectedOption.value === option.value ? "bg-primary text-white" : classNameOption || "text-gray-900 hover:bg-gray-100"}`}
                                 onClick={() => handleSelect(option)}
                                 role="option"
                                 aria-selected={
