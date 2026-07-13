@@ -4098,7 +4098,7 @@
           "prefixes": "./prefijocelular.json"
         },
         "generals": [
-          "igv_checkout",
+           "igv_checkout",
           "checkout_culqi",
           "checkout_culqi_name",
           "checkout_culqi_public_key",
@@ -4110,6 +4110,11 @@
           "checkout_transfer_cci",
           "checkout_transfer_name",
           "checkout_transfer_description",
+          "checkout_transfer_commission",
+          "checkout_culqi_commission",
+          "checkout_mercadopago_commission",
+          "checkout_openpay_commission",
+          "checkout_dwallet_commission",
           "terms_conditions",
           "privacy_policy",
           "delivery_policy",
@@ -4117,7 +4122,8 @@
           "additional_shipping_costs",
           "checkout_mercadopago",
           "checkout_openpay",
-          "shipping_free"
+          "shipping_free",
+          "transfer_accounts"
         ]
       },
       {
@@ -4243,6 +4249,11 @@
           "checkout_transfer_cci",
           "checkout_transfer_name",
           "checkout_transfer_description",
+          "checkout_transfer_commission",
+          "checkout_culqi_commission",
+          "checkout_mercadopago_commission",
+          "checkout_openpay_commission",
+          "checkout_dwallet_commission",
           "terms_conditions",
           "privacy_policy",
           "delivery_policy",
@@ -4250,7 +4261,8 @@
           "additional_shipping_costs",
           "checkout_mercadopago",
           "checkout_openpay",
-          "shipping_free"
+          "shipping_free",
+          "transfer_accounts"
         ]
       }
     ]

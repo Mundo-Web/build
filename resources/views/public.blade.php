@@ -383,6 +383,10 @@ $isCheckout = ($page->correlative ?? '') === 'checkout' ||
     </noscript>
     @endif
 
+    <script src="/lte/assets/libs/moment/min/moment.min.js"></script>
+    <script src="/lte/assets/libs/moment/moment-timezone.js"></script>
+    <script src="/lte/assets/libs/moment/locale/es.js"></script>
+
     @vite(['resources/css/app.css', 'resources/js/' . Route::currentRouteName()])
     @inertiaHead
 

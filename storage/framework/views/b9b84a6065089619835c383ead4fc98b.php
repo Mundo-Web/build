@@ -384,6 +384,10 @@ $isCheckout = ($page->correlative ?? '') === 'checkout' ||
     </noscript>
     <?php endif; ?>
 
+    <script src="/lte/assets/libs/moment/min/moment.min.js"></script>
+    <script src="/lte/assets/libs/moment/moment-timezone.js"></script>
+    <script src="/lte/assets/libs/moment/locale/es.js"></script>
+
     <?php echo app('Illuminate\Foundation\Vite')(['resources/css/app.css', 'resources/js/' . Route::currentRouteName()]); ?>
     <?php if (!isset($__inertiaSsrDispatched)) { $__inertiaSsrDispatched = true; $__inertiaSsrResponse = app(\Inertia\Ssr\Gateway::class)->dispatch($page); }  if ($__inertiaSsrResponse) { echo $__inertiaSsrResponse->head; } ?>
 
