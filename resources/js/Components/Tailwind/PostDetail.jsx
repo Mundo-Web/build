@@ -6,6 +6,9 @@ const PostDetailSimple = React.lazy(
 const PostDetailRainstar = React.lazy(
     () => import("./PostDetails/PostDetailRainstar"),
 );
+const PostDetailTwenty = React.lazy(
+    () => import("./PostDetails/PostDetailTwenty"),
+);
 
 const PostDetail = ({
     data,
@@ -22,6 +25,8 @@ const PostDetail = ({
                 return <PostDetailSimple data={data} item={item} />;
             case "PostDetailRainstar":
                 return <PostDetailRainstar data={data} item={item} />;
+            case "PostDetailTwenty":
+                return <PostDetailTwenty data={data} item={item} generals={generals} />;
             default:
                 return (
                     <div className="w-full px-[5%] replace-max-w-here p-4 mx-auto">

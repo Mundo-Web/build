@@ -4939,6 +4939,26 @@
                         "category"
                     ]
                 }
+            },
+            {
+                "id": "PostDetailTwenty",
+                "name": "Post Detail Twenty — Brutalist Dark",
+                "image": "post-detail-rainstar.png",
+                "data": [
+                    "class_title"
+                ],
+                "using": {
+                    "model": "Post",
+                    "field": "slug",
+                    "with": [
+                        "category",
+                        "tags"
+                    ],
+                    "relations": [
+                        "category",
+                        "tags"
+                    ]
+                }
             }
         ]
     },
