@@ -124,7 +124,7 @@ const FooterRainstar = ({ pages = [], generals = [], data, socials = [] }) => {
                             <img
                                 src={`/assets/resources/logo-footer.png?v=${crypto.randomUUID()}`}
                                 alt={Global.APP_NAME}
-                                className="h-12 md:h-16 object-contain filter brightness-0 invert"
+                                className="h-12 md:h-16 object-contain "
                                 onError={(e) => {
                                     e.target.onerror = null;
                                     e.target.src = "/assets/img/logo-bk.svg";

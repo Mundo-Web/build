@@ -75,7 +75,7 @@ const IndicatorTwenty = ({ items, data }) => {
         >
 
 
-            <div className=" 2xl:max-w-7xl mx-auto px-primary 2xl:px-0 relative z-10">
+            <div className=" 2xl:max-w-7xl mx-auto px-primary 2xl:px-0 relative z-10 text-neutral-dark">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 lg:gap-16">
                     {items.map((indicator, index) => {
                         const rotationClass = rotations[index % rotations.length];
@@ -117,7 +117,7 @@ const IndicatorTwenty = ({ items, data }) => {
                                     </h4>
                                 </div>
 
-                                <p className="text-primary  text-xs uppercase tracking-widest leading-loose">
+                                <p className="  text-xs uppercase tracking-widest leading-loose">
                                     {indicator.description}
                                 </p>
                             </div>

@@ -2017,6 +2017,24 @@
         "name": "Categorías",
         "options": [
             {
+                "id": "CategoryTwenty",
+                "name": "Carousel de Categorías Twenty (Streetwear)",
+                "image": "categories-carousel.png",
+                "data": [
+                    "path",
+                    "title",
+                    "badge",
+                    "description",
+                    "bg_class",
+                    "class_title",
+                    "class_container"
+                ],
+                "using": {
+                    "model": "Category"
+                    
+                }
+            },
+            {
                 "id": "CategorySimple",
                 "name": "Simple",
                 "image": "categories-simple.png",
@@ -4402,6 +4420,26 @@
         "id": "blog",
         "name": "Blogs",
         "options": [
+            {
+                "id": "BlogSectionTwenty",
+                "name": "Blog Section Twenty (Streetwear - 3 Columnas)",
+                "image": "blog-section-micjc.png",
+                "data": [
+                    "title",
+                    "badge",
+                    "description",
+                    "bg_class",
+                    "class_title",
+                    "class_section"
+                ],
+                "using": {
+                    "model": "Post",
+                    "limit": 3,
+                    "with": [
+                        "category"
+                    ]
+                }
+            },
             {
                 "id": "BlogSimple",
                 "name": "Simple",

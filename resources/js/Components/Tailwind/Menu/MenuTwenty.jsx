@@ -157,7 +157,7 @@ const MenuTwenty = ({ pages = [], items = [], data, visible = false }) => {
                                     <button
                                         onClick={() => setIsMenuOpen(!isMenuOpen)}
                                         className={`flex items-center gap-2.5 px-5 py-2.5 font-semibold text-sm tracking-wider uppercase transition-all duration-300  rounded-none ${isMenuOpen
-                                            ? "bg-neutral-light text-primary "
+                                            ? "bg-secondary text-primary "
                                             : "text-white border-transparent hover:bg-white/10"
                                             }`}
                                     >
@@ -207,7 +207,7 @@ const MenuTwenty = ({ pages = [], items = [], data, visible = false }) => {
 
                 {/* Mega Menú Dropdown */}
                 {isMenuOpen && !isMobile && (
-                    <div className="absolute left-0 right-0 top-[100%] w-full border-b border-primary/20 shadow-[0_25px_50px_rgba(0,0,0,0.15)] z-50 animate-in fade-in slide-in-from-top-1 duration-200 bg-neutral-light text-primary">
+                    <div className="absolute left-0 right-0 top-[100%] w-full border-b border-primary/20 shadow-[0_25px_50px_rgba(0,0,0,0.15)] z-50 animate-in fade-in slide-in-from-top-1 duration-200 bg-secondary text-primary">
                         <div className="px-primary 2xl:px-0 2xl:max-w-7xl mx-auto flex h-[70dvh] overflow-hidden">
                             {/* Panel Izquierdo */}
                             <div className="w-1/4 border-r border-primary/10 p-5 space-y-2.5 overflow-y-auto ">
@@ -235,7 +235,7 @@ const MenuTwenty = ({ pages = [], items = [], data, visible = false }) => {
                             </div>
 
                             {/* Panel Derecho */}
-                            <div className="w-3/4 p-6 overflow-y-auto flex flex-col justify-between bg-neutral-light">
+                            <div className="w-3/4 p-6 overflow-y-auto flex flex-col justify-between bg-secondary">
                                 <div>
                                     <div className="flex items-center justify-between border-b border-primary/10 pb-3 mb-5">
                                         <h3 className="font-paragraph font-extrabold text-xl tracking-wider uppercase text-primary">{activeCategory?.name}</h3>

@@ -48,7 +48,7 @@ const CardProductTwenty = ({ product, setCart, cart, data }) => {
                     {/* Sticker Style Technical Tag / Discount Tag */}
                     <div className="absolute top-4 right-4 z-20">
                         {hasDiscount && (
-                            <div className="bg-[#b0b3b8] text-black px-3 py-1.5 border border-black/20 shadow-[2px_2px_0px_rgba(0,0,0,1)]">
+                            <div className="bg-[#b0b3b8] text-neutral-dark px-3 py-1.5 border border-black/20 shadow-[2px_2px_0px_rgba(0,0,0,1)]">
                                 <span className="text-[10px] font-black uppercase tracking-wider">
                                     -{discountPercentage}% OFF
                                 </span>
@@ -73,7 +73,7 @@ const CardProductTwenty = ({ product, setCart, cart, data }) => {
                             whileHover={{ scale: 1.05, rotate: -0 }}
                             transition={{ type: "spring", stiffness: 200, damping: 18 }}
                             onClick={goToDetail}
-                            className="w-[90%] bg-white text-black py-4 mb-4  text-lg uppercase font-bold tracking-widest shadow-[4px_4px_0px_rgba(0,0,0,1)] border-2 border-black flex items-center justify-center"
+                            className="w-[90%] bg-white text-neutral-dark py-4 mb-4  text-base uppercase font-bold  flex items-center justify-center"
                         >
                             Ver detalles
                         </motion.button>
