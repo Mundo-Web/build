@@ -1337,6 +1337,53 @@
                 ]
             },
             {
+                "id": "CatalogoFiltrosTwenty",
+                "name": "Catálogo de Productos Twenty (Streetwear)",
+                "image": "products-list.png",
+                "data": [
+                    "class_title",
+                    "title",
+                    "description",
+                    "class_sort_options",
+                    "section_collections",
+                    "section_brands",
+                    "section_categories",
+                    "section_subcategories",
+                    "section_prices",
+                    "dat_prices",
+                    "class_product_container",
+                    "class_product_card_container",
+                    "bool:is_master:Productos usan producto maestro"
+                ],
+                "options": [
+                    {
+                        "id": "default",
+                        "name": "Lista estándar",
+                        "using": {
+                            "model": "Item",
+                            "with": [
+                                "category",
+                                "subcategory",
+                                "brand"
+                            ],
+                            "relations": [
+                                "category",
+                                "tags"
+                            ],
+                            "fields": [
+                                "id",
+                                "name",
+                                "slug",
+                                "price",
+                                "discount",
+                                "final_price",
+                                "image"
+                            ]
+                        }
+                    }
+                ]
+            },
+            {
                 "id": "CatalogoFiltrosMiBalon",
                 "name": "Producto Catalogo Filtro MiBalon",
                 "image": "products-list.png",

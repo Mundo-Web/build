@@ -224,9 +224,7 @@ const MenuTwenty = ({ pages = [], items = [], data, visible = false }) => {
                                                 }`}
                                         >
                                             <div className="flex items-center gap-3 min-w-0 transition-transform duration-100">
-                                                {category.image && (
-                                                    <img src={`/storage/images/category/${category.image}`} alt={category.name} className={`w-7 h-7 object-contain shrink-0 transition-all duration-100 ${isActive ? 'filter brightness-0 invert' : 'filter brightness-0'}`} onError={(e) => (e.target.src = "/api/cover/thumbnail/null")} />
-                                                )}
+
                                                 <span className="truncate">{category.name}</span>
                                             </div>
                                         </button>
