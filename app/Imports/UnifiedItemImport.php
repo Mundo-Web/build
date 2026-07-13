@@ -148,8 +148,18 @@ class UnifiedItemImport implements ToModel, WithHeadingRow, SkipsOnError, SkipsO
         $possibleKeys = $this->fieldMappings[$fieldKey] ?? [$fieldKey];
 
         foreach ($possibleKeys as $key) {
-            if (array_key_exists($key, $row) && !is_null($row[$key]) && trim(strval($row[$key])) !== '') {
-                return trim(strval($row[$key]));
+            $variants = [
+                $key,
+                strtolower($key),
+                strtolower(trim($key)),
+                Str::slug($key, '_'),
+                str_replace('-', '_', Str::slug($key, '_')),
+            ];
+
+            foreach (array_unique($variants) as $variant) {
+                if (array_key_exists($variant, $row) && !is_null($row[$variant]) && trim(strval($row[$variant])) !== '') {
+                    return trim(strval($row[$variant]));
+                }
             }
         }
 
@@ -164,8 +174,18 @@ class UnifiedItemImport implements ToModel, WithHeadingRow, SkipsOnError, SkipsO
         $possibleKeys = $this->fieldMappings[$fieldKey] ?? [$fieldKey];
 
         foreach ($possibleKeys as $key) {
-            if (array_key_exists($key, $row) && !is_null($row[$key]) && trim(strval($row[$key])) !== '') {
-                return true;
+            $variants = [
+                $key,
+                strtolower($key),
+                strtolower(trim($key)),
+                Str::slug($key, '_'),
+                str_replace('-', '_', Str::slug($key, '_')),
+            ];
+
+            foreach (array_unique($variants) as $variant) {
+                if (array_key_exists($variant, $row) && !is_null($row[$variant]) && trim(strval($row[$variant])) !== '') {
+                    return true;
+                }
             }
         }
 

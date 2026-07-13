@@ -245,6 +245,11 @@ HTML
                 'correlative' => 'body_custom_html',
                 'name' => 'HTML Personalizado (Body)',
                 'description' => ''
+            ],
+            [
+                'correlative' => 'excel_import_template',
+                'name' => 'Plantilla de Importación Excel',
+                'description' => 'plantilla_productos_importar.xlsx'
             ]
         ];
 

@@ -6,6 +6,7 @@ import CartModalIbergruas from "./CartModalIbergruas";
 import CartModalLaPetaca from "./CartModalLaPetaca";
 import CartModalMiBalon from "./CartModalMiBalon";
 import CartModalRainstar from "./CartModalRainstar";
+import CartTwenty from "./CartTwenty";
 
 const CartModalSelector = ({
     type_modal_cart = 'CartModal',
@@ -64,6 +65,10 @@ const CartModalSelector = ({
         case "cartmodalrainstar":
         case "rainstar":
             return <CartModalRainstar {...commonProps} />;
+        
+        case "carttwenty":
+        case "twenty":
+            return <CartTwenty {...commonProps} />;
         
         case "cartmodal":
         case "normal":

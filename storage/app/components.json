@@ -671,6 +671,38 @@
                     "phone_contact",
                     "opening_hours"
                 ]
+            },
+            {
+                "id": "HeaderTwenty",
+                "name": "Header Twenty",
+                "image": "header-with-search.png",
+                "data": [
+                    "class",
+                    "link_cart",
+                    "showLoginCart",
+                    "mobileSearch",
+                    "backgroundColor",
+                    "class_logo",
+                    "input_search_placeholder",
+                    "input_search_label",
+                    "input_search_class",
+                    "select:type_modal_cart:Tipo de Modal Carrito:CartModal|Normal,CartModalMiBalon|Mi Balón,CartTwenty|Twenty",
+                    "select:type_topbar:Tipo de TopBar:TopBarSimple|Simple,TopBarSocials|Socials,TopBarPages|Pages,none|Ninguno",
+                    "select:type_menu:Tipo de Menu:MenuTwenty|Twenty,MenuMicjc|Micjc,MenuSimple|Simple,none|Ninguno",
+                    "select:grid_cols_desktop:Columnas de Subcategorías en Desktop:3|3 Columnas,4|4 Columnas,5|5 Columnas",
+                    "showCategories"
+                ],
+                "using": {
+                    "model": "Category",
+                    "with": [
+                        "subcategories"
+                    ]
+                },
+                   "generals": [
+                    "phone_whatsapp",
+                    "message_whatsapp",
+                    "cintillo"
+                ]
             }
         ]
     },
@@ -2264,6 +2296,17 @@
         "name": "Indicadores",
         "options": [
             {
+                "id": "IndicatorTwenty",
+                "name": "Indicadores Twenty (Distressed / Streetwear)",
+                "image": "indicator-twenty.png",
+                "data": [
+                    "class"
+                ],
+                "using": {
+                    "model": "Indicator"
+                }
+            },
+            {
                 "id": "IndicatorRainstar",
                 "name": "Editorial Premium Indicators",
                 "image": "indicator-rainstar.png",
@@ -2581,6 +2624,45 @@
                     "bool:show_link_catalog:Mostrar Enlace a Todo el Catálogo",
                     "class_container",
                     "class_title",
+                    "select:type_modal_cart:Tipo de Modal Carrito:CartModal|Normal,CartModalBananaLab|Banana Lab,CartModalIbergruas|Ibergruas,CartModalLaPetaca|La Petaca,CartModalMiBalon|Mi Balón,CartModalRainstar|Rainstar"
+                ],
+                "using": {
+                    "model": "Item",
+                    "filters": [
+                        "featured",
+                        "recommended",
+                        "offering",
+                        "is_new",
+                        "views",
+                        "most_view",
+                        "is_master"
+                    ],
+                    "with": [
+                        "category",
+                        "subcategory",
+                        "brand"
+                    ],
+                    "limit": 12
+                }
+            },
+            {
+                "id": "ProductSwiperTwenty",
+                "name": "Carrusel de Productos Twenty (Streetwear)",
+                "image": "product-infinite.png",
+                "data": [
+                    "title",
+                    "title_line1",
+                    "title_line2",
+                    "badge",
+                    "description",
+                    "link_catalog",
+                    "select:type_card_product:Tipo de Tarjeta de Producto:CardProductTwenty|Twenty,CardProductMiBalon|Mi Balón,CardProductMicjc|Micjc,CardProductBananaLab|Banana Lab,CardProductMultivet|Multivet,CardProductKatya|Katya,ProductCardColors|Sala Fabulosa,ProductCardColorsBoton|Colors Boton,ProductCardFull|Full,ProductCardSimple|Simple",
+                    "bool:autoplay:Activar Autoplay (Reproducción Automática)",
+                    "bool:loop:Activar Bucle Infinito (Loop)",
+                    "bool:show_link_catalog:Mostrar Enlace a Todo el Catálogo",
+                    "class_container",
+                    "class_title",
+                    "bg_class",
                     "select:type_modal_cart:Tipo de Modal Carrito:CartModal|Normal,CartModalBananaLab|Banana Lab,CartModalIbergruas|Ibergruas,CartModalLaPetaca|La Petaca,CartModalMiBalon|Mi Balón,CartModalRainstar|Rainstar"
                 ],
                 "using": {

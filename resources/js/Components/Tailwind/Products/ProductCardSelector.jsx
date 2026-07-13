@@ -11,6 +11,7 @@ const ProductCardFull = React.lazy(() => import("./Components/ProductCardFull"))
 const ProductCardSimple = React.lazy(() => import("./Components/ProductCardSimple"));
 const CardProductMiBalon = React.lazy(() => import("./Components/CardProductMiBalon"));
 const CardProductMicjc = React.lazy(() => import("./Components/CardProductMicjc"));
+const CardProductTwenty = React.lazy(() => import("./Components/CardProductTwenty"));
 const LaPetacaCard = React.lazy(() => import("./LaPetacaCard"));
 
 /**
@@ -78,6 +79,10 @@ const ProductCardSelector = ({
             case "CardProductMicjc":
             case "micjc":
                 return <CardProductMicjc key={product?.id} {...commonProps} />;
+            
+            case "CardProductTwenty":
+            case "twenty":
+                return <CardProductTwenty key={product?.id} {...commonProps} />;
             
             case "CardProductMultivet":
             case "multivet":

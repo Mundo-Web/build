@@ -21,10 +21,15 @@ const IndicatorHostinfinityImage = React.lazy(
 const IndicatorRainstar = React.lazy(
     () => import("./Indicators/IndicatorRainstar"),
 );
+const IndicatorTwenty = React.lazy(
+    () => import("./Indicators/IndicatorTwenty"),
+);
 
 const Indicator = ({ data, which, items, generals }) => {
     const getIndicator = () => {
         switch (which) {
+            case "IndicatorTwenty":
+                return <IndicatorTwenty data={data} items={items} />;
             case "IndicatorRainstar":
                 return <IndicatorRainstar data={data} items={items} />;
             case "IndicatorSimple":

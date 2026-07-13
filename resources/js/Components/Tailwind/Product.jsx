@@ -62,6 +62,9 @@ const ProductSwiperMiBalon = React.lazy(
 const ProductSwiperBanners = React.lazy(
     () => import("./Products/ProductSwiperBanners"),
 );
+const ProductSwiperTwenty = React.lazy(
+    () => import("./Products/ProductSwiperTwenty"),
+);
 
 const Product = ({
     which,
@@ -149,6 +152,15 @@ const Product = ({
                     <ProductSwiperBanners
                         data={data}
                         items={items}
+                    />
+                );
+            case "ProductSwiperTwenty":
+                return (
+                    <ProductSwiperTwenty
+                        data={data}
+                        items={items}
+                        cart={cart}
+                        setCart={setCart}
                     />
                 );
             case "ProductIbergruas":

@@ -33,6 +33,8 @@ const SYSTEM_FIELDS = [
     { key: "visible", dbKey: "visible", label: "Visible", required: false, description: "1 / Sí / True" },
     { key: "es_maestro", dbKey: "is_master", label: "Es Maestro", required: false, description: "1 / Sí / True" },
     { key: "agrupador", dbKey: "agrupador", label: "Agrupador", required: false, description: "Código de agrupador" },
+    { key: "atributos", dbKey: "atributo", label: "Atributos", required: false, description: "Nombres de atributos separados por comas (ej: Color, Talla)" },
+    { key: "valores", dbKey: "valor", label: "Valores de Atributos", required: false, description: "Valores correspondientes separados por comas (ej: Rojo, L)" },
 ];
 
 const ModalImportItem = ({ gridRef, modalRef, excelTemplate }) => {
@@ -43,7 +45,7 @@ const ModalImportItem = ({ gridRef, modalRef, excelTemplate }) => {
     const [isError, setIsError] = useState(false);
     const [importMode, setImportMode] = useState("reset"); // "reset" o "add_update"
     const [step, setStep] = useState("upload"); // "upload", "mapping"
-    
+
     // Preview states
     const [headers, setHeaders] = useState([]);
     const [sampleRows, setSampleRows] = useState([]);
@@ -56,10 +58,12 @@ const ModalImportItem = ({ gridRef, modalRef, excelTemplate }) => {
         // Dependencia de imágenes
         if (field.key === "galeria") return Fillable.has("items", "image");
         // Reglas de negocio especiales
-        if (field.key === "especificaciones_tecnicas") return true; 
-        if (field.key === "regla_descuento") return true; 
-        if (field.key === "promociones") return true; 
-        
+        if (field.key === "especificaciones_tecnicas") return true;
+        if (field.key === "regla_descuento") return true;
+        if (field.key === "promociones") return true;
+        if (field.key === "atributos") return true;
+        if (field.key === "valores") return true;
+
         return Fillable.has("items", field.dbKey);
     });
 
@@ -80,11 +84,11 @@ const ModalImportItem = ({ gridRef, modalRef, excelTemplate }) => {
             if (response.success && response.preview) {
                 setHeaders(response.preview.headers || []);
                 setSampleRows(response.preview.sample_rows || []);
-                
+
                 // Generar auto-mapeo basado en la respuesta del backend
                 const initialMappings = {};
                 const recognized = response.field_analysis?.recognized_fields || {};
-                
+
                 activeFields.forEach(field => {
                     // Buscar si hay alguna coincidencia reconocida para este campo del sistema
                     const matchedHeader = Object.keys(recognized).find(
@@ -92,7 +96,7 @@ const ModalImportItem = ({ gridRef, modalRef, excelTemplate }) => {
                     );
                     initialMappings[field.key] = matchedHeader || "";
                 });
-                
+
                 setMappings(initialMappings);
                 setStep("mapping");
             } else {
@@ -167,7 +171,7 @@ const ModalImportItem = ({ gridRef, modalRef, excelTemplate }) => {
             } else {
                 setMessage(result.message);
                 setIsError(false);
-                
+
                 // Refrescar grilla de forma segura para evitar excepciones de JS
                 try {
                     if (gridRef && gridRef.current) {
@@ -179,7 +183,7 @@ const ModalImportItem = ({ gridRef, modalRef, excelTemplate }) => {
                 } catch (e) {
                     console.error("Error al refrescar la grilla:", e);
                 }
-                
+
                 toast.success("¡Importación completada!", {
                     description: result.message || 'Todos tus productos han sido importados correctamente.',
                     duration: 3000,
@@ -217,10 +221,10 @@ const ModalImportItem = ({ gridRef, modalRef, excelTemplate }) => {
     const getMappedSampleValue = (sysKey, rowIndex) => {
         const mappedHeader = mappings[sysKey];
         if (!mappedHeader) return <span className="text-muted fst-italic">No importado</span>;
-        
+
         const headerIndex = headers.indexOf(mappedHeader);
         if (headerIndex === -1) return <span className="text-danger">Columna no encontrada</span>;
-        
+
         const row = sampleRows[rowIndex];
         if (!row || row[headerIndex] === undefined || row[headerIndex] === null || row[headerIndex] === "") {
             return <span className="text-muted fst-italic">[Vacío]</span>;
@@ -240,8 +244,8 @@ const ModalImportItem = ({ gridRef, modalRef, excelTemplate }) => {
                     <p className="text-muted small mb-0">Sube cualquier archivo Excel, CSV o JSON y mapea las columnas</p>
                 </div>
                 {excelTemplate && step === "upload" && (
-                    <a 
-                        href={`/cloud/${excelTemplate}`} 
+                    <a
+                        href={`/cloud/${excelTemplate}`}
                         download
                         className="btn btn-sm btn-outline-secondary"
                     >
@@ -271,10 +275,10 @@ const ModalImportItem = ({ gridRef, modalRef, excelTemplate }) => {
                         <label className="form-label text-dark fw-bold mb-3" style={{ fontSize: '14px' }}>
                             Modo de Importación
                         </label>
-                        
+
                         <div className="row g-3">
                             <div className="col-md-6">
-                                <div 
+                                <div
                                     className={`card h-100 ${importMode === "reset" ? "border-primary" : "border"}`}
                                     style={{
                                         cursor: 'pointer',
@@ -309,7 +313,7 @@ const ModalImportItem = ({ gridRef, modalRef, excelTemplate }) => {
                             </div>
 
                             <div className="col-md-6">
-                                <div 
+                                <div
                                     className={`card h-100 ${importMode === "add_update" ? "border-primary" : "border"}`}
                                     style={{
                                         cursor: 'pointer',
@@ -348,11 +352,11 @@ const ModalImportItem = ({ gridRef, modalRef, excelTemplate }) => {
                     {/* Drag and Drop Zone */}
                     <div className="mb-4">
                         <label className="form-label text-dark fw-bold mb-2">Seleccionar Archivo de Datos</label>
-                        <div 
-                            className="p-5 border border-2 border-dashed rounded text-center" 
+                        <div
+                            className="p-5 border border-2 border-dashed rounded text-center"
                             style={{
-                                borderColor: '#dee2e6', 
-                                backgroundColor: '#f8f9fa', 
+                                borderColor: '#dee2e6',
+                                backgroundColor: '#f8f9fa',
                                 cursor: 'pointer',
                                 transition: 'all 0.2s ease'
                             }}
@@ -393,8 +397,8 @@ const ModalImportItem = ({ gridRef, modalRef, excelTemplate }) => {
                                 <small className="text-muted">Se detectaron <b>{headers.length} columnas</b> en el archivo.</small>
                             </div>
                         </div>
-                        <button 
-                            type="button" 
+                        <button
+                            type="button"
                             className="btn btn-sm btn-outline-danger"
                             onClick={handleBack}
                             disabled={loading}
