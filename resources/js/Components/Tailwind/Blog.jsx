@@ -118,9 +118,11 @@ const Blog = ({
                     filterArr.push("and", ["category_id", "=", activeCategory]);
                 }
 
-                // Exclude latest posts
-                if (latestPosts && latestPosts.length > 0) {
-                    latestPosts.forEach(post => {
+                // Exclude only the latest posts that are actually displayed in the top section
+                const topCount = (which === "BlogTwenty" || which === "BlogMicjc" || which === "BlogSimple") ? 4 : 3;
+                const postsToExclude = (latestPosts || []).slice(0, topCount);
+                if (postsToExclude && postsToExclude.length > 0) {
+                    postsToExclude.forEach(post => {
                         filterArr.push("and", ["id", "<>", post.id]);
                     });
                 }
