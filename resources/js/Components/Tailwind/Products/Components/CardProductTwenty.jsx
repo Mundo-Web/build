@@ -3,6 +3,9 @@ import { motion } from "framer-motion";
 import { ArrowRight, ShoppingCart } from "lucide-react";
 import { CurrencySymbol } from "../../../../Utils/Number2Currency";
 import CartModalSelector from "../../Components/CartModalSelector";
+import ItemsRest from "../../../../Actions/ItemsRest";
+
+const itemsRest = new ItemsRest();
 
 const CardProductTwenty = ({ product, setCart, cart, data }) => {
     const [modalOpen, setModalOpen] = useState(false);
@@ -22,8 +25,11 @@ const CardProductTwenty = ({ product, setCart, cart, data }) => {
         setTimeout(() => setModalOpen(false), 3000);
     };
 
-    const goToDetail = (e) => {
+    const goToDetail = async (e) => {
         e.preventDefault();
+        try {
+            await itemsRest.updateClicks({ id: product.id });
+        } catch (err) {}
         window.location.href = `/product/${product.slug}`;
     };
 

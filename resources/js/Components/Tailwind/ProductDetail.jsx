@@ -279,6 +279,7 @@ const ProductDetail = ({
                         generals={generals}
                         favorites={favorites}
                         setFavorites={setFavorites}
+                        onViewUpdate={handleViewUpdate}
                     />
                 );
             default:

@@ -49,6 +49,7 @@ const ProductDetailTwenty = ({
     generals,
     favorites,
     setFavorites,
+    onViewUpdate,
 }) => {
     const itemsRest = new ItemsRest();
     const [quantity, setQuantity] = useState(1);
@@ -174,6 +175,10 @@ const ProductDetailTwenty = ({
         if (item?.id) {
             productosRelacionados(item);
             setSelectedVariant(item);
+
+            // Notifica la vista del producto al padre
+            if (onViewUpdate) onViewUpdate(item);
+
             const initialAttributes = {};
             const itemAttrs = Array.isArray(item.attributes)
                 ? item.attributes
