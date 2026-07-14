@@ -16,11 +16,11 @@ const AdModalTwenty = ({ data, items = [] }) => {
             const timer = setTimeout(() => setPageReady(true), 500);
             return () => clearTimeout(timer);
         }
-        
+
         const handleLoad = () => {
             setTimeout(() => setPageReady(true), 500);
         };
-        
+
         window.addEventListener('load', handleLoad);
         return () => window.removeEventListener('load', handleLoad);
     }, []);
@@ -32,7 +32,7 @@ const AdModalTwenty = ({ data, items = [] }) => {
         // 2. Filtrar por fechas
         const now = new Date();
         const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-        
+
         const dateFilteredAds = validAds.filter(ad => {
             if (!ad.date_begin && !ad.date_end) return true;
 
@@ -126,15 +126,14 @@ const AdModalTwenty = ({ data, items = [] }) => {
                     {adsToShow.map((ad, index) => (
                         <div
                             key={ad.id || index}
-                            className={`transition-all duration-500 ease-in-out ${
-                                index === currentSlide
+                            className={`transition-all duration-500 ease-in-out ${index === currentSlide
                                     ? 'opacity-100 relative'
                                     : 'opacity-0 absolute inset-0 pointer-events-none'
-                            }`}
+                                }`}
                         >
-                            <AdContent 
-                                ad={ad} 
-                                handleAdClick={handleAdClick} 
+                            <AdContent
+                                ad={ad}
+                                handleAdClick={handleAdClick}
                             />
                         </div>
                     ))}
@@ -168,11 +167,10 @@ const AdModalTwenty = ({ data, items = [] }) => {
                             <button
                                 key={index}
                                 onClick={() => setCurrentSlide(index)}
-                                className={`transition-all duration-300 w-3 h-3 border border-white/30 rounded-none ${
-                                    index === currentSlide
+                                className={`transition-all duration-300 w-3 h-3 border border-white/30 rounded-none ${index === currentSlide
                                         ? 'bg-white scale-125'
                                         : 'bg-transparent hover:bg-white/20'
-                                }`}
+                                    }`}
                                 aria-label={`Ir al anuncio ${index + 1}`}
                             />
                         ))}
@@ -186,7 +184,7 @@ const AdModalTwenty = ({ data, items = [] }) => {
 const AdContent = ({ ad, handleAdClick }) => {
     const buttonText = ad.button_text || 'Ver detalles';
     const hasContent = ad.name || ad.description || ad.link;
-    
+
     return (
         <div className={`flex flex-col w-full text-white font-paragraph ${hasContent ? 'md:flex-row' : ''}`}>
             {/* Imagen */}
@@ -195,7 +193,7 @@ const AdContent = ({ ad, handleAdClick }) => {
                     <img
                         src={`/api/ads/media/${ad.image}`}
                         alt={ad.name || "Anuncio"}
-                        className="w-full h-full object-cover grayscale opacity-90 hover:grayscale-0 hover:opacity-100 transition-all duration-700"
+                        className="w-full h-full object-cover hover:grayscale-0 hover:opacity-100 transition-all duration-700"
                     />
                 </div>
             </div>
