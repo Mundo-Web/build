@@ -39,7 +39,9 @@ const SelectFormGroup = ({
         // Sync value if provided
         if (value !== undefined && value !== null) {
             if (JSON.stringify($element.val()) !== JSON.stringify(value)) {
+                $element.off("change", onChange);
                 $element.val(value).trigger("change.select2");
+                $element.on("change", onChange);
             }
         }
 
