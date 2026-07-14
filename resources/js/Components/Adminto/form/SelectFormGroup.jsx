@@ -39,14 +39,14 @@ const SelectFormGroup = ({
         // Sync value if provided
         if (value !== undefined && value !== null) {
             if (JSON.stringify($element.val()) !== JSON.stringify(value)) {
-                $element.off("change", onChange);
+                $element.off("change.react");
                 $element.val(value).trigger("change.select2");
-                $element.on("change", onChange);
+                $element.on("change.react", onChange);
             }
         }
 
-        $element.off("change", onChange);
-        $element.on("change", onChange);
+        $element.off("change.react");
+        $element.on("change.react", onChange);
 
         return () => {
             // Cleanup events if needed, but select2 might need to persist
