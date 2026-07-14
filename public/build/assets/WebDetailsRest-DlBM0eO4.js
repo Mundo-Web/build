@@ -1,1 +1,0 @@
-var e=Object.defineProperty,t=(t,r,s)=>((t,r,s)=>r in t?e(t,r,{enumerable:!0,configurable:!0,writable:!0,value:s}):t[r]=s)(t,"symbol"!=typeof r?r+"":r,s);import"./SelectAPIFormGroup-CLouFGf-.js";import{B as r}from"./BasicRest-DMVvWTck.js";class s extends r{constructor(){super(...arguments),t(this,"path","admin/web-details")}}export{s as W};
