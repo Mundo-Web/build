@@ -179,7 +179,7 @@ const ContactKatya = ({ data, generals = [] }) => {
             name: nameRef.current.value + " " + lastnameRef.current.value,
             phone: phoneRef.current.value,
             email: emailRef.current.value,
-            message: descriptionRef.current.value,
+            description: descriptionRef.current.value,
         };
 
         console.log("ContactKatya - Enviando datos:", request);

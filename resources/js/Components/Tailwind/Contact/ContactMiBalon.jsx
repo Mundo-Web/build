@@ -127,7 +127,7 @@ const ContactMiBalon = ({ data, generals = [] }) => {
             name: nameRef.current.value + " " + lastnameRef.current.value,
             phone: phoneRef.current.value,
             email: emailRef.current.value,
-            message: descriptionRef.current.value,
+            description: descriptionRef.current.value,
         };
 
         try {
@@ -171,7 +171,7 @@ const ContactMiBalon = ({ data, generals = [] }) => {
                                 contact_name: request.name,
                                 contact_phone: request.phone,
                                 contact_email: request.email,
-                                message: request.message,
+                                message: request.description,
                                 origin: `Página Web ${Global.APP_NAME}`,
                                 triggered_by: "Formulario de Contacto Mi Balón",
                             }),

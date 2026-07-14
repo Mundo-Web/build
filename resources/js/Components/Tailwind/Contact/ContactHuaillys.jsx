@@ -80,10 +80,10 @@ const ContactHuaillys = ({ data, contacts }) => {
         }
 
         const request = {
-            full_name: nameRef.current.value,
+            name: nameRef.current.value,
             phone: phoneNumbers,
             email: emailRef.current.value,
-            message: descriptionRef.current.value,
+            description: descriptionRef.current.value,
             subject: "Contacto desde web"
         };
 
