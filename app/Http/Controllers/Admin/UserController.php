@@ -91,7 +91,7 @@ class UserController extends BasicController
 
             // Set password if provided
             if ($request->password) {
-                $user->password = Hash::make($request->password);
+                $user->password = $request->password;
             }
 
             // Generate UUID for new users
