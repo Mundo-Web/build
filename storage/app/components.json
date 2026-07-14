@@ -6700,18 +6700,11 @@
         }
       },
       {
-        "id": "AdBanner",
-        "name": "Banner / Strip",
-        "image": "ad-banner.png",
+        "id": "AdModalTwenty",
+        "name": "Pop-up / Modal Twenty",
+        "image": "ad-modal.png",
         "using": {
-          "model": "Ad",
-          "fields": [
-            "name",
-            "description",
-            "image",
-            "link",
-            "visible"
-          ]
+          "model": "Ad"
         }
       }
     ]

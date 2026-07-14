@@ -1,0 +1,1 @@
+import{G as i}from"./General-ClVW7qxN.js";const t=(i,t="en-US")=>(Number(i)||0).toLocaleString(t,{maximumFractionDigits:2,minimumFractionDigits:2}),r=()=>"usd"===(i.get("currency")||"pen")?"$":"S/";export{r as C,t as N};

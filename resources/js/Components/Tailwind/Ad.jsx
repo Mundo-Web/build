@@ -2,6 +2,7 @@ import React, { Suspense } from "react"
 
 const AdSubscription = React.lazy(() => import('./Ads/AdSubscription'))
 const AdModal = React.lazy(() => import('./Ads/AdModal'))
+const AdModalTwenty = React.lazy(() => import('./Ads/AdModalTwenty'))
 const AdBanner = React.lazy(() => import('./Ads/AdBanner'))
 
 const Ad = ({ which, data, items, generals }) => {
@@ -11,6 +12,8 @@ const Ad = ({ which, data, items, generals }) => {
         return <AdSubscription data={data} items={items} generals={generals} />
       case 'AdModal':
         return <AdModal data={data} items={items} />
+      case 'AdModalTwenty':
+        return <AdModalTwenty data={data} items={items} />
      /* case 'AdBanner':
         return <AdBanner data={data} items={items} />*/
       default:
