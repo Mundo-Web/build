@@ -77,7 +77,7 @@ return [
     |
     */
 
-    'connection' => env('MULTI_DB_ENABLED', false) 
+    'connection' => env('MULTI_DB_ENABLED', false)
         ? env('SESSION_CONNECTION', 'mysql_shared_users')
         : env('SESSION_CONNECTION', null),
 
@@ -135,7 +135,7 @@ return [
 
     'cookie' => env(
         'SESSION_COOKIE',
-        Str::slug(env('APP_NAME', 'laravel'), '_').'_session'
+        Str::slug(env('APP_NAME', 'laravel'), '_') . '_session'
     ),
 
     /*
@@ -175,7 +175,7 @@ return [
     |
     */
 
-    'secure' => env('SESSION_SECURE_COOKIE'),
+    'secure' => env('SESSION_SECURE_COOKIE', false),
 
     /*
     |--------------------------------------------------------------------------
