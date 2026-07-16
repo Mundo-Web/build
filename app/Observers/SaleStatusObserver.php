@@ -133,11 +133,17 @@ class SaleStatusObserver
         if ($sale->isDirty('status_id')) {
             $userId = $this->syncAuthUserToMainDb();
 
-            SaleStatusTrace::create([
-                'sale_id' => $sale->id,
-                'status_id' => $sale->status_id,
-                'user_id' => $userId,
-            ]);
+            $lastTrace = SaleStatusTrace::where('sale_id', $sale->id)
+                ->orderBy('created_at', 'desc')
+                ->first();
+
+            if (!$lastTrace || $lastTrace->status_id !== $sale->status_id) {
+                SaleStatusTrace::create([
+                    'sale_id' => $sale->id,
+                    'status_id' => $sale->status_id,
+                    'user_id' => $userId,
+                ]);
+            }
         }
     }
 }

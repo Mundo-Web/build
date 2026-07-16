@@ -68,6 +68,18 @@ const ProductDetailTwenty = ({
     const [modalOpen, setModalOpen] = useState(false);
     const [showAllSpecs, setShowAllSpecs] = useState(false);
     const [relationsItems, setRelationsItems] = useState([]);
+    useEffect(() => {
+        if (selectedVariant) {
+            const maxQty = selectedVariant.stock_unlimited ? 99 : (selectedVariant.stock || 0);
+            if (maxQty <= 0) {
+                setQuantity(0);
+            } else if (quantity > maxQty) {
+                setQuantity(maxQty);
+            } else if (quantity === 0) {
+                setQuantity(1);
+            }
+        }
+    }, [selectedVariant?.id]);
 
     const productosRelacionados = async (item) => {
         try {
@@ -277,11 +289,46 @@ const ProductDetailTwenty = ({
             return;
         }
 
+        if (!product.stock_unlimited) {
+            const currentStock = product.stock || 0;
+            if (currentStock <= 0) {
+                Swal.fire({
+                    title: "Producto Agotado",
+                    text: "Este producto se encuentra agotado.",
+                    icon: "warning",
+                    confirmButtonColor: "#000000"
+                });
+                return;
+            }
+            if (currentStock < quantity) {
+                Swal.fire({
+                    title: "Stock Insuficiente",
+                    text: `No hay suficiente stock disponible. Stock disponible: ${currentStock}`,
+                    icon: "warning",
+                    confirmButtonColor: "#000000"
+                });
+                return;
+            }
+        }
+
         const newCart = [...cart];
         const index = newCart.findIndex((x) => x.id === product.id);
         if (index === -1) {
             newCart.push({ ...product, quantity });
         } else {
+            if (!product.stock_unlimited) {
+                const currentStock = product.stock || 0;
+                const newQty = newCart[index].quantity + quantity;
+                if (newQty > currentStock) {
+                    Swal.fire({
+                        title: "Stock Insuficiente",
+                        text: `No puedes agregar más de este producto. Stock total disponible: ${currentStock}. Ya tienes ${newCart[index].quantity} en el carrito.`,
+                        icon: "warning",
+                        confirmButtonColor: "#000000"
+                    });
+                    return;
+                }
+            }
             newCart[index].quantity += quantity;
         }
         setCart(newCart);
@@ -621,7 +668,7 @@ const ProductDetailTwenty = ({
 
                             <div itemProp="offers" itemScope={true} itemType="https://schema.org/Offer" className="flex items-center gap-6 py-2 border-y border-white/10">
                                 <meta itemProp="priceCurrency" content="PEN" />
-                                <link itemProp="availability" href={currentProduct?.stock > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock"} />
+                                <link itemProp="availability" href={(currentProduct?.stock_unlimited || currentProduct?.stock > 0) ? "https://schema.org/InStock" : "https://schema.org/OutOfStock"} />
                                 <span className="text-5xl uppercase text-white">
                                     {CurrencySymbol()}{" "}
                                     <span itemProp="price" content={currentProduct?.final_price || currentProduct?.price}>{currentProduct?.final_price}</span>
@@ -730,7 +777,10 @@ const ProductDetailTwenty = ({
                                                 {quantity}
                                             </span>
                                             <button
-                                                onClick={() => setQuantity(Math.min(10, quantity + 1))}
+                                                onClick={() => {
+                                                    const maxQty = currentProduct?.stock_unlimited ? 99 : (currentProduct?.stock || 0);
+                                                    setQuantity(Math.min(maxQty, quantity + 1));
+                                                }}
                                                 className="text-lg font-bold hover:text-white/60 transition-colors"
                                             >
                                                 +
@@ -753,35 +803,45 @@ const ProductDetailTwenty = ({
                                     const showCart = data?.cartButton !== false && hasValidPrice;
                                     const showWhatsApp = data?.show_whatsapp === true;
                                     const whatsappType = data?.quoteButton === true ? "quote" : "consult";
+                                    const isOutOfStock = !currentProduct?.stock_unlimited && (currentProduct?.stock <= 0 || !currentProduct?.stock);
 
                                     return (
                                         <div className="space-y-4">
-                                            {(showBuy || showCart) && (
-                                                <div className="flex flex-col sm:flex-row gap-3">
-                                                    {showBuy && (
-                                                        <button
-                                                            disabled={!isFullySelected}
-                                                            onClick={() => {
-                                                                onAddClicked(currentProduct);
-                                                                if (isFullySelected) {
-                                                                    window.location.href = "/cart";
-                                                                }
-                                                            }}
-                                                            className={`${twentyPrimaryBtn} ${!isFullySelected ? "opacity-50 cursor-not-allowed" : ""}`}
-                                                        >
-                                                            Comprar ahora
-                                                        </button>
-                                                    )}
-                                                    {showCart && (
-                                                        <button
-                                                            disabled={!isFullySelected}
-                                                            onClick={() => onAddClicked(currentProduct)}
-                                                            className={`${twentySecondaryBtn} ${!isFullySelected ? "opacity-50 cursor-not-allowed" : ""}`}
-                                                        >
-                                                            Al Carrito
-                                                        </button>
-                                                    )}
-                                                </div>
+                                            {isOutOfStock ? (
+                                                <button
+                                                    disabled
+                                                    className={`${twentySecondaryBtn} opacity-50 cursor-not-allowed w-full`}
+                                                >
+                                                    Agotado
+                                                </button>
+                                            ) : (
+                                                (showBuy || showCart) && (
+                                                    <div className="flex flex-col sm:flex-row gap-3">
+                                                        {showBuy && (
+                                                            <button
+                                                                disabled={!isFullySelected}
+                                                                onClick={() => {
+                                                                    onAddClicked(currentProduct);
+                                                                    if (isFullySelected) {
+                                                                        window.location.href = "/cart";
+                                                                    }
+                                                                }}
+                                                                className={`${twentyPrimaryBtn} ${!isFullySelected ? "opacity-50 cursor-not-allowed" : ""}`}
+                                                            >
+                                                                Comprar ahora
+                                                            </button>
+                                                        )}
+                                                        {showCart && (
+                                                            <button
+                                                                disabled={!isFullySelected}
+                                                                onClick={() => onAddClicked(currentProduct)}
+                                                                className={`${twentySecondaryBtn} ${!isFullySelected ? "opacity-50 cursor-not-allowed" : ""}`}
+                                                            >
+                                                                Al Carrito
+                                                            </button>
+                                                        )}
+                                                    </div>
+                                                )
                                             )}
 
                                             {showWhatsApp && (
@@ -1128,30 +1188,41 @@ const ProductDetailTwenty = ({
 
                         if (!showBuy && !showCart && !showWhatsApp) return null;
 
+                        const isOutOfStock = !currentProduct?.stock_unlimited && (currentProduct?.stock <= 0 || !currentProduct?.stock);
+
                         return (
-                            <div className="fixed bottom-0 left-0 right-0 z-50 bg-black border-t border-white/20 p-4 flex flex-col gap-2">
-                                {(showBuy || showCart) && (
-                                    <div className="flex gap-2">
-                                        {showCart && (
-                                            <button
-                                                onClick={() => onAddClicked(currentProduct)}
-                                                className={`${twentySecondaryBtn} !py-3 !text-xs flex-1`}
-                                            >
-                                                Carrito
-                                            </button>
-                                        )}
-                                        {showBuy && (
-                                            <button
-                                                onClick={() => {
-                                                    onAddClicked(currentProduct);
-                                                    window.location.href = "/cart";
-                                                }}
-                                                className={`${twentyPrimaryBtn} !py-3 !text-xs flex-1`}
-                                            >
-                                                Pagar
-                                            </button>
-                                        )}
-                                    </div>
+                            <div className="fixed bottom-0 left-0 right-0 z-50 bg-black border-t border-white/20 p-4 flex flex-col gap-2 font-mono">
+                                {isOutOfStock ? (
+                                    <button
+                                        disabled
+                                        className={`${twentySecondaryBtn} opacity-50 cursor-not-allowed !py-3 !text-xs w-full`}
+                                    >
+                                        Agotado
+                                    </button>
+                                ) : (
+                                    (showBuy || showCart) && (
+                                        <div className="flex gap-2">
+                                            {showCart && (
+                                                <button
+                                                    onClick={() => onAddClicked(currentProduct)}
+                                                    className={`${twentySecondaryBtn} !py-3 !text-xs flex-1`}
+                                                >
+                                                    Carrito
+                                                </button>
+                                            )}
+                                            {showBuy && (
+                                                <button
+                                                    onClick={() => {
+                                                        onAddClicked(currentProduct);
+                                                        window.location.href = "/cart";
+                                                    }}
+                                                    className={`${twentyPrimaryBtn} !py-3 !text-xs flex-1`}
+                                                >
+                                                    Pagar
+                                                </button>
+                                            )}
+                                        </div>
+                                    )
                                 )}
                                 {showWhatsApp && (
                                     <button

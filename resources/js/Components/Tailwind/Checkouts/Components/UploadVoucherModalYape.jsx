@@ -348,7 +348,7 @@ export default function UploadVoucherModalYape({
                         type="file"
                         ref={fileInputRef}
                         onChange={handleFileChange}
-                        accept="image/png, image/jpeg, application/pdf"
+                        accept="image/*, application/pdf"
                         className="hidden"
                     />
 

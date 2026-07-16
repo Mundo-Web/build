@@ -7,6 +7,15 @@ const CardItemTwenty = ({ setCart, ...item }) => {
     };
 
     const onPlusClicked = () => {
+        if (!item.stock_unlimited && (item.quantity || 1) >= (item.stock || 0)) {
+            Swal.fire({
+                title: "Límite de Stock",
+                text: `No hay más stock disponible para este producto. Stock máximo: ${item.stock || 0}`,
+                icon: "warning",
+                confirmButtonColor: "#000000"
+            });
+            return;
+        }
         setCart((old) =>
             old.map((x) =>
                 x.id === item.id ? { ...x, quantity: (x.quantity || 1) + 1 } : x

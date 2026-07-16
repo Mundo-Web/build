@@ -1559,21 +1559,27 @@ class UnifiedItemImport implements ToModel, WithHeadingRow, SkipsOnError, SkipsO
                 switch ($mime) {
                     case 'image/jpeg':
                     case 'image/jpg':
-                        $sourceImage = @imagecreatefromjpeg($tempFile);
+                        if (function_exists('imagecreatefromjpeg')) {
+                            $sourceImage = @imagecreatefromjpeg($tempFile);
+                        }
                         break;
                     case 'image/png':
-                        $sourceImage = @imagecreatefrompng($tempFile);
-                        if ($sourceImage) {
-                            imagealphablending($sourceImage, false);
-                            imagesavealpha($sourceImage, true);
+                        if (function_exists('imagecreatefrompng')) {
+                            $sourceImage = @imagecreatefrompng($tempFile);
+                            if ($sourceImage) {
+                                imagealphablending($sourceImage, false);
+                                imagesavealpha($sourceImage, true);
+                            }
                         }
                         break;
                     case 'image/webp':
-                        $sourceImage = @imagecreatefromwebp($tempFile);
+                        if (function_exists('imagecreatefromwebp')) {
+                            $sourceImage = @imagecreatefromwebp($tempFile);
+                        }
                         break;
                 }
 
-                if ($sourceImage) {
+                if ($sourceImage && function_exists('imagewebp')) {
                     $webpTempPath = tempnam(sys_get_temp_dir(), 'webp_');
                     if (@imagewebp($sourceImage, $webpTempPath, 90)) {
                         $path = "images/item/{$uuid}.webp";

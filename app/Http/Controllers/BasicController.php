@@ -677,21 +677,27 @@ class BasicController extends Controller
         switch ($mime) {
           case 'image/jpeg':
           case 'image/jpg':
-            $sourceImage = @imagecreatefromjpeg($realPath);
+            if (function_exists('imagecreatefromjpeg')) {
+              $sourceImage = @imagecreatefromjpeg($realPath);
+            }
             break;
           case 'image/png':
-            $sourceImage = @imagecreatefrompng($realPath);
-            if ($sourceImage) {
-              imagealphablending($sourceImage, false);
-              imagesavealpha($sourceImage, true);
+            if (function_exists('imagecreatefrompng')) {
+              $sourceImage = @imagecreatefrompng($realPath);
+              if ($sourceImage) {
+                imagealphablending($sourceImage, false);
+                imagesavealpha($sourceImage, true);
+              }
             }
             break;
           case 'image/webp':
-            $sourceImage = @imagecreatefromwebp($realPath);
+            if (function_exists('imagecreatefromwebp')) {
+              $sourceImage = @imagecreatefromwebp($realPath);
+            }
             break;
         }
         
-        if ($sourceImage) {
+        if ($sourceImage && function_exists('imagewebp')) {
           $tempPath = tempnam(sys_get_temp_dir(), 'webp');
           if (@imagewebp($sourceImage, $tempPath, 90)) {
             $path = "images/{$snake_case}/{$uuid}.webp";

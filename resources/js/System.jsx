@@ -264,6 +264,15 @@ const System = ({
                             found.price = item.price;
                             found.discount = item.discount;
                             found.name = item.name;
+                            
+                            if (!item.stock_unlimited) {
+                                if (item.stock <= 0) {
+                                    return null;
+                                }
+                                if (item.stock < found.quantity) {
+                                    found.quantity = item.stock;
+                                }
+                            }
                             return found;
                         })
                         .filter(Boolean); // Filtrar undefined/null

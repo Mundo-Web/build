@@ -136,6 +136,7 @@ const Items = ({
     // VARIANTES: Refs y Estados
     // Integrated Variant Manager State
     const [isMaster, setIsMaster] = useState(false);
+    const [isStockUnlimited, setIsStockUnlimited] = useState(false);
 
     // Gestión Avanzada de Variantes (New Component)
     const [masterItemForVariants, setMasterItemForVariants] = useState(null);
@@ -487,6 +488,7 @@ const Items = ({
         }
 
         setIsMaster(Boolean(data?.is_master));
+        setIsStockUnlimited(Boolean(data?.stock_unlimited));
 
         if (fileCatalogoGeneralRef.current)
             fileCatalogoGeneralRef.current.checked = Boolean(
@@ -601,7 +603,8 @@ const Items = ({
                 descriptionRef.current?.value ||
                 descriptionRef.editor?.root?.innerHTML ||
                 "",
-            stock: stockRef.current?.value || 0,
+            stock: isStockUnlimited ? 0 : (stockRef.current?.value || 0),
+            stock_unlimited: isStockUnlimited ? 1 : 0,
             agrupador: agrupadorRef.current?.value || "",
             meta_title: metaTitleRef.current?.value || "",
             meta_description: metaDescriptionRef.current?.value || "",
@@ -2462,11 +2465,23 @@ const Items = ({
                                                 </h6>
                                             </div>
                                             <div className="card-body">
+                                                <div className="mb-3">
+                                                    <SwitchFormGroup
+                                                        label="Stock Ilimitado"
+                                                        checked={isStockUnlimited}
+                                                        onChange={(e) =>
+                                                            setIsStockUnlimited(
+                                                                e.target.checked,
+                                                            )
+                                                        }
+                                                    />
+                                                </div>
                                                 <InputFormGroup
                                                     label="Stock Disponible"
                                                     eRef={stockRef}
                                                     type="number"
-                                                    required
+                                                    required={!isStockUnlimited}
+                                                    disabled={isStockUnlimited}
                                                 />
                                             </div>
                                         </div>

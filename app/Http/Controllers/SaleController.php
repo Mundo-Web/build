@@ -156,6 +156,17 @@ class SaleController extends BasicController
     static function create(array $sale, array $details): array
     {
         try {
+            // Validar stock antes de crear la venta
+            foreach ($details as $detail) {
+                $itemType = $detail['type'] ?? 'item';
+                if ($itemType === 'item') {
+                    $itemJpa = Item::find($detail['id']);
+                    if ($itemJpa && !$itemJpa->stock_unlimited && $itemJpa->stock < $detail['quantity']) {
+                        throw new \Exception("El producto {$itemJpa->name} no tiene suficiente stock disponible.");
+                    }
+                }
+            }
+
             // Separar items y combos
             $itemDetails = array_filter($details, fn($item) => ($item['type'] ?? 'item') === 'item');
             $comboDetails = array_filter($details, fn($item) => ($item['type'] ?? 'item') === 'combo');
@@ -410,7 +421,7 @@ class SaleController extends BasicController
 
                 // Actualizar stock físico lo que no vino de la bóveda
                 $fromPhysical = $quantityNeeded - $fromVault;
-                if ($fromPhysical > 0) {
+                if ($fromPhysical > 0 && !$itemJpa->stock_unlimited) {
                     Item::where('id', $itemJpa->id)->decrement('stock', $fromPhysical);
                 }
 
@@ -462,7 +473,7 @@ class SaleController extends BasicController
                     }
 
                     $fromPhysical = $stockReduction - $fromVault;
-                    if ($fromPhysical > 0) {
+                    if ($fromPhysical > 0 && !$comboItem->stock_unlimited) {
                         Item::where('id', $comboItem->id)->decrement('stock', $fromPhysical);
                     }
                 }
@@ -686,7 +697,7 @@ class SaleController extends BasicController
                         }
 
                         $fromPhysical = $stockReduction - $fromVault;
-                        if ($fromPhysical > 0) {
+                        if ($fromPhysical > 0 && !$comboItem->stock_unlimited) {
                             Item::where('id', $comboItem->id)->decrement('stock', $fromPhysical);
                         }
                     }
@@ -728,7 +739,7 @@ class SaleController extends BasicController
                     }
 
                     $fromPhysical = $quantityNeeded - $fromVault;
-                    if ($fromPhysical > 0) {
+                    if ($fromPhysical > 0 && !$itemJpa->stock_unlimited) {
                         Item::where('id', $itemJpa->id)->decrement('stock', $fromPhysical);
                     }
                 }

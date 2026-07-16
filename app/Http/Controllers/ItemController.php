@@ -849,7 +849,7 @@ class ItemController extends BasicController
     public function verifyStock(Request $request)
     {
         $response = Response::simpleTryCatch(function () use ($request) {
-            return Item::select(['id', 'price', 'discount', 'name'])
+            return Item::select(['id', 'price', 'discount', 'name', 'stock', 'stock_unlimited'])
                 ->whereIn('id', $request->all())
                 ->get();
         });

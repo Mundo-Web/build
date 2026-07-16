@@ -47,6 +47,23 @@ class OpenPayController extends Controller
                 'request' => $request->all()
             ]);
 
+            // Validar stock antes de continuar
+            foreach ($request->cart as $item) {
+                $itemId = is_array($item) ? $item['id'] ?? null : $item->id ?? null;
+                $itemQuantity = is_array($item) ? $item['quantity'] ?? null : $item->quantity ?? null;
+                $itemType = is_array($item) ? $item['type'] ?? 'item' : $item->type ?? 'item';
+
+                if ($itemType !== 'combo') {
+                    $itemJpa = Item::find($itemId);
+                    if ($itemJpa && !$itemJpa->stock_unlimited && $itemJpa->stock < $itemQuantity) {
+                        return response()->json([
+                            'status' => false,
+                            'message' => "El producto {$itemJpa->name} no tiene suficiente stock disponible."
+                        ], 400);
+                    }
+                }
+            }
+
             $credentials = $this->getOpenPayCredentials();
             
             if (!$credentials['enabled']) {
@@ -255,7 +272,7 @@ class OpenPayController extends Controller
                         $itemData = is_array($item) ? $item : (array) $item;
                         $producto = Item::find($itemData['id']);
                         
-                        if ($producto) {
+                        if ($producto && !$producto->stock_unlimited) {
                             $producto->stock -= $itemData['quantity'];
                             $producto->save();
                         }
@@ -341,7 +358,7 @@ class OpenPayController extends Controller
                 if ($sale->payment_status !== 'pagado') {
                     foreach ($sale->details as $detail) {
                         $producto = Item::find($detail->item_id);
-                        if ($producto) {
+                        if ($producto && !$producto->stock_unlimited) {
                             $producto->stock -= $detail->quantity;
                             $producto->save();
                         }

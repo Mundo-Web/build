@@ -24,6 +24,23 @@ class MercadoPagoController extends Controller
     public function createPreference(Request $request)
     {
         try {
+            // Validar stock antes de continuar
+            foreach ($request->cart as $item) {
+                $itemId = is_array($item) ? $item['id'] ?? null : $item->id ?? null;
+                $itemQuantity = is_array($item) ? $item['quantity'] ?? null : $item->quantity ?? null;
+                $itemType = is_array($item) ? $item['type'] ?? 'item' : $item->type ?? 'item';
+
+                if ($itemType !== 'combo') {
+                    $itemJpa = Item::find($itemId);
+                    if ($itemJpa && !$itemJpa->stock_unlimited && $itemJpa->stock < $itemQuantity) {
+                        return response()->json([
+                            'status' => false,
+                            'message' => "El producto {$itemJpa->name} no tiene suficiente stock disponible."
+                        ], 400);
+                    }
+                }
+            }
+
             $access_token = General::where('correlative', 'checkout_mercadopago_private_key')->first();
             $public_key = General::where('correlative', 'checkout_mercadopago_public_key')->first();
             // Configurar SDK de MercadoPago
@@ -306,7 +323,10 @@ class MercadoPagoController extends Controller
 
             // Actualizar stock (solo si el pago es aprobado)
             foreach ($saleDetails as $detail) {
-                Item::where('id', $detail->item_id)->decrement('stock', $detail->quantity);
+                $itemJpa = Item::find($detail->item_id);
+                if ($itemJpa && !$itemJpa->stock_unlimited) {
+                    $itemJpa->decrement('stock', $detail->quantity);
+                }
             }
 
             // Enviar correo de resumen de compra al cliente y administrador

@@ -38,6 +38,23 @@ class PaymentController extends Controller
             // Debug: Log de todos los datos recibidos
             Log::info('PaymentController - Datos recibidos:', $request->all());
 
+            // Validar stock antes de procesar
+            foreach ($request->cart as $item) {
+                $itemId = is_array($item) ? $item['id'] ?? null : $item->id ?? null;
+                $itemQuantity = is_array($item) ? $item['quantity'] ?? null : $item->quantity ?? null;
+                $itemType = is_array($item) ? $item['type'] ?? 'item' : $item->type ?? 'item';
+
+                if ($itemType !== 'combo') {
+                    $itemJpa = Item::find($itemId);
+                    if ($itemJpa && !$itemJpa->stock_unlimited && $itemJpa->stock < $itemQuantity) {
+                        return response()->json([
+                            'status' => false,
+                            'message' => "El producto {$itemJpa->name} no tiene suficiente stock disponible."
+                        ], 400);
+                    }
+                }
+            }
+
             // Redondear y convertir el monto a centavos para Culqi
             $amountInSoles = round((float)$request->amount, 2);
             $amountInCents = round($amountInSoles * 100);
@@ -243,8 +260,10 @@ class PaymentController extends Controller
 
                         // Actualizar stock de los items del combo
                         foreach ($comboJpa->items as $comboItem) {
-                            $stockReduction = $comboItem->pivot->quantity * $itemQuantity;
-                            Item::where('id', $comboItem->id)->decrement('stock', $stockReduction);
+                            if (!$comboItem->stock_unlimited) {
+                                $stockReduction = $comboItem->pivot->quantity * $itemQuantity;
+                                Item::where('id', $comboItem->id)->decrement('stock', $stockReduction);
+                            }
                         }
                     }
                 } else {
@@ -263,7 +282,9 @@ class PaymentController extends Controller
                         'provider_price' => $itemJpa?->provider_price,
                     ]);
 
-                    Item::where('id', $itemId)->decrement('stock', $itemQuantity);
+                    if ($itemJpa && !$itemJpa->stock_unlimited) {
+                        Item::where('id', $itemId)->decrement('stock', $itemQuantity);
+                    }
                 }
             }
 
@@ -416,6 +437,18 @@ class PaymentController extends Controller
 
             $saleStatusPagado = SaleStatus::getByName('Pagado');
 
+            // Validar stock antes de crear la venta
+            foreach ($request->cart as $item) {
+                $itemData = is_array($item) ? $item : (array) $item;
+                $itemJpa = Item::find($itemData['id']);
+                if ($itemJpa && !$itemJpa->stock_unlimited && $itemJpa->stock < $itemData['quantity']) {
+                    return response()->json([
+                        'status' => false,
+                        'message' => "El producto {$itemJpa->name} no tiene suficiente stock disponible."
+                    ], 400);
+                }
+            }
+
             // Registrar la venta (mismo código que charge() pero sin crear el cargo)
             $sale = Sale::create([
                 'code' => $request->orderNumber,
@@ -481,7 +514,7 @@ class PaymentController extends Controller
                 ]);
 
                 // Actualizar stock
-                if ($itemJpa && $itemJpa->stock > 0) {
+                if ($itemJpa && !$itemJpa->stock_unlimited && $itemJpa->stock > 0) {
                     $itemJpa->decrement('stock', $itemData['quantity']);
                 }
             }
@@ -566,6 +599,18 @@ class PaymentController extends Controller
     {
         try {
             Log::info('PaymentController::charge3DS - Datos recibidos:', $request->all());
+
+            // Validar stock antes de crear la venta
+            foreach ($request->cart as $item) {
+                $itemData = is_array($item) ? $item : (array) $item;
+                $itemJpa = Item::find($itemData['id']);
+                if ($itemJpa && !$itemJpa->stock_unlimited && $itemJpa->stock < $itemData['quantity']) {
+                    return response()->json([
+                        'status' => false,
+                        'message' => "El producto {$itemJpa->name} no tiene suficiente stock disponible."
+                    ], 400);
+                }
+            }
 
             // Validar que tengamos los parámetros 3DS
             if (!$request->authentication_3DS) {
@@ -716,7 +761,7 @@ class PaymentController extends Controller
                 SaleDetail::create($saleDetailData);
 
                 // Decrementar stock
-                if ($itemJpa && $itemJpa->stock > 0) {
+                if ($itemJpa && !$itemJpa->stock_unlimited && $itemJpa->stock > 0) {
                     $itemJpa->decrement('stock', $itemData['quantity']);
                 }
             }

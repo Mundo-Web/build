@@ -287,6 +287,7 @@ class ItemController extends BasicController
                 'tags' => 'nullable',
                 'description' => 'nullable|string',
                 'weight' => 'nullable|numeric',
+                'stock_unlimited' => 'nullable|boolean',
 
                 'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:10240',
                 'banner' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:10240',
@@ -348,7 +349,8 @@ class ItemController extends BasicController
                 'discount' => $request->input('discount'),
                 'description' => $request->input('description'),
                 'weight' => $request->input('weight'),
-                'stock' => $request->input('stock', 0),
+                'stock' => $request->boolean('stock_unlimited') ? 0 : $request->input('stock', 0),
+                'stock_unlimited' => $request->boolean('stock_unlimited'),
                 'type' => $request->input('type', 'product'),
                 'room_type' => $request->input('room_type'),
                 'max_occupancy' => $request->input('max_occupancy'),
@@ -1003,6 +1005,7 @@ class ItemController extends BasicController
             $child->name = $variantData['name'] ?? ($masterItem->name . ' - ' . ($idx + 1));
             $child->price = $variantData['price'] ?? $masterItem->price;
             $child->stock = $variantData['stock'] ?? $masterItem->stock;
+            $child->stock_unlimited = $variantData['stock_unlimited'] ?? $masterItem->stock_unlimited;
             $child->sku = $variantData['sku'] ?? ($masterItem->sku . '-' . ($idx + 1));
             $child->slug = Str::slug($child->name) . '-' . Str::random(5);
             $child->save();
