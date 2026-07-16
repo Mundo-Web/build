@@ -120,6 +120,16 @@ export default function CheckoutStepsPidelo({ cart, setCart, user, ubigeos = [],
     const [code, setCode] = useState([]);
     const [delivery, setDelivery] = useState([]);
 
+    // Detectar código de compra en la URL (para mostrar la confirmación al recargar)
+    useEffect(() => {
+        const params = new URLSearchParams(window.location.search);
+        const urlCode = params.get("code");
+        if (urlCode) {
+            setCode(urlCode);
+            setCurrentStep(3);
+        }
+    }, [window.location.search]);
+
     // Estado para tracking de conversión
     const [conversionScripts, setConversionScripts] = useState(null);
 

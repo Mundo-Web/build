@@ -509,6 +509,9 @@ export default function BookingStepRooms({
                     if (response.status) {
                         setBooking(response.sale);
                         setCode(response.code);
+                        
+                        // Actualizar la URL con el código de compra para mantener la confirmación al recargar
+                        window.history.pushState(null, '', `?code=${response.code}`);
                         onContinue();
                     } else {
                         toast.error('Error en el Pago', {
@@ -1226,6 +1229,20 @@ export default function BookingStepRooms({
                 setBooking={setBooking}
                 onContinue={onContinue}
             />
+            {paymentLoading && (
+                <div className="fixed inset-0 bg-black/45 backdrop-blur-sm z-[9999] flex flex-col items-center justify-center transition-all duration-300">
+                    <div className="bg-white border border-gray-100 rounded-2xl p-8 max-w-sm w-full mx-4 shadow-2xl flex flex-col items-center text-center space-y-4">
+                        <div className="relative w-16 h-16">
+                            <div className="absolute inset-0 rounded-full border-4 border-gray-100"></div>
+                            <div className="absolute inset-0 rounded-full border-4 border-t-primary animate-spin"></div>
+                        </div>
+                        <h3 className="text-neutral-900 font-bold text-lg">Procesando Pago</h3>
+                        <p className="text-neutral-500 text-sm leading-relaxed">
+                            Estamos conectando de forma segura. Por favor, no cierres esta ventana ni recargues la página.
+                        </p>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

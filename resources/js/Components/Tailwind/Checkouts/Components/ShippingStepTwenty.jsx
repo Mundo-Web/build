@@ -1352,6 +1352,9 @@ export default function ShippingStepTwenty({
                         setSale(response.sale);
                         setDelivery(response.delivery);
                         setCode(response.code);
+                        
+                        // Actualizar la URL con el código de compra para mantener la confirmación al recargar
+                        window.history.pushState(null, '', `?code=${response.code}`);
 
                         // Capturar scripts de conversión si están disponibles
                         if (response.conversion_scripts) {
@@ -1386,10 +1389,10 @@ export default function ShippingStepTwenty({
                 } catch (error) {
                     console.error("💥 Error en pago Culqi:", error);
                     // No mostrar error si el usuario canceló el pago o si ya fue manejado por culqiPayment.js
-                    const isCancelled = error === "Pago cancelado por el usuario" || 
-                                      error?.message === "Pago cancelado por el usuario" || 
-                                      error?.cancelled === true ||
-                                      error?.alreadyHandled === true;
+                    const isCancelled = error === "Pago cancelado por el usuario" ||
+                        error?.message === "Pago cancelado por el usuario" ||
+                        error?.cancelled === true ||
+                        error?.alreadyHandled === true;
                     if (!isCancelled) {
                         toast.error("Error en el Pago", {
                             description:
@@ -2002,8 +2005,8 @@ export default function ShippingStepTwenty({
             <ReactModal
                 isOpen={showLoginModal}
                 onRequestClose={() => setShowLoginModal(false)}
-                className="modal-content max-w-md w-full bg-black border border-white/20 p-8 rounded-none text-white relative outline-none"
-                overlayClassName="modal-overlay fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-[999]"
+                className="modal-content max-w-md w-full bg-primary border border-white/20 p-8 rounded-none text-white relative outline-none"
+                overlayClassName="modal-overlay fixed inset-0 bg-primary/80 backdrop-blur-sm flex items-center justify-center z-[999]"
             >
                 <div className="text-center">
                     <h2 className="text-xl font-paragraph font-bold uppercase tracking-widest mb-4">
@@ -3308,6 +3311,20 @@ export default function ShippingStepTwenty({
             />
 
             <LoginModal />
+             {paymentLoading && (
+                <div className="fixed inset-0 bg-primary/80 backdrop-blur-sm z-[9999] flex flex-col items-center justify-center transition-all duration-300">
+                    <div className="bg-primary border border-white/20 p-8 max-w-sm w-full mx-4 shadow-2xl flex flex-col items-center text-center space-y-4 rounded-none">
+                        <div className="relative w-16 h-16">
+                            <div className="absolute inset-0 rounded-full border-4 border-white/10"></div>
+                            <div className="absolute inset-0 rounded-full border-4 border-t-white animate-spin"></div>
+                        </div>
+                        <h3 className="text-white font-paragraph font-bold uppercase tracking-widest text-lg">Procesando Pago</h3>
+                        <p className="text-white/60 text-xs font-paragraph uppercase tracking-wider leading-relaxed">
+                            Estamos conectando de forma segura. Por favor, no cierres esta ventana ni recargues la página.
+                        </p>
+                    </div>
+                </div>
+            )}
         </>
     );
 }
