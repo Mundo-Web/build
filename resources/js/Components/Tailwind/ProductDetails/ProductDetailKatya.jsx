@@ -72,6 +72,19 @@ const ProductDetailKatya = ({ item, data, setCart, cart, generals, favorites, se
     const [isSpecificationsExpanded, setIsSpecificationsExpanded] = useState(false);
     const [isFavorite, setIsFavorite] = useState(false);
 
+    const isOutOfStock = !item?.stock_unlimited && (item?.stock <= 0 || !item?.stock);
+
+    useEffect(() => {
+        const maxQty = item?.stock_unlimited ? 99 : (item?.stock || 0);
+        if (maxQty <= 0) {
+            setQuantity(0);
+        } else if (quantity > maxQty) {
+            setQuantity(maxQty);
+        } else if (quantity === 0) {
+            setQuantity(1);
+        }
+    }, [item?.id]);
+
     // Referencias para medir contenido
     const descriptionRef = useRef(null);
     const specificationsRef = useRef(null);
@@ -312,7 +325,10 @@ const ProductDetailKatya = ({ item, data, setCart, cart, generals, favorites, se
     // Manejar cambio de cantidad
     const handleChange = (e) => {
         const value = parseInt(e.target.value) || 1;
-        setQuantity(Math.max(1, value));
+        const maxQty = item?.stock_unlimited ? 99 : (item?.stock || 0);
+        let finalVal = Math.max(1, value);
+        if (finalVal > maxQty) finalVal = maxQty;
+        setQuantity(finalVal);
     };
 
     // Funciones de WhatsApp multi-asesor
@@ -380,17 +396,36 @@ const ProductDetailKatya = ({ item, data, setCart, cart, generals, favorites, se
 
     // Función para agregar al carrito (desde ProductDetailB)
     const onAddClicked = (product) => {
+        if (!product.stock_unlimited) {
+            const currentStock = product.stock || 0;
+            if (currentStock <= 0) {
+                toast.error("Este producto se encuentra agotado.");
+                return;
+            }
+            if (currentStock < quantity) {
+                toast.error(`No hay suficiente stock disponible. Stock disponible: ${currentStock}`);
+                return;
+            }
+        }
+
         const newCart = structuredClone(cart);
         const index = newCart.findIndex((x) => x.id == product?.id);
         if (index == -1) {
             newCart.push({ ...product, quantity: quantity });
         } else {
+            if (!product.stock_unlimited) {
+                const currentStock = product.stock || 0;
+                const newQty = newCart[index].quantity + quantity;
+                if (newQty > currentStock) {
+                    toast.error(`No puedes agregar más de este producto. Stock disponible: ${currentStock}. Ya tienes ${newCart[index].quantity} en el carrito.`);
+                    return;
+                }
+            }
             newCart[index].quantity += quantity;
         }
         setCart(newCart);
 
         // Opcional: Mostrar notificación de éxito
-        // Puedes descomentar esto si tienes Swal o una librería de notificaciones
         /*
         Swal.fire({
             title: "Producto agregado",
@@ -457,7 +492,7 @@ const ProductDetailKatya = ({ item, data, setCart, cart, generals, favorites, se
     const allImages = [
         { url: item?.image, type: 'main', alt: 'Imagen principal' },
         ...(item?.images || []).filter((image, index, self) =>
-            index === self.findIndex((img) => img.url === image.url) // Filtra duplicados como en ProductDetailB
+            index === self.findIndex((img) => img.url === image.url)
         ).map((img, index) => ({
             url: img.url,
             type: 'gallery',
@@ -585,10 +620,7 @@ const ProductDetailKatya = ({ item, data, setCart, cart, generals, favorites, se
                             {item?.sku && (
                                 <span><span className="font-bold">SKU:</span> {item?.sku}</span>
                             )}
-                            {item?.stock && (
-                                <span><span className="font-bold">Disponibilidad:</span> {item?.stock > 0 ? 'En stock' : 'Agotado'}</span>
-                            )}
-
+                            <span><span className="font-bold">Disponibilidad:</span> {item?.stock_unlimited || (item?.stock || 0) > 0 ? 'En stock' : 'Agotado'}</span>
                         </div>
 
                         {/* Título y rating */}
@@ -706,8 +738,8 @@ const ProductDetailKatya = ({ item, data, setCart, cart, generals, favorites, se
                                         <div className="flex items-center bg-gray-50 rounded-xl border border-gray-200 p-1">
                                             <button
                                                 onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                                                className="w-10 h-10 flex items-center justify-center rounded-lg hover:bg-white hover:shadow-sm active:scale-95 transition-all duration-200 customtext-neutral-dark font-bold text-xl"
-                                                disabled={quantity <= 1}
+                                                className="w-10 h-10 flex items-center justify-center rounded-lg hover:bg-white hover:shadow-sm active:scale-95 transition-all duration-200 customtext-neutral-dark font-bold text-xl disabled:opacity-30 disabled:cursor-not-allowed"
+                                                disabled={quantity <= 1 || isOutOfStock}
                                             >
                                                 −
                                             </button>
@@ -717,9 +749,9 @@ const ProductDetailKatya = ({ item, data, setCart, cart, generals, favorites, se
                                                 </span>
                                             </div>
                                             <button
-                                                onClick={() => setQuantity(Math.min(10, quantity + 1))}
-                                                className="w-10 h-10 flex items-center justify-center rounded-lg hover:bg-white hover:shadow-sm active:scale-95 transition-all duration-200 customtext-neutral-dark font-bold text-xl"
-                                                disabled={quantity >= 10}
+                                                onClick={() => setQuantity(Math.min(item?.stock_unlimited ? 99 : (item?.stock || 0), quantity + 1))}
+                                                className="w-10 h-10 flex items-center justify-center rounded-lg hover:bg-white hover:shadow-sm active:scale-95 transition-all duration-200 customtext-neutral-dark font-bold text-xl disabled:opacity-30 disabled:cursor-not-allowed"
+                                                disabled={quantity >= (item?.stock_unlimited ? 99 : (item?.stock || 0)) || isOutOfStock}
                                             >
                                                 +
                                             </button>
@@ -731,13 +763,14 @@ const ProductDetailKatya = ({ item, data, setCart, cart, generals, favorites, se
                             <div className="space-y-3 mt-6">
                                 <button
                                     onClick={() => onAddClicked(item)}
-                                    className={`w-full py-4 px-6 rounded-full font-bold flex items-center justify-center space-x-2 hover:scale-105 transition-all shadow-lg hover:shadow-xl transform duration-500 ${inCart
+                                    disabled={isOutOfStock}
+                                    className={`w-full py-4 px-6 rounded-full font-bold flex items-center justify-center space-x-2 hover:scale-105 transition-all shadow-lg hover:shadow-xl transform duration-500 ${isOutOfStock ? "bg-gray-300 text-gray-500 cursor-not-allowed" : inCart
                                             ? 'bg-secondary text-white'
                                             : 'bg-primary customtext-neutral-dark'
                                         }`}
                                 >
                                     <span>
-                                        {inCart ? `En carrito (${cartQuantity})` : 'Agregar al carrito'}
+                                        {isOutOfStock ? "Agotado" : inCart ? `En carrito (${cartQuantity})` : 'Agregar al carrito'}
                                     </span>
                                     <svg width="25" height="24" viewBox="0 0 25 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                         <path d="M8.5 16H15.7632C20.2508 16 20.9333 13.1808 21.761 9.06908C21.9998 7.88311 22.1192 7.29013 21.8321 6.89507C21.545 6.5 20.9947 6.5 19.8941 6.5H6.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
@@ -799,15 +832,14 @@ const ProductDetailKatya = ({ item, data, setCart, cart, generals, favorites, se
                 )}
             </div>
 
-            {/* Botón Flotante Mobile */}
             <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 z-40 shadow-lg">
                 <div className="flex items-center gap-3">
                     {/* Selector de Cantidad Mobile */}
                     <div className="flex items-center bg-gray-50 rounded-xl border border-gray-200 p-1">
                         <button
                             onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                            className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white hover:shadow-sm active:scale-95 transition-all duration-200 customtext-neutral-dark font-bold text-lg"
-                            disabled={quantity <= 1}
+                            className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white hover:shadow-sm active:scale-95 transition-all duration-200 customtext-neutral-dark font-bold text-lg disabled:opacity-30 disabled:cursor-not-allowed"
+                            disabled={quantity <= 1 || isOutOfStock}
                         >
                             −
                         </button>
@@ -817,9 +849,9 @@ const ProductDetailKatya = ({ item, data, setCart, cart, generals, favorites, se
                             </span>
                         </div>
                         <button
-                            onClick={() => setQuantity(Math.min(10, quantity + 1))}
-                            className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white hover:shadow-sm active:scale-95 transition-all duration-200 customtext-neutral-dark font-bold text-lg"
-                            disabled={quantity >= 10}
+                            onClick={() => setQuantity(Math.min(item?.stock_unlimited ? 99 : (item?.stock || 0), quantity + 1))}
+                            className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white hover:shadow-sm active:scale-95 transition-all duration-200 customtext-neutral-dark font-bold text-lg disabled:opacity-30 disabled:cursor-not-allowed"
+                            disabled={quantity >= (item?.stock_unlimited ? 99 : (item?.stock || 0)) || isOutOfStock}
                         >
                             +
                         </button>
@@ -828,7 +860,8 @@ const ProductDetailKatya = ({ item, data, setCart, cart, generals, favorites, se
                     {/* Botón de Agregar al Carrito Mobile */}
                     <button
                         onClick={() => onAddClicked(item)}
-                        className={`flex-1 py-3 px-4 rounded-xl font-bold flex items-center justify-center space-x-2 transition-all shadow-lg active:scale-95 ${inCart
+                        disabled={isOutOfStock}
+                        className={`flex-1 py-3 px-4 rounded-xl font-bold flex items-center justify-center space-x-2 transition-all shadow-lg active:scale-95 ${isOutOfStock ? "bg-gray-300 text-gray-500 cursor-not-allowed" : inCart
                                 ? 'bg-primary customtext-neutral-dark'
                                 : 'bg-primary customtext-neutral-dark hover:bg-accent'
                             }`}
@@ -841,7 +874,7 @@ const ProductDetailKatya = ({ item, data, setCart, cart, generals, favorites, se
                             <path d="M18 22C18.8284 22 19.5 21.3284 19.5 20.5C19.5 19.6716 18.8284 19 18 19C17.1716 19 16.5 19.6716 16.5 20.5C16.5 21.3284 17.1716 22 18 22Z" stroke="currentColor" stroke-width="1.5" />
                         </svg>
                         <span className="text-sm">
-                            {inCart ? `En carrito (${cartQuantity})` : 'Agregar al Carrito'}
+                            {isOutOfStock ? "Agotado" : inCart ? `En carrito (${cartQuantity})` : 'Agregar al Carrito'}
                         </span>
                     </button>
 

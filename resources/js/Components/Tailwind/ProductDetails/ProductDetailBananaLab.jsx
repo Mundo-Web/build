@@ -36,11 +36,27 @@ export default function ProductDetailBananaLab({ item, data, setCart, cart }) {
     });
 
     const [quantity, setQuantity] = useState(1);
+
+    const isOutOfStock = !item?.stock_unlimited && (item?.stock <= 0 || !item?.stock);
+
+    useEffect(() => {
+        const maxQty = item?.stock_unlimited ? 99 : (item?.stock || 0);
+        if (maxQty <= 0) {
+            setQuantity(0);
+        } else if (quantity > maxQty) {
+            setQuantity(maxQty);
+        } else if (quantity === 0) {
+            setQuantity(1);
+        }
+    }, [item?.id]);
+
     const handleChange = (e) => {
         let value = parseInt(e.target.value, 10);
-        if (isNaN(value) || value < 1) value = 1;
-        if (value > 10) value = 10;
-        setQuantity(value);
+        const maxQty = item?.stock_unlimited ? 99 : (item?.stock || 0);
+        if (isNaN(value)) return;
+        let finalVal = Math.max(1, value);
+        if (finalVal > maxQty) finalVal = maxQty;
+        setQuantity(finalVal);
     };
 
     const [isExpanded, setIsExpanded] = useState(false);
@@ -167,12 +183,47 @@ export default function ProductDetailBananaLab({ item, data, setCart, cart }) {
     };
 
     const onAddClicked = (product) => {
+        if (!product.stock_unlimited) {
+            const currentStock = product.stock || 0;
+            if (currentStock <= 0) {
+                Swal.fire({
+                    title: "Producto Agotado",
+                    text: "Este producto se encuentra agotado.",
+                    icon: "warning",
+                    confirmButtonColor: "#000000"
+                });
+                return;
+            }
+            if (currentStock < quantity) {
+                Swal.fire({
+                    title: "Stock Insuficiente",
+                    text: `No hay suficiente stock disponible. Stock disponible: ${currentStock}`,
+                    icon: "warning",
+                    confirmButtonColor: "#000000"
+                });
+                return;
+            }
+        }
+
         const newCart = structuredClone(cart);
         const index = newCart.findIndex((x) => x.id == product.id);
         if (index == -1) {
             newCart.push({ ...product, quantity: quantity });
         } else {
-            newCart[index].quantity++;
+            if (!product.stock_unlimited) {
+                const currentStock = product.stock || 0;
+                const newQty = newCart[index].quantity + quantity;
+                if (newQty > currentStock) {
+                    Swal.fire({
+                        title: "Stock Insuficiente",
+                        text: `No puedes agregar más de este producto. Stock total disponible: ${currentStock}. Ya tienes ${newCart[index].quantity} en el carrito.`,
+                        icon: "warning",
+                        confirmButtonColor: "#000000"
+                    });
+                    return;
+                }
+            }
+            newCart[index].quantity += quantity;
         }
         setCart(newCart);
 
@@ -325,7 +376,7 @@ export default function ProductDetailBananaLab({ item, data, setCart, cart }) {
                             <span className="customtext-neutral-light text-sm 2xl:text-base">
                                 Disponibilidad:{" "}
                                 <span className="customtext-neutral-dark font-bold">
-                                    {item?.stock > 0 ? "En stock" : "Agotado"}
+                                    {item?.stock_unlimited || item?.stock > 0 ? "En stock" : "Agotado"}
                                 </span>
                             </span>
                         </motion.div>
@@ -429,9 +480,10 @@ export default function ProductDetailBananaLab({ item, data, setCart, cart }) {
                                             type="number"
                                             value={quantity}
                                             onChange={handleChange}
-                                            min="1"
-                                            max="10"
-                                            className="w-10 py-1 customtext-neutral-dark text-center bg-transparent outline-none appearance-none"
+                                            min={isOutOfStock ? 0 : 1}
+                                            max={item?.stock_unlimited ? 99 : (item?.stock || 0)}
+                                            disabled={isOutOfStock}
+                                            className="w-10 py-1 customtext-neutral-dark text-center bg-transparent outline-none appearance-none disabled:opacity-50"
                                         />
                                     </motion.div>
                                 </div>
@@ -444,23 +496,29 @@ export default function ProductDetailBananaLab({ item, data, setCart, cart }) {
                             className="flex flex-col"
                         >
                             <motion.a
-                                href="/canva1"
-                                className="w-full flex gap-4 items-center justify-center font-paragraph text-base 2xl:text-lg bg-primary text-white py-3 font-semibold rounded-3xl hover:opacity-90 transition-all duration-300 mt-3"
-                                whileHover={{ scale: 1.02 }}
-                                whileTap={{ scale: 0.98 }}
+                                href={isOutOfStock ? "#" : "/canva1"}
+                                onClick={(e) => {
+                                    if (isOutOfStock) {
+                                        e.preventDefault();
+                                    }
+                                }}
+                                className={`w-full flex gap-4 items-center justify-center font-paragraph text-base 2xl:text-lg py-3 font-semibold rounded-3xl transition-all duration-300 mt-3 ${isOutOfStock ? "bg-gray-300 text-gray-500 cursor-not-allowed pointer-events-none" : "bg-primary text-white hover:opacity-90"}`}
+                                whileHover={isOutOfStock ? {} : { scale: 1.02 }}
+                                whileTap={isOutOfStock ? {} : { scale: 0.98 }}
                             >
-                                Crea y edita tu regalo
+                                {isOutOfStock ? "Agotado" : "Crea y edita tu regalo"}
                                 <Brush width={20} />
                             </motion.a>
                             <motion.button
                                 onClick={() => {
                                     onAddClicked(item);
                                 }}
-                                className="w-full flex gap-4 items-center justify-center font-paragraph text-base 2xl:text-lg bg-white border-2 border-primary customtext-primary py-3 font-semibold rounded-3xl hover:opacity-90 transition-all duration-300 mt-3"
-                                whileHover={{ scale: 1.02 }}
-                                whileTap={{ scale: 0.98 }}
+                                disabled={isOutOfStock}
+                                className={`w-full flex gap-4 items-center justify-center font-paragraph text-base 2xl:text-lg py-3 font-semibold rounded-3xl transition-all duration-300 mt-3 ${isOutOfStock ? "bg-gray-100 text-gray-400 cursor-not-allowed border-gray-200" : "bg-white border-2 border-primary customtext-primary hover:opacity-90"}`}
+                                whileHover={isOutOfStock ? {} : { scale: 1.02 }}
+                                whileTap={isOutOfStock ? {} : { scale: 0.98 }}
                             >
-                                Lista de deseos
+                                {isOutOfStock ? "Agotado" : "Lista de deseos"}
                                 <Heart width={20} />
                             </motion.button>
                         </motion.div>

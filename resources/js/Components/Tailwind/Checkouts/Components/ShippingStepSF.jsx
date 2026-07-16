@@ -1180,9 +1180,6 @@ export default function ShippingStepSF({
                     applied_promotions: autoDiscounts,
                     promotion_discount: formatAmountForAPI(autoDiscountTotal),
                     total_amount: formatAmountForAPI(finalTotalWithCommission),
-                    perception_amount: formatAmountForAPI(perception),
-                    packaging_amount: formatAmountForAPI(packagingAmount),
-                    packaging_id: selectedPackaging?.id || null,
                 };
 
                 try {
@@ -1314,9 +1311,6 @@ export default function ShippingStepSF({
                         packaging_amount: formatAmountForAPI(packagingAmount),
                         packaging_id: selectedPackaging?.id || null,
                         delivery: formatAmountForAPI(envio),
-                        perception_amount: formatAmountForAPI(perception),
-                        packaging_amount: formatAmountForAPI(packagingAmount),
-                        packaging_id: selectedPackaging?.id || null,
                         delivery_type: deliveryType,
                         // Costos adicionales de envío
                         additional_shipping_cost: formatAmountForAPI(
@@ -1496,9 +1490,6 @@ export default function ShippingStepSF({
                     promotion_discount: formatAmountForAPI(autoDiscountTotal),
                     total_amount: formatAmountForAPI(finalTotalWithCommission),
                     igv_amount: formatAmountForAPI(igv), // ENVIAR EL IGV CALCULADO
-                    perception_amount: formatAmountForAPI(perception),
-                    packaging_amount: formatAmountForAPI(packagingAmount),
-                    packaging_id: selectedPackaging?.id || null,
                 };
 
                 setPaymentRequest(request);
@@ -1594,9 +1585,6 @@ export default function ShippingStepSF({
                     promotion_discount: formatAmountForAPI(autoDiscountTotal),
                     total_amount: formatAmountForAPI(finalTotalWithCommission),
                     igv_amount: formatAmountForAPI(igv), // ENVIAR EL IGV CALCULADO
-                    perception_amount: formatAmountForAPI(perception),
-                    packaging_amount: formatAmountForAPI(packagingAmount),
-                    packaging_id: selectedPackaging?.id || null,
                 };
                 setPaymentRequest(request);
                 setShowVoucherModalBancs(true);
@@ -1702,9 +1690,6 @@ export default function ShippingStepSF({
                 packaging_amount: formatAmountForAPI(packagingAmount),
                 packaging_id: selectedPackaging?.id || null,
                 delivery: formatAmountForAPI(envio),
-                perception_amount: formatAmountForAPI(perception),
-                packaging_amount: formatAmountForAPI(packagingAmount),
-                packaging_id: selectedPackaging?.id || null,
                 delivery_type: deliveryType,
                 // Costos adicionales de envío
                 additional_shipping_cost: formatAmountForAPI(
@@ -1733,9 +1718,6 @@ export default function ShippingStepSF({
                 applied_promotions: autoDiscounts,
                 promotion_discount: formatAmountForAPI(autoDiscountTotal),
                 total_amount: formatAmountForAPI(finalTotalWithCommission),
-                perception_amount: formatAmountForAPI(perception),
-                packaging_amount: formatAmountForAPI(packagingAmount),
-                packaging_id: selectedPackaging?.id || null,
             };
 
             console.log("📤 [OpenPay] Valores antes de enviar:");

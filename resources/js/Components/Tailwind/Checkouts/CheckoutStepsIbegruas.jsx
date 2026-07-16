@@ -14,6 +14,7 @@ import CartStepIbergruas from "./Components/CartStepIbergruas";
 import ShippingStepIbergruas from "./Components/ShippingStepIbergruas";
 import ConfirmationStepIbergruas from "./Components/ConfirmationStepIbergruas";
 import General from "../../../Utils/General";
+import Swal from "sweetalert2";
 
 export default function CheckoutStepsIbegruas({ cart, setCart, user, prefixes, ubigeos, items, contacts, data, generals = [] }) {
    
@@ -111,6 +112,56 @@ export default function CheckoutStepsIbegruas({ cart, setCart, user, prefixes, u
         window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
+    const handleContinueToShipping = async () => {
+        const regularItems = cart.filter((x) => (x.type || "item") === "item");
+        if (regularItems.length > 0) {
+            try {
+                const response = await fetch('/api/items/verify-stock', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(regularItems.map(x => x.id))
+                });
+                const itemsStock = await response.json();
+                
+                let outOfStockList = [];
+                let adjustedCart = [...cart];
+                let hasChanges = false;
+
+                regularItems.forEach(cartItem => {
+                    const dbItem = itemsStock.find(x => x.id == cartItem.id);
+                    if (dbItem) {
+                        if (!dbItem.stock_unlimited) {
+                            if (dbItem.stock <= 0) {
+                                outOfStockList.push(`${cartItem.name} (Sin Stock)`);
+                                adjustedCart = adjustedCart.filter(x => x.id !== cartItem.id);
+                                hasChanges = true;
+                            } else if (dbItem.stock < cartItem.quantity) {
+                                outOfStockList.push(`${cartItem.name} (Disponible: ${dbItem.stock})`);
+                                adjustedCart = adjustedCart.map(x => x.id === cartItem.id ? { ...x, quantity: dbItem.stock } : x);
+                                hasChanges = true;
+                            }
+                        }
+                    }
+                });
+
+                if (hasChanges) {
+                    setCart(adjustedCart);
+                    Swal.fire({
+                        title: "Ajuste de Stock",
+                        html: `Algunos productos en tu carrito ya no tienen suficiente stock y han sido ajustados o eliminados:<br><br>${outOfStockList.map(x => `• ${x}`).join('<br>')}`,
+                        icon: "warning",
+                        confirmButtonColor: "#000000"
+                    });
+                    return;
+                }
+            } catch (err) {
+                console.error("Error verifying stock:", err);
+            }
+        }
+
+        handleStepChange(2);
+    };
+
     return (
         <div id={data?.element_id || null} className="min-h-screen bg-secondary py-4 md:py-12 ">
             <div className="bg-secondary px-primary 2xl:px-0 2xl:max-w-7xl mx-auto rounded-lg md:rounded-xl shadow-sm">
@@ -150,7 +201,7 @@ export default function CheckoutStepsIbegruas({ cart, setCart, user, prefixes, u
                         data={data}
                         cart={cart}
                         setCart={setCart}
-                        onContinue={() => handleStepChange(2)}
+                        onContinue={handleContinueToShipping}
                         subTotal={subTotal}
                         totalPrice={totalPrice}
                         envio={envio}

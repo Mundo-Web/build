@@ -15,6 +15,7 @@ import ReactModal from "react-modal";
 import HtmlContent from "../../../Utils/HtmlContent";
 import { X } from "lucide-react";
 import { CurrencySymbol } from "../../../Utils/Number2Currency";
+import Swal from "sweetalert2";
 
 export default function CheckoutStepsRainstar({
     data,
@@ -130,7 +131,53 @@ export default function CheckoutStepsRainstar({
         }
     }, [window.location.search]);
 
-    const onContinueToShipping = () => {
+    const onContinueToShipping = async () => {
+        const regularItems = cart.filter((x) => (x.type || "item") === "item");
+        if (regularItems.length > 0) {
+            try {
+                const response = await fetch('/api/items/verify-stock', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(regularItems.map(x => x.id))
+                });
+                const itemsStock = await response.json();
+                
+                let outOfStockList = [];
+                let adjustedCart = [...cart];
+                let hasChanges = false;
+
+                regularItems.forEach(cartItem => {
+                    const dbItem = itemsStock.find(x => x.id == cartItem.id);
+                    if (dbItem) {
+                        if (!dbItem.stock_unlimited) {
+                            if (dbItem.stock <= 0) {
+                                outOfStockList.push(`${cartItem.name} (Sin Stock)`);
+                                adjustedCart = adjustedCart.filter(x => x.id !== cartItem.id);
+                                hasChanges = true;
+                            } else if (dbItem.stock < cartItem.quantity) {
+                                outOfStockList.push(`${cartItem.name} (Disponible: ${dbItem.stock})`);
+                                adjustedCart = adjustedCart.map(x => x.id === cartItem.id ? { ...x, quantity: dbItem.stock } : x);
+                                hasChanges = true;
+                            }
+                        }
+                    }
+                });
+
+                if (hasChanges) {
+                    setCart(adjustedCart);
+                    Swal.fire({
+                        title: "Ajuste de Stock",
+                        html: `Algunos productos en tu carrito ya no tienen suficiente stock y han sido ajustados o eliminados:<br><br>${outOfStockList.map(x => `• ${x}`).join('<br>')}`,
+                        icon: "warning",
+                        confirmButtonColor: "#000000"
+                    });
+                    return;
+                }
+            } catch (err) {
+                console.error("Error verifying stock:", err);
+            }
+        }
+
         setStep(2);
         window.scrollTo(0, 0);
     };

@@ -43,12 +43,27 @@ export default function ProductDetailPidelo({ item, data, setCart, cart, textsta
     const [selectedSize, setSelectedSize] = useState(item?.slug);
     const [selectedVariant, setSelectedVariant] = useState(item);
 
+    const currentProduct = sizesItems.find(v => v.slug === selectedSize) || selectedVariant || item;
+    const isOutOfStock = !currentProduct?.stock_unlimited && (currentProduct?.stock <= 0 || !currentProduct?.stock);
+
     const handleChange = (e) => {
         let value = parseInt(e.target.value, 10);
+        const maxQty = currentProduct?.stock_unlimited ? 99 : (currentProduct?.stock || 0);
         if (isNaN(value) || value < 1) value = 1;
-        if (value > 10) value = 10;
+        if (value > maxQty) value = maxQty;
         setQuantity(value);
     };
+
+    useEffect(() => {
+        const maxQty = currentProduct?.stock_unlimited ? 99 : (currentProduct?.stock || 0);
+        if (maxQty <= 0) {
+            setQuantity(0);
+        } else if (quantity > maxQty) {
+            setQuantity(maxQty);
+        } else if (quantity === 0) {
+            setQuantity(1);
+        }
+    }, [currentProduct?.id]);
 
     const getContact = (correlative) => {
         return (
@@ -74,15 +89,31 @@ export default function ProductDetailPidelo({ item, data, setCart, cart, textsta
     //     setCart(newCart);
 
     //     Swal.fire({
-    //         title: "Producto agregado",
-    //         text: `Se agregó ${product.name} al carrito`,
-    //         icon: "success",
-    //         timer: 1500,
-    //     });
-    // };
     // Comprar: agrega al carrito y redirige al cart, sin abrir modal
     const onBuyClicked = (product) => {
         const variantToAdd = sizesItems.find(v => v.slug === selectedSize) || selectedVariant || product;
+        if (!variantToAdd.stock_unlimited) {
+            const currentStock = variantToAdd.stock || 0;
+            if (currentStock <= 0) {
+                Swal.fire({
+                    title: "Producto Agotado",
+                    text: "Este producto se encuentra agotado.",
+                    icon: "warning",
+                    confirmButtonColor: "#000000"
+                });
+                return;
+            }
+            if (currentStock < quantity) {
+                Swal.fire({
+                    title: "Stock Insuficiente",
+                    text: `No hay suficiente stock disponible. Stock disponible: ${currentStock}`,
+                    icon: "warning",
+                    confirmButtonColor: "#000000"
+                });
+                return;
+            }
+        }
+
         const newCart = structuredClone(cart);
         const index = newCart.findIndex((x) => x.id == variantToAdd.id);
         if (index == -1) {
@@ -91,35 +122,79 @@ export default function ProductDetailPidelo({ item, data, setCart, cart, textsta
                 quantity: quantity,
             });
         } else {
-            newCart[index].quantity++;
+            if (!variantToAdd.stock_unlimited) {
+                const currentStock = variantToAdd.stock || 0;
+                const newQty = newCart[index].quantity + quantity;
+                if (newQty > currentStock) {
+                    Swal.fire({
+                        title: "Stock Insuficiente",
+                        text: `No puedes agregar más de este producto. Stock total disponible: ${currentStock}. Ya tienes ${newCart[index].quantity} en el carrito.`,
+                        icon: "warning",
+                        confirmButtonColor: "#000000"
+                    });
+                    return;
+                }
+            }
+            newCart[index].quantity += quantity;
         }
         setCart(newCart);
         // Redirige al carrito
         window.location.href = '/cart';
     };
     const onAddClicked = (product) => {
-
-
         const variantToAdd = sizesItems.find(v => v.slug === selectedSize) || selectedVariant || product;
+        if (!variantToAdd.stock_unlimited) {
+            const currentStock = variantToAdd.stock || 0;
+            if (currentStock <= 0) {
+                Swal.fire({
+                    title: "Producto Agotado",
+                    text: "Este producto se encuentra agotado.",
+                    icon: "warning",
+                    confirmButtonColor: "#000000"
+                });
+                return;
+            }
+            if (currentStock < quantity) {
+                Swal.fire({
+                    title: "Stock Insuficiente",
+                    text: `No hay suficiente stock disponible. Stock disponible: ${currentStock}`,
+                    icon: "warning",
+                    confirmButtonColor: "#000000"
+                });
+                return;
+            }
+        }
+
         const newCart = structuredClone(cart);
-        //const index = newCart.findIndex((x) => x.id == product.id);
         const index = newCart.findIndex((x) => x.id == variantToAdd.id);
 
         if (index == -1) {
-            //newCart.push({ ...product, quantity: quantity });
             newCart.push({
                 ...variantToAdd,
                 quantity: quantity,
             });
         } else {
-            newCart[index].quantity++;
+            if (!variantToAdd.stock_unlimited) {
+                const currentStock = variantToAdd.stock || 0;
+                const newQty = newCart[index].quantity + quantity;
+                if (newQty > currentStock) {
+                    Swal.fire({
+                        title: "Stock Insuficiente",
+                        text: `No puedes agregar más de este producto. Stock total disponible: ${currentStock}. Ya tienes ${newCart[index].quantity} en el carrito.`,
+                        icon: "warning",
+                        confirmButtonColor: "#000000"
+                    });
+                    return;
+                }
+            }
+            newCart[index].quantity += quantity;
         }
         setCart(newCart);
 
         Swal.fire({
             title: '<span style="font-size:2rem;font-weight:700;color:#222">Producto agregado</span>',
-            html: `<div style="font-size:1.1rem;color:#444;margin-bottom:1rem;">Se agregó <b>${selectedVariant.name || product.name}</b> al carrito</div>
-                <img src='/storage/images/item/${selectedVariant.image || product.image}' style='width:100px;height:100px;border-radius:16px;margin:auto;background:#fff;object-fit:cover;' />`,
+            html: `<div style="font-size:1.1rem;color:#444;margin-bottom:1rem;">Se agregó <b>${variantToAdd.name || product.name}</b> al carrito</div>
+                <img src='/storage/images/item/${variantToAdd.image || product.image}' style='width:100px;height:100px;border-radius:16px;margin:auto;background:#fff;object-fit:cover;' />`,
             icon: "success",
             showCancelButton: true,
             confirmButtonText: '<span style="font-size:1rem;font-weight:600;">Abrir mini carrito</span>',
@@ -138,8 +213,6 @@ export default function ProductDetailPidelo({ item, data, setCart, cart, textsta
             }
         });
     };
-
-
 
     const [associatedItems, setAssociatedItems] = useState([]);
     const [relationsItems, setRelationsItems] = useState([]);
@@ -423,7 +496,7 @@ export default function ProductDetailPidelo({ item, data, setCart, cart, textsta
                                         type="button"
                                         onClick={() => setQuantity(Math.max(1, quantity - 1))}
                                         className="w-8 h-8 flex items-center justify-center rounded-lg bg-white shadow-sm hover:shadow-md hover:bg-gray-100 customtext-neutral-dark transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:shadow-sm disabled:hover:bg-white"
-                                        disabled={quantity <= 1}
+                                        disabled={quantity <= 1 || isOutOfStock}
                                     >
                                         <Minus className="w-4 h-4" />
                                     </button>
@@ -432,9 +505,9 @@ export default function ProductDetailPidelo({ item, data, setCart, cart, textsta
                                     </div>
                                     <button
                                         type="button"
-                                        onClick={() => setQuantity(Math.min(10, quantity + 1))}
+                                        onClick={() => setQuantity(Math.min(currentProduct?.stock_unlimited ? 99 : (currentProduct?.stock || 0), quantity + 1))}
                                         className="w-8 h-8 flex items-center justify-center rounded-lg bg-white shadow-sm hover:shadow-md hover:bg-gray-100 customtext-neutral-dark transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:shadow-sm disabled:hover:bg-white"
-                                        disabled={quantity >= 10}
+                                        disabled={quantity >= (currentProduct?.stock_unlimited ? 99 : (currentProduct?.stock || 0)) || isOutOfStock}
                                     >
                                         <Plus className="w-4 h-4" />
                                     </button>
@@ -443,8 +516,9 @@ export default function ProductDetailPidelo({ item, data, setCart, cart, textsta
                                     type="number"
                                     value={quantity}
                                     onChange={handleChange}
-                                    min="1"
-                                    max="10"
+                                    min={isOutOfStock ? 0 : 1}
+                                    max={currentProduct?.stock_unlimited ? 99 : (currentProduct?.stock || 0)}
+                                    disabled={isOutOfStock}
                                     className="hidden"
                                 />
                             </div>
@@ -542,11 +616,11 @@ export default function ProductDetailPidelo({ item, data, setCart, cart, textsta
                             {/* Availability */}
                             <div className="flex gap-4 items-center justify-start ">
                                 <span className="customtext-neutral-dark text-sm font-medium">Disponibilidad</span>
-                                <span className={`px-3  py-1 rounded-full text-xs font-semibold ${selectedVariant?.stock > 0
+                                <span className={`px-3  py-1 rounded-full text-xs font-semibold ${(currentProduct?.stock_unlimited || currentProduct?.stock > 0)
                                     ? ` customtext-neutral-dark ${data?.class_badge || "bg-primary"}`
                                     : `bg-secondary customtext-neutral-dark`
                                     }`}>
-                                    {selectedVariant?.stock > 0 ? "En stock" : "Agotado"}
+                                    {(currentProduct?.stock_unlimited || currentProduct?.stock > 0) ? "En stock" : "Agotado"}
                                 </span>
                             </div>
 
@@ -567,10 +641,10 @@ export default function ProductDetailPidelo({ item, data, setCart, cart, textsta
                             )}
 
                             {/* Stock Quantity */}
-                            {selectedVariant?.stock > 0 && (
+                            {!currentProduct?.stock_unlimited && currentProduct?.stock > 0 && (
                                 <div className="flex gap-4 items-center justify-start ">
                                     <span className="customtext-neutral-dark text-sm font-medium">Stock disponible</span>
-                                    <span className="customtext-neutral-dark text-sm font-bold">{selectedVariant.stock} unidades</span>
+                                    <span className="customtext-neutral-dark text-sm font-bold">{currentProduct.stock} unidades</span>
                                 </div>
                             )}
 
@@ -668,19 +742,19 @@ export default function ProductDetailPidelo({ item, data, setCart, cart, textsta
                             </div>
 
                             <button
-                                className="w-full bg-primary text-white font-bold py-4 rounded-xl text-lg hover:opacity-90 transition"
-                                disabled={selectedVariant?.stock <= 0}
+                                className={`w-full font-bold py-4 rounded-xl text-lg hover:opacity-90 transition ${isOutOfStock ? "bg-gray-300 text-gray-500 cursor-not-allowed" : "bg-primary text-white"}`}
+                                disabled={isOutOfStock}
                                 onClick={() => onBuyClicked(item)}
                             >
-                                Comprar
+                                {isOutOfStock ? "Agotado" : "Comprar"}
                             </button>
 
                             <button
-                                className="w-full bg-gray-200 text-gray-700 font-bold py-4 rounded-xl text-lg hover:opacity-90 transition"
+                                className={`w-full font-bold py-4 rounded-xl text-lg hover:opacity-90 transition ${isOutOfStock ? "bg-gray-100 text-gray-400 cursor-not-allowed border border-gray-200" : "bg-gray-200 text-gray-700"}`}
                                 onClick={() => onAddClicked(item)}
-                                disabled={selectedVariant?.stock <= 0}
+                                disabled={isOutOfStock}
                             >
-                                Agregar al Carrito
+                                {isOutOfStock ? "Agotado" : "Agregar al Carrito"}
                             </button>
                         </div>
                     </div>

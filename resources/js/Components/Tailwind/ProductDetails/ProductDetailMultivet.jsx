@@ -84,6 +84,19 @@ const ProductDetailMultivet = ({
     const [isSpecificationsExpanded, setIsSpecificationsExpanded] =
         useState(false);
     const [isFavorite, setIsFavorite] = useState(false);
+    
+    const isOutOfStock = !item?.stock_unlimited && (item?.stock <= 0 || !item?.stock);
+
+    useEffect(() => {
+        const maxQty = item?.stock_unlimited ? 99 : (item?.stock || 0);
+        if (maxQty <= 0) {
+            setQuantity(0);
+        } else if (quantity > maxQty) {
+            setQuantity(maxQty);
+        } else if (quantity === 0) {
+            setQuantity(1);
+        }
+    }, [item?.id]);
 
     // Referencias para medir contenido
     const descriptionRef = useRef(null);
@@ -303,7 +316,10 @@ const ProductDetailMultivet = ({
     // Manejar cambio de cantidad
     const handleChange = (e) => {
         const value = parseInt(e.target.value) || 1;
-        setQuantity(Math.max(1, value));
+        const maxQty = item?.stock_unlimited ? 99 : (item?.stock || 0);
+        let finalVal = Math.max(1, value);
+        if (finalVal > maxQty) finalVal = maxQty;
+        setQuantity(finalVal);
     };
 
     // Funciones de WhatsApp
@@ -356,11 +372,31 @@ const ProductDetailMultivet = ({
             return;
         }
 
+        if (!product.stock_unlimited) {
+            const currentStock = product.stock || 0;
+            if (currentStock <= 0) {
+                toast.error("Este producto se encuentra agotado.");
+                return;
+            }
+            if (currentStock < quantity) {
+                toast.error(`No hay suficiente stock disponible. Stock disponible: ${currentStock}`);
+                return;
+            }
+        }
+
         const newCart = structuredClone(cart);
         const index = newCart.findIndex((x) => x.id == product?.id);
         if (index == -1) {
             newCart.push({ ...product, quantity: quantity });
         } else {
+            if (!product.stock_unlimited) {
+                const currentStock = product.stock || 0;
+                const newQty = newCart[index].quantity + quantity;
+                if (newQty > currentStock) {
+                    toast.error(`No puedes agregar más de este producto. Stock disponible: ${currentStock}. Ya tienes ${newCart[index].quantity} en el carrito.`);
+                    return;
+                }
+            }
             newCart[index].quantity += quantity;
         }
         setCart(newCart);
@@ -915,8 +951,8 @@ const ProductDetailMultivet = ({
                                                             ),
                                                         )
                                                     }
-                                                    className="w-10 h-10 flex items-center justify-center rounded-lg hover:bg-white hover:shadow-sm active:scale-95 transition-all duration-200 text-neutral-dark font-bold text-xl"
-                                                    disabled={quantity <= 1}
+                                                    className="w-10 h-10 flex items-center justify-center rounded-lg hover:bg-white hover:shadow-sm active:scale-95 transition-all duration-200 text-neutral-dark font-bold text-xl disabled:opacity-30 disabled:cursor-not-allowed"
+                                                    disabled={quantity <= 1 || isOutOfStock}
                                                 >
                                                     −
                                                 </button>
@@ -929,13 +965,13 @@ const ProductDetailMultivet = ({
                                                     onClick={() =>
                                                         setQuantity(
                                                             Math.min(
-                                                                10,
+                                                                item?.stock_unlimited ? 99 : (item?.stock || 0),
                                                                 quantity + 1,
                                                             ),
                                                         )
                                                     }
-                                                    className="w-10 h-10 flex items-center justify-center rounded-lg hover:bg-white hover:shadow-sm active:scale-95 transition-all duration-200 text-neutral-dark font-bold text-xl"
-                                                    disabled={quantity >= 10}
+                                                    className="w-10 h-10 flex items-center justify-center rounded-lg hover:bg-white hover:shadow-sm active:scale-95 transition-all duration-200 text-neutral-dark font-bold text-xl disabled:opacity-30 disabled:cursor-not-allowed"
+                                                    disabled={quantity >= (item?.stock_unlimited ? 99 : (item?.stock || 0)) || isOutOfStock}
                                                 >
                                                     +
                                                 </button>
@@ -949,10 +985,10 @@ const ProductDetailMultivet = ({
                                 {/* Botón de Comprar Ahora - Solo si buyButton es true y hay precio válido */}
                                 {data?.buyButton &&
                                     hasValidPrice &&
-                                    (item?.sold_out ? (
+                                    (isOutOfStock ? (
                                         <button
                                             disabled
-                                            className="w-full py-4 px-6 rounded-xl font-bold flex items-center justify-center space-x-2 bg-danger text-white "
+                                            className="w-full py-4 px-6 rounded-xl font-bold flex items-center justify-center space-x-2 bg-gray-300 text-gray-500 cursor-not-allowed"
                                         >
                                             <XCircle className="w-5 h-5" />
                                             <span>Agotado</span>
@@ -1119,8 +1155,8 @@ const ProductDetailMultivet = ({
                                 onClick={() =>
                                     setQuantity(Math.max(1, quantity - 1))
                                 }
-                                className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white hover:shadow-sm active:scale-95 transition-all duration-200 text-neutral-dark font-bold text-lg"
-                                disabled={quantity <= 1}
+                                className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white hover:shadow-sm active:scale-95 transition-all duration-200 text-neutral-dark font-bold text-lg disabled:opacity-30 disabled:cursor-not-allowed"
+                                disabled={quantity <= 1 || isOutOfStock}
                             >
                                 −
                             </button>
@@ -1131,10 +1167,10 @@ const ProductDetailMultivet = ({
                             </div>
                             <button
                                 onClick={() =>
-                                    setQuantity(Math.min(10, quantity + 1))
+                                    setQuantity(Math.min(item?.stock_unlimited ? 99 : (item?.stock || 0), quantity + 1))
                                 }
-                                className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white hover:shadow-sm active:scale-95 transition-all duration-200 text-neutral-dark font-bold text-lg"
-                                disabled={quantity >= 10}
+                                className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white hover:shadow-sm active:scale-95 transition-all duration-200 text-neutral-dark font-bold text-lg disabled:opacity-30 disabled:cursor-not-allowed"
+                                disabled={quantity >= (item?.stock_unlimited ? 99 : (item?.stock || 0)) || isOutOfStock}
                             >
                                 +
                             </button>
@@ -1144,10 +1180,10 @@ const ProductDetailMultivet = ({
                     {/* Botón de Comprar Mobile - Solo si buyButton es true y hay precio válido */}
                     {data?.buyButton &&
                         hasValidPrice &&
-                        (item?.sold_out ? (
+                        (isOutOfStock ? (
                             <button
                                 disabled
-                                className="flex-1 py-3 px-4 rounded-xl font-bold flex items-center justify-center space-x-2 bg-gray-400 text-white cursor-not-allowed opacity-75"
+                                className="flex-1 py-3 px-4 rounded-xl font-bold flex items-center justify-center space-x-2 bg-gray-300 text-gray-500 cursor-not-allowed"
                             >
                                 <XCircle className="w-4 h-4" />
                                 <span className="text-sm">Agotado</span>

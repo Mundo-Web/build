@@ -65,21 +65,49 @@ const ProductDetailPaani = ({ item, data, setCart, cart, generals, favorites, se
     const [isExpanded, setIsExpanded] = useState(false);
 
     const onAddClicked = (product) => {
+        if (!product.stock_unlimited) {
+            const currentStock = product.stock || 0;
+            if (currentStock <= 0) {
+                Swal.fire({
+                    title: "Producto Agotado",
+                    text: "Este producto se encuentra agotado.",
+                    icon: "warning",
+                    confirmButtonColor: "#000000"
+                });
+                return;
+            }
+            if (currentStock < quantity) {
+                Swal.fire({
+                    title: "Stock Insuficiente",
+                    text: `No hay suficiente stock disponible. Stock disponible: ${currentStock}`,
+                    icon: "warning",
+                    confirmButtonColor: "#000000"
+                });
+                return;
+            }
+        }
+
         const newCart = structuredClone(cart);
         const index = newCart.findIndex((x) => x.id == product.id);
         if (index == -1) {
             newCart.push({ ...product, quantity: quantity });
         } else {
-            newCart[index].quantity++;
+            if (!product.stock_unlimited) {
+                const currentStock = product.stock || 0;
+                const newQty = newCart[index].quantity + quantity;
+                if (newQty > currentStock) {
+                    Swal.fire({
+                        title: "Stock Insuficiente",
+                        text: `No puedes agregar más de este producto. Stock total disponible: ${currentStock}. Ya tienes ${newCart[index].quantity} en el carrito.`,
+                        icon: "warning",
+                        confirmButtonColor: "#000000"
+                    });
+                    return;
+                }
+            }
+            newCart[index].quantity += quantity;
         }
         setCart(newCart);
-
-        /*   Swal.fire({
-               title: "Producto agregado",
-               text: `Se agregó ${product.name} al carrito`,
-               icon: "success",
-               timer: 1500,
-           });*/
         setModalOpen(!modalOpen);
         setTimeout(() => setModalOpen(false), 3000);
     };
@@ -654,7 +682,7 @@ const ProductDetailPaani = ({ item, data, setCart, cart, generals, favorites, se
                                     <span className="ustomtext-neutral-light text-sm">
                                         Disponibilidad:{" "}
                                         <span className="customtext-neutral-dark  font-medium">
-                                            {item?.stock > 0
+                                            {item?.stock_unlimited || item?.stock > 0
                                                 ? "En stock"
                                                 : "Agotado"}
                                         </span>

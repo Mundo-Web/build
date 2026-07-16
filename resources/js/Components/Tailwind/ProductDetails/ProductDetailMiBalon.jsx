@@ -67,6 +67,19 @@ const ProductDetailMiBalon = ({
     const [showAllSpecs, setShowAllSpecs] = useState(false);
     const [relationsItems, setRelationsItems] = useState([]);
 
+    const isOutOfStock = !currentProduct?.stock_unlimited && (currentProduct?.stock <= 0 || !currentProduct?.stock);
+
+    useEffect(() => {
+        const maxQty = currentProduct?.stock_unlimited ? 99 : (currentProduct?.stock || 0);
+        if (maxQty <= 0) {
+            setQuantity(0);
+        } else if (quantity > maxQty) {
+            setQuantity(maxQty);
+        } else if (quantity === 0) {
+            setQuantity(1);
+        }
+    }, [currentProduct?.id]);
+
     const productosRelacionados = async (item) => {
         try {
             const request = { 
@@ -284,11 +297,46 @@ const ProductDetailMiBalon = ({
             return;
         }
 
+        if (!product.stock_unlimited) {
+            const currentStock = product.stock || 0;
+            if (currentStock <= 0) {
+                Swal.fire({
+                    title: "Producto Agotado",
+                    text: "Este producto se encuentra agotado.",
+                    icon: "warning",
+                    confirmButtonColor: "#000000"
+                });
+                return;
+            }
+            if (currentStock < quantity) {
+                Swal.fire({
+                    title: "Stock Insuficiente",
+                    text: `No hay suficiente stock disponible. Stock disponible: ${currentStock}`,
+                    icon: "warning",
+                    confirmButtonColor: "#000000"
+                });
+                return;
+            }
+        }
+
         const newCart = [...cart];
         const index = newCart.findIndex((x) => x.id === product.id);
         if (index === -1) {
             newCart.push({ ...product, quantity });
         } else {
+            if (!product.stock_unlimited) {
+                const currentStock = product.stock || 0;
+                const newQty = newCart[index].quantity + quantity;
+                if (newQty > currentStock) {
+                    Swal.fire({
+                        title: "Stock Insuficiente",
+                        text: `No puedes agregar más de este producto. Stock total disponible: ${currentStock}. Ya tienes ${newCart[index].quantity} en el carrito.`,
+                        icon: "warning",
+                        confirmButtonColor: "#000000"
+                    });
+                    return;
+                }
+            }
             newCart[index].quantity += quantity;
         }
         setCart(newCart);
@@ -775,7 +823,8 @@ const ProductDetailMiBalon = ({
                                                         Math.max(1, quantity - 1),
                                                     )
                                                 }
-                                                className="text-2xl font-medium hover:text-primary   transition-colors"
+                                                disabled={quantity <= 1 || isOutOfStock}
+                                                className="text-2xl font-medium hover:text-primary transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
                                             >
                                                 -
                                             </button>
@@ -785,10 +834,11 @@ const ProductDetailMiBalon = ({
                                             <button
                                                 onClick={() =>
                                                     setQuantity(
-                                                        Math.min(10, quantity + 1),
+                                                        Math.min(currentProduct?.stock_unlimited ? 99 : (currentProduct?.stock || 0), quantity + 1),
                                                     )
                                                 }
-                                                className="text-2xl font-medium hover:text-primary transition-colors"
+                                                disabled={quantity >= (currentProduct?.stock_unlimited ? 99 : (currentProduct?.stock || 0)) || isOutOfStock}
+                                                className="text-2xl font-medium hover:text-primary transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
                                             >
                                                 +
                                             </button>
@@ -826,7 +876,7 @@ const ProductDetailMiBalon = ({
                                                 <div className="grid grid-cols-2 gap-3">
                                                     {showBuy && (
                                                         <button
-                                                            disabled={!isFullySelected}
+                                                            disabled={!isFullySelected || isOutOfStock}
                                                             onClick={() => {
                                                                 onAddClicked(
                                                                     currentProduct,
@@ -836,20 +886,20 @@ const ProductDetailMiBalon = ({
                                                                         "/cart";
                                                                 }
                                                             }}
-                                                            className={`${mibalonPrimaryBtn} ${!isFullySelected ? "opacity-50 cursor-not-allowed hover:bg-primary hover:border-neutral-dark" : ""}`}
+                                                            className={`${mibalonPrimaryBtn} ${!isFullySelected || isOutOfStock ? "opacity-50 cursor-not-allowed hover:bg-primary hover:border-neutral-dark bg-gray-300 text-gray-500" : ""}`}
                                                         >
-                                                            Comprar ahora
+                                                            {isOutOfStock ? "Agotado" : "Comprar ahora"}
                                                         </button>
                                                     )}
                                                     {showCart && (
                                                         <button
-                                                            disabled={!isFullySelected}
+                                                            disabled={!isFullySelected || isOutOfStock}
                                                             onClick={() =>
                                                                 onAddClicked(currentProduct)
                                                             }
-                                                            className={`${mibalonSecondaryBtn} ${!isFullySelected ? "opacity-50 cursor-not-allowed hover:bg-white hover:border-gray-200" : ""}`}
+                                                            className={`${mibalonSecondaryBtn} ${!isFullySelected || isOutOfStock ? "opacity-50 cursor-not-allowed hover:bg-white hover:border-gray-200 bg-gray-100 text-gray-400" : ""}`}
                                                         >
-                                                            Al Carrito
+                                                            {isOutOfStock ? "Agotado" : "Al Carrito"}
                                                         </button>
                                                     )}
                                                 </div>
@@ -1218,9 +1268,10 @@ const ProductDetailMiBalon = ({
                                         {showCart && (
                                             <button
                                                 onClick={() => onAddClicked(currentProduct)}
-                                                className={`${mibalonSecondaryBtn} !py-3 !text-sm flex-1`}
+                                                disabled={isOutOfStock}
+                                                className={`${mibalonSecondaryBtn} !py-3 !text-sm flex-1 ${isOutOfStock ? "opacity-50 cursor-not-allowed bg-gray-100 text-gray-400" : ""}`}
                                             >
-                                                Carrito
+                                                {isOutOfStock ? "Agotado" : "Carrito"}
                                             </button>
                                         )}
                                         {showBuy && (
@@ -1229,9 +1280,10 @@ const ProductDetailMiBalon = ({
                                                     onAddClicked(currentProduct);
                                                     window.location.href = "/cart";
                                                 }}
-                                                className={`${mibalonPrimaryBtn} !py-3 !text-sm flex-1`}
+                                                disabled={isOutOfStock}
+                                                className={`${mibalonPrimaryBtn} !py-3 !text-sm flex-1 ${isOutOfStock ? "opacity-50 cursor-not-allowed bg-gray-300 text-gray-500" : ""}`}
                                             >
-                                                Pagar
+                                                {isOutOfStock ? "Agotado" : "Pagar"}
                                             </button>
                                         )}
                                     </div>

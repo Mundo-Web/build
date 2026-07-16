@@ -57,6 +57,19 @@ const ProductDetailRainstar = ({
     const [selectedVariant, setSelectedVariant] = useState(item);
     const [selectedAttributes, setSelectedAttributes] = useState({});
     const [modalOpen, setModalOpen] = useState(false);
+    
+    const isOutOfStock = !currentProduct?.stock_unlimited && (currentProduct?.stock <= 0 || !currentProduct?.stock);
+
+    useEffect(() => {
+        const maxQty = currentProduct?.stock_unlimited ? 99 : (currentProduct?.stock || 0);
+        if (maxQty <= 0) {
+            setQuantity(0);
+        } else if (quantity > maxQty) {
+            setQuantity(maxQty);
+        } else if (quantity === 0) {
+            setQuantity(1);
+        }
+    }, [currentProduct?.id]);
 
     // Zoom State
     const [zoomPosition, setZoomPosition] = useState({ x: 0, y: 0 });
@@ -229,11 +242,46 @@ const ProductDetailRainstar = ({
             return;
         }
 
+        if (!product.stock_unlimited) {
+            const currentStock = product.stock || 0;
+            if (currentStock <= 0) {
+                Swal.fire({
+                    title: "Producto Agotado",
+                    text: "Este producto se encuentra agotado.",
+                    icon: "warning",
+                    confirmButtonColor: "#000000"
+                });
+                return;
+            }
+            if (currentStock < quantity) {
+                Swal.fire({
+                    title: "Stock Insuficiente",
+                    text: `No hay suficiente stock disponible. Stock disponible: ${currentStock}`,
+                    icon: "warning",
+                    confirmButtonColor: "#000000"
+                });
+                return;
+            }
+        }
+
         const newCart = [...cart];
         const index = newCart.findIndex((x) => x.id === product.id);
         if (index === -1) {
             newCart.push({ ...product, quantity });
         } else {
+            if (!product.stock_unlimited) {
+                const currentStock = product.stock || 0;
+                const newQty = newCart[index].quantity + quantity;
+                if (newQty > currentStock) {
+                    Swal.fire({
+                        title: "Stock Insuficiente",
+                        text: `No puedes agregar más de este producto. Stock total disponible: ${currentStock}. Ya tienes ${newCart[index].quantity} en el carrito.`,
+                        icon: "warning",
+                        confirmButtonColor: "#000000"
+                    });
+                    return;
+                }
+            }
             newCart[index].quantity += quantity;
         }
         setCart(newCart);
@@ -676,7 +724,8 @@ const ProductDetailRainstar = ({
                                                     Math.max(1, quantity - 1),
                                                 )
                                             }
-                                            className="text-2xl font-light hover:text-primary transition-colors"
+                                            disabled={quantity <= 1 || isOutOfStock}
+                                            className="text-2xl font-light hover:text-primary transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
                                         >
                                             -
                                         </button>
@@ -686,10 +735,11 @@ const ProductDetailRainstar = ({
                                         <button
                                             onClick={() =>
                                                 setQuantity(
-                                                    Math.min(10, quantity + 1),
+                                                    Math.min(currentProduct?.stock_unlimited ? 99 : (currentProduct?.stock || 0), quantity + 1),
                                                 )
                                             }
-                                            className="text-2xl font-light hover:text-primary transition-colors"
+                                            disabled={quantity >= (currentProduct?.stock_unlimited ? 99 : (currentProduct?.stock || 0)) || isOutOfStock}
+                                            className="text-2xl font-light hover:text-primary transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
                                         >
                                             +
                                         </button>
@@ -701,17 +751,19 @@ const ProductDetailRainstar = ({
                                             onAddClicked(currentProduct);
                                             window.location.href = "/cart";
                                         }}
-                                        className={rainstarPrimaryBtn}
+                                        disabled={isOutOfStock}
+                                        className={`${rainstarPrimaryBtn} ${isOutOfStock ? "bg-gray-300 text-gray-500 border-gray-300 cursor-not-allowed" : ""}`}
                                     >
-                                        Comprar ahora
+                                        {isOutOfStock ? "Agotado" : "Comprar ahora"}
                                     </button>
                                     <button
                                         onClick={() =>
                                             onAddClicked(currentProduct)
                                         }
-                                        className={rainstarSecondaryBtn}
+                                        disabled={isOutOfStock}
+                                        className={`${rainstarSecondaryBtn} ${isOutOfStock ? "bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed" : ""}`}
                                     >
-                                        Al Carrito
+                                        {isOutOfStock ? "Agotado" : "Al Carrito"}
                                     </button>
                                 </div>
                             </div>
@@ -988,18 +1040,20 @@ const ProductDetailRainstar = ({
                     <div className="fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-neutral-dark p-6 grid grid-cols-2 gap-4 shadow-[0_-10px_30px_rgba(0,0,0,0.05)]">
                         <button
                             onClick={() => onAddClicked(currentProduct)}
-                            className={rainstarSecondaryBtn}
+                            disabled={isOutOfStock}
+                            className={`${rainstarSecondaryBtn} ${isOutOfStock ? "bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed" : ""}`}
                         >
-                            Carrito
+                            {isOutOfStock ? "Agotado" : "Carrito"}
                         </button>
                         <button
                             onClick={() => {
                                 onAddClicked(currentProduct);
                                 window.location.href = "/cart";
                             }}
-                            className={rainstarPrimaryBtn}
+                            disabled={isOutOfStock}
+                            className={`${rainstarPrimaryBtn} ${isOutOfStock ? "bg-gray-300 text-gray-500 border-gray-300 cursor-not-allowed" : ""}`}
                         >
-                            Pagar
+                            {isOutOfStock ? "Agotado" : "Pagar"}
                         </button>
                     </div>
                 </div>

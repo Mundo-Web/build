@@ -75,6 +75,19 @@ const ProductDetailIbergruas = ({ item, data, setCart, cart, generals, favorites
     const [isSpecificationsExpanded, setIsSpecificationsExpanded] = useState(false);
     const [isFavorite, setIsFavorite] = useState(false);
 
+    const isOutOfStock = !item?.stock_unlimited && (item?.stock <= 0 || !item?.stock);
+
+    useEffect(() => {
+        const maxQty = item?.stock_unlimited ? 99 : (item?.stock || 0);
+        if (maxQty <= 0) {
+            setQuantity(0);
+        } else if (quantity > maxQty) {
+            setQuantity(maxQty);
+        } else if (quantity === 0) {
+            setQuantity(1);
+        }
+    }, [item?.id]);
+
     // Referencias para medir contenido
     const descriptionRef = useRef(null);
     const specificationsRef = useRef(null);
@@ -296,7 +309,10 @@ const ProductDetailIbergruas = ({ item, data, setCart, cart, generals, favorites
     // Manejar cambio de cantidad
     const handleChange = (e) => {
         const value = parseInt(e.target.value) || 1;
-        setQuantity(Math.max(1, value));
+        const maxQty = item?.stock_unlimited ? 99 : (item?.stock || 0);
+        let finalVal = Math.max(1, value);
+        if (finalVal > maxQty) finalVal = maxQty;
+        setQuantity(finalVal);
     };
 
     // Funciones de WhatsApp
@@ -345,11 +361,31 @@ const ProductDetailIbergruas = ({ item, data, setCart, cart, generals, favorites
             return;
         }
 
+        if (!product.stock_unlimited) {
+            const currentStock = product.stock || 0;
+            if (currentStock <= 0) {
+                toast.error("Este producto se encuentra agotado.");
+                return;
+            }
+            if (currentStock < quantity) {
+                toast.error(`No hay suficiente stock disponible. Stock disponible: ${currentStock}`);
+                return;
+            }
+        }
+
         const newCart = structuredClone(cart);
         const index = newCart.findIndex((x) => x.id == product?.id);
         if (index == -1) {
             newCart.push({ ...product, quantity: quantity });
         } else {
+            if (!product.stock_unlimited) {
+                const currentStock = product.stock || 0;
+                const newQty = newCart[index].quantity + quantity;
+                if (newQty > currentStock) {
+                    toast.error(`No puedes agregar más de este producto. Stock disponible: ${currentStock}. Ya tienes ${newCart[index].quantity} en el carrito.`);
+                    return;
+                }
+            }
             newCart[index].quantity += quantity;
         }
         setCart(newCart);
@@ -802,8 +838,8 @@ const ProductDetailIbergruas = ({ item, data, setCart, cart, generals, favorites
                                             <div className="flex items-center rounded-none border border-primary p-1">
                                                 <button
                                                     onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                                                    className="w-10 h-10 flex items-center justify-center rounded-none hover:bg-primary hover:shadow-sm active:scale-95 transition-all duration-200 text-white font-bold text-xl"
-                                                    disabled={quantity <= 1}
+                                                    className="w-10 h-10 flex items-center justify-center rounded-none hover:bg-primary hover:shadow-sm active:scale-95 transition-all duration-200 text-white font-bold text-xl disabled:opacity-30 disabled:cursor-not-allowed"
+                                                    disabled={quantity <= 1 || isOutOfStock}
                                                 >
                                                     −
                                                 </button>
@@ -813,9 +849,9 @@ const ProductDetailIbergruas = ({ item, data, setCart, cart, generals, favorites
                                                     </span>
                                                 </div>
                                                 <button
-                                                    onClick={() => setQuantity(Math.min(10, quantity + 1))}
-                                                    className="w-10 h-10 flex items-center justify-center rounded-none hover:bg-primary hover:shadow-sm active:scale-95 transition-all duration-200 text-white font-bold text-xl"
-                                                    disabled={quantity >= 10}
+                                                    onClick={() => setQuantity(Math.min(item?.stock_unlimited ? 99 : (item?.stock || 0), quantity + 1))}
+                                                    className="w-10 h-10 flex items-center justify-center rounded-none hover:bg-primary hover:shadow-sm active:scale-95 transition-all duration-200 text-white font-bold text-xl disabled:opacity-30 disabled:cursor-not-allowed"
+                                                    disabled={quantity >= (item?.stock_unlimited ? 99 : (item?.stock || 0)) || isOutOfStock}
                                                 >
                                                     +
                                                 </button>
@@ -832,14 +868,15 @@ const ProductDetailIbergruas = ({ item, data, setCart, cart, generals, favorites
                                     data?.buyButton && (
                                         <button
                                             onClick={() => onAddClicked(item)}
-                                            className={`w-full py-4 px-6 rounded-none font-bold flex items-center justify-center space-x-2 hover:scale-105 transition-all shadow-lg hover:shadow-xl transform duration-500 ${inCart
+                                            disabled={isOutOfStock}
+                                            className={`w-full py-4 px-6 rounded-none font-bold flex items-center justify-center space-x-2 hover:scale-105 transition-all shadow-lg hover:shadow-xl transform duration-500 ${isOutOfStock ? "bg-gray-300 text-gray-500 cursor-not-allowed" : inCart
                                                 ? 'bg-accent text-white'
                                                 : 'bg-primary text-white'
                                                 }`}
                                         >
                                             <ShoppingCart className="w-5 h-5" />
                                             <span>
-                                                {inCart ? `En carrito (${cartQuantity})` : 'Comprar ahora'}
+                                                {isOutOfStock ? "Agotado" : inCart ? `En carrito (${cartQuantity})` : 'Comprar ahora'}
                                             </span>
                                         </button>
                                     )
@@ -948,15 +985,14 @@ const ProductDetailIbergruas = ({ item, data, setCart, cart, generals, favorites
                 )}
             </div>
 
-            {/* Botón Flotante Mobile */}
             <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 z-40 shadow-lg">
                 <div className="flex items-center gap-3">
                     {/* Selector de Cantidad Mobile */}
                     <div className="flex items-center bg-gray-50 rounded-xl border border-gray-200 p-1">
                         <button
                             onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                            className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white hover:shadow-sm active:scale-95 transition-all duration-200 customtext-neutral-dark font-bold text-lg"
-                            disabled={quantity <= 1}
+                            className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white hover:shadow-sm active:scale-95 transition-all duration-200 customtext-neutral-dark font-bold text-lg disabled:opacity-30 disabled:cursor-not-allowed"
+                            disabled={quantity <= 1 || isOutOfStock}
                         >
                             −
                         </button>
@@ -966,29 +1002,30 @@ const ProductDetailIbergruas = ({ item, data, setCart, cart, generals, favorites
                             </span>
                         </div>
                         <button
-                            onClick={() => setQuantity(Math.min(10, quantity + 1))}
-                            className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white hover:shadow-sm active:scale-95 transition-all duration-200 customtext-neutral-dark font-bold text-lg"
-                            disabled={quantity >= 10}
+                            onClick={() => setQuantity(Math.min(item?.stock_unlimited ? 99 : (item?.stock || 0), quantity + 1))}
+                            className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white hover:shadow-sm active:scale-95 transition-all duration-200 customtext-neutral-dark font-bold text-lg disabled:opacity-30 disabled:cursor-not-allowed"
+                            disabled={quantity >= (item?.stock_unlimited ? 99 : (item?.stock || 0)) || isOutOfStock}
                         >
                             +
                         </button>
                     </div>
 
                     {/* Botón de Comprar Mobile - Solo si buyButton es true */}
-                   {item?.price > 0  && (  data?.buyButton && (
+                    {item?.price > 0 && data?.buyButton && (
                         <button
                             onClick={() => onAddClicked(item)}
-                            className={`flex-1 py-3 px-4 rounded-none font-bold flex items-center justify-center space-x-2 transition-all shadow-lg active:scale-95 ${inCart
+                            disabled={isOutOfStock}
+                            className={`flex-1 py-3 px-4 rounded-none font-bold flex items-center justify-center space-x-2 transition-all shadow-lg active:scale-95 ${isOutOfStock ? "bg-gray-300 text-gray-500 cursor-not-allowed" : inCart
                                 ? 'bg-secondary text-white'
                                 : 'bg-primary customtext-neutral-dark hover:bg-accent'
                                 }`}
                         >
                             <ShoppingCart className="w-4 h-4" />
                             <span className="text-sm">
-                                {inCart ? `En carrito (${cartQuantity})` : 'Comprar'}
+                                {isOutOfStock ? "Agotado" : inCart ? `En carrito (${cartQuantity})` : 'Comprar'}
                             </span>
                         </button>
-                    ))}
+                    )}
 
                     {/* Botón de Cotizar Mobile */}
                     <button

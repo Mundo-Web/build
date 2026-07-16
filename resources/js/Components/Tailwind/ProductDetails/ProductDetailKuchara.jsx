@@ -2,7 +2,7 @@ import Swal from "sweetalert2"
 import html2string from "../../../Utils/html2string"
 import HtmlContent from "../../../Utils/HtmlContent"
 import Number2Currency, { CurrencySymbol } from "../../../Utils/Number2Currency"
-import { useRef, useState } from "react"
+import { useRef, useState, useEffect } from "react"
 import { Swiper, SwiperSlide } from 'swiper/react';
 // Add this with other imports at the top
 
@@ -12,14 +12,62 @@ const ProductDetailKuchara = ({ item, data, cart, setCart }) => {
 
   const quantityRef = useRef()
   const [quantity, setQuantity] = useState(1)
+  
+  const isOutOfStock = !item?.stock_unlimited && (item?.stock <= 0 || !item?.stock);
+
+  useEffect(() => {
+    const maxQty = item?.stock_unlimited ? 99 : (item?.stock || 0);
+    if (maxQty <= 0) {
+      setQuantity(0);
+    } else if (quantity > maxQty) {
+      setQuantity(maxQty);
+    } else if (quantity === 0) {
+      setQuantity(1);
+    }
+  }, [item?.id]);
 
   const onAddClicked = () => {
+    if (!item.stock_unlimited) {
+      const currentStock = item.stock || 0;
+      if (currentStock <= 0) {
+        Swal.fire({
+          title: "Producto Agotado",
+          text: "Este producto se encuentra agotado.",
+          icon: "warning",
+          confirmButtonColor: "#15803d"
+        });
+        return;
+      }
+      if (currentStock < quantity) {
+        Swal.fire({
+          title: "Stock Insuficiente",
+          text: `No hay suficiente stock disponible. Stock disponible: ${currentStock}`,
+          icon: "warning",
+          confirmButtonColor: "#15803d"
+        });
+        return;
+      }
+    }
+
     const newCart = structuredClone(cart)
     const index = newCart.findIndex((x) => x.id == item.id)
     if (index == -1) {
       newCart.push({ ...item, quantity: Number(quantity || 1) })
     } else {
-      newCart[index].quantity++
+      if (!item.stock_unlimited) {
+        const currentStock = item.stock || 0;
+        const newQty = newCart[index].quantity + quantity;
+        if (newQty > currentStock) {
+          Swal.fire({
+            title: "Stock Insuficiente",
+            text: `No puedes agregar más de este producto. Stock total disponible: ${currentStock}. Ya tienes ${newCart[index].quantity} en el carrito.`,
+            icon: "warning",
+            confirmButtonColor: "#15803d"
+          });
+          return;
+        }
+      }
+      newCart[index].quantity += quantity;
     }
     setCart(newCart)
 
@@ -32,7 +80,8 @@ const ProductDetailKuchara = ({ item, data, cart, setCart }) => {
   }
 
   const incrementQuantity = () => {
-    setQuantity((prev) => prev + 1)
+    const maxQty = item?.stock_unlimited ? 99 : (item?.stock || 0);
+    setQuantity((prev) => (prev < maxQty ? prev + 1 : maxQty))
   }
 
   const decrementQuantity = () => {
@@ -41,8 +90,11 @@ const ProductDetailKuchara = ({ item, data, cart, setCart }) => {
 
   const handleQuantityChange = (e) => {
     const value = Number.parseInt(e.target.value)
-    if (!isNaN(value) && value > 0) {
-      setQuantity(value)
+    const maxQty = item?.stock_unlimited ? 99 : (item?.stock || 0);
+    if (!isNaN(value)) {
+      let finalVal = Math.max(1, value);
+      if (finalVal > maxQty) finalVal = maxQty;
+      setQuantity(finalVal)
     }
   }
 
@@ -104,7 +156,7 @@ const ProductDetailKuchara = ({ item, data, cart, setCart }) => {
           <div className="flex flex-col gap-1">
             <div className="flex justify-between items-center text-sm text-gray-600">
               <span>SKU: {item?.sku || "N/A"}</span>
-              <span className="text-green-600 font-medium">Disponibilidad: {item?.stock > 0 ? "En stock" : "Agotado"}</span>
+              <span className="text-green-600 font-medium">Disponibilidad: {item?.stock_unlimited || item?.stock > 0 ? "En stock" : "Agotado"}</span>
             </div>
 
             <h1 className="font-bold font-title text-3xl text-green-700 leading-none my-4">{item?.name || "Sin nombre"}</h1>
@@ -167,7 +219,7 @@ const ProductDetailKuchara = ({ item, data, cart, setCart }) => {
               </label>
               <div className="flex items-center">
                 <div className="flex border border-gray-300 rounded-md">
-                  <button type="button" onClick={decrementQuantity} className="px-3 py-2 border-r border-gray-300">
+                  <button type="button" onClick={decrementQuantity} disabled={quantity <= 1 || isOutOfStock} className="px-3 py-2 border-r border-gray-300 disabled:opacity-30 disabled:cursor-not-allowed">
                     <i className="mdi mdi-minus" size={16} />
                   </button>
                   <input
@@ -177,13 +229,15 @@ const ProductDetailKuchara = ({ item, data, cart, setCart }) => {
                     className="w-16 text-center focus:outline-none"
                     value={quantity}
                     onChange={handleQuantityChange}
-                    min="1"
+                    min={isOutOfStock ? 0 : 1}
+                    max={item?.stock_unlimited ? 99 : (item?.stock || 0)}
+                    disabled={isOutOfStock}
                   />
-                  <button type="button" onClick={incrementQuantity} className="px-3 py-2 border-l border-gray-300">
+                  <button type="button" onClick={incrementQuantity} disabled={quantity >= (item?.stock_unlimited ? 99 : (item?.stock || 0)) || isOutOfStock} className="px-3 py-2 border-l border-gray-300 disabled:opacity-30 disabled:cursor-not-allowed">
                     <i className="mdi mdi-plus" size={16} />
                   </button>
                 </div>
-                <span className="ml-3 text-gray-600">Máximo 10 unidades.</span>
+                <span className="ml-3 text-gray-600">Máximo {item?.stock_unlimited ? 99 : (item?.stock || 0)} unidades.</span>
               </div>
             </div>
           </div>
@@ -198,19 +252,15 @@ const ProductDetailKuchara = ({ item, data, cart, setCart }) => {
             </span>
           </div> */}
 
-          {/* Botones de acción */}
           <div className="mt-4 flex flex-col gap-3">
             <button
               onClick={onAddClicked}
-              className="w-full py-3 bg-green-700 hover:bg-green-800 text-white rounded-md flex items-center justify-center gap-2 transition-colors"
+              disabled={isOutOfStock}
+              className={`w-full py-3 text-white rounded-md flex items-center justify-center gap-2 transition-colors ${isOutOfStock ? "bg-gray-300 text-gray-500 cursor-not-allowed" : "bg-green-700 hover:bg-green-800"}`}
             >
               <i className="mdi mdi-cart-plus" size={20} />
-              <span>Agregar a mi carrito</span>
+              <span>{isOutOfStock ? "Agotado" : "Agregar a mi carrito"}</span>
             </button>
-            {/* <button className="w-full py-3 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-md flex items-center justify-center gap-2 transition-colors">
-              <i className="mdi mdi-heart" size={20} />
-              <span>Lista de favoritos</span>
-            </button> */}
           </div>
         </div>
       </div>

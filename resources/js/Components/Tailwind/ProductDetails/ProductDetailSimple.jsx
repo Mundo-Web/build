@@ -8,17 +8,55 @@ import { useRef } from "react";
 
 const ProductDetailSimple = ({ item, data, cart, setCart }) => {
     const quantityRef = useRef();
+    const isOutOfStock = !item?.stock_unlimited && (item?.stock <= 0 || !item?.stock);
 
     const onAddClicked = () => {
+        if (isOutOfStock) {
+            Swal.fire({
+                title: "Producto Agotado",
+                text: "Este producto se encuentra agotado.",
+                icon: "warning",
+                confirmButtonColor: "#000000"
+            });
+            return;
+        }
+
+        const quantity = Number(quantityRef.current.value || 1);
+        if (!item.stock_unlimited) {
+            const currentStock = item.stock || 0;
+            if (currentStock < quantity) {
+                Swal.fire({
+                    title: "Stock Insuficiente",
+                    text: `No hay suficiente stock disponible. Stock disponible: ${currentStock}`,
+                    icon: "warning",
+                    confirmButtonColor: "#000000"
+                });
+                return;
+            }
+        }
+
         const newCart = structuredClone(cart);
         const index = newCart.findIndex((x) => x.id == item.id);
         if (index == -1) {
             newCart.push({
                 ...item,
-                quantity: Number(quantityRef.current.value || 1),
+                quantity: quantity,
             });
         } else {
-            newCart[index].quantity++;
+            if (!item.stock_unlimited) {
+                const currentStock = item.stock || 0;
+                const newQty = newCart[index].quantity + quantity;
+                if (newQty > currentStock) {
+                    Swal.fire({
+                        title: "Stock Insuficiente",
+                        text: `No puedes agregar más de este producto. Stock total disponible: ${currentStock}. Ya tienes ${newCart[index].quantity} en el carrito.`,
+                        icon: "warning",
+                        confirmButtonColor: "#000000"
+                    });
+                    return;
+                }
+            }
+            newCart[index].quantity += quantity;
         }
         setCart(newCart);
 
@@ -92,8 +130,18 @@ const ProductDetailSimple = ({ item, data, cart, setCart }) => {
                                 ref={quantityRef}
                                 type="number"
                                 className="text-textPrimary px-2 py-1 border-2 rounded-lg w-16 border-[#FF3131]"
-                                defaultValue={1}
+                                defaultValue={isOutOfStock ? 0 : 1}
+                                min={isOutOfStock ? 0 : 1}
+                                max={item?.stock_unlimited ? 99 : (item?.stock || 0)}
+                                disabled={isOutOfStock}
                                 step={1}
+                                onChange={(e) => {
+                                    let val = parseInt(e.target.value, 10);
+                                    const maxVal = item?.stock_unlimited ? 99 : (item?.stock || 0);
+                                    if (isNaN(val) || val < 1) val = 1;
+                                    if (val > maxVal) val = maxVal;
+                                    e.target.value = val;
+                                }}
                             />
                         </div>
 
@@ -109,10 +157,11 @@ const ProductDetailSimple = ({ item, data, cart, setCart }) => {
                             data-aos-offset="150"
                         >
                             <button
-                                className="bg-[#0051FF] w-full py-3 px-2 md:px-10 text-center rounded-3xl"
+                                className={`w-full py-3 px-2 md:px-10 text-center rounded-3xl ${isOutOfStock ? "bg-gray-300 text-gray-500 cursor-not-allowed" : "bg-[#0051FF] text-white"}`}
                                 onClick={onAddClicked}
+                                disabled={isOutOfStock}
                             >
-                                Quiero comprar
+                                {isOutOfStock ? "Agotado" : "Quiero comprar"}
                             </button>
                             <a
                                 href="#"

@@ -96,12 +96,26 @@ export default function ProductDetailSF({
         setActiveImage(newImage || null);
     }, [currentProduct?.id, variantsForSelectedGroup, masterProduct?.id]);
 
+    const isOutOfStock = !currentProduct?.stock_unlimited && (currentProduct?.stock <= 0 || !currentProduct?.stock);
+
     const handleChange = (e) => {
         let value = parseInt(e.target.value, 10);
+        const maxQty = currentProduct?.stock_unlimited ? 99 : (currentProduct?.stock || 0);
         if (isNaN(value) || value < 1) value = 1;
-        if (value > 10) value = 10;
+        if (value > maxQty) value = maxQty;
         setQuantity(value);
     };
+
+    useEffect(() => {
+        const maxQty = currentProduct?.stock_unlimited ? 99 : (currentProduct?.stock || 0);
+        if (maxQty <= 0) {
+            setQuantity(0);
+        } else if (quantity > maxQty) {
+            setQuantity(maxQty);
+        } else if (quantity === 0) {
+            setQuantity(1);
+        }
+    }, [currentProduct?.id]);
 
     const getContact = (correlative) => {
         return (
@@ -148,6 +162,28 @@ export default function ProductDetailSF({
         }
 
         const variantToAdd = selectedVariant || product;
+        if (!variantToAdd.stock_unlimited) {
+            const currentStock = variantToAdd.stock || 0;
+            if (currentStock <= 0) {
+                Swal.fire({
+                    title: "Producto Agotado",
+                    text: "Este producto se encuentra agotado.",
+                    icon: "warning",
+                    confirmButtonColor: "#000000"
+                });
+                return;
+            }
+            if (currentStock < quantity) {
+                Swal.fire({
+                    title: "Stock Insuficiente",
+                    text: `No hay suficiente stock disponible. Stock disponible: ${currentStock}`,
+                    icon: "warning",
+                    confirmButtonColor: "#000000"
+                });
+                return;
+            }
+        }
+
         const newCart = structuredClone(cart);
         const index = newCart.findIndex((x) => x.id == variantToAdd.id);
 
@@ -157,6 +193,19 @@ export default function ProductDetailSF({
                 quantity: quantity,
             });
         } else {
+            if (!variantToAdd.stock_unlimited) {
+                const currentStock = variantToAdd.stock || 0;
+                const newQty = newCart[index].quantity + quantity;
+                if (newQty > currentStock) {
+                    Swal.fire({
+                        title: "Stock Insuficiente",
+                        text: `No puedes agregar más de este producto. Stock total disponible: ${currentStock}. Ya tienes ${newCart[index].quantity} en el carrito.`,
+                        icon: "warning",
+                        confirmButtonColor: "#000000"
+                    });
+                    return;
+                }
+            }
             newCart[index].quantity += quantity;
         }
         setCart(newCart);
@@ -697,7 +746,7 @@ export default function ProductDetailSF({
                                 <span className="customtext-neutral-dark text-base 2xl:text-lg">
                                     Disponibilidad:{" "}
                                     <span className="customtext-neutral-dark font-bold">
-                                        {currentProduct?.stock > 0
+                                        {currentProduct?.stock_unlimited || currentProduct?.stock > 0
                                             ? "En stock"
                                             : "Agotado"}
                                     </span>
@@ -894,7 +943,7 @@ export default function ProductDetailSF({
                                                     Math.max(1, quantity - 1),
                                                 )
                                             }
-                                            disabled={quantity <= 1}
+                                            disabled={quantity <= 1 || isOutOfStock}
                                             className="w-12 h-12 flex items-center justify-center bg-gray-50 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
                                         >
                                             <svg
@@ -914,18 +963,19 @@ export default function ProductDetailSF({
                                         <input
                                             value={quantity}
                                             onChange={handleChange}
-                                            min="1"
-                                            max="10"
+                                            min={isOutOfStock ? 0 : 1}
+                                            max={currentProduct?.stock_unlimited ? 99 : (currentProduct?.stock || 0)}
+                                            disabled={isOutOfStock}
                                             className="w-16 h-12 customtext-neutral-dark text-center bg-white outline-none appearance-none font-medium text-lg border-none"
                                         />
                                         <button
                                             type="button"
                                             onClick={() =>
                                                 setQuantity(
-                                                    Math.min(10, quantity + 1),
+                                                    Math.min(currentProduct?.stock_unlimited ? 99 : (currentProduct?.stock || 0), quantity + 1),
                                                 )
                                             }
-                                            disabled={quantity >= 10}
+                                            disabled={quantity >= (currentProduct?.stock_unlimited ? 99 : (currentProduct?.stock || 0)) || isOutOfStock}
                                             className="w-12 h-12 flex items-center justify-center bg-gray-50 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
                                         >
                                             <svg
@@ -944,7 +994,7 @@ export default function ProductDetailSF({
                                         </button>
                                     </div>
                                     <span className="text-sm customtext-neutral-light">
-                                        Máximo 10 unidades
+                                        Máximo {currentProduct?.stock_unlimited ? 99 : (currentProduct?.stock || 0)} unidades
                                     </span>
                                 </div>
                             </div>
@@ -955,14 +1005,14 @@ export default function ProductDetailSF({
                                     onClick={() => {
                                         onAddClicked(currentProduct);
                                     }}
-                                    disabled={currentProduct?.stock <= 0}
+                                    disabled={isOutOfStock}
                                     className={`hidden lg:block w-full font-paragraph text-base 2xl:text-lg py-3 xl:py-4 font-semibold rounded-full transition-all duration-300 mt-3 ${
-                                        currentProduct?.stock > 0
+                                        !isOutOfStock
                                             ? "bg-accent text-white hover:opacity-90 hover:shadow-lg transform hover:scale-[1.02]"
                                             : "bg-gray-300 text-gray-500 cursor-not-allowed"
                                     }`}
                                 >
-                                    {currentProduct?.stock > 0
+                                    {!isOutOfStock
                                         ? "Agregar al carrito"
                                         : "Producto agotado"}
                                 </button>
@@ -1234,14 +1284,14 @@ export default function ProductDetailSF({
                             onClick={() => {
                                 onAddClicked(currentProduct);
                             }}
-                            disabled={currentProduct?.stock <= 0}
+                            disabled={isOutOfStock}
                             className={`flex-1 font-paragraph text-sm py-3 font-semibold rounded-2xl transition-all duration-300 ${
-                                currentProduct?.stock > 0
+                                !isOutOfStock
                                     ? "bg-accent text-white hover:opacity-90"
                                     : "bg-gray-300 text-gray-500 cursor-not-allowed"
                             }`}
                         >
-                            {currentProduct?.stock > 0
+                            {!isOutOfStock
                                 ? "Agregar al carrito"
                                 : "Producto agotado"}
                         </button>

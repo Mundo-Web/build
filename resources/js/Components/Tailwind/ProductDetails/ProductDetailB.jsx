@@ -54,12 +54,26 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
     const imageRef = useRef(null);
 
     const [quantity, setQuantity] = useState(1);
+    const isOutOfStock = !item?.stock_unlimited && (item?.stock <= 0 || !item?.stock);
+
     const handleChange = (e) => {
         let value = parseInt(e.target.value, 10);
+        const maxQty = item?.stock_unlimited ? 99 : (item?.stock || 0);
         if (isNaN(value) || value < 1) value = 1;
-        if (value > 10) value = 10;
+        if (value > maxQty) value = maxQty;
         setQuantity(value);
     };
+
+    useEffect(() => {
+        const maxQty = item?.stock_unlimited ? 99 : (item?.stock || 0);
+        if (maxQty <= 0) {
+            setQuantity(0);
+        } else if (quantity > maxQty) {
+            setQuantity(maxQty);
+        } else if (quantity === 0) {
+            setQuantity(1);
+        }
+    }, [item?.id]);
     /*ESPECIFICACIONES */
     const [isExpanded, setIsExpanded] = useState(false);
     const [isSpecificationsExpanded, setIsSpecificationsExpanded] =
@@ -190,21 +204,51 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
     };
 
     const onAddClicked = (product) => {
+        if (isOutOfStock) {
+            Swal.fire({
+                title: "Producto Agotado",
+                text: "Este producto se encuentra agotado.",
+                icon: "warning",
+                confirmButtonColor: "#000000"
+            });
+            return;
+        }
+
+        if (!product.stock_unlimited) {
+            const currentStock = product.stock || 0;
+            if (currentStock < quantity) {
+                Swal.fire({
+                    title: "Stock Insuficiente",
+                    text: `No hay suficiente stock disponible. Stock disponible: ${currentStock}`,
+                    icon: "warning",
+                    confirmButtonColor: "#000000"
+                });
+                return;
+            }
+        }
+
         const newCart = structuredClone(cart);
         const index = newCart.findIndex((x) => x.id == product?.id);
         if (index == -1) {
             newCart.push({ ...product, quantity: quantity });
         } else {
-            newCart[index].quantity++;
+            if (!product.stock_unlimited) {
+                const currentStock = product.stock || 0;
+                const newQty = newCart[index].quantity + quantity;
+                if (newQty > currentStock) {
+                    Swal.fire({
+                        title: "Stock Insuficiente",
+                        text: `No puedes agregar más de este producto. Stock total disponible: ${currentStock}. Ya tienes ${newCart[index].quantity} en el carrito.`,
+                        icon: "warning",
+                        confirmButtonColor: "#000000"
+                    });
+                    return;
+                }
+            }
+            newCart[index].quantity += quantity;
         }
         setCart(newCart);
 
-        /*   Swal.fire({
-               title: "Producto agregado",
-               text: `Se agregó ${product?.name} al carrito`,
-               icon: "success",
-               timer: 1500,
-           });*/
         setModalOpen(!modalOpen);
         setTimeout(() => setModalOpen(false), 3000);
     };
@@ -892,17 +936,19 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                                 onAddClicked(item);
                                 window.location.href = "/cart";
                             }}
+                            disabled={isOutOfStock}
                             aria-label="Comprar ahora"
-                            className="flex-1 bg-primary text-white py-3 rounded-xl font-medium active:scale-95 transition-transform"
+                            className={`flex-1 py-3 rounded-xl font-medium active:scale-95 transition-transform ${isOutOfStock ? "bg-gray-300 text-gray-500 cursor-not-allowed" : "bg-primary text-white"}`}
                         >
-                            Comprar ahora
+                            {isOutOfStock ? "Agotado" : "Comprar ahora"}
                         </button>
                         <button
                             onClick={() => onAddClicked(item)}
+                            disabled={isOutOfStock}
                             aria-label="Añadir al carrito"
-                            className="flex-1 bg-gray-100 customtext-primary py-3 rounded-xl font-medium border border-primary active:scale-95 transition-transform"
+                            className={`flex-1 py-3 rounded-xl font-medium border active:scale-95 transition-transform ${isOutOfStock ? "bg-gray-100 text-gray-400 border-gray-300 cursor-not-allowed" : "bg-gray-100 customtext-primary border-primary"}`}
                         >
-                            Añadir al carrito
+                            {isOutOfStock ? "Agotado" : "Añadir al carrito"}
                         </button>
                     </div>
                 </div>
@@ -1127,7 +1173,7 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                                 <span className="ustomtext-neutral-light text-sm">
                                     Disponibilidad:{" "}
                                     <span className="customtext-neutral-dark">
-                                        {item?.stock > 0
+                                        {item?.stock_unlimited || item?.stock > 0
                                             ? "En stock"
                                             : "Agotado"}
                                     </span>
@@ -1175,7 +1221,7 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                                                             )
                                                         }
                                                         className="w-10 h-10 flex items-center justify-center hover:bg-gray-100 active:bg-gray-200 transition-colors duration-200 customtext-neutral-dark font-semibold text-lg"
-                                                        disabled={quantity <= 1}
+                                                        disabled={quantity <= 1 || isOutOfStock}
                                                     >
                                                         −
                                                     </button>
@@ -1188,7 +1234,7 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                                                         onClick={() =>
                                                             setQuantity(
                                                                 Math.min(
-                                                                    10,
+                                                                    item?.stock_unlimited ? 99 : (item?.stock || 0),
                                                                     quantity +
                                                                     1,
                                                                 ),
@@ -1196,14 +1242,14 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                                                         }
                                                         className="w-10 h-10 flex items-center justify-center hover:bg-gray-100 active:bg-gray-200 transition-colors duration-200 customtext-neutral-dark font-semibold text-lg"
                                                         disabled={
-                                                            quantity >= 10
+                                                            quantity >= (item?.stock_unlimited ? 99 : (item?.stock || 0)) || isOutOfStock
                                                         }
                                                     >
                                                         +
                                                     </button>
                                                 </div>
                                                 <span className="customtext-neutral-light text-xs">
-                                                    Máximo 10 unidades
+                                                    Máximo {item?.stock_unlimited ? 99 : (item?.stock || 0)} unidades
                                                 </span>
                                             </div>
                                         </div>
@@ -1215,9 +1261,10 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                                             onAddClicked(item);
                                             setModalOpen(!modalOpen);
                                         }}
-                                        className={`w-full bg-primary  py-3 font-bold shadow-lg rounded-xl hover:opacity-90 transition-all duration-300 mt-4 ${data?.class_button || "text-white"}`}
+                                        disabled={isOutOfStock}
+                                        className={`w-full py-3 font-bold shadow-lg rounded-xl hover:opacity-90 transition-all duration-300 mt-4 ${isOutOfStock ? "bg-gray-300 text-gray-500 cursor-not-allowed" : `bg-primary ${data?.class_button || "text-white"}`}`}
                                     >
-                                        Agregar al carrito
+                                        {isOutOfStock ? "Agotado" : "Agregar al carrito"}
                                     </button>
                                 </div>
                             </div>
@@ -1608,7 +1655,7 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                                 <span className="ustomtext-neutral-light text-sm">
                                     Disponibilidad:{" "}
                                     <span className="customtext-neutral-dark">
-                                        {item?.stock > 0
+                                        {item?.stock_unlimited || item?.stock > 0
                                             ? "En stock"
                                             : "Agotado"}
                                     </span>
@@ -1714,7 +1761,7 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                                                         }
                                                         aria-label="Disminuir cantidad del producto"
                                                         className="w-10 h-10 flex items-center justify-center hover:bg-gray-100 active:bg-gray-200 transition-colors duration-200 customtext-neutral-dark font-semibold text-lg"
-                                                        disabled={quantity <= 1}
+                                                        disabled={quantity <= 1 || isOutOfStock}
                                                     >
                                                         −
                                                     </button>
@@ -1727,7 +1774,7 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                                                         onClick={() =>
                                                             setQuantity(
                                                                 Math.min(
-                                                                    10,
+                                                                    item?.stock_unlimited ? 99 : (item?.stock || 0),
                                                                     quantity +
                                                                     1,
                                                                 ),
@@ -1735,14 +1782,14 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                                                         }
                                                         className="w-10 h-10 flex items-center justify-center hover:bg-gray-100 active:bg-gray-200 transition-colors duration-200 customtext-neutral-dark font-semibold text-lg"
                                                         disabled={
-                                                            quantity >= 10
+                                                            quantity >= (item?.stock_unlimited ? 99 : (item?.stock || 0)) || isOutOfStock
                                                         }
                                                     >
                                                         +
                                                     </button>
                                                 </div>
                                                 <span className="customtext-neutral-light text-xs">
-                                                    Máximo 10 unidades
+                                                    Máximo {item?.stock_unlimited ? 99 : (item?.stock || 0)} unidades
                                                 </span>
                                             </div>
                                         </div>
@@ -1754,9 +1801,10 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                                             onAddClicked(item);
                                             setModalOpen(!modalOpen);
                                         }}
-                                        className={`w-full bg-primary py-3 font-bold shadow-lg rounded-xl hover:opacity-90 transition-all duration-300 mt-4 ${data?.class_button || "text-white"}`}
+                                        disabled={isOutOfStock}
+                                        className={`w-full bg-primary py-3 font-bold shadow-lg rounded-xl hover:opacity-90 transition-all duration-300 mt-4 ${isOutOfStock ? "bg-gray-300 text-gray-500 cursor-not-allowed" : `bg-primary ${data?.class_button || "text-white"}`}`}
                                     >
-                                        Agregar al carrito
+                                        {isOutOfStock ? "Agotado" : "Agregar al carrito"}
                                     </button>
                                 </div>
                             </div>

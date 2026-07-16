@@ -118,9 +118,9 @@ const FooterB = ({ pages, generals, data }) => {
                         <ul className={`space-y-3 text-white ${data?.class_menu_list || ''}`}>
                             <li>
                                 <a
-                                    href="#"
+                                    href="/politicas-de-privacidad"
                                     type="button"
-                                    onClick={() => openModal(0)}
+
                                     aria-label="Ver políticas de privacidad"
                                     className={`cursor-pointer hover:customtext-primary hover:font-bold transition-all duration-300 ${data?.class_menu_item || ''}`}
                                 >
@@ -129,11 +129,10 @@ const FooterB = ({ pages, generals, data }) => {
                             </li>
                             <li>
                                 <a
-                                    href="#"
+                                    href="/terminos-y-condiciones"
                                     type="button"
 
                                     aria-label="Ver términos y condiciones"
-                                    onClick={() => openModal(1)}
                                     className={`cursor-pointer hover:customtext-primary hover:font-bold transition-all duration-300 ${data?.class_menu_item || ''}`}
                                 >
                                     Términos y Condiciones
@@ -141,10 +140,9 @@ const FooterB = ({ pages, generals, data }) => {
                             </li>
                             <li>
                                 <a
-                                    href="#"
+                                    href="/politicas-de-devolucion-y-cambio"
                                     type="button"
 
-                                    onClick={() => openModal(2)}
                                     aria-label="Ver políticas de cambio"
                                     className={`cursor-pointer hover:customtext-primary hover:font-bold transition-all duration-300 ${data?.class_menu_item || ''}`}
                                 >
