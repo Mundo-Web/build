@@ -31,6 +31,7 @@ return new class extends Migration
             SELECT category_id, id, NOW(), NOW()
             FROM sub_categories
             WHERE category_id IS NOT NULL
+              AND category_id IN (SELECT id FROM categories)
         ');
 
         // Drop the category_id column from sub_categories

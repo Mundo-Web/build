@@ -649,13 +649,15 @@
         "name": "Header Sticky Rainstarstore",
         "image": "header-sticky.png",
         "data": [
-          "class"
+          "class",
+          "select:type_topbar:Tipo de TopBar:TopBarSimple|Simple,TopBarSocials|Socials,TopBarPages|Pages,TopBarCart|Cart,TopBarCopyright|Copyright,TopBarPanni|Panni,TopBarAddress|Address,TopBarMarquee|Marquee,none|Ninguno"
         ],
         "generals": [
           "whatsapp_advisors",
           "email_contact",
           "phone_contact",
-          "opening_hours"
+          "opening_hours",
+          "cintillo"
         ]
       },
       {
