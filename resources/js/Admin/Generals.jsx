@@ -120,6 +120,11 @@ const Generals = ({
             "checkout_culqi_rsa_public_key",
             "checkout_culqi_supports_usd",
             "checkout_culqi_commission",
+            "checkout_culqi_enable_card",
+            "checkout_culqi_enable_yape",
+            "checkout_culqi_enable_banking",
+            "checkout_culqi_enable_agent",
+            "checkout_culqi_enable_wallet",
             "checkout_mercadopago",
             "checkout_mercadopago_name",
             "checkout_mercadopago_public_key",
@@ -613,6 +618,21 @@ const Generals = ({
         checkout_culqi_commission:
             generals.find((x) => x.correlative == "checkout_culqi_commission")
                 ?.description ?? "",
+        checkout_culqi_enable_card:
+            generals.find((x) => x.correlative == "checkout_culqi_enable_card")
+                ?.description ?? "true",
+        checkout_culqi_enable_yape:
+            generals.find((x) => x.correlative == "checkout_culqi_enable_yape")
+                ?.description ?? "true",
+        checkout_culqi_enable_banking:
+            generals.find((x) => x.correlative == "checkout_culqi_enable_banking")
+                ?.description ?? "true",
+        checkout_culqi_enable_agent:
+            generals.find((x) => x.correlative == "checkout_culqi_enable_agent")
+                ?.description ?? "true",
+        checkout_culqi_enable_wallet:
+            generals.find((x) => x.correlative == "checkout_culqi_enable_wallet")
+                ?.description ?? "true",
         checkout_mercadopago:
             generals.find((x) => x.correlative == "checkout_mercadopago")
                 ?.description ?? "",
@@ -1667,6 +1687,31 @@ const Generals = ({
                 correlative: "checkout_culqi_commission",
                 name: "Comisión Culqi (%)",
                 description: formData.checkout_culqi_commission || "",
+            },
+            {
+                correlative: "checkout_culqi_enable_card",
+                name: "Habilitar Pago con Tarjeta en Culqi",
+                description: formData.checkout_culqi_enable_card || "true",
+            },
+            {
+                correlative: "checkout_culqi_enable_yape",
+                name: "Habilitar Yape en Culqi",
+                description: formData.checkout_culqi_enable_yape || "true",
+            },
+            {
+                correlative: "checkout_culqi_enable_banking",
+                name: "Habilitar Banca Móvil/Agente en Culqi",
+                description: formData.checkout_culqi_enable_banking || "true",
+            },
+            {
+                correlative: "checkout_culqi_enable_agent",
+                name: "Habilitar Pago Efectivo Agente en Culqi",
+                description: formData.checkout_culqi_enable_agent || "true",
+            },
+            {
+                correlative: "checkout_culqi_enable_wallet",
+                name: "Habilitar Billeteras Móviles en Culqi",
+                description: formData.checkout_culqi_enable_wallet || "true",
             },
             {
                 correlative: "checkout_mercadopago",
@@ -3933,6 +3978,159 @@ const Generals = ({
                                                     aplicar comisión. Ejemplo:
                                                     3.5 = 3.5%
                                                 </small>
+                                            </div>
+                                            <div className="mt-4 mb-2">
+                                                <h6 className="text-muted">
+                                                    Métodos de Pago Culqi Habilitados
+                                                </h6>
+                                                <small className="text-muted d-block mb-2">
+                                                    Activa o desactiva las opciones de pago que se mostrarán en la pasarela de Culqi.
+                                                </small>
+                                            </div>
+                                            <div className="mb-2">
+                                                <div className="form-check">
+                                                    <input
+                                                        type="checkbox"
+                                                        className="form-check-input"
+                                                        id="checkout-culqi-enable-card"
+                                                        checked={
+                                                            formData.checkout_culqi_enable_card ===
+                                                            "true"
+                                                        }
+                                                        onChange={(e) =>
+                                                            setFormData({
+                                                                ...formData,
+                                                                checkout_culqi_enable_card:
+                                                                    String(
+                                                                        e.target
+                                                                            .checked,
+                                                                    ),
+                                                            })
+                                                        }
+                                                    />
+                                                    <label
+                                                        className="form-check-label form-label"
+                                                        htmlFor="checkout-culqi-enable-card"
+                                                    >
+                                                        Permitir Tarjeta de Crédito/Débito
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            <div className="mb-2">
+                                                <div className="form-check">
+                                                    <input
+                                                        type="checkbox"
+                                                        className="form-check-input"
+                                                        id="checkout-culqi-enable-yape"
+                                                        checked={
+                                                            formData.checkout_culqi_enable_yape ===
+                                                            "true"
+                                                        }
+                                                        onChange={(e) =>
+                                                            setFormData({
+                                                                ...formData,
+                                                                checkout_culqi_enable_yape:
+                                                                    String(
+                                                                        e.target
+                                                                            .checked,
+                                                                    ),
+                                                            })
+                                                        }
+                                                    />
+                                                    <label
+                                                        className="form-check-label form-label"
+                                                        htmlFor="checkout-culqi-enable-yape"
+                                                    >
+                                                        Permitir Yape
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            <div className="mb-2">
+                                                <div className="form-check">
+                                                    <input
+                                                        type="checkbox"
+                                                        className="form-check-input"
+                                                        id="checkout-culqi-enable-banking"
+                                                        checked={
+                                                            formData.checkout_culqi_enable_banking ===
+                                                            "true"
+                                                        }
+                                                        onChange={(e) =>
+                                                            setFormData({
+                                                                ...formData,
+                                                                checkout_culqi_enable_banking:
+                                                                    String(
+                                                                        e.target
+                                                                            .checked,
+                                                                    ),
+                                                            })
+                                                        }
+                                                    />
+                                                    <label
+                                                        className="form-check-label form-label"
+                                                        htmlFor="checkout-culqi-enable-banking"
+                                                    >
+                                                        Permitir Banca por Internet (PagoEfectivo)
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            <div className="mb-2">
+                                                <div className="form-check">
+                                                    <input
+                                                        type="checkbox"
+                                                        className="form-check-input"
+                                                        id="checkout-culqi-enable-agent"
+                                                        checked={
+                                                            formData.checkout_culqi_enable_agent ===
+                                                            "true"
+                                                        }
+                                                        onChange={(e) =>
+                                                            setFormData({
+                                                                ...formData,
+                                                                checkout_culqi_enable_agent:
+                                                                    String(
+                                                                        e.target
+                                                                            .checked,
+                                                                    ),
+                                                            })
+                                                        }
+                                                    />
+                                                    <label
+                                                        className="form-check-label form-label"
+                                                        htmlFor="checkout-culqi-enable-agent"
+                                                    >
+                                                        Permitir Agente/Depósito (PagoEfectivo)
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            <div className="mb-2">
+                                                <div className="form-check">
+                                                    <input
+                                                        type="checkbox"
+                                                        className="form-check-input"
+                                                        id="checkout-culqi-enable-wallet"
+                                                        checked={
+                                                            formData.checkout_culqi_enable_wallet ===
+                                                            "true"
+                                                        }
+                                                        onChange={(e) =>
+                                                            setFormData({
+                                                                ...formData,
+                                                                checkout_culqi_enable_wallet:
+                                                                    String(
+                                                                        e.target
+                                                                            .checked,
+                                                                    ),
+                                                            })
+                                                        }
+                                                    />
+                                                    <label
+                                                        className="form-check-label form-label"
+                                                        htmlFor="checkout-culqi-enable-wallet"
+                                                    >
+                                                        Permitir Billeteras Móviles (Plin, etc.)
+                                                    </label>
+                                                </div>
                                             </div>
                                         </div>
                                     </ConditionalField>

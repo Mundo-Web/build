@@ -300,8 +300,10 @@ Route::get('/combos-as-products/{id}', [App\Http\Controllers\Api\ComboApiControl
 Route::get('/items/{id}/combos', [ItemController::class, 'getItemCombos']);
 
 Route::post('/pago', [PaymentController::class, 'charge']);
+Route::post('/pago/order', [PaymentController::class, 'order']);
 Route::post('/pago/charge-completed', [PaymentController::class, 'chargeCompleted']);
 Route::post('/pago/3ds', [PaymentController::class, 'charge3DS']);
+Route::post('/pago/failed', [PaymentController::class, 'registerFailedPayment']);
 Route::get('/pago/{sale_id}', [PaymentController::class, 'getPaymentStatus']);
 
 // Rutas para Empaques
@@ -309,6 +311,7 @@ Route::get('/packaging', [PackagingController::class, 'index']);
 
 // Ruta para crear orden de Culqi (habilita Yape, bancaMovil, etc.)
 Route::post('/culqi/checkout-order', [\App\Http\Controllers\CulqiController::class, 'createCheckoutOrder']);
+Route::post('/culqi/webhook', [\App\Http\Controllers\CulqiController::class, 'webhook']);
 
 // Nuevas rutas para MercadoPago
 Route::post('/mercadopago/preference', [MercadoPagoController::class, 'createPreference']);

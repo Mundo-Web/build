@@ -234,6 +234,26 @@ function generarNumeroOrdenConPrefijoYFecha() {
 }
 
 /**
+ * Reporta al backend un intento de pago fallido/rechazado para dejarlo registrado en la BD.
+ * No lanza errores para no interrumpir el flujo principal.
+ */
+async function reportFailedPayment(request, errorReason) {
+    try {
+        const apiPath = `${window.APP_URL || ''}/api/pago/failed`.replace(/\/+/g, '/').replace(':/', '://');
+        await Fetch(apiPath, {
+            method: 'POST',
+            body: JSON.stringify({
+                ...request,
+                error_reason: errorReason,
+            }),
+        });
+        console.log('📝 Pago rechazado registrado en la base de datos');
+    } catch (e) {
+        console.warn('⚠️ No se pudo registrar el pago fallido en la BD:', e);
+    }
+}
+
+/**
  * Verifica si Culqi soporta USD (cuenta en dólares configurada)
  * @returns {boolean} - true si Culqi soporta USD directamente
  */
@@ -480,7 +500,7 @@ const ensureCulqiSDK = async () => {
     if (typeof window.CulqiCheckout !== 'undefined') return true;
     
     console.log("📡 Cargando SDK de Culqi dinámicamente...");
-    await loadScript('https://js.culqi.com/3ds-js');
+    await loadScript('https://3ds.culqi.com');
     const success = await loadScript('https://js.culqi.com/checkout-js');
     
     if (success && typeof window.CulqiCheckout === 'undefined') {
@@ -496,12 +516,18 @@ export const processCulqiPayment = async (request, options = {}) => {
         try {
             console.log("🔄 Intentando crear orden de Culqi para habilitar todos los métodos de pago...");
             
+            // ✅ Generar orderNumber ANTES de crear la orden en Culqi
+            // Esto garantiza que el order_number en Culqi coincida con Sale.code en la base de datos
+            const preGeneratedOrderNumber = generarNumeroOrdenConPrefijoYFecha();
+            console.log("📝 Número de orden pre-generado:", preGeneratedOrderNumber);
+            
             const orderResult = await CulqiOrderAPI.createCheckoutOrder({
                 amount: request.amount,
                 email: request.email,
                 name: request.name,
                 lastname: request.lastname,
-                phone: request.phone
+                phone: request.phone,
+                orderNumber: preGeneratedOrderNumber  // ✅ Pasar orderNumber al backend
             });
             
             console.log("📦 Respuesta de createCheckoutOrder:", orderResult);
@@ -516,6 +542,8 @@ export const processCulqiPayment = async (request, options = {}) => {
                 console.log("✅ Orden de checkout creada con ID:", orderId);
                 options.orderId = orderId;
                 options.orderData = orderData;
+                // ✅ Guardar el orderNumber pre-generado para usarlo al guardar la venta
+                options.preGeneratedOrderNumber = preGeneratedOrderNumber;
             } else {
                 console.warn("⚠️ No se pudo obtener order_id de la respuesta:", orderResult);
                 console.warn("⚠️ Continuando solo con tarjeta");
@@ -615,8 +643,10 @@ export const processCulqiPayment = async (request, options = {}) => {
                 console.log("💵 Pago directo en USD - Sin conversión");
             }
             
-            const orderNumber = generarNumeroOrdenConPrefijoYFecha();
-            console.log("📝 Número de orden generado:", orderNumber);
+            // ✅ Usar el orderNumber pre-generado (si existe) para que coincida con el order_number
+            // enviado a Culqi al crear la orden — esto es clave para que el webhook encuentre la venta
+            const orderNumber = options.preGeneratedOrderNumber || generarNumeroOrdenConPrefijoYFecha();
+            console.log("📝 Número de orden:", orderNumber, options.preGeneratedOrderNumber ? "(pre-generado, sincronizado con Culqi)" : "(nuevo, solo tarjeta)");
             
             // Obtener la moneda para Culqi
             const culqiCurrency = amountData.currency;
@@ -675,18 +705,25 @@ export const processCulqiPayment = async (request, options = {}) => {
                 email: request.email || '',
             };
 
+            // Cargar estado de métodos individuales desde window (inyectados por BasicController → Global)
+            const enableCard = (Global.get("checkout_culqi_enable_card") ?? "true") === "true";
+            const enableYape = (Global.get("checkout_culqi_enable_yape") ?? "true") === "true";
+            const enableBanking = (Global.get("checkout_culqi_enable_banking") ?? "true") === "true";
+            const enableAgent = (Global.get("checkout_culqi_enable_agent") ?? "true") === "true";
+            const enableWallet = (Global.get("checkout_culqi_enable_wallet") ?? "true") === "true";
+
             // Métodos de pago habilitados
-            // Con Order ID: Todos los métodos disponibles
+            // Con Order ID: Habilitar según configuración administrativa
             // Sin Order ID: Solo tarjeta
             const paymentMethods = hasOrder ? {
-                tarjeta: true,
-                yape: true,        // ✅ Habilitado con Order ID
-                bancaMovil: true,  // ✅ Habilitado con Order ID
-                agente: true,      // ✅ Habilitado con Order ID
-                billetera: true,   // ✅ Habilitado con Order ID
+                tarjeta: enableCard,
+                yape: enableYape,        // ✅ Habilitado con Order ID según config
+                bancaMovil: enableBanking,  // ✅ Habilitado con Order ID según config
+                agente: enableAgent,      // ✅ Habilitado con Order ID según config
+                billetera: enableWallet,   // ✅ Habilitado con Order ID según config
                 cuotealo: false,   // Cuotas requiere configuración especial
             } : {
-                tarjeta: true,
+                tarjeta: enableCard,
                 yape: false,       // ❌ Requiere order ID
                 bancaMovil: false, // ❌ Requiere order ID
                 agente: false,     // ❌ Requiere order ID
@@ -694,7 +731,18 @@ export const processCulqiPayment = async (request, options = {}) => {
                 cuotealo: false,   // ❌ Requiere order ID
             };
             
+            // Construir dinámicamente la lista de ordenamiento según lo que esté activo
+            const sortList = [];
+            if (enableCard) sortList.push('tarjeta');
+            if (hasOrder) {
+                if (enableYape) sortList.push('yape');
+                if (enableBanking) sortList.push('bancaMovil');
+                if (enableWallet) sortList.push('billetera');
+                if (enableAgent) sortList.push('agente');
+            }
+
             console.log("💳 Métodos de pago habilitados:", paymentMethods);
+            console.log("🔀 Orden de visualización en Culqi:", sortList);
 
             // Opciones del checkout
             const checkoutOptions = {
@@ -702,10 +750,7 @@ export const processCulqiPayment = async (request, options = {}) => {
                 installments: false,
                 modal: true,
                 paymentMethods: paymentMethods,
-                paymentMethodsSort: hasOrder 
-                    ? [ 'tarjeta','yape', 'bancaMovil', 'billetera', 'agente'] 
-                    : ['tarjeta'],
-               
+                paymentMethodsSort: sortList,
             };
 
             // Apariencia del checkout
@@ -779,6 +824,9 @@ export const processCulqiPayment = async (request, options = {}) => {
                                             culqiInstance.error.merchant_message || 
                                             "Error al procesar el pago";
                         
+                        // 📝 Registrar el pago rechazado en la BD
+                        await reportFailedPayment(request, errorMessage);
+
                         toast.error("Error en el pago", {
                             description: errorMessage,
                             duration: 5000,
@@ -786,7 +834,7 @@ export const processCulqiPayment = async (request, options = {}) => {
                             richColors: true,
                         });
                         
-                        reject(errorMessage);
+                        reject({ message: errorMessage, alreadyHandled: true });
                         return;
                     }
 
@@ -898,13 +946,15 @@ export const processCulqiPayment = async (request, options = {}) => {
                             }
                             
                             if (!Culqi3DSModule.isAvailable()) {
+                                // 📝 Registrar el pago rechazado en la BD (3DS no disponible)
+                                await reportFailedPayment(request, "El servicio de autenticación 3DS no está disponible");
                                 toast.error("Error en autenticación", {
                                     description: "El servicio de autenticación 3DS no está disponible. Por favor recarga la página.",
                                     duration: 5000,
                                     position: "top-right",
                                     richColors: true,
                                 });
-                                reject("Servicio 3DS no disponible");
+                                reject({ message: "Servicio 3DS no disponible", alreadyHandled: true });
                                 return;
                             }
                             
@@ -948,13 +998,15 @@ export const processCulqiPayment = async (request, options = {}) => {
                             } catch (error3DS) {
                                 console.error("❌ Error en autenticación 3DS:", error3DS);
                                 Culqi3DSModule.reset();
+                                // 📝 Registrar el pago rechazado en la BD (fallo 3DS)
+                                await reportFailedPayment(request, error3DS.message || "Autenticación 3DS fallida");
                                 toast.error("Error en autenticación", {
                                     description: error3DS.message || "No se pudo completar la autenticación 3DS",
                                     duration: 5000,
                                     position: "top-right",
                                     richColors: true,
                                 });
-                                reject(error3DS.message || "Error en autenticación 3DS");
+                                reject({ message: error3DS.message || "Error en autenticación 3DS", alreadyHandled: true });
                                 return;
                             }
                         }

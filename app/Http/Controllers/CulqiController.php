@@ -3,9 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\CulqiConfig;
-use App\Jobs\SendSaleEmail;
-use App\Jobs\SendSaleWhatsApp;
+use App\Helpers\NotificationHelper;
+use App\Notifications\PurchaseSummaryNotification;
 use App\Models\CulqiCharge;
+use App\Models\SaleDetail;
 use App\Models\CulqiSubscription;
 use App\Models\General;
 use App\Models\Sale;
@@ -96,14 +97,14 @@ class CulqiController extends Controller
       $amountForCulqi = $this->convertAmountForCulqi($amount);
       $currency = $this->getCulqiCurrency();
       
-      // Generar número de orden temporal
-      $orderNumber = 'CHK-' . time() . '-' . Str::random(6);
+      // Obtener o generar número de orden
+      $orderNumber = $data['orderNumber'] ?? ('CHK-' . time() . '-' . Str::random(6));
       
       $config = [
         "amount" => Math::ceil(($amountForCulqi * 100)), // Culqi usa céntimos
         "currency_code" => $currency,
         "description" => "Compra en " . env('APP_NAME'),
-        "order_number" => $orderNumber,
+        "order_number" => '#' . env('APP_CORRELATIVE') . '-' . $orderNumber,
         "client_details" => [
           "first_name" => $data['name'] ?? 'Cliente',
           "last_name" => $data['lastname'] ?? '',
@@ -248,8 +249,8 @@ class CulqiController extends Controller
         } catch (\Throwable $th) {
         }
 
-        SendSaleWhatsApp::dispatchAfterResponse($sale);
-        SendSaleEmail::dispatchAfterResponse($sale);
+        $details = SaleDetail::where('sale_id', $sale->id)->get();
+        NotificationHelper::sendToClientAndAdmin($sale, new PurchaseSummaryNotification($sale, $details));
       }
     }, function () use ($sale) {
       $sale->update(['status_id' => 'd3a77651-15df-4fdc-a3db-91d6a8f4247c']);
@@ -510,8 +511,8 @@ class CulqiController extends Controller
 
         DB::commit();
 
-        SendSaleWhatsApp::dispatchAfterResponse($sale);
-        SendSaleEmail::dispatchAfterResponse($sale);
+        $details = SaleDetail::where('sale_id', $sale->id)->get();
+        NotificationHelper::sendToClientAndAdmin($sale, new PurchaseSummaryNotification($sale, $details));
       } catch (\Throwable $th) {
         DB::rollBack();
         throw $th;
@@ -555,8 +556,8 @@ class CulqiController extends Controller
 
         DB::commit();
 
-        SendSaleWhatsApp::dispatchAfterResponse($newSale);
-        SendSaleEmail::dispatchAfterResponse($newSale);
+        $details = SaleDetail::where('sale_id', $newSale->id)->get();
+        NotificationHelper::sendToClientAndAdmin($newSale, new PurchaseSummaryNotification($newSale, $details));
       } catch (\Throwable $th) {
         DB::rollBack();
         throw $th;
@@ -596,7 +597,7 @@ class CulqiController extends Controller
     } catch (\Throwable $th) {
     }
 
-    SendSaleWhatsApp::dispatchAfterResponse($sale);
-    SendSaleEmail::dispatchAfterResponse($sale);
+    $details = SaleDetail::where('sale_id', $sale->id)->get();
+    NotificationHelper::sendToClientAndAdmin($sale, new PurchaseSummaryNotification($sale, $details));
   }
 }

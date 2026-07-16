@@ -675,7 +675,7 @@ export default function ShippingStep({
                 fullname: `${formData.name} ${formData.lastname}`,
                 country: "Perú",
                 document_type: formData.documentType, // Cambiar a document_type para que coincida con lo que espera el backend
-                amount: roundToTwoDecimals(finalTotalWithCoupon),
+                amount: roundToTwoDecimals(finalTotalWithCommission),
                 delivery: roundToTwoDecimals(envio),
                 // Campos de importación
                 seguro_importacion_total: roundToTwoDecimals(seguroImportacionTotal || 0),
@@ -688,6 +688,9 @@ export default function ShippingStep({
                 coupon_id: appliedCoupon?.id || null,
                 coupon_code: appliedCoupon?.code || null,
                 coupon_discount: roundToTwoDecimals(couponDiscount || 0),
+                // Comisión del método de pago
+                payment_commission: roundToTwoDecimals(calculatedCommission),
+                payment_commission_percentage: roundToTwoDecimals(culqiCommission),
                 // Información de promociones automáticas
                 applied_promotions: automaticDiscounts || [],
                 promotion_discount: roundToTwoDecimals(automaticDiscountTotal || 0),
@@ -732,10 +735,12 @@ export default function ShippingStep({
         } catch (error) {
             console.error('💥 Error completo en handlePayment:', error);
             
-            // No mostrar error si el usuario canceló el pago o cerró el modal
+            // No mostrar error si el usuario canceló el pago, cerró el modal,
+            // o si culqiPayment.js ya mostró su propio toast de error (alreadyHandled)
             const isCancelled = error === "Pago cancelado por el usuario" || 
                               error?.message === "Pago cancelado por el usuario" || 
-                              error?.cancelled === true;
+                              error?.cancelled === true ||
+                              error?.alreadyHandled === true;
 
             if (!isCancelled) {
                 toast.error("Lo sentimos, no puede continuar con la compra", {
@@ -956,6 +961,13 @@ export default function ShippingStep({
     }, [appliedCoupon, subTotal, igv, envio, automaticDiscountTotal]);
 
     const finalTotalWithCoupon = Math.max(0, roundToTwoDecimals(totalBase - calculatedCouponDiscount));
+
+    // Comisión del método de pago (Culqi)
+    const culqiCommission = parseFloat(Global.get("checkout_culqi_commission") || 0);
+    const calculatedCommission = roundToTwoDecimals(
+        finalTotalWithCoupon * (culqiCommission / 100)
+    );
+    const finalTotalWithCommission = roundToTwoDecimals(finalTotalWithCoupon + calculatedCommission);
 
     // Componente Modal de Login
     const LoginModal = () => {
@@ -1539,10 +1551,19 @@ export default function ShippingStep({
                     
                   
 
+                    {culqiCommission > 0 && (
+                        <div className="flex justify-between text-yellow-600 pb-2">
+                            <span>Comisión ({culqiCommission}%)</span>
+                            <span className="font-semibold">
+                                +{CurrencySymbol()}{Number2Currency(calculatedCommission)}
+                            </span>
+                        </div>
+                    )}
+
                     <div className="pt-4 border-t-2">
                         <div className="flex justify-between font-bold text-lg">
                             <span>Total:</span>
-                            <span>{CurrencySymbol()}{Number2Currency(roundToTwoDecimals(finalTotalWithCoupon))}</span>
+                            <span>{CurrencySymbol()}{Number2Currency(roundToTwoDecimals(finalTotalWithCommission))}</span>
                         </div>
                     </div>
 
@@ -1574,7 +1595,7 @@ export default function ShippingStep({
                         loading={paymentLoading}
                         className={`w-full mt-6 ${data?.class_button || 'text-white'} ${(!Global.CULQI_ENABLED || !Global.CULQI_PUBLIC_KEY) ? 'opacity-50 cursor-not-allowed' : ''}`}
                     >
-                        {paymentLoading ? "Procesando..." : !Global.CULQI_ENABLED ? "Pago no disponible" : !Global.CULQI_PUBLIC_KEY ? "Configuración pendiente" : `Pagar ${CurrencySymbol()}${Number2Currency(roundToTwoDecimals(finalTotalWithCoupon))}`}
+                        {paymentLoading ? "Procesando..." : !Global.CULQI_ENABLED ? "Pago no disponible" : !Global.CULQI_PUBLIC_KEY ? "Configuración pendiente" : `Pagar ${CurrencySymbol()}${Number2Currency(roundToTwoDecimals(finalTotalWithCommission))}`}
                     </ButtonPrimary>
 
                     <ButtonSecondary 

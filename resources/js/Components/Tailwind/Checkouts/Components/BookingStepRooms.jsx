@@ -519,10 +519,13 @@ export default function BookingStepRooms({
                         });
                     }
                 } catch (error) {
-                    // Verificar si el usuario canceló el pago (cerró el modal)
-                    if (error?.cancelled) {
-                        console.log("ℹ️ Pago cancelado por el usuario");
-                        // No mostrar error, simplemente volver al estado normal
+                    // Verificar si el usuario canceló el pago o si ya fue manejado por culqiPayment.js
+                    const isCancelled = error === "Pago cancelado por el usuario" || 
+                                      error?.message === "Pago cancelado por el usuario" || 
+                                      error?.cancelled === true ||
+                                      error?.alreadyHandled === true;
+                    if (isCancelled) {
+                        console.log("ℹ️ Pago cancelado o ya manejado");
                     } else {
                         toast.error('Error en el Pago', {
                             description: error?.message || `No se llegó a procesar el pago`,

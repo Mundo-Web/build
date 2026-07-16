@@ -453,6 +453,11 @@ class BasicController extends Controller
         'checkout_culqi_supports_usd',
         'exchange_rate_usd_pen',
         'tiny_api_key',
+        'checkout_culqi_enable_card',
+        'checkout_culqi_enable_yape',
+        'checkout_culqi_enable_banking',
+        'checkout_culqi_enable_agent',
+        'checkout_culqi_enable_wallet',
       ])->get()->keyBy('correlative');
     });
 
@@ -509,6 +514,11 @@ class BasicController extends Controller
         'CULQI_SUPPORTS_USD' => ($globalConfig->get('checkout_culqi_supports_usd')?->description ?? '') === 'true',
         'EXCHANGE_RATE' => $exchangeRate,
         'API_KEY_TINYMCE' => $globalConfig->get('tiny_api_key')?->description ?: env('API_KEY_TINYMCE', "xiambljzyxjms4y2148wtxxl05f7bcpyt5o949l0c78tfe7c"),
+        'checkout_culqi_enable_card' => $globalConfig->get('checkout_culqi_enable_card')?->description ?? 'true',
+        'checkout_culqi_enable_yape' => $globalConfig->get('checkout_culqi_enable_yape')?->description ?? 'true',
+        'checkout_culqi_enable_banking' => $globalConfig->get('checkout_culqi_enable_banking')?->description ?? 'true',
+        'checkout_culqi_enable_agent' => $globalConfig->get('checkout_culqi_enable_agent')?->description ?? 'true',
+        'checkout_culqi_enable_wallet' => $globalConfig->get('checkout_culqi_enable_wallet')?->description ?? 'true',
       ],
       'can_access' => $menus,
       'fillable' => $fillable,

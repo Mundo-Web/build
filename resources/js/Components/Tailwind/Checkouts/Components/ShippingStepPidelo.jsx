@@ -702,12 +702,19 @@ export default function ShippingStepPidelo({
             console.error('💥 Error name:', error.name);
             console.error('💥 Error message:', error.message);
             
-            toast.error("Lo sentimos, no puede continuar con la compra", {
-                description: `Ocurrió un error al procesar el pedido: ${error.message}`,
-                icon: <XOctagonIcon className="h-5 w-5 text-red-500" />,
-                duration: 3000,
-                position: "bottom-center",
-            });
+            // No mostrar error si el usuario canceló el pago o si ya fue manejado por culqiPayment.js
+            const isCancelled = error === "Pago cancelado por el usuario" || 
+                              error?.message === "Pago cancelado por el usuario" || 
+                              error?.cancelled === true ||
+                              error?.alreadyHandled === true;
+            if (!isCancelled) {
+                toast.error("Lo sentimos, no puede continuar con la compra", {
+                    description: `Ocurrió un error al procesar el pedido: ${error.message || error || "Error desconocido"}`,
+                    icon: <XOctagonIcon className="h-5 w-5 text-red-500" />,
+                    duration: 3000,
+                    position: "bottom-center",
+                });
+            }
         } finally {
             setPaymentLoading(false);
         }

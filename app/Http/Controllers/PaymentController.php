@@ -370,7 +370,7 @@ class PaymentController extends Controller
             return response()->json([
                 'message' => 'Pago exitoso',
                 'status' => true,
-                'culqi_response' => $charge,
+                'culqi_charge_id' => $charge->id,
                 'sale' => $request->cart,
                 'code' => $request->orderNumber,
                 'delivery' => $request->delivery,
@@ -389,6 +389,203 @@ class PaymentController extends Controller
 
             return response()->json([
                 'message' => 'Error en el pago: ' . $e->getMessage(),
+                'status' => false,
+                'error' => $e->getMessage()
+            ], 400);
+        }
+    }
+
+    public function order(Request $request)
+    {
+        Log::info('🔥 PaymentController::order - Inicio de proceso (Orden Culqi)', [
+            'url' => $request->fullUrl(),
+            'method' => $request->method(),
+            'ip' => $request->ip()
+        ]);
+        try {
+            Log::info('PaymentController::order - Datos recibidos:', $request->all());
+
+            // Validar stock antes de procesar
+            foreach ($request->cart as $item) {
+                $itemId = is_array($item) ? $item['id'] ?? null : $item->id ?? null;
+                $itemQuantity = is_array($item) ? $item['quantity'] ?? null : $item->quantity ?? null;
+                $itemType = is_array($item) ? $item['type'] ?? 'item' : $item->type ?? 'item';
+
+                if ($itemType !== 'combo') {
+                    $itemJpa = Item::find($itemId);
+                    if ($itemJpa && !$itemJpa->stock_unlimited && $itemJpa->stock < $itemQuantity) {
+                        return response()->json([
+                            'status' => false,
+                            'message' => "El producto {$itemJpa->name} no tiene suficiente stock disponible."
+                        ], 400);
+                    }
+                }
+            }
+
+            $saleStatusPendiente = SaleStatus::getByName('Pendiente');
+            Log::info('PaymentController::order - SaleStatus obtenido', ['status_id' => $saleStatusPendiente?->id]);
+
+            // Registrar la venta
+            $sale = Sale::create([
+                'code' => $request->orderNumber,
+                'user_id' => $request->user_id,
+                'referrer_id' => \App\Models\User::where('uuid', \Illuminate\Support\Facades\Cookie::get('referral_code'))->value('id'),
+                'name' => $request->name,
+                'lastname' => $request->lastname,
+                'fullname' => $request->fullname,
+                'email' => $request->email,
+                'phone' => $request->phone,
+                'country' => $request->country,
+                'department' => $request->department,
+                'province' => $request->province,
+                'district' => $request->district,
+                'ubigeo' => $request->ubigeo,
+                'address' => $request->address,
+                'number' => $request->number,
+                'reference' => $request->reference,
+                'comment' => $request->comment,
+                'amount' => $request->amount,
+                'delivery' => $request->delivery,
+                'additional_shipping_cost' => $request->additional_shipping_cost ?? 0,
+                'additional_shipping_description' => $request->additional_shipping_description ?? '',
+                'seguro_importacion_total' => $request->seguro_importacion_total ?? 0,
+                'derecho_arancelario_total' => $request->derecho_arancelario_total ?? 0,
+                'flete_total' => $request->flete_total ?? 0,
+                'delivery_type' => $request->delivery_type,
+                'store_id' => $request->store_id,
+                'coupon_id' => $request->coupon_id,
+                'coupon_code' => $request->coupon_code,
+                'coupon_discount' => $request->coupon_discount ?? 0,
+                'applied_promotions' => $request->applied_promotions ? json_encode($request->applied_promotions) : null,
+                'promotion_discount' => $request->promotion_discount ?? 0,
+                'culqi_charge_id' => $request->orderId,
+                'payment_status' => 'pendiente',
+                'status_id' => $saleStatusPendiente ? $saleStatusPendiente->id : null,
+                'invoiceType' => $request->invoiceType,
+                'documentType' => $request->documentType,
+                'document' => $request->document,
+                'businessName' => $request->businessName,
+                'igv_amount' => TaxHelper::calculate($request->cart, $request->packaging_id)['igv_amount'],
+                'perception_amount' => TaxHelper::calculate($request->cart, $request->packaging_id)['perception_amount'],
+                'packaging_amount' => TaxHelper::calculate($request->cart, $request->packaging_id)['packaging_amount'],
+                'packaging_id' => $request->packaging_id,
+                'total_amount' => TaxHelper::calculate($request->cart, $request->packaging_id)['total']
+            ]);
+
+            Log::info('PaymentController::order - Venta creada exitosamente', ['sale_id' => $sale->id]);
+
+            // Registrar detalles de la venta y actualizar stock
+            foreach ($request->cart as $item) {
+                $itemId = is_array($item) ? $item['id'] ?? null : $item->id ?? null;
+                $itemName = is_array($item) ? $item['name'] ?? null : $item->name ?? null;
+                $itemPrice = is_array($item) ? $item['final_price'] ?? $item['price'] ?? null : $item->final_price ?? $item->price ?? null;
+                $itemQuantity = is_array($item) ? $item['quantity'] ?? null : $item->quantity ?? null;
+                $itemImage = is_array($item) ? $item['image'] ?? null : $item->image ?? null;
+                $itemType = is_array($item) ? $item['type'] ?? 'item' : $item->type ?? 'item';
+
+                if ($itemType === 'combo') {
+                    $comboJpa = Combo::with('items')->find($itemId);
+                    if ($comboJpa) {
+                        $comboPriceToUse = $comboJpa->final_price && $comboJpa->final_price > 0
+                            ? $comboJpa->final_price
+                            : $comboJpa->price;
+
+                        SaleDetail::create([
+                            'sale_id' => $sale->id,
+                            'item_id' => null,
+                            'combo_id' => $comboJpa->id,
+                            'type' => 'combo',
+                            'name' => $comboJpa->name,
+                            'price' => $comboPriceToUse,
+                            'quantity' => $itemQuantity,
+                            'image' => $comboJpa->image,
+                            'combo_data' => [
+                                'items' => $comboJpa->items->map(function ($comboItem) {
+                                    return [
+                                        'id' => $comboItem->id,
+                                        'name' => $comboItem->name,
+                                        'sku' => $comboItem->sku,
+                                        'quantity' => $comboItem->pivot->quantity,
+                                        'is_main_item' => $comboItem->pivot->is_main_item
+                                    ];
+                                })->toArray()
+                            ]
+                        ]);
+
+                        foreach ($comboJpa->items as $comboItem) {
+                            if (!$comboItem->stock_unlimited) {
+                                $stockReduction = $comboItem->pivot->quantity * $itemQuantity;
+                                Item::where('id', $comboItem->id)->decrement('stock', $stockReduction);
+                            }
+                        }
+                    }
+                } else {
+                    $itemJpa = Item::find($itemId);
+                    SaleDetail::create([
+                        'sale_id' => $sale->id,
+                        'item_id' => $itemId,
+                        'combo_id' => null,
+                        'type' => 'item',
+                        'name' => $itemName,
+                        'price' => $itemPrice,
+                        'quantity' => $itemQuantity,
+                        'image' => $itemImage,
+                        'provider_id' => $itemJpa?->provider_id,
+                        'provider_price' => $itemJpa?->provider_price,
+                    ]);
+
+                    if ($itemJpa && !$itemJpa->stock_unlimited) {
+                        Item::where('id', $itemId)->decrement('stock', $itemQuantity);
+                    }
+                }
+            }
+
+            // Registrar ganancias de proveedores
+            \App\Helpers\CommissionHelper::recordProviderEarnings($sale);
+
+            // Incrementar uso de cupón
+            if ($request->coupon_code) {
+                $coupon = Coupon::where('code', $request->coupon_code)->first();
+                if ($coupon) {
+                    $coupon->incrementUsage();
+                }
+            }
+
+            // usuario autenticado actualizar datos de contacto
+            if (Auth::check()) {
+                $userJpa = User::find(Auth::user()->id);
+                $userJpa->phone = $request->phone;
+                $userJpa->document_type = $request->documentType;
+                $userJpa->document_number = $request->document;
+                $userJpa->country = $request->country;
+                $userJpa->department = $request->department;
+                $userJpa->province = $request->province;
+                $userJpa->district = $request->district;
+                $userJpa->ubigeo = $request->ubigeo;
+                $userJpa->address = $request->address;
+                $userJpa->reference = $request->reference;
+                $userJpa->number = $request->number;
+                $userJpa->save();
+            }
+
+            return response()->json([
+                'message' => 'Orden registrada correctamente',
+                'status' => true,
+                'sale' => $request->cart,
+                'code' => $request->orderNumber,
+                'delivery' => $request->delivery,
+                'additional_shipping_cost' => $request->additional_shipping_cost ?? 0,
+                'additional_shipping_description' => $request->additional_shipping_description ?? '',
+                'sale_id' => $sale->id
+            ]);
+        } catch (\Exception $e) {
+            Log::error('PaymentController::order - Error:', [
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return response()->json([
+                'message' => 'Error al registrar la orden: ' . $e->getMessage(),
                 'status' => false,
                 'error' => $e->getMessage()
             ], 400);
@@ -830,6 +1027,65 @@ class PaymentController extends Controller
                 'status' => false,
                 'error' => $e->getMessage()
             ], 400);
+        }
+    }
+
+    /**
+     * Registra un intento de pago rechazado/fallido.
+     * Se llama desde el frontend cuando Culqi devuelve un error o la autenticación 3DS falla.
+     * NO descuenta stock ni genera notificaciones — solo deja constancia del intento.
+     */
+    public function registerFailedPayment(Request $request)
+    {
+        try {
+            Log::warning('PaymentController::registerFailedPayment - Pago rechazado', [
+                'email'        => $request->email,
+                'amount'       => $request->amount,
+                'error_reason' => $request->error_reason,
+                'order_number' => $request->orderNumber,
+            ]);
+
+            // UUID fijo del seeder (StatusSeeder.php) para el status 'Rechazado'
+            // Usar ID directo en lugar de buscar por name para evitar dependencia del nombre editable
+            $saleStatusRechazado = SaleStatus::find('d3a77651-15df-4fdc-a3db-91d6a8f4247c');
+
+            Sale::create([
+                'code'          => $request->orderNumber ?? ('FAIL-' . strtoupper(substr(uniqid(), -6))),
+                'user_id'       => $request->user_id,
+                'name'          => $request->name,
+                'lastname'      => $request->lastname,
+                'fullname'      => $request->fullname,
+                'email'         => $request->email,
+                'phone'         => $request->phone,
+                'country'       => $request->country,
+                'department'    => $request->department,
+                'province'      => $request->province,
+                'district'      => $request->district,
+                'ubigeo'        => $request->ubigeo,
+                'address'       => $request->address,
+                'amount'        => $request->amount ?? 0,
+                'delivery'      => $request->delivery ?? 0,
+                'payment_status' => 'rechazado',
+                'status_id'     => $saleStatusRechazado->id,
+                'comment'       => '[PAGO RECHAZADO] ' . ($request->error_reason ?? 'Error desconocido'),
+                'documentType'  => $request->documentType,
+                'document'      => $request->document,
+                'coupon_discount'  => $request->coupon_discount ?? 0,
+                'promotion_discount' => $request->promotion_discount ?? 0,
+            ]);
+
+            return response()->json([
+                'status'  => true,
+                'message' => 'Intento de pago registrado como rechazado',
+            ]);
+        } catch (\Throwable $e) {
+            Log::error('PaymentController::registerFailedPayment - Error al registrar:', [
+                'message' => $e->getMessage(),
+            ]);
+            return response()->json([
+                'status'  => false,
+                'message' => 'No se pudo registrar el pago fallido: ' . $e->getMessage(),
+            ], 500);
         }
     }
 }

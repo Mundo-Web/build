@@ -1385,8 +1385,12 @@ export default function ShippingStepSF({
                     }
                 } catch (error) {
                     console.error("💥 Error en pago Culqi:", error);
-                    // No mostrar error si el usuario canceló el pago
-                    if (error !== "Pago cancelado por el usuario") {
+                    // No mostrar error si el usuario canceló el pago o si ya fue manejado por culqiPayment.js
+                    const isCancelled = error === "Pago cancelado por el usuario" || 
+                                      error?.message === "Pago cancelado por el usuario" || 
+                                      error?.cancelled === true ||
+                                      error?.alreadyHandled === true;
+                    if (!isCancelled) {
                         toast.error("Error en el Pago", {
                             description:
                                 error.message ||

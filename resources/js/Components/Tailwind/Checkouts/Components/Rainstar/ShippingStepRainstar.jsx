@@ -617,7 +617,14 @@ export default function ShippingStepRainstar({
             }
         } catch (error) {
             console.error("Error en el pago:", error);
-            toast.error("Ocurrió un error al procesar el pago");
+            // No mostrar error si el usuario canceló el pago o si ya fue manejado por culqiPayment.js
+            const isCancelled = error === "Pago cancelado por el usuario" || 
+                              error?.message === "Pago cancelado por el usuario" || 
+                              error?.cancelled === true ||
+                              error?.alreadyHandled === true;
+            if (!isCancelled) {
+                toast.error("Ocurrió un error al procesar el pago");
+            }
         } finally {
             setPaymentLoading(false);
         }

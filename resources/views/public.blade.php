@@ -565,7 +565,7 @@ $isCheckout = ($page->correlative ?? '') === 'checkout' ||
     $culqiRsaPublicKey = $generals->where('correlative', 'checkout_culqi_rsa_public_key')->first()?->description ?? '';
     @endphp
     @if($culqiEnabled && $culqiPublicKey)
-    <script type="text/javascript" src="https://js.culqi.com/3ds-js"></script>
+    <script type="text/javascript" src="https://3ds.culqi.com"></script>
     <script type="text/javascript" src="https://js.culqi.com/checkout-js"></script>
     <script type="text/javascript">
         window.CULQI_PUBLIC_KEY = "<?php echo $culqiPublicKey; ?>";
