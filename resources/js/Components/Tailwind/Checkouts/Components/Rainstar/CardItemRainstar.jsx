@@ -1,5 +1,6 @@
 import { Minus, Plus, Trash2, Package, Gift } from "lucide-react";
 import { CurrencySymbol } from "../../../../../Utils/Number2Currency";
+import Swal from "sweetalert2";
 
 const CardItemRainstar = ({
     setCart,
@@ -23,6 +24,21 @@ const CardItemRainstar = ({
     };
 
     const onPlusClicked = () => {
+        if (!item.stock_unlimited && (item.quantity || 1) >= (item.stock || 0)) {
+            Swal.fire({
+                title: "Límite de Stock",
+                text: `No hay más stock disponible para este producto. Stock máximo: ${item.stock || 0}`,
+                icon: "warning",
+                confirmButtonText: "Entendido",
+                customClass: {
+                    popup: "rounded-none border-4 border-black font-black uppercase tracking-tight",
+                    confirmButton:
+                        "rounded-none border-4 border-black bg-black text-white hover:bg-white hover:text-neutral-dark transition-all",
+                },
+            });
+            return;
+        }
+
         setCart((old) =>
             old.map((x) => {
                 if (isCombo) {
@@ -163,7 +179,8 @@ const CardItemRainstar = ({
                             <button
                                 type="button"
                                 onClick={onPlusClicked}
-                                className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-white hover:shadow-sm text-neutral-dark transition-all"
+                                disabled={!item.stock_unlimited && (item.quantity || 1) >= (item.stock || 0)}
+                                className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-white hover:shadow-sm text-neutral-dark transition-all disabled:opacity-30 disabled:cursor-not-allowed"
                             >
                                 <Plus size={14} strokeWidth={2.5} />
                             </button>

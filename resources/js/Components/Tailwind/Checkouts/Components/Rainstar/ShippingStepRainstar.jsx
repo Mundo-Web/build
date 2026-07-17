@@ -50,18 +50,17 @@ import UploadVoucherModalBancsRainstar from "./UploadVoucherModalBancsRainstar";
 
 const InputField = ({ label, icon: Icon, name, error, ...props }) => (
     <div className="space-y-1.5">
-        <label className="text-xs font-bold tracking-widest text-neutral-400  block">
+        <label className="text-xs font-bold  text-neutral-400  block">
             {label}
         </label>
         <div className="relative group">
             <input
                 {...props}
                 name={name}
-                className={`w-full border-2 p-4 font-medium outline-none transition-all bg-white text-neutral-800 placeholder-neutral-300 ${
-                    error
-                        ? "border-red-400 bg-red-50"
-                        : "border-gray-200 focus:border-black hover:border-gray-400"
-                } ${Icon ? "pl-12" : ""}`}
+                className={`w-full border-2 p-4 font-medium outline-none transition-all bg-white text-neutral-800 placeholder-neutral-300 ${error
+                    ? "border-red-400 bg-red-50"
+                    : "border-gray-100 focus:border-black hover:border-gray-200"
+                    } ${Icon ? "pl-12" : ""}`}
             />
             {Icon && (
                 <div className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-300 group-hover:text-neutral-500 transition-colors">
@@ -70,7 +69,7 @@ const InputField = ({ label, icon: Icon, name, error, ...props }) => (
             )}
         </div>
         {error && (
-            <p className="text-[9px] font-bold text-red-500 uppercase tracking-widest mt-1">
+            <p className="text-[9px] font-bold text-red-500 uppercase  mt-1">
                 {error}
             </p>
         )}
@@ -80,17 +79,16 @@ const InputField = ({ label, icon: Icon, name, error, ...props }) => (
 // SelectField — NO fuerza uppercase en el texto de las opciones
 const SelectField = ({ label, icon: Icon, children, error, ...props }) => (
     <div className="space-y-1.5">
-        <label className="text-xs font-bold tracking-widest text-neutral-400  block">
+        <label className="text-xs font-bold  text-neutral-400  block">
             {label}
         </label>
         <div className="relative group">
             <select
                 {...props}
-                className={`w-full border-2 p-4 font-medium outline-none appearance-none bg-white cursor-pointer transition-all text-neutral-800 ${
-                    error
-                        ? "border-red-400 bg-red-50"
-                        : "border-gray-200 focus:border-black hover:border-gray-400"
-                } ${Icon ? "pl-12" : ""}`}
+                className={`w-full border-2 p-4 font-medium outline-none appearance-none bg-white cursor-pointer transition-all text-neutral-800 ${error
+                    ? "border-red-400 bg-red-50"
+                    : "border-gray-100 focus:border-black hover:border-gray-200"
+                    } ${Icon ? "pl-12" : ""}`}
             >
                 {children}
             </select>
@@ -104,7 +102,7 @@ const SelectField = ({ label, icon: Icon, children, error, ...props }) => (
             )}
         </div>
         {error && (
-            <p className="text-[9px] font-bold text-red-500 uppercase tracking-widest mt-1">
+            <p className="text-[9px] font-bold text-red-500 uppercase  mt-1">
                 {error}
             </p>
         )}
@@ -210,9 +208,9 @@ export default function ShippingStepRainstar({
     const [appliedCoupon, setAppliedCoupon] = useState(
         dataCheckout?.coupon_discount > 0
             ? {
-                  code: dataCheckout?.coupon_code,
-                  value: dataCheckout?.coupon_discount,
-              }
+                code: dataCheckout?.coupon_code,
+                value: dataCheckout?.coupon_discount,
+            }
             : null,
     );
     const [couponLoading, setCouponLoading] = useState(false);
@@ -253,7 +251,7 @@ export default function ShippingStepRainstar({
                         handleUbigeoChange(option);
                     }
                 })
-                .catch(() => {});
+                .catch(() => { });
         }
     }, []);
 
@@ -618,10 +616,10 @@ export default function ShippingStepRainstar({
         } catch (error) {
             console.error("Error en el pago:", error);
             // No mostrar error si el usuario canceló el pago o si ya fue manejado por culqiPayment.js
-            const isCancelled = error === "Pago cancelado por el usuario" || 
-                              error?.message === "Pago cancelado por el usuario" || 
-                              error?.cancelled === true ||
-                              error?.alreadyHandled === true;
+            const isCancelled = error === "Pago cancelado por el usuario" ||
+                error?.message === "Pago cancelado por el usuario" ||
+                error?.cancelled === true ||
+                error?.alreadyHandled === true;
             if (!isCancelled) {
                 toast.error("Ocurrió un error al procesar el pago");
             }
@@ -669,18 +667,18 @@ export default function ShippingStepRainstar({
                     onClick={onBack}
                     className="flex items-center gap-3 group text-neutral-dark/50 hover:text-neutral-dark transition-colors"
                 >
-                    <div className="w-10 h-10 rounded-full border border-gray-200 flex items-center justify-center group-hover:border-black group-hover:bg-black group-hover:text-white transition-all">
+                    <div className="w-10 h-10 rounded-full border border-gray-100 flex items-center justify-center group-hover:border-black group-hover:bg-black group-hover:text-white transition-all">
                         <ChevronLeft size={18} />
                     </div>
-                    <span className="text-xs font-bold tracking-widest uppercase hidden sm:block">
+                    <span className="text-xs font-bold  uppercase hidden sm:block">
                         Volver
                     </span>
                 </button>
                 <div className="text-right">
-                    <p className="text-[10px] font-bold tracking-widest text-neutral-dark/30 uppercase mb-1">
+                    <p className="text-[10px] font-bold  text-neutral-dark/30 uppercase mb-1">
                         Paso 02
                     </p>
-                    <h2 className="text-3xl md:text-4xl font-black tracking-tight text-neutral-dark">
+                    <h2 className="text-3xl md:text-4xl font-black  text-neutral-dark">
                         Envío &amp; Pago
                     </h2>
                 </div>
@@ -698,7 +696,7 @@ export default function ShippingStepRainstar({
                             <div className="w-8 h-8 bg-neutral-dark text-white rounded-full flex items-center justify-center text-xs font-black shrink-0">
                                 01
                             </div>
-                            <h3 className="text-xl font-black tracking-tight text-neutral-dark">
+                            <h3 className="text-xl font-black  text-neutral-dark">
                                 Tus Datos
                             </h3>
                         </div>
@@ -739,13 +737,13 @@ export default function ShippingStepRainstar({
                             </div>
 
                             {/* Phone with flag prefix */}
-                            <div className="md:col-span-2">
-                                <label className="text-xs font-bold tracking-widest text-neutral-400  block mb-1.5">
+                            <div className="md:col-span-2 space-y-1.5">
+                                <label className={`text-xs font-bold  block ${errors.phone ? "text-red-500" : "text-neutral-400"}`}>
                                     Teléfono / WhatsApp
                                 </label>
-                                <div className="flex gap-3">
+                                <div className={`flex items-center border-2 bg-white transition-all ${errors.phone ? "border-red-400 bg-red-50" : "border-gray-100 focus-within:border-black hover:border-gray-200"}`}>
                                     {/* Prefix selector con banderas usando react-select */}
-                                    <div className="w-36 shrink-0">
+                                    <div className="w-36 shrink-0 border-r border-gray-100">
                                         <Select
                                             name="phone_prefix"
                                             value={(() => {
@@ -850,7 +848,7 @@ export default function ShippingStepRainstar({
                                                                     alt={
                                                                         country
                                                                     }
-                                                                    className="w-5 h-3.5 object-cover rounded-sm border border-gray-200 flex-shrink-0"
+                                                                    className="w-5 h-3.5 object-cover rounded-sm border border-gray-100 flex-shrink-0"
                                                                     onError={
                                                                         handleImgError
                                                                     }
@@ -900,12 +898,10 @@ export default function ShippingStepRainstar({
                                                 control: (base, state) => ({
                                                     ...base,
                                                     minHeight: "52px",
-                                                    border: `2px solid ${state.isFocused ? "#171717" : "#e5e7eb"}`,
+                                                    border: "none",
                                                     borderRadius: "0",
                                                     boxShadow: "none",
-                                                    "&:hover": {
-                                                        borderColor: "#9ca3af",
-                                                    },
+                                                    backgroundColor: "transparent",
                                                 }),
                                                 option: (base, state) => ({
                                                     ...base,
@@ -913,8 +909,8 @@ export default function ShippingStepRainstar({
                                                         state.isSelected
                                                             ? "#171717"
                                                             : state.isFocused
-                                                              ? "#f3f4f6"
-                                                              : "white",
+                                                                ? "#f3f4f6"
+                                                                : "white",
                                                     color: state.isSelected
                                                         ? "white"
                                                         : "#374151",
@@ -933,25 +929,31 @@ export default function ShippingStepRainstar({
                                             }}
                                         />
                                     </div>
-                                    <div className="flex-1">
-                                        <InputField
-                                            label=""
+                                    <div className="flex-1 relative group">
+                                        <input
                                             name="phone"
                                             type="tel"
                                             value={formData.phone}
                                             onChange={handleChange}
-                                            error={errors.phone}
-                                            icon={Phone}
                                             placeholder="999 888 777"
                                             required
+                                            className="w-full p-4 pl-12 font-medium outline-none border-none bg-transparent text-neutral-800 placeholder-neutral-300"
                                         />
+                                        <div className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-300 group-hover:text-neutral-500 transition-colors">
+                                            <Phone size={16} />
+                                        </div>
                                     </div>
                                 </div>
+                                {errors.phone && (
+                                    <p className="text-[9px] font-bold text-red-500 uppercase  mt-1">
+                                        {errors.phone}
+                                    </p>
+                                )}
                             </div>
 
                             {/* Invoice type */}
                             <div className="md:col-span-2 space-y-2">
-                                <label className="text-xs font-bold tracking-widest text-neutral-400  block">
+                                <label className="text-xs font-bold  text-neutral-400  block">
                                     Tipo de Comprobante
                                 </label>
                                 <div className="flex gap-3">
@@ -967,11 +969,10 @@ export default function ShippingStepRainstar({
                                                     },
                                                 })
                                             }
-                                            className={`flex-1 py-4 px-6 border-2 font-bold text-sm capitalize tracking-wide transition-all rounded-none ${
-                                                formData.invoiceType === type
-                                                    ? "bg-neutral-dark text-white border-neutral-dark"
-                                                    : "border-gray-200 text-neutral-dark/60 hover:border-neutral-dark hover:text-neutral-dark"
-                                            }`}
+                                            className={`flex-1 py-4 px-6 border-2 font-bold text-sm capitalize  transition-all rounded-none ${formData.invoiceType === type
+                                                ? "bg-neutral-dark text-white border-neutral-dark"
+                                                : "border-gray-100 text-neutral-dark/60 hover:border-neutral-dark hover:text-neutral-dark"
+                                                }`}
                                         >
                                             {type}
                                         </button>
@@ -1027,7 +1028,7 @@ export default function ShippingStepRainstar({
                             <div className="w-8 h-8 bg-neutral-dark text-white rounded-full flex items-center justify-center text-xs font-black shrink-0">
                                 02
                             </div>
-                            <h3 className="text-xl font-black tracking-tight text-neutral-dark">
+                            <h3 className="text-xl font-black  text-neutral-dark">
                                 Entrega
                             </h3>
                         </div>
@@ -1036,11 +1037,10 @@ export default function ShippingStepRainstar({
                             {/* Ubigeo async select */}
                             <div id="ubigeo-select-container">
                                 <label
-                                    className={`text-xs font-bold tracking-widest  block mb-1.5 ${
-                                        errors.ubigeo
-                                            ? "text-red-500"
-                                            : "text-neutral-400"
-                                    }`}
+                                    className={`text-xs font-bold   block mb-1.5 ${errors.ubigeo
+                                        ? "text-red-500"
+                                        : "text-neutral-400"
+                                        }`}
                                 >
                                     Ubicación (Distrito, Provincia,
                                     Departamento)
@@ -1060,7 +1060,7 @@ export default function ShippingStepRainstar({
                                     styles={{
                                         control: (base, state) => ({
                                             ...base,
-                                            border: `2px solid ${errors.ubigeo ? "#f87171" : state.isFocused ? "#171717" : "#e5e7eb"}`,
+                                            border: `2px solid ${errors.ubigeo ? "#f87171" : state.isFocused ? "#171717" : "#f3f4f6 "}`,
                                             borderRadius: "0",
                                             padding: "6px 4px",
                                             fontWeight: "500",
@@ -1069,7 +1069,7 @@ export default function ShippingStepRainstar({
                                                 ? "#fef2f2"
                                                 : "white",
                                             "&:hover": {
-                                                border: `2px solid ${errors.ubigeo ? "#f87171" : "#9ca3af"}`,
+                                                border: `2px solid ${errors.ubigeo ? "#f87171" : "#e5e7eb "}`,
                                             },
                                         }),
                                         menu: (base) => ({
@@ -1103,12 +1103,12 @@ export default function ShippingStepRainstar({
                                     }}
                                 />
                                 {errors.ubigeo && (
-                                    <p className="text-red-500 text-[9px] font-bold mt-1 uppercase tracking-widest">
+                                    <p className="text-red-500 text-[9px] font-bold mt-1 uppercase ">
                                         {errors.ubigeo}
                                     </p>
                                 )}
                                 {isLoading && (
-                                    <p className="text-[10px] text-neutral-400 font-bold tracking-widest mt-2 uppercase animate-pulse">
+                                    <p className="text-[10px] text-neutral-400 font-bold  mt-2 uppercase animate-pulse">
                                         Calculando opciones de envío...
                                     </p>
                                 )}
@@ -1161,7 +1161,7 @@ export default function ShippingStepRainstar({
                             {/* Shipping options */}
                             {shippingOptions.length > 0 && (
                                 <div className="space-y-3 pt-4 border-t border-gray-100">
-                                    <h4 className="text-xs font-bold tracking-widest text-neutral-400 uppercase mb-3">
+                                    <h4 className="text-xs font-bold  text-neutral-400 uppercase mb-3">
                                         Elige tu método de envío
                                     </h4>
                                     <div className="grid md:grid-cols-2 gap-3">
@@ -1175,7 +1175,7 @@ export default function ShippingStepRainstar({
                                             const location = ubigeoInfo
                                                 ? `${ubigeoInfo.distrito}, ${ubigeoInfo.provincia}, ${ubigeoInfo.departamento}`
                                                 : selectedUbigeo?.label ||
-                                                  "mi ubicación";
+                                                "mi ubicación";
                                             const consultMessage = `Hola, necesito consultar el costo de envío para: ${location}. ¿Me pueden ayudar?`;
                                             const isSelected =
                                                 selectedOption === opt.type;
@@ -1192,19 +1192,17 @@ export default function ShippingStepRainstar({
                                                                 opt,
                                                             )
                                                         }
-                                                        className={`w-full p-5 border-2 text-left transition-all ${
-                                                            isSelected
-                                                                ? "bg-neutral-dark text-white border-neutral-dark shadow-lg"
-                                                                : "border-gray-200 hover:border-neutral-dark bg-white"
-                                                        }`}
+                                                        className={`w-full p-5 border-2 text-left transition-all ${isSelected
+                                                            ? "bg-neutral-dark text-white border-neutral-dark shadow-lg"
+                                                            : "border-gray-100 hover:border-neutral-dark bg-white"
+                                                            }`}
                                                     >
                                                         <div className="flex justify-between items-start mb-2">
                                                             <span
-                                                                className={`font-bold text-sm capitalize ${
-                                                                    isSelected
-                                                                        ? "text-white"
-                                                                        : "text-neutral-dark"
-                                                                }`}
+                                                                className={`font-bold text-sm capitalize ${isSelected
+                                                                    ? "text-white"
+                                                                    : "text-neutral-dark"
+                                                                    }`}
                                                             >
                                                                 {
                                                                     opt.deliveryType
@@ -1212,32 +1210,30 @@ export default function ShippingStepRainstar({
                                                             </span>
                                                             {!opt.showConsultButton && (
                                                                 <span
-                                                                    className={`font-black text-sm ${
-                                                                        isSelected
-                                                                            ? "text-white"
-                                                                            : "text-neutral-dark"
-                                                                    }`}
+                                                                    className={`font-black text-sm ${isSelected
+                                                                        ? "text-white"
+                                                                        : "text-neutral-dark"
+                                                                        }`}
                                                                 >
                                                                     {opt.price ===
-                                                                    0
+                                                                        0
                                                                         ? "Gratis"
                                                                         : `${CurrencySymbol()} ${Number2Currency(opt.price)}`}
                                                                 </span>
                                                             )}
                                                         </div>
                                                         <p
-                                                            className={`text-xs leading-relaxed ${
-                                                                isSelected
-                                                                    ? "text-white/60"
-                                                                    : "text-neutral-400"
-                                                            }`}
+                                                            className={`text-xs  ${isSelected
+                                                                ? "text-white/60"
+                                                                : "text-neutral-400"
+                                                                }`}
                                                         >
                                                             {opt.description}
                                                         </p>
 
                                                         {opt.showConsultButton &&
                                                             advisors.length >
-                                                                0 && (
+                                                            0 && (
                                                                 <div className="mt-3 pt-3 border-t border-white/10">
                                                                     <button
                                                                         type="button"
@@ -1275,7 +1271,7 @@ export default function ShippingStepRainstar({
                                                                                                                         "_blank",
                                                                                                                     )
                                                                                                                 }
-                                                                                                                className="p-2 bg-neutral-dark text-white font-bold text-xs uppercase tracking-widest rounded"
+                                                                                                                className="p-2 bg-neutral-dark text-white font-bold text-xs uppercase  rounded"
                                                                                                             >
                                                                                                                 Hablar
                                                                                                                 con{" "}
@@ -1291,11 +1287,10 @@ export default function ShippingStepRainstar({
                                                                                 );
                                                                             }
                                                                         }}
-                                                                        className={`w-full py-2 flex items-center justify-center gap-2 font-bold text-xs uppercase tracking-widest transition-all ${
-                                                                            isSelected
-                                                                                ? "bg-white text-black hover:bg-neutral-100"
-                                                                                : "bg-green-500 text-white hover:bg-green-600"
-                                                                        }`}
+                                                                        className={`w-full py-2 flex items-center justify-center gap-2 font-bold text-xs uppercase  transition-all ${isSelected
+                                                                            ? "bg-white text-black hover:bg-neutral-100"
+                                                                            : "bg-green-500 text-white hover:bg-green-600"
+                                                                            }`}
                                                                     >
                                                                         <Phone
                                                                             size={
@@ -1334,7 +1329,7 @@ export default function ShippingStepRainstar({
                                                                     className="text-primary"
                                                                 />
                                                             </div>
-                                                            <p className="text-sm text-neutral-dark/70 leading-relaxed">
+                                                            <p className="text-sm text-neutral-dark/70 ">
                                                                 {char}
                                                             </p>
                                                         </div>
@@ -1371,13 +1366,13 @@ export default function ShippingStepRainstar({
                         {/* Summary header */}
                         <div className="flex items-center gap-4 px-6 sm:px-8 py-6 border-b border-gray-100">
                             <div className="w-10 h-10 bg-gray-50 rounded-full flex items-center justify-center">
-                                <ShoppingBag className="w-5 h-5 text-neutral-dark/40" />
+                                <ShoppingBag className="w-5 h-5 text-neutral-light" />
                             </div>
                             <div>
-                                <h4 className="text-lg font-black tracking-tight text-neutral-dark">
+                                <h4 className="text-lg font-black  text-neutral-dark">
                                     Resumen del Pedido
                                 </h4>
-                                <p className="text-xs font-bold tracking-wider text-neutral-dark/30 uppercase">
+                                <p className="text-xs font-bold  text-neutral-dark/30 uppercase">
                                     {cart.length} artículo
                                     {cart.length !== 1 ? "s" : ""}
                                 </p>
@@ -1399,7 +1394,7 @@ export default function ShippingStepRainstar({
                                         />
                                     </div>
                                     <div className="flex-1 min-w-0">
-                                        <p className="text-xs font-bold text-neutral-dark leading-tight truncate">
+                                        <p className="text-xs font-bold text-neutral-dark  truncate">
                                             {item.name}
                                         </p>
                                         <p className="text-[10px] text-neutral-400 mt-0.5">
@@ -1414,7 +1409,7 @@ export default function ShippingStepRainstar({
                                         {CurrencySymbol()}{" "}
                                         {Number2Currency(
                                             (item.final_price || item.price) *
-                                                item.quantity,
+                                            item.quantity,
                                         )}
                                     </span>
                                 </div>
@@ -1425,7 +1420,7 @@ export default function ShippingStepRainstar({
                             {/* Coupon */}
                             <div className="pt-4 border-t border-gray-100">
                                 {!appliedCoupon ? (
-                                    <div className="flex border border-gray-200">
+                                    <div className="flex border border-gray-100">
                                         <input
                                             type="text"
                                             value={couponCode}
@@ -1439,7 +1434,7 @@ export default function ShippingStepRainstar({
                                             onKeyDown={(e) =>
                                                 e.key === "Enter" &&
                                                 (e.preventDefault(),
-                                                validateCoupon())
+                                                    validateCoupon())
                                             }
                                         />
                                         <button
@@ -1478,7 +1473,7 @@ export default function ShippingStepRainstar({
                                     </div>
                                 )}
                                 {couponError && (
-                                    <p className="text-red-500 text-[9px] font-bold uppercase mt-2 tracking-widest">
+                                    <p className="text-red-500 text-[9px] font-bold uppercase mt-2 ">
                                         {couponError}
                                     </p>
                                 )}
@@ -1487,7 +1482,7 @@ export default function ShippingStepRainstar({
                             {/* Price breakdown */}
                             <div className="space-y-3 pt-2 border-t border-gray-100">
                                 <div className="flex justify-between items-center">
-                                    <span className="text-xs font-bold tracking-widest text-neutral-dark/40 ">
+                                    <span className="text-xs font-bold  text-neutral-light ">
                                         Subtotal
                                     </span>
                                     <span className="font-bold text-neutral-dark">
@@ -1496,7 +1491,7 @@ export default function ShippingStepRainstar({
                                     </span>
                                 </div>
                                 <div className="flex justify-between items-center">
-                                    <span className="text-xs font-bold tracking-widest text-neutral-dark/40 ">
+                                    <span className="text-xs font-bold  text-neutral-light ">
                                         I.G.V.
                                     </span>
                                     <span className="font-bold text-neutral-dark">
@@ -1505,43 +1500,43 @@ export default function ShippingStepRainstar({
                                     </span>
                                 </div>
                                 <div className="flex justify-between items-center">
-                                    <span className="text-xs font-bold tracking-widest text-neutral-dark/40 ">
+                                    <span className="text-xs font-bold  text-neutral-light ">
                                         Envío
                                     </span>
                                     <span className="font-bold text-neutral-dark">
                                         {envio > 0
                                             ? `${CurrencySymbol()} ${Number2Currency(envio)}`
                                             : selectedUbigeo
-                                              ? "Gratis"
-                                              : "Al elegir ubicación"}
+                                                ? "Gratis"
+                                                : "Al elegir ubicación"}
                                     </span>
                                 </div>
                                 {(couponDiscount > 0 ||
                                     automaticDiscountTotal > 0) && (
-                                    <div className="flex justify-between items-center text-red-500">
-                                        <span className="text-xs font-bold tracking-widest ">
-                                            Descuentos
-                                        </span>
-                                        <span className="font-black">
-                                            -{CurrencySymbol()}{" "}
-                                            {Number2Currency(
-                                                (couponDiscount || 0) +
+                                        <div className="flex justify-between items-center text-red-500">
+                                            <span className="text-xs font-bold  ">
+                                                Descuentos
+                                            </span>
+                                            <span className="font-black">
+                                                -{CurrencySymbol()}{" "}
+                                                {Number2Currency(
+                                                    (couponDiscount || 0) +
                                                     (automaticDiscountTotal ||
                                                         0),
-                                            )}
-                                        </span>
-                                    </div>
-                                )}
+                                                )}
+                                            </span>
+                                        </div>
+                                    )}
                             </div>
 
                             {/* Total */}
                             <div className="border-t border-gray-100 pt-6">
                                 <div className="flex justify-between items-end mb-8">
-                                    <span className="text-xs font-bold tracking-widest text-neutral-dark/40 ">
+                                    <span className="text-xs font-bold  text-neutral-light ">
                                         Total
                                     </span>
                                     <div className="text-right">
-                                        <span className="text-3xl sm:text-4xl font-black tracking-tighter text-neutral-dark">
+                                        <span className="text-3xl sm:text-4xl font-black  text-neutral-dark">
                                             {CurrencySymbol()}{" "}
                                             {Number2Currency(totalFinal)}
                                         </span>
@@ -1554,7 +1549,7 @@ export default function ShippingStepRainstar({
                                     disabled={paymentLoading}
                                     className="group w-full flex items-center justify-between py-5 sm:py-6 px-6 sm:px-8 bg-primary text-white hover:bg-primary/90 transition-all duration-300 shadow-xl shadow-primary/20 active:translate-y-1 active:shadow-none disabled:opacity-60 disabled:cursor-not-allowed"
                                 >
-                                    <span className="text-xs sm:text-sm font-bold tracking-normal sm:tracking-[0.2em] uppercase">
+                                    <span className="text-xs sm:text-sm font-bold  sm: uppercase">
                                         {paymentLoading
                                             ? "Procesando..."
                                             : "Proceder al Pago"}
@@ -1621,7 +1616,7 @@ export default function ShippingStepRainstar({
                             <div className="absolute inset-0 rounded-full border-4 border-t-primary animate-spin"></div>
                         </div>
                         <h3 className="text-neutral-900 font-bold text-lg">Procesando Pago</h3>
-                        <p className="text-neutral-500 text-sm leading-relaxed">
+                        <p className="text-neutral-500 text-sm ">
                             Estamos conectando de forma segura. Por favor, no cierres esta ventana ni recargues la página.
                         </p>
                     </div>

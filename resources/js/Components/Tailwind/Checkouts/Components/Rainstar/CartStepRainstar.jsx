@@ -174,17 +174,17 @@ export default function CartStepRainstar({
     return (
         <div className="grid lg:grid-cols-12 gap-12 pt-8 pb-20">
             {/* Left Content: Items List */}
-            <div className="lg:col-span-8 space-y-8">
+            <div className="lg:col-span-7 space-y-8">
                 <div className="flex items-center justify-between mb-8 border-b border-gray-100 pb-8">
                     <div className="flex items-center gap-6">
                         <div className="w-16 h-16 bg-gray-50 flex items-center justify-center rounded-full">
                             <ShoppingBag className="w-8 h-8 text-neutral-dark" />
                         </div>
                         <div>
-                            <h2 className="text-3xl font-black tracking-tighter text-neutral-dark">
+                            <h2 className="text-3xl font-black  text-neutral-dark">
                                 Mi Carrito
                             </h2>
-                            <p className="text-xs font-bold tracking-wider text-neutral-dark/40 uppercase">
+                            <p className="text-xs font-bold  text-neutral-light uppercase">
                                 {cart.length} artículos seleccionados
                             </p>
                         </div>
@@ -201,10 +201,10 @@ export default function CartStepRainstar({
                             <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center shadow-sm mb-8">
                                 <ShoppingCart className="w-10 h-10 text-neutral-dark/20" />
                             </div>
-                            <h3 className="text-2xl font-black tracking-tight text-neutral-dark mb-2">
+                            <h3 className="text-2xl font-black  text-neutral-dark mb-2">
                                 Tu carrito está vacío
                             </h3>
-                            <p className="text-xs font-bold text-neutral-dark/40 tracking-widest uppercase mb-10 text-center max-w-sm">
+                            <p className="text-xs font-bold text-neutral-light  uppercase mb-10 text-center max-w-sm">
                                 Descubre nuestro catálogo y llena tu carrito con
                                 los mejores productos.
                             </p>
@@ -212,7 +212,7 @@ export default function CartStepRainstar({
                                 onClick={() =>
                                     (window.location.href = "/catalogo")
                                 }
-                                className="py-4 px-10 rounded-xl bg-primary text-white font-bold text-xs uppercase tracking-widest hover:bg-neutral-dark transition-all shadow-lg shadow-primary/20 active:scale-95"
+                                className="py-4 px-10 rounded-xl bg-primary text-white font-bold text-xs uppercase  hover:bg-neutral-dark transition-all shadow-lg shadow-primary/20 active:scale-95"
                             >
                                 Ir al Catálogo
                             </button>
@@ -240,10 +240,10 @@ export default function CartStepRainstar({
                         <ShieldCheck className="w-8 h-8 text-primary opacity-80 stroke-[1.5]" />
                     </div>
                     <div className="text-center md:text-left">
-                        <h4 className="font-bold tracking-tight text-sm text-neutral-dark mb-1">
+                        <h4 className="font-bold  text-lg text-neutral-dark mb-1">
                             Compra Garantizada
                         </h4>
-                        <p className="text-xs font-bold text-neutral-dark/40  tracking-widest leading-relaxed">
+                        <p className="text-sm font-bold text-neutral-light   ">
                             Protegemos tus datos con los más altos estándares de
                             cifrado. Tu transacción está 100% segura.
                         </p>
@@ -252,36 +252,36 @@ export default function CartStepRainstar({
             </div>
 
             {/* Right Content: Summary Widget */}
-            <div className="lg:col-span-4">
+            <div className="lg:col-span-5">
                 <div className="sticky top-24 border border-gray-100 bg-white p-8 rounded-none shadow-2xl shadow-neutral-dark/5">
-                    <h3 className="text-2xl font-black tracking-tight mb-8 border-b border-gray-50 pb-6 text-neutral-dark">
+                    <h3 className="text-2xl font-black  mb-8 border-b border-gray-50 pb-6 text-neutral-dark">
                         Resumen
                     </h3>
 
                     <div className="space-y-6 mb-10">
                         <div className="flex justify-between items-end">
-                            <span className="text-xs font-bold tracking-widest text-neutral-dark/40 ">
+                            <span className="text-sm font-bold  text-neutral-light ">
                                 Subtotal
                             </span>
-                            <span className="text-xl font-bold tracking-tight text-neutral-dark">
+                            <span className="text-xl font-bold  text-neutral-dark">
                                 {CurrencySymbol()} {Number2Currency(subTotal)}
                             </span>
                         </div>
                         <div className="flex justify-between items-end">
-                            <span className="text-xs font-bold tracking-widest text-neutral-dark/40 ">
+                            <span className="text-sm font-bold  text-neutral-light ">
                                 Impuestos (IGV)
                             </span>
-                            <span className="text-xl font-bold tracking-tight text-neutral-dark">
+                            <span className="text-xl font-bold  text-neutral-dark">
                                 {CurrencySymbol()} {Number2Currency(igv)}
                             </span>
                         </div>
 
                         {/* Delivery Placeholder */}
                         <div className="flex justify-between items-center py-4 border-y border-gray-50">
-                            <span className="text-xs font-bold tracking-widest text-neutral-dark/40 ">
+                            <span className="text-sm font-bold  text-neutral-light ">
                                 Envío
                             </span>
-                            <span className="text-[10px] font-bold bg-gray-50/80 rounded-lg text-neutral-dark/40 px-3 py-1.5 uppercase tracking-wide">
+                            <span className="text-xs font-bold bg-gray-50/80 rounded-lg text-neutral-dark px-3 py-1.5 uppercase ">
                                 {envio > 0
                                     ? `${CurrencySymbol()} ${Number2Currency(envio)}`
                                     : "Calculado al finalizar"}
@@ -291,7 +291,7 @@ export default function CartStepRainstar({
                         {/* Discounts Display */}
                         {isLoadingDiscounts && (
                             <div className="flex justify-center py-4">
-                                <span className="animate-pulse text-[10px] font-black uppercase tracking-widest italic">
+                                <span className="animate-pulse text-[10px] font-black uppercase  italic">
                                     Calculando beneficios Rainstar...
                                 </span>
                             </div>
@@ -301,7 +301,7 @@ export default function CartStepRainstar({
                             <div className="space-y-3 pt-4 border-t-2 border-black/5">
                                 <div className="flex items-center gap-2 text-red-600">
                                     <Tag size={14} strokeWidth={3} />
-                                    <span className="text-[10px] font-black uppercase tracking-widest">
+                                    <span className="text-[10px] font-black uppercase ">
                                         Beneficios Aplicados
                                     </span>
                                 </div>
@@ -319,7 +319,7 @@ export default function CartStepRainstar({
                                         </span>
                                     </div>
                                 ))}
-                                <div className="flex justify-between pt-2 border-t-2 border-black/5 text-[10px] font-black uppercase tracking-widest text-red-600">
+                                <div className="flex justify-between pt-2 border-t-2 border-black/5 text-[10px] font-black uppercase  text-red-600">
                                     <span>Total Descuentos</span>
                                     <span>
                                         -{CurrencySymbol()}{" "}
@@ -333,20 +333,20 @@ export default function CartStepRainstar({
                     {/* Total Section matching CartModalRainstar.jsx */}
                     <div className="border-t border-gray-100 pt-8 mt-8">
                         <div className="flex justify-between items-end mb-8">
-                            <span className="text-xs font-bold tracking-widest text-neutral-dark/40 mb-2 uppercase">
+                            <span className="text-sm font-bold  text-neutral-light mb-2 uppercase">
                                 Total:
                             </span>
                             <div className="text-right">
                                 {totalDiscount > 0 && (
-                                    <div className="text-[10px] font-bold text-neutral-dark/30 line-through tracking-wider mb-1">
+                                    <div className="text-xs font-bold text-neutral-dark/30 line-through  mb-1">
                                         Antes: {CurrencySymbol()}{" "}
                                         {Number2Currency(
                                             totalWithoutDiscounts ||
-                                                totalFinal + totalDiscount,
+                                            totalFinal + totalDiscount,
                                         )}
                                     </div>
                                 )}
-                                <span className="text-5xl font-black tracking-tighter text-neutral-dark">
+                                <span className="text-4xl font-black  text-neutral-dark">
                                     {CurrencySymbol()}{" "}
                                     {Number2Currency(totalFinal)}
                                 </span>
@@ -357,13 +357,12 @@ export default function CartStepRainstar({
                             <button
                                 onClick={handleContinueClick}
                                 disabled={isCartEmpty}
-                                className={`group w-full flex items-center justify-between py-6 px-10 transition-all duration-500 rounded-none shadow-xl ${
-                                    isCartEmpty
-                                        ? "bg-gray-100 text-neutral-dark/20 cursor-not-allowed"
-                                        : "bg-primary text-white hover:bg-primary/90 shadow-primary/20 active:translate-y-1 active:shadow-none"
-                                }`}
+                                className={`group w-full flex items-center justify-between py-6 px-10 transition-all duration-500 rounded-none shadow-xl ${isCartEmpty
+                                    ? "bg-gray-100 text-neutral-dark/20 cursor-not-allowed"
+                                    : "bg-primary text-white hover:bg-primary/90 shadow-primary/20 active:translate-y-1 active:shadow-none"
+                                    }`}
                             >
-                                <span className="text-sm font-bold tracking-[0.2em] uppercase">
+                                <span className="text-sm font-bold  uppercase">
                                     Continuar Compra
                                 </span>
                                 {!isCartEmpty && (
@@ -373,7 +372,7 @@ export default function CartStepRainstar({
 
                             <button
                                 onClick={() => (window.location.href = "/")}
-                                className="w-full py-4 text-xs font-bold tracking-widest text-neutral-dark/40 hover:text-neutral-dark transition-colors uppercase"
+                                className="w-full py-4 text-xs font-bold  text-neutral-light hover:text-neutral-dark transition-colors uppercase"
                             >
                                 Seguir Comprando
                             </button>
@@ -381,14 +380,12 @@ export default function CartStepRainstar({
                     </div>
 
                     <div className="mt-8 pt-8 border-t border-gray-100 text-center">
-                        <p className="text-[10px] font-bold text-neutral-dark/40  leading-relaxed tracking-widest">
+                        <p className="text-xs font-bold text-neutral-light   ">
                             Al realizar tu pedido, aceptas los{" "}
                             <a
-                                href="#"
-                                onClick={(e) => {
-                                    e.preventDefault();
-                                    openModal("terms_conditions");
-                                }}
+                                href="/terminos-y-condiciones"
+                                target="_blank"
+                                rel="noopener noreferrer"
                                 className="text-neutral-dark underline hover:text-primary transition-colors uppercase"
                             >
                                 términos y condiciones
@@ -396,11 +393,9 @@ export default function CartStepRainstar({
                             , y que nosotros usaremos sus datos personales de
                             acuerdo con nuestra{" "}
                             <a
-                                href="#"
-                                onClick={(e) => {
-                                    e.preventDefault();
-                                    openModal("privacy_policy");
-                                }}
+                                href="/politica-de-privacidad"
+                                target="_blank"
+                                rel="noopener noreferrer"
                                 className="text-neutral-dark underline hover:text-primary transition-colors uppercase"
                             >
                                 política de privacidad
@@ -422,7 +417,7 @@ export default function CartStepRainstar({
 
             {/* Brutalist Login Modal (Refined) */}
             {showLoginModal && (
-                <div className="fixed inset-0 bg-neutral-dark/40 backdrop-blur-sm flex items-center justify-center z-[9999] p-6">
+                <div className="fixed inset-0 bg-neutral-light backdrop-blur-sm flex items-center justify-center z-[9999] p-6">
                     <motion.div
                         initial={{ scale: 0.95, opacity: 0, y: 20 }}
                         animate={{ scale: 1, opacity: 1, y: 0 }}
@@ -430,7 +425,7 @@ export default function CartStepRainstar({
                     >
                         <button
                             onClick={() => setShowLoginModal(false)}
-                            className="absolute top-6 right-6 w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 text-neutral-dark/40 hover:text-neutral-dark transition-all"
+                            className="absolute top-6 right-6 w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 text-neutral-light hover:text-neutral-dark transition-all"
                         >
                             <X className="w-5 h-5 stroke-[2]" />
                         </button>
@@ -438,10 +433,10 @@ export default function CartStepRainstar({
                             <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6">
                                 <ShieldCheck className="w-8 h-8 text-primary" />
                             </div>
-                            <h2 className="text-3xl font-black tracking-tight text-neutral-dark mb-4">
+                            <h2 className="text-3xl font-black  text-neutral-dark mb-4">
                                 Identifícate
                             </h2>
-                            <p className="text-xs font-bold tracking-widest text-neutral-dark/40 uppercase">
+                            <p className="text-xs font-bold  text-neutral-light uppercase">
                                 Para una experiencia personalizada, inicia
                                 sesión.
                             </p>
@@ -451,7 +446,7 @@ export default function CartStepRainstar({
                                 onClick={() =>
                                     (window.location.href = "/iniciar-sesion")
                                 }
-                                className="w-full py-5 px-8 rounded-xl bg-primary text-white font-bold text-xs uppercase tracking-widest hover:bg-neutral-dark transition-all shadow-lg shadow-primary/20 active:scale-95"
+                                className="w-full py-5 px-8 rounded-xl bg-primary text-white font-bold text-xs uppercase  hover:bg-neutral-dark transition-all shadow-lg shadow-primary/20 active:scale-95"
                             >
                                 Iniciar Sesión
                             </button>
@@ -459,7 +454,7 @@ export default function CartStepRainstar({
                                 onClick={() =>
                                     (window.location.href = "/crear-cuenta")
                                 }
-                                className="w-full py-5 px-8 rounded-xl border border-gray-100 text-neutral-dark font-bold text-xs uppercase tracking-widest hover:bg-gray-50 transition-all active:scale-95"
+                                className="w-full py-5 px-8 rounded-xl border border-gray-100 text-neutral-dark font-bold text-xs uppercase  hover:bg-gray-50 transition-all active:scale-95"
                             >
                                 Crear Cuenta
                             </button>

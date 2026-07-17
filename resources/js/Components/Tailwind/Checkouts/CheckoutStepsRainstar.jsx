@@ -141,7 +141,7 @@ export default function CheckoutStepsRainstar({
                     body: JSON.stringify(regularItems.map(x => x.id))
                 });
                 const itemsStock = await response.json();
-                
+
                 let outOfStockList = [];
                 let adjustedCart = [...cart];
                 let hasChanges = false;
@@ -298,7 +298,7 @@ export default function CheckoutStepsRainstar({
 
     return (
         <section className="bg-white min-h-screen py-12">
-            <div className="max-w-7xl px-primary mx-auto">
+            <div className="2xl:max-w-7xl px-primary 2xl:px-0 mx-auto">
                 {step === 1 && (
                     <CartStepRainstar
                         data={data}
@@ -391,7 +391,7 @@ export default function CheckoutStepsRainstar({
                             className="bg-white border border-gray-100 w-full max-w-4xl max-h-[90vh] flex flex-col shadow-2xl relative overflow-hidden"
                         >
                             <div className="flex items-center justify-between px-10 py-10 border-b border-gray-50">
-                                <h2 className="text-3xl font-black tracking-tighter text-neutral-dark">
+                                <h2 className="text-3xl font-black  text-neutral-dark">
                                     {title}
                                 </h2>
                                 <button
@@ -407,7 +407,7 @@ export default function CheckoutStepsRainstar({
                             <div className="p-10 border-t border-gray-50 bg-gray-50/50 flex justify-end">
                                 <button
                                     onClick={closeModal}
-                                    className="px-12 py-4 bg-neutral-dark text-white font-bold uppercase text-[10px] tracking-widest hover:bg-primary transition-all rounded-none shadow-xl shadow-neutral-dark/10"
+                                    className="px-12 py-4 bg-neutral-dark text-white font-bold uppercase text-[10px]  hover:bg-primary transition-all rounded-none shadow-xl shadow-neutral-dark/10"
                                 >
                                     Cerrar ahora
                                 </button>

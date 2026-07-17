@@ -57,7 +57,7 @@ export default function CheckoutStepsSF({
     // Calcular IGV y Percepción según la configuración de productos y categorías
     const igvGeneral = generals.find(g => g.correlative === "igv_checkout");
     const igvRate = parseFloat(igvGeneral?.description) || 18;
-    
+
     let subTotal = 0;
     let igv = 0;
     let perceptionBasis = 0;
@@ -67,7 +67,7 @@ export default function CheckoutStepsSF({
         const product = items.find(
             (i) => i.id === (cartItem.id || cartItem.item_id),
         ) || cartItem;
-        
+
         // Usar final_price (con descuento) si existe, sino price
         const finalPrice = cartItem.final_price || cartItem.price || 0;
         const lineTotal = finalPrice * cartItem.quantity;
@@ -88,7 +88,7 @@ export default function CheckoutStepsSF({
 
     const perception = Number(perceptionBasis > 100 ? potentialPerception : 0);
     const packagingAmount = Number(selectedPackaging?.price || 0);
-    
+
     // El total ya incluye el IGV (lógica inclusiva)
     const totalPrice = Number(subTotal) + perception + packagingAmount;
 
@@ -261,7 +261,7 @@ export default function CheckoutStepsSF({
                     body: JSON.stringify(regularItems.map(x => x.id))
                 });
                 const itemsStock = await response.json();
-                
+
                 let outOfStockList = [];
                 let adjustedCart = [...cart];
                 let hasChanges = false;
@@ -304,7 +304,7 @@ export default function CheckoutStepsSF({
     return (
         <div
             id={data?.element_id || null}
-            className="min-h-screen py-4 md:py-12 px-2 sm:px-primary 2xl:px-0 2xl:max-w-7xl mx-auto"
+            className="min-h-screen py-4 md:py-12 px-primary 2xl:px-0 2xl:max-w-7xl mx-auto"
         >
             <div className="bg-white p-3 md:p-8 rounded-lg md:rounded-xl shadow-sm">
                 {/* Steps indicator */}

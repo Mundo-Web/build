@@ -707,6 +707,12 @@ class BasicController extends Controller
             break;
         }
         
+        if ($sourceImage) {
+          if (function_exists('imagepalettetotruecolor') && !imageistruecolor($sourceImage)) {
+            imagepalettetotruecolor($sourceImage);
+          }
+        }
+        
         if ($sourceImage && function_exists('imagewebp')) {
           $tempPath = tempnam(sys_get_temp_dir(), 'webp');
           if (@imagewebp($sourceImage, $tempPath, 90)) {
