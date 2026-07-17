@@ -286,7 +286,7 @@ const FooterRainstar = ({ pages = [], generals = [], data, socials = [] }) => {
                                     </a>
                                     <a
                                         href="/libro-reclamaciones"
-                                        className="block w-24 hover:opacity-80 transition-opacity"
+                                        className="block  hover:opacity-80 transition-opacity"
                                     >
                                         <img
                                             src="/assets/resources/libro-reclamaciones.png"

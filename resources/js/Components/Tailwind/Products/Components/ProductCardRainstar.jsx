@@ -1,5 +1,5 @@
 import React from "react";
-import { ArrowRight, ShoppingCart } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import Global from "../../../../Utils/Global";
 
 import ItemsRest from "../../../../Actions/ItemsRest";
@@ -26,22 +26,6 @@ const ProductCardRainstar = ({ item, cart, setCart }) => {
         window.location.href = `/product/${slug}`;
     };
 
-    const addToCart = (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        const existing = cart.find((i) => i.id === item.id);
-        if (existing) {
-            setCart(
-                cart.map((i) =>
-                    i.id === item.id
-                        ? { ...i, quantity: (i.quantity || 1) + 1 }
-                        : i,
-                ),
-            );
-        } else {
-            setCart([...cart, { ...item, quantity: 1 }]);
-        }
-    };
 
     return (
         <div className="group cursor-pointer" onClick={goToDetail}>
@@ -64,12 +48,11 @@ const ProductCardRainstar = ({ item, cart, setCart }) => {
 
                 {/* Action Button */}
                 <button
-                    onClick={addToCart}
-                    className="absolute bottom-0 left-0 right-0 bg-white text-black py-4 font-bold uppercase text-xs tracking-widest translate-y-full group-hover:translate-y-0 transition-transform duration-300 z-20 border-t border-black hover:bg-black hover:text-white flex items-center justify-center gap-2"
+                    onClick={goToDetail}
+                    className="absolute bottom-0 left-0 right-0 bg-white text-black py-4 font-bold uppercase text-xs tracking-wider translate-y-full group-hover:translate-y-0 transition-transform duration-300 z-20 border-t border-black hover:bg-black hover:text-white flex items-center justify-center gap-2"
                 >
-                    <ShoppingCart size={14} />
-                    Agregar al carrito — {CurrencySymbol}{" "}
-                    {Number(finalPrice).toFixed(2)}
+                    Ver Detalle
+                    <ArrowRight size={14} className="transition-transform duration-300 group-hover:translate-x-1" />
                 </button>
 
                 <img

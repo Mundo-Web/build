@@ -13,18 +13,18 @@ const ProductGridRainstar = ({ items, data, cart, setCart }) => {
 
     return (
         <section
-            className={` py-10 lg:py-20 bg-white ${data?.class || ""}`}
+            className={`  bg-white ${data?.class || "py-10 lg:py-20"}`}
             id={data?.element_id}
         >
             <div className="px-primary 2xl:max-w-7xl 2xl:px-0 mx-auto  ">
                 <div className="flex justify-between items-end mb-12">
-                    <h2 className="text-3xl md:text-5xl font-black uppercase tracking-tighter leading-tight">
+                    <h2 className="text-3xl md:text-5xl font-title font-black uppercase text-neutral-dark">
                         {title}
                     </h2>
                     {data?.show_button !== false && (
                         <a
                             href={buttonLink}
-                            className="hidden md:flex items-center gap-2 text-xs font-bold uppercase tracking-widest border border-black px-8 py-3 hover:bg-black hover:text-white transition-all duration-300"
+                            className="hidden md:flex items-center gap-2 text-xs font-bold uppercase border border-black px-8 py-3 hover:bg-black hover:text-white transition-all duration-300"
                         >
                             {buttonText} <ArrowRight size={14} />
                         </a>
@@ -93,11 +93,10 @@ const ProductGridRainstar = ({ items, data, cart, setCart }) => {
                             {items.map((_, idx) => (
                                 <div
                                     key={idx}
-                                    className={`h-2 transition-all duration-500 ${
-                                        idx === activeIndex
-                                            ? "w-12 bg-primary shadow-lg"
-                                            : "w-4 bg-primary/30"
-                                    }`}
+                                    className={`h-2 transition-all duration-500 ${idx === activeIndex
+                                        ? "w-12 bg-primary shadow-lg"
+                                        : "w-4 bg-primary/30"
+                                        }`}
                                 />
                             ))}
                         </div>
