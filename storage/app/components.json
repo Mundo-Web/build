@@ -4582,6 +4582,25 @@
     "name": "Blogs",
     "options": [
       {
+        "id": "BlogSectionRainstar",
+        "name": "Blog Section Rainstar (Rainstar Style - 3 Columnas)",
+        "image": "blog-section-rainstar.png",
+        "data": [
+          "title",
+          "badge",
+          "description",
+          "class_title",
+          "class_section"
+        ],
+        "using": {
+          "model": "Post",
+          "limit": 3,
+          "with": [
+            "category"
+          ]
+        }
+      },
+      {
         "id": "BlogSectionTwenty",
         "name": "Blog Section Twenty (Streetwear - 3 Columnas)",
         "image": "blog-section-micjc.png",
