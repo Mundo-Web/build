@@ -33,6 +33,7 @@ import General from "../../../Utils/General";
 import ReactModal from "react-modal";
 import TextWithHighlight from "../../../Utils/TextWithHighlight";
 import CartModalRainstar from "../Components/CartModalRainstar";
+import ProductGridRainstar from "../Products/ProductGridRainstar";
 
 const ProductDetailRainstar = ({
     item,
@@ -57,7 +58,16 @@ const ProductDetailRainstar = ({
     const [selectedVariant, setSelectedVariant] = useState(item);
     const [selectedAttributes, setSelectedAttributes] = useState({});
     const [modalOpen, setModalOpen] = useState(false);
+    const [relationsItems, setRelationsItems] = useState([]);
     
+    const currentProduct = selectedVariant
+        ? {
+              ...selectedVariant,
+              brand: selectedVariant.brand || item?.brand,
+              category: selectedVariant.category || item?.category,
+          }
+        : item;
+
     const isOutOfStock = !currentProduct?.stock_unlimited && (currentProduct?.stock <= 0 || !currentProduct?.stock);
 
     useEffect(() => {
@@ -77,7 +87,6 @@ const ProductDetailRainstar = ({
     const [activeImage, setActiveImage] = useState(null);
     const imageRef = useRef(null);
 
-    const currentProduct = selectedVariant || item;
     const advisors = General.whatsapp_advisors || [];
 
     const handleShare = () => {
@@ -111,6 +120,22 @@ const ProductDetailRainstar = ({
         generals?.find((g) => g.correlative === "delivery_policy")
             ?.description || "Políticas de envío no disponibles.";
 
+    const productosRelacionados = async (item) => {
+        try {
+            const request = {
+                id: item?.id,
+                related_filter: data?.related_filter || "category",
+                related_limit: data?.related_limit || 4,
+                is_master: 1,
+            };
+            const response = await itemsRest.productsRelations(request);
+            if (!response) return;
+            setRelationsItems(Object.values(response).filter((x) => x.is_master));
+        } catch (error) {
+            return;
+        }
+    };
+
     useEffect(() => {
         if (currentProduct?.image) {
             setActiveImage(currentProduct.image);
@@ -119,6 +144,7 @@ const ProductDetailRainstar = ({
 
     useEffect(() => {
         if (item?.id) {
+            productosRelacionados(item);
             // First fallback to item selection
             setSelectedVariant(item);
             const initialAttributes = {};
@@ -169,8 +195,6 @@ const ProductDetailRainstar = ({
                         );
                         setVariantsForSelectedGroup(uniqueVariants);
 
-                        // Removed automatic selection of the first variant to force user selection
-                        /*
                         const sellableVariants = uniqueVariants.filter(
                             (v) => !v.is_master && v.id !== item.id,
                         );
@@ -198,7 +222,6 @@ const ProductDetailRainstar = ({
                             }
                             setSelectedAttributes(newAttrs);
                         }
-                        */
                     })
                     .catch((err) => {
                         console.error(
@@ -451,7 +474,11 @@ const ProductDetailRainstar = ({
         <main className="bg-white min-h-screen text-neutral-dark py-16 px-4 md:px-6 2xl:px-0">
             <div className="container mx-auto 2xl:max-w-7xl">
                 {/* Desktop View */}
-                <div className="hidden md:grid grid-cols-12 gap-12">
+                <article
+                    itemScope={true}
+                    itemType="https://schema.org/Product"
+                    className="hidden md:grid grid-cols-12 gap-12"
+                >
                     {/* Left Column: Images */}
                     <div className="col-span-12 lg:col-span-7 flex gap-6">
                         {/* Gallery Thumbnails on the side */}
@@ -531,6 +558,7 @@ const ProductDetailRainstar = ({
                                         }}
                                         src={`/storage/images/item/${activeImage?.url || activeImage || currentProduct?.image}`}
                                         alt={currentProduct?.name || item?.name}
+                                        itemProp="image"
                                         className={`w-full h-full object-cover object-top transition-transform duration-300 ease-out ${isZoomEnabled ? "scale-150" : "scale-100"}`}
                                         style={
                                             isZoomEnabled
@@ -576,25 +604,29 @@ const ProductDetailRainstar = ({
                             className="space-y-6"
                         >
                             <div className="space-y-4">
-                                <span className="text-sm font-bold tracking-wider text-neutral-dark/60">
-                                    {currentProduct?.brand?.name ||
-                                        currentProduct?.category?.name ||
-                                        "COLECCIÓN PREMIUM"}
+                                <span itemProp="brand" itemScope={true} itemType="https://schema.org/Brand" className="text-sm font-bold tracking-wider text-neutral-dark/60 block">
+                                    <span itemProp="name">
+                                        {currentProduct?.brand?.name ||
+                                            currentProduct?.category?.name ||
+                                            "COLECCIÓN PREMIUM"}
+                                    </span>
                                 </span>
-                                <h1 className="text-4xl md:text-5xl lg:text-6xl font-black tracking-tighter leading-[0.9] text-neutral-dark">
+                                <h1 itemProp="name" className="text-4xl md:text-5xl lg:text-6xl font-black tracking-tighter leading-[0.9] text-neutral-dark">
                                     <TextWithHighlight
                                         text={currentProduct?.name}
                                     />
                                 </h1>
                                 <p className="text-sm font-medium tracking-normal text-neutral-dark/40 border-l border-neutral-dark/20 pl-4">
-                                    Código: {currentProduct?.sku}
+                                    Código: <span itemProp="sku">{currentProduct?.sku}</span>
                                 </p>
                             </div>
 
-                            <div className="flex items-center gap-6 py-4">
+                            <div itemProp="offers" itemScope={true} itemType="https://schema.org/Offer" className="flex items-center gap-6 py-4">
+                                <meta itemProp="priceCurrency" content="PEN" />
+                                <link itemProp="availability" href={(currentProduct?.stock_unlimited || currentProduct?.stock > 0) ? "https://schema.org/InStock" : "https://schema.org/OutOfStock"} />
                                 <span className="text-5xl font-black tracking-tighter text-neutral-dark">
                                     {CurrencySymbol()}{" "}
-                                    {currentProduct?.final_price}
+                                    <span itemProp="price" content={currentProduct?.final_price || currentProduct?.price}>{currentProduct?.final_price}</span>
                                 </span>
                                 {currentProduct?.price >
                                     currentProduct?.final_price && (
@@ -652,6 +684,8 @@ const ProductDetailRainstar = ({
                                                                     disabled={
                                                                         !isAvailable
                                                                     }
+                                                                    title={`Seleccionar ${attrData.name}: ${val.value}`}
+                                                                    aria-label={`Seleccionar ${attrData.name}: ${val.value}`}
                                                                     onClick={() => {
                                                                         const matching =
                                                                             findBestMatchingVariant(
@@ -770,58 +804,66 @@ const ProductDetailRainstar = ({
                         </motion.div>
                     </div>
 
-                    {/* Specifications & Description */}
-                    <div className="col-span-12 grid grid-cols-1 lg:grid-cols-2 gap-24 mt-20 border-t border-black/5 pt-20">
-                        <section>
-                            <h2 className={rainstarSectionTitleClass}>
-                                <span>01 Descripción</span>
-                                <Plus size={14} className="opacity-20" />
-                            </h2>
-                            <div
-                                className="text-base font-normal leading-relaxed prose prose-neutral max-w-none text-neutral-dark/80"
-                                dangerouslySetInnerHTML={{
-                                    __html:
-                                        currentProduct?.description ||
-                                        item?.description,
-                                }}
-                            />
-                        </section>
-                        <section>
-                            <h2 className={rainstarSectionTitleClass}>
-                                <span>02 Especificaciones</span>
-                                <Plus size={14} className="opacity-20" />
-                            </h2>
-                            <div className="grid grid-cols-1 gap-6">
-                                {generalSpecifications.length > 0 ? (
-                                    generalSpecifications.map((spec, i) => (
+                    {/* Specifications & Description — only render sections with content */}
+                    {(() => {
+                        const hasDesc = !!(currentProduct?.description || item?.description);
+                        const hasSpecs = generalSpecifications.length > 0;
+                        if (!hasDesc && !hasSpecs) return null;
+                        const colClass = (hasDesc && hasSpecs)
+                            ? "grid-cols-1 lg:grid-cols-2 gap-24"
+                            : "grid-cols-1 max-w-3xl mx-auto";
+                        return (
+                            <div className={`col-span-12 grid ${colClass} mt-20 border-t border-black/5 pt-20`}>
+                                {hasDesc && (
+                                    <section>
+                                        <h2 className={rainstarSectionTitleClass}>
+                                            <span>01 Descripción</span>
+                                            <Plus size={14} className="opacity-20" />
+                                        </h2>
                                         <div
-                                            key={i}
-                                            className="border-b border-gray-100 pb-4 flex items-center justify-between group"
-                                        >
-                                            <div className="flex items-center gap-4">
-                                                <span className="text-[9px] font-bold text-gray-300 w-4">
-                                                    {(i + 1)
-                                                        .toString()
-                                                        .padStart(2, "0")}
-                                                </span>
-                                                <span className="text-sm font-bold tracking-wider text-neutral-dark">
-                                                    {spec.title ||
-                                                        "Característica"}
-                                                </span>
-                                            </div>
-                                            <span className="text-sm font-medium tracking-normal text-neutral-dark group-hover:text-neutral-dark transition-colors">
-                                                {spec.description || spec.value}
-                                            </span>
+                                            className="text-base font-normal leading-relaxed prose prose-neutral max-w-none text-neutral-dark/80"
+                                            dangerouslySetInnerHTML={{
+                                                __html:
+                                                    currentProduct?.description ||
+                                                    item?.description,
+                                            }}
+                                        />
+                                    </section>
+                                )}
+                                {hasSpecs && (
+                                    <section>
+                                        <h2 className={rainstarSectionTitleClass}>
+                                            <span>{hasDesc ? "02" : "01"} Especificaciones</span>
+                                            <Plus size={14} className="opacity-20" />
+                                        </h2>
+                                        <div className="grid grid-cols-1 gap-6">
+                                            {generalSpecifications.map((spec, i) => (
+                                                <div
+                                                    key={i}
+                                                    className="border-b border-gray-100 pb-4 flex items-center justify-between group"
+                                                >
+                                                    <div className="flex items-center gap-4">
+                                                        <span className="text-[9px] font-bold text-gray-300 w-4">
+                                                            {(i + 1)
+                                                                .toString()
+                                                                .padStart(2, "0")}
+                                                        </span>
+                                                        <span className="text-sm font-bold tracking-wider text-neutral-dark">
+                                                            {spec.title ||
+                                                                "Característica"}
+                                                        </span>
+                                                    </div>
+                                                    <span className="text-sm font-medium tracking-normal text-neutral-dark group-hover:text-neutral-dark transition-colors">
+                                                        {spec.description || spec.value}
+                                                    </span>
+                                                </div>
+                                            ))}
                                         </div>
-                                    ))
-                                ) : (
-                                    <p className="text-sm font-bold tracking-wider text-neutral-dark/20">
-                                        No hay especificaciones disponibles.
-                                    </p>
+                                    </section>
                                 )}
                             </div>
-                        </section>
-                    </div>
+                        );
+                    })()}
 
                     {/* Policy Section */}
                     <div className="col-span-12">
@@ -849,7 +891,7 @@ const ProductDetailRainstar = ({
                             </div>
                         </div>
                     </div>
-                </div>
+                </article>
 
                 {/* Mobile View */}
                 <div className="md:hidden space-y-12 pb-24">
@@ -935,9 +977,18 @@ const ProductDetailRainstar = ({
                                         const isSelected =
                                             selectedAttributes[attrData.name]
                                                 ?.value === val.value;
+                                        const isAvailable =
+                                            isValueAvailable(
+                                                attrData.name,
+                                                val.value,
+                                                group,
+                                            );
                                         return (
                                             <button
                                                 key={idx}
+                                                disabled={!isAvailable}
+                                                title={`Seleccionar ${attrData.name}: ${val.value}`}
+                                                aria-label={`Seleccionar ${attrData.name}: ${val.value}`}
                                                 onClick={() => {
                                                     const matching =
                                                         findBestMatchingVariant(
@@ -979,7 +1030,9 @@ const ProductDetailRainstar = ({
                                                         );
                                                     }
                                                 }}
-                                                className={`px-6 py-3 text-sm font-bold tracking-wider border transition-all ${isSelected ? "bg-primary text-white border-neutral-dark shadow-sm" : "bg-white text-neutral-dark border-gray-100"}`}
+                                                className={`px-6 py-3 text-sm font-bold tracking-wider border transition-all 
+                                                    ${isSelected ? "bg-primary text-white border-neutral-dark shadow-sm" : isAvailable ? "bg-white text-neutral-dark border-gray-100 hover:border-neutral-dark" : "bg-gray-50 text-neutral-dark/20 border-gray-50 cursor-not-allowed line-through opacity-50"}
+                                                `}
                                             >
                                                 {val.value}
                                             </button>
@@ -990,39 +1043,51 @@ const ProductDetailRainstar = ({
                         ))}
                     </div>
 
-                    <div className="space-y-12 px-2 border-t border-gray-100 pt-12">
-                        <section>
-                            <h2 className="text-sm font-bold tracking-widest mb-6 text-neutral-dark/60">
-                                01 / DESCRIPCIÓN
-                            </h2>
-                            <div
-                                className="text-sm font-medium tracking-[0.1em] leading-loose text-neutral-dark"
-                                dangerouslySetInnerHTML={{
-                                    __html: currentProduct?.description,
-                                }}
-                            />
-                        </section>
-                        <section>
-                            <h2 className="text-sm font-bold tracking-widest mb-6 text-neutral-dark/60">
-                                02 / ESPECIFICACIONES
-                            </h2>
-                            <div className="space-y-4">
-                                {generalSpecifications.map((spec, i) => (
-                                    <div
-                                        key={i}
-                                        className="flex justify-between items-center border-b border-gray-50 pb-4"
-                                    >
-                                        <span className="text-sm font-bold tracking-wider text-neutral-dark">
-                                            {spec.title || "Factor"}
-                                        </span>
-                                        <span className="text-sm font-bold text-neutral-dark/40 text-right">
-                                            {spec.description || spec.value}
-                                        </span>
-                                    </div>
-                                ))}
+                    {/* Mobile Specifications & Description */}
+                    {(() => {
+                        const hasDesc = !!(currentProduct?.description || item?.description);
+                        const hasSpecs = generalSpecifications.length > 0;
+                        if (!hasDesc && !hasSpecs) return null;
+                        return (
+                            <div className="space-y-12 px-2 border-t border-gray-100 pt-12">
+                                {hasDesc && (
+                                    <section>
+                                        <h2 className="text-sm font-bold tracking-widest mb-6 text-neutral-dark/60">
+                                            01 / DESCRIPCIÓN
+                                        </h2>
+                                        <div
+                                            className="text-sm font-medium tracking-[0.1em] leading-loose text-neutral-dark prose prose-neutral max-w-none"
+                                            dangerouslySetInnerHTML={{
+                                                __html: currentProduct?.description || item?.description,
+                                            }}
+                                        />
+                                    </section>
+                                )}
+                                {hasSpecs && (
+                                    <section>
+                                        <h2 className="text-sm font-bold tracking-widest mb-6 text-neutral-dark/60">
+                                            {hasDesc ? "02" : "01"} / ESPECIFICACIONES
+                                        </h2>
+                                        <div className="space-y-4">
+                                            {generalSpecifications.map((spec, i) => (
+                                                <div
+                                                    key={i}
+                                                    className="flex justify-between items-center border-b border-gray-50 pb-4"
+                                                >
+                                                    <span className="text-sm font-bold tracking-wider text-neutral-dark">
+                                                        {spec.title || "Factor"}
+                                                    </span>
+                                                    <span className="text-sm font-bold text-neutral-dark/40 text-right">
+                                                        {spec.description || spec.value}
+                                                    </span>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </section>
+                                )}
                             </div>
-                        </section>
-                    </div>
+                        );
+                    })()}
 
                     <div
                         onClick={() => setDeliveryPolicyModalOpen(true)}
@@ -1137,6 +1202,22 @@ const ProductDetailRainstar = ({
                     >
                         <MessageCircle className="w-10 h-10" />
                     </button>
+                </div>
+            )}
+
+            {/* Related Products Section */}
+            {relationsItems.length > 0 && (
+                <div className="border-t border-gray-100 pt-16 mt-20">
+                    <ProductGridRainstar
+                        data={{
+                            ...data,
+                            title: data?.related_title || "También te puede interesar",
+                            show_button: false,
+                        }}
+                        items={relationsItems}
+                        cart={cart}
+                        setCart={setCart}
+                    />
                 </div>
             )}
 

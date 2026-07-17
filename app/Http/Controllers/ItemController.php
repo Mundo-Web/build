@@ -984,11 +984,17 @@ class ItemController extends BasicController
             $product = Item::findOrFail($request->id);
             $filter  = $request->input('related_filter', 'category');
             $limit   = (int) $request->input('related_limit', 10);
+            $hasIsMaster = $request->has('is_master');
+            $isMasterVal = $request->input('is_master');
 
             $relatedItems = collect();
 
             // ── Prioridad 1: Relaciones individuales manuales ──────────────────
-            $manualRelated = $product->manualRelated()->take($limit)->get();
+            $manualQuery = $product->manualRelated()->with(['brand', 'category']);
+            if ($hasIsMaster) {
+                $manualQuery->where('items.is_master', $isMasterVal);
+            }
+            $manualRelated = $manualQuery->take($limit)->get();
             if ($manualRelated->isNotEmpty()) {
                 $relatedItems = $manualRelated;
             }
@@ -1000,10 +1006,13 @@ class ItemController extends BasicController
                 })->where('status', true)->first();
 
                 if ($group) {
-                    $relatedItems = $group->items()
+                    $groupQuery = $group->items()
                         ->where('items.id', '!=', $product->id)
-                        ->take($limit)
-                        ->get();
+                        ->with(['brand', 'category']);
+                    if ($hasIsMaster) {
+                        $groupQuery->where('items.is_master', $isMasterVal);
+                    }
+                    $relatedItems = $groupQuery->take($limit)->get();
                 }
             }
 
@@ -1011,7 +1020,12 @@ class ItemController extends BasicController
             if ($relatedItems->isEmpty()) {
                 $query = Item::where('id', '!=', $product->id)
                     ->where('status', true)
-                    ->where('visible', true);
+                    ->where('visible', true)
+                    ->with(['brand', 'category']);
+
+                if ($hasIsMaster) {
+                    $query->where('items.is_master', $isMasterVal);
+                }
 
                 switch ($filter) {
                     case 'brand':

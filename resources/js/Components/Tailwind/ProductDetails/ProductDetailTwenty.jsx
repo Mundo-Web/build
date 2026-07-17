@@ -86,11 +86,12 @@ const ProductDetailTwenty = ({
             const request = {
                 id: item?.id,
                 related_filter: data?.related_filter || 'category',
-                related_limit: data?.related_limit || 10
+                related_limit: data?.related_limit || 10,
+                is_master: 1
             };
             const response = await itemsRest.productsRelations(request);
             if (!response) return;
-            setRelationsItems(Object.values(response));
+            setRelationsItems(Object.values(response).filter((x) => x.is_master));
         } catch (error) {
             return;
         }
