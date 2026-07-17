@@ -22,7 +22,8 @@ import TextWithHighlight from "../../../Utils/TextWithHighlight";
 
 const messagesRest = new MessagesRest();
 
-const ContactRainstar = ({ data, contacts }) => {
+const ContactRainstar = ({ data, contacts: passedContacts, generals }) => {
+    const contacts = passedContacts || generals || [];
     const getContact = (correlative) => {
         return (
             contacts.find((contact) => contact.correlative === correlative)
@@ -225,34 +226,30 @@ const ContactRainstar = ({ data, contacts }) => {
     return (
         <section
             id={data?.element_id}
-            className="bg-white min-h-screen pt-24 pb-40"
+            className="bg-white min-h-screen py-10 lg:py-24"
         >
-            <div className="container mx-auto px-primary 2xl:px-0 2xl:max-w-7xl">
+            <div className=" mx-auto px-primary 2xl:px-0 2xl:max-w-7xl">
                 {/* ── Header Section ─────────────────────────────────────────── */}
                 <div className="mb-24">
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }}
-                        className="flex flex-col md:flex-row md:items-end justify-between gap-12 pb-6 lg:mb-16 border-b-[6px] border-neutral-dark lg:pb-12"
+                        className="flex flex-col md:flex-row md:items-end justify-between gap-3   border-b-[6px] border-neutral-dark"
                     >
                         <div className="max-w-4xl">
-                            <span className="text-[11px] font-bold text-primary mb-6 block">
+                            <span className="text-[11px] font-bold text-primary  block">
                                 Estamos para ayudarte
                             </span>
-                            <h1 className="text-5xl md:text-7xl lg:text-8xl font-black uppercase tracking-tighter lg:leading-[0.9] text-neutral-dark lg:mb-4">
+                            <h1 className="text-5xl md:text-7xl lg:text-8xl font-black uppercase  text-neutral-dark lg:mb-4">
                                 <TextWithHighlight
                                     text={data?.title || "Hablemos *Hoy*"}
+                                    className="font-title"
                                     color="bg-primary"
                                 />
                             </h1>
                         </div>
-                        <div className="hidden md:block max-w-[280px]">
-                            <p className="text-right text-[11px] font-medium text-neutral-dark/40 leading-relaxed italic">
-                                {data?.description ||
-                                    "¿Tienes preguntas o propuestas? Nuestro equipo especializado está listo para brindarte una solución inmediata."}
-                            </p>
-                        </div>
+
                     </motion.div>
                 </div>
 
@@ -272,7 +269,7 @@ const ContactRainstar = ({ data, contacts }) => {
                             <h3 className="text-sm font-black mb-4 text-neutral-dark group-hover:text-white/50 transition-colors">
                                 Sede Principal
                             </h3>
-                            <p className="text-base font-bold leading-relaxed text-neutral-dark group-hover:text-white transition-colors">
+                            <p className="text-base font-bold  text-neutral-dark group-hover:text-white transition-colors">
                                 {mainStoreData
                                     ? mainStoreData.address
                                     : getContact("address")}
@@ -345,7 +342,7 @@ const ContactRainstar = ({ data, contacts }) => {
                                 <div className="w-8 h-8 bg-neutral-dark text-white rounded-full flex items-center justify-center text-xs font-black shrink-0">
                                     01
                                 </div>
-                                <h1 className="text-xl font-black tracking-tight text-neutral-dark">
+                                <h1 className="text-xl font-black  text-neutral-dark">
                                     Envíanos un Mensaje
                                 </h1>
                             </div>
@@ -424,7 +421,7 @@ const ContactRainstar = ({ data, contacts }) => {
                                 <button
                                     type="submit"
                                     disabled={sending}
-                                    className="px-12 py-6 text-[11px] font-black uppercase tracking-[0.2em] bg-neutral-dark text-white hover:bg-primary disabled:bg-neutral-100 disabled:text-neutral-300 disabled:cursor-not-allowed transition-all duration-500 flex items-center justify-center gap-6 group w-full md:w-auto shadow-xl"
+                                    className="px-12 py-6 text-[11px] font-black uppercase  bg-neutral-dark text-white hover:bg-primary disabled:bg-neutral-100 disabled:text-neutral-300 disabled:cursor-not-allowed transition-all duration-500 flex items-center justify-center gap-6 group w-full md:w-auto shadow-xl"
                                 >
                                     {sending ? (
                                         <>
@@ -448,23 +445,21 @@ const ContactRainstar = ({ data, contacts }) => {
                     initial={{ opacity: 0, y: 40 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
-                    className="mt-40"
+                    className="mt-20"
                 >
-                    <div className="flex items-center justify-between border-b border-gray-100 pb-12 mb-16 gap-8">
-                        <div className="flex items-center gap-6">
-                            <div className="w-8 h-8 bg-neutral-dark text-white rounded-full flex items-center justify-center text-xs font-black shrink-0">
-                                02
-                            </div>
-                            <h2 className="text-4xl md:text-6xl font-black tracking-tighter text-neutral-dark">
-                                <TextWithHighlight
-                                    text={
-                                        data?.title_ubication ||
-                                        "Nuestras *Ubicaciones*"
-                                    }
-                                />
-                            </h2>
-                        </div>
-                        <div className="hidden lg:block bg-neutral-dark h-[2px] flex-1 max-w-[100px] opacity-20"></div>
+                    <div className="flex items-center justify-between border-b border-gray-100  pb-10 gap-8">
+
+                        <h2 className="text-4xl md:text-6xl font-black  text-neutral-dark">
+                            <TextWithHighlight
+                                text={
+                                    data?.title_ubication ||
+                                    "Nuestras *Ubicaciones*"
+                                }
+                                className="font-title"
+                            />
+                        </h2>
+
+
                     </div>
 
                     <div className="relative border-2 border-neutral-dark/10 h-[600px] w-full bg-neutral-100 overflow-hidden shadow-2xl">
@@ -484,21 +479,21 @@ const ContactRainstar = ({ data, contacts }) => {
                                         ? 16
                                         : data?.stores_support &&
                                             allStores.length > 0
-                                          ? 12
-                                          : 16
+                                            ? 12
+                                            : 16
                                 }
                                 center={
                                     selectedStore &&
-                                    selectedStore.latitude &&
-                                    selectedStore.longitude
+                                        selectedStore.latitude &&
+                                        selectedStore.longitude
                                         ? {
-                                              lat: parseFloat(
-                                                  selectedStore.latitude,
-                                              ),
-                                              lng: parseFloat(
-                                                  selectedStore.longitude,
-                                              ),
-                                          }
+                                            lat: parseFloat(
+                                                selectedStore.latitude,
+                                            ),
+                                            lng: parseFloat(
+                                                selectedStore.longitude,
+                                            ),
+                                        }
                                         : locationGps
                                 }
                                 options={{
@@ -514,16 +509,16 @@ const ContactRainstar = ({ data, contacts }) => {
                                 <Marker
                                     position={
                                         mainStoreData &&
-                                        mainStoreData.latitude &&
-                                        mainStoreData.longitude
+                                            mainStoreData.latitude &&
+                                            mainStoreData.longitude
                                             ? {
-                                                  lat: parseFloat(
-                                                      mainStoreData.latitude,
-                                                  ),
-                                                  lng: parseFloat(
-                                                      mainStoreData.longitude,
-                                                  ),
-                                              }
+                                                lat: parseFloat(
+                                                    mainStoreData.latitude,
+                                                ),
+                                                lng: parseFloat(
+                                                    mainStoreData.longitude,
+                                                ),
+                                            }
                                             : locationGps
                                     }
                                     title={
@@ -545,7 +540,7 @@ const ContactRainstar = ({ data, contacts }) => {
                                                 store.latitude !== "0" &&
                                                 store.longitude !== "0" &&
                                                 store.type !==
-                                                    "tienda_principal",
+                                                "tienda_principal",
                                         )
                                         .map((store) => (
                                             <Marker

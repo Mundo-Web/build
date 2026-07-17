@@ -17,32 +17,28 @@ const FaqRainstar = ({ data, faqs }) => {
     };
 
     return (
-        <section id={data?.element_id} className="bg-white py-24 md:py-40">
+        <section id={data?.element_id} className="bg-white py-10 md:py-16">
             <div className=" mx-auto px-primary 2xl:px-0 2xl:max-w-7xl">
                 {/* ── Header Section ─────────────────────────────────────────── */}
-                <div className="mb-24">
+                <div className="mb-10">
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }}
-                        className="flex flex-col md:flex-row md:items-end justify-between gap-12 mb-16 border-b-[6px] border-neutral-dark pb-12"
+                        className="flex flex-col md:flex-col  gap-3 border-b-[6px] border-neutral-dark "
                     >
-                        <div className="max-w-4xl">
-                            <span className="text-[11px] font-bold text-primary mb-6 block">
-                                Despeja tus dudas
-                            </span>
-                            <h1 className="text-5xl md:text-7xl lg:text-8xl font-black uppercase tracking-tighter leading-[0.9] text-neutral-dark mb-4">
-                                <TextWithHighlight
-                                    text={data?.title || "Preguntas Frecuentes"}
-                                />
-                            </h1>
-                        </div>
-                        <div className="hidden md:block max-w-[280px]">
-                            <p className="text-right text-[11px] font-medium text-neutral-dark/40 leading-relaxed italic">
-                                {data?.description ||
-                                    "Encuentra respuestas inmediatas a las consultas más habituales de nuestros clientes sobre servicios y procesos."}
-                            </p>
-                        </div>
+
+                        <span className="text-sm font-bold text-primary  block">
+                            Despeja tus dudas
+                        </span>
+                        <h1 className="text-5xl font-black uppercase   text-neutral-dark mb-4">
+                            <TextWithHighlight
+                                text={data?.title || "Preguntas Frecuentes"}
+                                className="font-title"
+                            />
+                        </h1>
+
+
                     </motion.div>
                 </div>
 
@@ -69,7 +65,7 @@ const FaqRainstar = ({ data, faqs }) => {
                                             .padStart(2, "0")}
                                     </span>
                                     <h3
-                                        className={`text-lg md:text-xl font-black tracking-tight transition-all duration-500 ${expandedFaqs.has(faq.id) ? "text-neutral-dark" : "text-neutral-dark/70 group-hover:text-neutral-dark"}`}
+                                        className={`text-lg md:text-xl font-black  transition-all duration-500 ${expandedFaqs.has(faq.id) ? "text-neutral-dark" : "text-neutral-dark/70 group-hover:text-neutral-dark"}`}
                                     >
                                         {faq.question}
                                     </h3>
@@ -98,7 +94,7 @@ const FaqRainstar = ({ data, faqs }) => {
                                         className="overflow-hidden"
                                     >
                                         <div className="pb-8 px-8 pl-16 md:pl-20">
-                                            <p className="text-sm md:text-base font-medium text-neutral-dark/60 leading-relaxed border-l-2 border-primary/30 pl-6">
+                                            <p className="text-sm md:text-base font-medium text-neutral-dark/60  border-l-2 border-primary/30 pl-6">
                                                 {faq.answer}
                                             </p>
                                         </div>

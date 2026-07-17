@@ -34,7 +34,7 @@ const SectionLabel = ({ children }) => (
 // ── Section heading ───────────────────────────────────────────────────────────
 const SectionHeading = ({ children, className = "" }) => (
     <h2
-        className={`text-3xl md:text-5xl font-black tracking-tight leading-tight text-neutral-dark ${className}`}
+        className={`text-3xl md:text-5xl font-black font-title tracking-tight leading-tight text-neutral-dark ${className}`}
     >
         {children}
     </h2>
@@ -66,6 +66,7 @@ const AboutRainstar = ({ data, filteredData, items, generals }) => {
     const cta = items?.find((item) => item.correlative === "section-cta");
     const mision = items?.find((item) => item.correlative === "section-mision");
     const vision = items?.find((item) => item.correlative === "section-vision");
+    const values = items?.find((item) => item.correlative === "section-valores");
 
     return (
         <main id={data?.element_id || null} className="bg-white">
@@ -74,27 +75,27 @@ const AboutRainstar = ({ data, filteredData, items, generals }) => {
                 {...fadeUp}
                 className="relative overflow-hidden bg-neutral-dark text-white px-primary  mx-auto 2xl:px-0 py-20 md:py-32"
             >
-                {/* Decorative circles */}
+                {/* Decorative squares */}
                 <div className="absolute inset-0 pointer-events-none select-none overflow-hidden">
-                    <div className="absolute -top-20 -left-20 w-96 h-96 rounded-full bg-white/[0.03]" />
-                    <div className="absolute -bottom-24 -right-24 w-[500px] h-[500px] rounded-full bg-white/[0.03]" />
+                    <div className="absolute -top-20 -left-20 w-96 h-96 rounded-none bg-white/[0.03] rotate-12" />
+                    <div className="absolute -bottom-24 -right-24 w-[500px] h-[500px] rounded-none bg-white/[0.03] -rotate-12" />
                 </div>
 
                 <div className="relative z-10 max-w-7xl mx-auto">
-                    <p className="text-[10px] font-bold tracking-widest text-white/30 uppercase mb-4">
+                    <p className="text-[10px] font-bold tracking-widest text-white uppercase mb-4">
                         Quiénes somos
                     </p>
                     <h1 className="text-4xl md:text-8xl font-black tracking-tight leading-none text-white mb-6">
                         <TextWithHighlight
                             text={history?.title || "Sobre Nosotros"}
-                            className="font-black"
+                            className="font-black font-title"
                         />
                     </h1>
                     <div className="w-16 h-0.5 bg-white/20 mt-8" />
                 </div>
             </motion.section>
 
-            <div className="px-primary 2xl:max-w-7xl mx-auto w-full py-20 md:py-28 space-y-28">
+            <div className="px-primary 2xl:px-0 2xl:max-w-7xl mx-auto w-full py-20 md:py-28 space-y-28">
                 {/* ── Historia ─────────────────────────────────────────────── */}
                 {history && (
                     <section className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-stretch">
@@ -106,8 +107,8 @@ const AboutRainstar = ({ data, filteredData, items, generals }) => {
                                 <img
                                     src={`/storage/images/aboutus/${history?.image}`}
                                     onError={(e) =>
-                                        (e.target.src =
-                                            "/api/cover/thumbnail/null")
+                                    (e.target.src =
+                                        "/api/cover/thumbnail/null")
                                     }
                                     alt={history?.title}
                                     className="w-full h-full object-cover hover:scale-105 transition-transform duration-700"
@@ -142,14 +143,12 @@ const AboutRainstar = ({ data, filteredData, items, generals }) => {
                         {mision && (
                             <motion.div
                                 {...fadeLeft}
-                                className="group relative overflow-hidden border border-gray-100 p-10 md:p-14 bg-white hover:bg-neutral-dark transition-colors duration-150"
+                                className="group relative overflow-hidden border border-gray-100 p-10 md:p-14 bg-white hover:bg-neutral-dark transition-colors duration-150 rounded-none"
                             >
                                 <div className="flex items-center gap-4 mb-7">
-                                    <div className="w-10 h-10 rounded-full bg-gray-50 group-hover:bg-white/10 flex items-center justify-center text-xs font-black text-neutral-dark/30 group-hover:text-white/40 transition-colors duration-150">
-                                        01
-                                    </div>
-                                    <h2 className="text-3xl md:text-4xl font-black tracking-tight text-neutral-dark group-hover:text-white transition-colors duration-150">
-                                        Misión
+
+                                    <h2 className="text-3xl md:text-4xl font-black tracking-tight text-neutral-dark group-hover:text-white transition-colors duration-150 font-title">
+                                        {mision?.title || "Misión"}
                                     </h2>
                                 </div>
                                 <div
@@ -159,21 +158,19 @@ const AboutRainstar = ({ data, filteredData, items, generals }) => {
                                     }}
                                 />
                                 {/* Corner accent */}
-                                <div className="absolute bottom-0 right-0 w-20 h-20 bg-gray-50 group-hover:bg-white/5 transition-colors duration-150 -z-0" />
+                                <div className="absolute bottom-0 right-0 w-20 h-20 bg-gray-50 group-hover:bg-white/5 transition-colors duration-150 -z-0 rounded-none" />
                             </motion.div>
                         )}
 
                         {vision && (
                             <motion.div
                                 {...fadeRight}
-                                className="group relative overflow-hidden border border-gray-100 p-10 md:p-14 bg-white hover:bg-neutral-dark transition-colors duration-150"
+                                className="group relative overflow-hidden border border-gray-100 p-10 md:p-14 bg-white hover:bg-neutral-dark transition-colors duration-150 rounded-none"
                             >
                                 <div className="flex items-center gap-4 mb-7">
-                                    <div className="w-10 h-10 rounded-full bg-gray-50 group-hover:bg-white/10 flex items-center justify-center text-xs font-black text-neutral-dark/30 group-hover:text-white/40 transition-colors duration-150">
-                                        02
-                                    </div>
-                                    <h2 className="text-3xl md:text-4xl font-black tracking-tight text-neutral-dark group-hover:text-white transition-colors duration-150">
-                                        Visión
+
+                                    <h2 className="text-3xl md:text-4xl font-black tracking-tight text-neutral-dark group-hover:text-white transition-colors duration-150 font-title">
+                                        {vision?.title || "Visión"}
                                     </h2>
                                 </div>
                                 <div
@@ -182,7 +179,7 @@ const AboutRainstar = ({ data, filteredData, items, generals }) => {
                                         __html: vision?.description,
                                     }}
                                 />
-                                <div className="absolute bottom-0 right-0 w-20 h-20 bg-gray-50 group-hover:bg-white/5 transition-colors duration-150 -z-0" />
+                                <div className="absolute bottom-0 right-0 w-20 h-20 bg-gray-50 group-hover:bg-white/5 transition-colors duration-150 -z-0 rounded-none" />
                             </motion.div>
                         )}
                     </section>
@@ -192,9 +189,13 @@ const AboutRainstar = ({ data, filteredData, items, generals }) => {
                 {strengths?.length > 0 && (
                     <section>
                         <motion.div {...fadeUp} className="mb-12">
-                            <SectionLabel>Nuestros pilares</SectionLabel>
+                            {values?.name ? (
+                                <SectionLabel>{values.name}</SectionLabel>
+                            ) : (
+                                <SectionLabel>Nuestros pilares</SectionLabel>
+                            )}
                             <SectionHeading>
-                                Valores Y Fortalezas
+                                {values?.title || "Valores Y Fortalezas"}
                             </SectionHeading>
                         </motion.div>
 
@@ -209,21 +210,21 @@ const AboutRainstar = ({ data, filteredData, items, generals }) => {
                                         delay: index * 0.08,
                                         duration: 0.5,
                                     }}
-                                    className="group border border-gray-100 bg-white p-7 hover:border-gray-200 hover:bg-gray-50/80 hover:-translate-y-1 hover:shadow-md transition-all duration-150"
+                                    className="group border border-gray-100 bg-white p-7 hover:border-gray-200 hover:bg-gray-50/80 hover:-translate-y-1 hover:shadow-md transition-all duration-150 rounded-none"
                                 >
                                     {/* Icon */}
-                                    <div className="w-12 h-12 rounded-full bg-gray-50 group-hover:bg-white flex items-center justify-center mb-5 transition-colors duration-150 group-hover:shadow-sm">
+                                    <div className="w-20 h-20 rounded-none flex items-center justify-center mb-5 transition-colors duration-150 ">
                                         <img
                                             src={`/storage/images/strength/${item?.image}`}
                                             alt={item?.name}
-                                            className="w-8 h-8 object-contain transition-all duration-150"
+                                            className="w-20 h-20 object-contain transition-all duration-150"
                                             onError={(e) =>
-                                                (e.target.src =
-                                                    "/assets/img/noimage/noicon.png")
+                                            (e.target.src =
+                                                "/assets/img/noimage/noicon.png")
                                             }
                                         />
                                     </div>
-                                    <h3 className="text-lg font-bold tracking-tight text-neutral-dark mb-2">
+                                    <h3 className="text-2xl font-title font-bold tracking-tight text-neutral-dark mb-2">
                                         {item?.name}
                                     </h3>
                                     <p className="text-md text-neutral-dark/50 leading-relaxed">
@@ -239,7 +240,7 @@ const AboutRainstar = ({ data, filteredData, items, generals }) => {
                 {equipo && (
                     <section>
                         <motion.div {...fadeUp} className="mb-12">
-                            <SectionLabel>Las personas detrás</SectionLabel>
+                            <SectionLabel>{equipo.name || "Las personas detrás"}</SectionLabel>
                             <SectionHeading>
                                 {equipo.title || "Nuestro Equipo"}
                             </SectionHeading>
@@ -256,8 +257,8 @@ const AboutRainstar = ({ data, filteredData, items, generals }) => {
                                         alt={equipo.title}
                                         className="w-full h-[380px] md:h-[480px] object-cover hover:scale-105 transition-transform duration-700"
                                         onError={(e) =>
-                                            (e.target.src =
-                                                "/api/cover/thumbnail/null")
+                                        (e.target.src =
+                                            "/api/cover/thumbnail/null")
                                         }
                                     />
                                 </motion.div>
@@ -278,101 +279,7 @@ const AboutRainstar = ({ data, filteredData, items, generals }) => {
                 )}
             </div>
 
-            {/* ── CTA Section ─────────────────────────────────────────────── */}
-            {cta && (
-                <motion.section
-                    {...fadeUp}
-                    className="relative overflow-hidden bg-neutral-dark text-white"
-                >
-                    {/* Background image */}
-                    {cta.image && (
-                        <div className="absolute inset-0 z-0">
-                            <img
-                                src={`/storage/images/aboutus/${cta.image}`}
-                                alt=""
-                                className="w-full h-full object-cover scale-105"
-                            />
-                            <div className="absolute inset-0 " />
-                        </div>
-                    )}
 
-                    {/* Pattern fallback */}
-                    {!cta.image && (
-                        <div className="absolute inset-0 pointer-events-none opacity-5">
-                            <div className="w-full h-full bg-[repeating-linear-gradient(45deg,transparent,transparent_10px,#fff_10px,#fff_11px)]" />
-                        </div>
-                    )}
-
-                    <div className="relative z-10 max-w-7xl mx-auto px-6 md:px-12 2xl:px-0 py-20 md:py-32 text-center">
-                        <p className="text-[10px] font-bold tracking-widest text-white/30 uppercase mb-5">
-                            {cta.name || "Contáctanos"}
-                        </p>
-                        <h2 className="text-4xl md:text-7xl font-black tracking-tight leading-tight mb-6 max-w-5xl mx-auto">
-                            {cta.title || "¿Listo para empezar?"}
-                        </h2>
-
-                        {cta.description && (
-                            <div
-                                className="text-base md:text-xl text-white/60 leading-relaxed mb-12 max-w-3xl mx-auto font-medium"
-                                dangerouslySetInnerHTML={{
-                                    __html: cta.description,
-                                }}
-                            />
-                        )}
-
-                        <div className="flex flex-wrap justify-center gap-4">
-                            {advisors.length > 0
-                                ? advisors.map((advisor, index) => (
-                                      <motion.button
-                                          key={index}
-                                          initial={{ opacity: 0, y: 20 }}
-                                          whileInView={{ opacity: 1, y: 0 }}
-                                          viewport={{ once: true }}
-                                          transition={{ delay: index * 0.08 }}
-                                          onClick={() =>
-                                              handleAdvisorClick(advisor)
-                                          }
-                                          className="group flex items-center gap-4 bg-white/10 border border-white/20 hover:bg-white hover:border-white px-6 py-4 text-left transition-all duration-200 min-w-[240px]"
-                                      >
-                                          <div className="w-10 h-10 rounded-full bg-white/10 group-hover:bg-neutral-dark flex items-center justify-center font-black text-white group-hover:text-white shrink-0 transition-colors text-sm">
-                                              {advisor.name
-                                                  ?.charAt(0)
-                                                  .toUpperCase()}
-                                          </div>
-                                          <div className="flex-1 text-left">
-                                              <div className="font-bold text-white group-hover:text-neutral-dark text-sm leading-tight transition-colors">
-                                                  {advisor.name}
-                                              </div>
-                                              <div className="text-xs text-white/50 group-hover:text-neutral-dark/50 transition-colors mt-0.5">
-                                                  {advisor.position ||
-                                                      "Asesor Comercial"}
-                                              </div>
-                                          </div>
-                                          <MessageCircle
-                                              size={14}
-                                              className="text-white/30 group-hover:text-neutral-dark/40 shrink-0 transition-colors"
-                                          />
-                                      </motion.button>
-                                  ))
-                                : cta.link && (
-                                      <a
-                                          href={cta.link}
-                                          className="group inline-flex items-center gap-3 bg-primary text-white px-10 py-4 font-bold text-sm tracking-widest uppercase hover:bg-white hover:text-neutral-dark transition-all duration-200 shadow-lg shadow-primary/20"
-                                      >
-                                          <span>
-                                              {cta.slogan || "Empezar Ahora"}
-                                          </span>
-                                          <ArrowRight
-                                              size={14}
-                                              strokeWidth={2.5}
-                                              className="group-hover:translate-x-1 transition-transform"
-                                          />
-                                      </a>
-                                  )}
-                        </div>
-                    </div>
-                </motion.section>
-            )}
         </main>
     );
 };
