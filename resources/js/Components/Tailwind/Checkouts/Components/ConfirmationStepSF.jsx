@@ -44,6 +44,7 @@ export default function ConfirmationStepSF({
             fetchOrderDetails();
             Local.delete(`${Global.APP_CORRELATIVE}_cart`);
             Local.set(`${Global.APP_CORRELATIVE}_cart`, []);
+            setCart([]);
         }
     }, [code]);
 

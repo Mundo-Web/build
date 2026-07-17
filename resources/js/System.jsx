@@ -247,6 +247,14 @@ const System = ({
     }, [cart]);
 
     useEffect(() => {
+        const params = new URLSearchParams(window.location.search);
+        if (params.get("code")) {
+            Local.delete(`${Global.APP_CORRELATIVE}_cart`);
+            Local.set(`${Global.APP_CORRELATIVE}_cart`, []);
+            setCart([]);
+            return;
+        }
+
         // Separar combos de productos normales
         const regularItems = cart.filter((x) => x.type !== "combo");
         const combos = cart.filter((x) => x.type === "combo");

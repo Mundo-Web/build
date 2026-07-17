@@ -1195,14 +1195,7 @@ const ProductDetailRainstar = ({
                             </motion.div>
                         )}
                     </AnimatePresence>
-                    <button
-                        onClick={() =>
-                            setIsAdvisorDropdownOpen(!isAdvisorDropdownOpen)
-                        }
-                        className="w-20 h-20 bg-primary text-white flex items-center justify-center border-4 border-neutral-dark shadow-[10px_10px_0px_0px_rgba(0,0,0,0.1)] hover:bg-white hover:text-neutral-dark transition-all active:translate-y-2 active:shadow-none"
-                    >
-                        <MessageCircle className="w-10 h-10" />
-                    </button>
+
                 </div>
             )}
 

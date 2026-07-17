@@ -99,20 +99,14 @@ export default function PaymentModalRainstar({
         onPaymentComplete(paymentMethod);
     };
 
-    const ischeckmpobject = contacts?.find(
-        (x) => x.correlative === "checkout_mercadopago",
-    );
-    const ischeckopenpayobject = contacts?.find(
-        (x) => x.correlative === "checkout_openpay",
-    );
-    const ischeckculqiobject = contacts?.find(
-        (x) => x.correlative === "checkout_culqi",
-    );
+    const ischeckmp = General.get("checkout_mercadopago");
+    const ischeckopenpay = General.get("checkout_openpay");
+    const ischeckculqi = General.get("checkout_culqi");
 
     const hasNoOptions =
-        ischeckmpobject?.description !== "true" &&
-        ischeckopenpayobject?.description !== "true" &&
-        ischeckculqiobject?.description !== "true" &&
+        ischeckmp !== "true" &&
+        ischeckopenpay !== "true" &&
+        ischeckculqi !== "true" &&
         General.get("checkout_dwallet") !== "true" &&
         General.get("checkout_transfer") !== "true";
 
@@ -171,7 +165,7 @@ export default function PaymentModalRainstar({
                         </div>
                     ) : (
                         <div className="flex-1 space-y-3 overflow-y-auto pr-1">
-                            {ischeckmpobject?.description === "true" && (
+                            {ischeckmp === "true" && (
                                 <PaymentOption
                                     active={paymentMethod === "tarjeta"}
                                     onClick={() => setPaymentMethod("tarjeta")}
@@ -185,7 +179,7 @@ export default function PaymentModalRainstar({
                                     )}
                                 />
                             )}
-                            {ischeckopenpayobject?.description === "true" && (
+                            {ischeckopenpay === "true" && (
                                 <PaymentOption
                                     active={paymentMethod === "openpay"}
                                     onClick={() => setPaymentMethod("openpay")}
@@ -199,7 +193,7 @@ export default function PaymentModalRainstar({
                                     )}
                                 />
                             )}
-                            {ischeckculqiobject?.description === "true" && (
+                            {ischeckculqi === "true" && (
                                 <PaymentOption
                                     active={paymentMethod === "culqi"}
                                     onClick={() => setPaymentMethod("culqi")}

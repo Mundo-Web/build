@@ -36,6 +36,7 @@ export default function ConfirmationStepRooms({
             fetchOrderDetails();
             // Limpiar el carrito de habitaciones
             Local.delete(`${Global.APP_CORRELATIVE}_cart`);
+            setCart([]);
         }
     }, [code]);
 

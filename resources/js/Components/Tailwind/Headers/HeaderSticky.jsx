@@ -471,7 +471,7 @@ const HeaderSticky = ({
                                                                 size={18}
                                                                 className="text-neutral-light group-hover:text-black"
                                                             />
-                                                            <span className="text-sm font-bold uppercase ">
+                                                            <span className="text-xs font-bold  ">
                                                                 Mi Perfil
                                                             </span>
                                                         </a>
@@ -483,7 +483,7 @@ const HeaderSticky = ({
                                                                 size={18}
                                                                 className="text-neutral-light group-hover:text-black"
                                                             />
-                                                            <span className="text-sm font-bold uppercase ">
+                                                            <span className="text-xs font-bold  ">
                                                                 Mis Pedidos
                                                             </span>
                                                         </a>
@@ -495,7 +495,7 @@ const HeaderSticky = ({
                                                                 size={18}
                                                                 className="text-neutral-light group-hover:text-black"
                                                             />
-                                                            <span className="text-sm font-bold uppercase ">
+                                                            <span className="text-xs font-bold  ">
                                                                 Configuración
                                                             </span>
                                                         </a>
@@ -509,7 +509,7 @@ const HeaderSticky = ({
                                                             size={18}
                                                             className="text-neutral-light group-hover:text-black"
                                                         />
-                                                        <span className="text-sm font-bold  ">
+                                                        <span className="text-xs font-bold  ">
                                                             Dashboard
                                                         </span>
                                                     </a>
@@ -519,7 +519,7 @@ const HeaderSticky = ({
                                                     className="w-full flex items-center gap-3 p-3 hover:bg-red-50  transition-colors group text-red-500"
                                                 >
                                                     <LogOut size={18} />
-                                                    <span className="text-sm font-bold  ">
+                                                    <span className="text-xs font-bold  ">
                                                         Cerrar Sesión
                                                     </span>
                                                 </button>

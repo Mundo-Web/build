@@ -37,6 +37,7 @@ export default function ConfirmationStepIbergruas({
             fetchOrderDetails();
             Local.delete(`${Global.APP_CORRELATIVE}_cart`);
             Local.set(`${Global.APP_CORRELATIVE}_cart`, []);
+            setCart([]);
         }
     }, [code]);
 
