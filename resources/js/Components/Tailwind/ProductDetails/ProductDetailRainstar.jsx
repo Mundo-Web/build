@@ -59,13 +59,13 @@ const ProductDetailRainstar = ({
     const [selectedAttributes, setSelectedAttributes] = useState({});
     const [modalOpen, setModalOpen] = useState(false);
     const [relationsItems, setRelationsItems] = useState([]);
-    
+
     const currentProduct = selectedVariant
         ? {
-              ...selectedVariant,
-              brand: selectedVariant.brand || item?.brand,
-              category: selectedVariant.category || item?.category,
-          }
+            ...selectedVariant,
+            brand: selectedVariant.brand || item?.brand,
+            category: selectedVariant.category || item?.category,
+        }
         : item;
 
     const isOutOfStock = !currentProduct?.stock_unlimited && (currentProduct?.stock <= 0 || !currentProduct?.stock);
@@ -108,7 +108,7 @@ const ProductDetailRainstar = ({
                 icon: "success",
                 confirmButtonText: "Entendido",
                 customClass: {
-                    popup: "rounded-none border-4 border-black font-black uppercase tracking-tight",
+                    popup: "rounded-none border-4 border-black font-black uppercase ",
                     confirmButton:
                         "rounded-none border-4 border-black bg-black text-white hover:bg-white hover:text-neutral-dark transition-all",
                 },
@@ -257,7 +257,7 @@ const ProductDetailRainstar = ({
                 icon: "info",
                 confirmButtonColor: "#000000",
                 customClass: {
-                    popup: "rounded-none border-4 border-black font-black uppercase tracking-tight",
+                    popup: "rounded-none border-4 border-black font-black uppercase ",
                     confirmButton:
                         "rounded-none border-4 border-black bg-black text-white hover:bg-white hover:text-neutral-dark transition-all",
                 },
@@ -410,62 +410,62 @@ const ProductDetailRainstar = ({
     const group =
         variantsForSelectedGroup.length > 0
             ? {
-                  variants: variantsForSelectedGroup,
-                  allAttributes: Array.from(
-                      new Set(
-                          variantsForSelectedGroup.flatMap((v) => {
-                              const vAttrs = Array.isArray(v.attributes)
-                                  ? v.attributes
-                                  : Object.values(v.attributes || {});
-                              return vAttrs.map((a) => a.name || a.slug);
-                          }),
-                      ),
-                  ).map((name) => {
-                      const values = [];
-                      variantsForSelectedGroup.forEach((v) => {
-                          const vAttrs = Array.isArray(v.attributes)
-                              ? v.attributes
-                              : Object.values(v.attributes || {});
-                          const attr = vAttrs.find(
-                              (a) => (a.name || a.slug) === name,
-                          );
-                          if (attr) {
-                              const value = attr.pivot?.value || attr.value;
-                              if (!values.find((val) => val.value === value)) {
-                                  values.push({ value, itemId: v.id, item: v });
-                              }
-                          }
-                      });
-                      return {
-                          name,
-                          attribute: variantsForSelectedGroup
-                              .map((v) =>
-                                  Array.isArray(v.attributes)
-                                      ? v.attributes
-                                      : Object.values(v.attributes || {}),
-                              )
-                              .flat()
-                              .find((a) => (a.name || a.slug) === name),
-                          values,
-                      };
-                  }),
-              }
+                variants: variantsForSelectedGroup,
+                allAttributes: Array.from(
+                    new Set(
+                        variantsForSelectedGroup.flatMap((v) => {
+                            const vAttrs = Array.isArray(v.attributes)
+                                ? v.attributes
+                                : Object.values(v.attributes || {});
+                            return vAttrs.map((a) => a.name || a.slug);
+                        }),
+                    ),
+                ).map((name) => {
+                    const values = [];
+                    variantsForSelectedGroup.forEach((v) => {
+                        const vAttrs = Array.isArray(v.attributes)
+                            ? v.attributes
+                            : Object.values(v.attributes || {});
+                        const attr = vAttrs.find(
+                            (a) => (a.name || a.slug) === name,
+                        );
+                        if (attr) {
+                            const value = attr.pivot?.value || attr.value;
+                            if (!values.find((val) => val.value === value)) {
+                                values.push({ value, itemId: v.id, item: v });
+                            }
+                        }
+                    });
+                    return {
+                        name,
+                        attribute: variantsForSelectedGroup
+                            .map((v) =>
+                                Array.isArray(v.attributes)
+                                    ? v.attributes
+                                    : Object.values(v.attributes || {}),
+                            )
+                            .flat()
+                            .find((a) => (a.name || a.slug) === name),
+                        values,
+                    };
+                }),
+            }
             : null;
 
     const rainstarSectionTitleClass =
-        "text-sm font-bold tracking-widest border-b border-gray-100 pb-4 mb-8 flex items-center justify-between text-neutral-dark";
+        "text-sm font-bold  border-b border-gray-100 pb-4 mb-8 flex items-center justify-between text-neutral-dark";
     const rainstarButtonClass =
-        "w-full py-5 text-sm font-bold tracking-widest transition-all duration-300 rounded-none border border-neutral-dark active:scale-[0.98]";
+        "w-full py-5 text-sm font-bold  transition-all duration-300 rounded-none border border-neutral-dark active:scale-[0.98]";
     const rainstarPrimaryBtn = `${rainstarButtonClass} bg-primary text-white hover:bg-primary/90 uppercase`;
     const rainstarSecondaryBtn = `${rainstarButtonClass} bg-white text-neutral-dark hover:bg-gray-50 border-gray-200 uppercase`;
 
     const generalSpecifications = (
         Array.isArray(currentProduct?.specifications) &&
-        currentProduct.specifications.length > 0
+            currentProduct.specifications.length > 0
             ? currentProduct.specifications
             : Array.isArray(item?.specifications)
-              ? item.specifications
-              : []
+                ? item.specifications
+                : []
     ).filter((s) => s.type === "general" || !s.type);
 
     console.log("ProductDetailRainstar: Rendering with group", group);
@@ -488,8 +488,8 @@ const ProductDetailRainstar = ({
                                 ...(Array.isArray(currentProduct?.images)
                                     ? currentProduct.images
                                     : Object.values(
-                                          currentProduct?.images || {},
-                                      )),
+                                        currentProduct?.images || {},
+                                    )),
                                 ...(Array.isArray(item?.images)
                                     ? item.images
                                     : Object.values(item?.images || {})),
@@ -520,8 +520,8 @@ const ProductDetailRainstar = ({
                                                 src={`/storage/images/item/${imgUrl}`}
                                                 className="w-full h-full object-cover object-top"
                                                 onError={(e) =>
-                                                    (e.target.src =
-                                                        "/api/cover/thumbnail/null")
+                                                (e.target.src =
+                                                    "/api/cover/thumbnail/null")
                                                 }
                                             />
                                         </div>
@@ -563,13 +563,13 @@ const ProductDetailRainstar = ({
                                         style={
                                             isZoomEnabled
                                                 ? {
-                                                      transformOrigin: `${zoomPosition.x}% ${zoomPosition.y}%`,
-                                                  }
+                                                    transformOrigin: `${zoomPosition.x}% ${zoomPosition.y}%`,
+                                                }
                                                 : {}
                                         }
                                         onError={(e) =>
-                                            (e.target.src =
-                                                "/api/cover/thumbnail/null")
+                                        (e.target.src =
+                                            "/api/cover/thumbnail/null")
                                         }
                                     />
                                 </AnimatePresence>
@@ -604,19 +604,20 @@ const ProductDetailRainstar = ({
                             className="space-y-6"
                         >
                             <div className="space-y-4">
-                                <span itemProp="brand" itemScope={true} itemType="https://schema.org/Brand" className="text-sm font-bold tracking-wider text-neutral-dark/60 block">
+                                <span itemProp="brand" itemScope={true} itemType="https://schema.org/Brand" className="text-sm font-bold  text-neutral-dark/60 block">
                                     <span itemProp="name">
                                         {currentProduct?.brand?.name ||
                                             currentProduct?.category?.name ||
                                             "COLECCIÓN PREMIUM"}
                                     </span>
                                 </span>
-                                <h1 itemProp="name" className="text-4xl md:text-5xl lg:text-6xl font-black tracking-tighter leading-[0.9] text-neutral-dark">
+                                <h1 itemProp="name" className="text-4xl font-title md:text-5xl lg:text-6xl font-black   text-neutral-dark">
                                     <TextWithHighlight
                                         text={currentProduct?.name}
+                                        className="font-title"
                                     />
                                 </h1>
-                                <p className="text-sm font-medium tracking-normal text-neutral-dark/40 border-l border-neutral-dark/20 pl-4">
+                                <p className="text-sm font-medium  text-neutral-dark/40 border-l border-neutral-dark/20 pl-4">
                                     Código: <span itemProp="sku">{currentProduct?.sku}</span>
                                 </p>
                             </div>
@@ -624,31 +625,31 @@ const ProductDetailRainstar = ({
                             <div itemProp="offers" itemScope={true} itemType="https://schema.org/Offer" className="flex items-center gap-6 py-4">
                                 <meta itemProp="priceCurrency" content="PEN" />
                                 <link itemProp="availability" href={(currentProduct?.stock_unlimited || currentProduct?.stock > 0) ? "https://schema.org/InStock" : "https://schema.org/OutOfStock"} />
-                                <span className="text-5xl font-black tracking-tighter text-neutral-dark">
+                                <span className="text-5xl font-black  text-neutral-dark">
                                     {CurrencySymbol()}{" "}
                                     <span itemProp="price" content={currentProduct?.final_price || currentProduct?.price}>{currentProduct?.final_price}</span>
                                 </span>
                                 {currentProduct?.price >
                                     currentProduct?.final_price && (
-                                    <div className="flex flex-col">
-                                        <span className="text-xl text-neutral-dark/30 line-through font-bold leading-none">
-                                            {CurrencySymbol()}{" "}
-                                            {currentProduct?.price}
-                                        </span>
-                                        <span className="text-sm font-bold tracking-tighter text-primary">
-                                            AHORRA{" "}
-                                            {Number(
-                                                currentProduct?.discount_percent,
-                                            ).toFixed(0)}
-                                            %
-                                        </span>
-                                    </div>
-                                )}
+                                        <div className="flex flex-col">
+                                            <span className="text-xl text-neutral-dark/30 line-through font-bold ">
+                                                {CurrencySymbol()}{" "}
+                                                {currentProduct?.price}
+                                            </span>
+                                            <span className="text-sm font-bold  text-primary">
+                                                AHORRA{" "}
+                                                {Number(
+                                                    currentProduct?.discount_percent,
+                                                ).toFixed(0)}
+                                                %
+                                            </span>
+                                        </div>
+                                    )}
                             </div>
 
                             {/* Variants Selection */}
                             {isLoadingVariants ? (
-                                <div className="flex items-center gap-2 text-sm font-bold uppercase tracking-widest animate-pulse">
+                                <div className="flex items-center gap-2 text-sm font-bold uppercase  animate-pulse">
                                     <div className="w-2 h-2 bg-black rounded-full"></div>
                                     Actualizando Variantes...
                                 </div>
@@ -660,7 +661,7 @@ const ProductDetailRainstar = ({
                                                 key={attrData.name}
                                                 className="space-y-4"
                                             >
-                                                <h3 className="text-sm font-bold tracking-wider text-neutral-dark/60">
+                                                <h3 className="text-sm font-bold  text-neutral-dark/60">
                                                     {attrData.name}
                                                 </h3>
                                                 <div className="flex flex-wrap gap-2">
@@ -707,16 +708,16 @@ const ProductDetailRainstar = ({
                                                                                 ) => {
                                                                                     newAttrs[
                                                                                         a.name ||
-                                                                                            a.slug
+                                                                                        a.slug
                                                                                     ] =
-                                                                                        {
-                                                                                            value:
-                                                                                                a
-                                                                                                    .pivot
-                                                                                                    ?.value ||
-                                                                                                a.value,
-                                                                                            item: matching,
-                                                                                        };
+                                                                                    {
+                                                                                        value:
+                                                                                            a
+                                                                                                .pivot
+                                                                                                ?.value ||
+                                                                                            a.value,
+                                                                                        item: matching,
+                                                                                    };
                                                                                 },
                                                                             );
                                                                             setSelectedAttributes(
@@ -729,7 +730,7 @@ const ProductDetailRainstar = ({
                                                                             );
                                                                         }
                                                                     }}
-                                                                    className={`px-6 py-3 text-sm font-bold tracking-wider transition-all border
+                                                                    className={`px-6 py-3 text-sm font-bold  transition-all border
                                                                 ${isSelected ? "bg-primary text-white border-neutral-dark shadow-md" : isAvailable ? "bg-white text-neutral-dark border-gray-100 hover:border-neutral-dark" : "bg-gray-50 text-neutral-dark/20 border-gray-50 cursor-not-allowed line-through opacity-50"}
                                                             `}
                                                                 >
@@ -748,7 +749,7 @@ const ProductDetailRainstar = ({
                             {/* Purchase Actions */}
                             <div className="space-y-8 pt-12">
                                 <div className="flex items-center justify-between border-b border-black/5 pb-8">
-                                    <span className="text-sm font-bold tracking-wider text-neutral-dark">
+                                    <span className="text-sm font-bold  text-neutral-dark">
                                         Cantidad
                                     </span>
                                     <div className="flex items-center gap-12">
@@ -821,7 +822,7 @@ const ProductDetailRainstar = ({
                                             <Plus size={14} className="opacity-20" />
                                         </h2>
                                         <div
-                                            className="text-base font-normal leading-relaxed prose prose-neutral max-w-none text-neutral-dark/80"
+                                            className="text-base font-normal  prose prose-neutral max-w-none text-neutral-dark/80"
                                             dangerouslySetInnerHTML={{
                                                 __html:
                                                     currentProduct?.description ||
@@ -848,12 +849,12 @@ const ProductDetailRainstar = ({
                                                                 .toString()
                                                                 .padStart(2, "0")}
                                                         </span>
-                                                        <span className="text-sm font-bold tracking-wider text-neutral-dark">
+                                                        <span className="text-sm font-bold  text-neutral-dark">
                                                             {spec.title ||
                                                                 "Característica"}
                                                         </span>
                                                     </div>
-                                                    <span className="text-sm font-medium tracking-normal text-neutral-dark group-hover:text-neutral-dark transition-colors">
+                                                    <span className="text-sm font-medium  text-neutral-dark group-hover:text-neutral-dark transition-colors">
                                                         {spec.description || spec.value}
                                                     </span>
                                                 </div>
@@ -874,17 +875,17 @@ const ProductDetailRainstar = ({
                             <div className="flex items-center gap-12">
                                 <Truck className="w-16 h-16 stroke-[1] text-neutral-dark/40 group-hover:text-primary transition-colors" />
                                 <div>
-                                    <h4 className="text-5xl font-black tracking-tighter text-neutral-dark">
+                                    <h4 className="text-5xl font-black  text-neutral-dark">
                                         Políticas de Envío
                                     </h4>
-                                    <p className="text-sm font-bold tracking-wider text-neutral-dark/40 mt-2">
+                                    <p className="text-sm font-bold  text-neutral-dark/40 mt-2">
                                         Condiciones de entrega y tiempos a nivel
                                         nacional
                                     </p>
                                 </div>
                             </div>
                             <div className="flex items-center gap-6">
-                                <span className="text-sm font-bold tracking-widest hidden group-hover:block transition-all opacity-0 group-hover:opacity-100">
+                                <span className="text-sm font-bold  hidden group-hover:block transition-all opacity-0 group-hover:opacity-100">
                                     DETALLES
                                 </span>
                                 <ChevronRight className="w-10 h-10 transform group-hover:translate-x-4 transition-transform stroke-[1]" />
@@ -899,10 +900,10 @@ const ProductDetailRainstar = ({
                         <div className="border-b border-gray-100 pb-8 px-2">
                             <div className="flex justify-between items-start mb-4">
                                 <div className="space-y-1">
-                                    <span className="text-sm font-bold tracking-wider text-neutral-dark/60 block">
+                                    <span className="text-sm font-bold  text-neutral-dark/60 block">
                                         ID: {currentProduct?.sku}
                                     </span>
-                                    <span className="text-sm font-bold tracking-wider text-neutral-dark">
+                                    <span className="text-sm font-bold  text-neutral-dark">
                                         {currentProduct?.brand?.name ||
                                             "PREMIUM"}
                                     </span>
@@ -914,21 +915,21 @@ const ProductDetailRainstar = ({
                                     <Share2 className="w-5 h-5 stroke-[1.5]" />
                                 </button>
                             </div>
-                            <h2 className="text-3xl font-black tracking-tighter leading-[0.9] mb-6 text-neutral-dark">
+                            <h2 className="text-3xl font-black  font-title  mb-6 text-neutral-dark">
                                 {currentProduct?.name}
                             </h2>
                             <div className="flex items-baseline gap-4">
-                                <span className="text-4xl font-black tracking-tighter text-neutral-dark">
+                                <span className="text-4xl font-black  text-neutral-dark">
                                     {CurrencySymbol()}{" "}
                                     {currentProduct?.final_price}
                                 </span>
                                 {currentProduct?.price >
                                     currentProduct?.final_price && (
-                                    <span className="text-lg text-neutral-dark/20 line-through font-bold">
-                                        {CurrencySymbol()}{" "}
-                                        {currentProduct?.price}
-                                    </span>
-                                )}
+                                        <span className="text-lg text-neutral-dark/20 line-through font-bold">
+                                            {CurrencySymbol()}{" "}
+                                            {currentProduct?.price}
+                                        </span>
+                                    )}
                             </div>
                         </div>
 
@@ -948,16 +949,16 @@ const ProductDetailRainstar = ({
                                     ...(Array.isArray(currentProduct?.images)
                                         ? currentProduct.images
                                         : Object.values(
-                                              currentProduct?.images || {},
-                                          )),
+                                            currentProduct?.images || {},
+                                        )),
                                 ].map((img, i) => (
                                     <SwiperSlide key={i}>
                                         <img
                                             src={`/storage/images/item/${img?.url || img}`}
                                             className="w-full h-full object-cover object-top"
                                             onError={(e) =>
-                                                (e.target.src =
-                                                    "/api/cover/thumbnail/null")
+                                            (e.target.src =
+                                                "/api/cover/thumbnail/null")
                                             }
                                         />
                                     </SwiperSlide>
@@ -969,7 +970,7 @@ const ProductDetailRainstar = ({
                     <div className="space-y-10 px-2">
                         {group?.allAttributes?.map((attrData) => (
                             <div key={attrData.name} className="space-y-4">
-                                <h3 className="text-sm font-bold tracking-wider text-neutral-dark/60">
+                                <h3 className="text-sm font-bold  text-neutral-dark/60">
                                     {attrData.name}
                                 </h3>
                                 <div className="flex flex-wrap gap-2">
@@ -1006,9 +1007,9 @@ const ProductDetailRainstar = ({
                                                         )
                                                             ? matching.attributes
                                                             : Object.values(
-                                                                  matching.attributes ||
-                                                                      {},
-                                                              );
+                                                                matching.attributes ||
+                                                                {},
+                                                            );
                                                         mAttrs.forEach((a) => {
                                                             newAttrs[
                                                                 a.name || a.slug
@@ -1030,7 +1031,7 @@ const ProductDetailRainstar = ({
                                                         );
                                                     }
                                                 }}
-                                                className={`px-6 py-3 text-sm font-bold tracking-wider border transition-all 
+                                                className={`px-6 py-3 text-sm font-bold  border transition-all 
                                                     ${isSelected ? "bg-primary text-white border-neutral-dark shadow-sm" : isAvailable ? "bg-white text-neutral-dark border-gray-100 hover:border-neutral-dark" : "bg-gray-50 text-neutral-dark/20 border-gray-50 cursor-not-allowed line-through opacity-50"}
                                                 `}
                                             >
@@ -1052,11 +1053,11 @@ const ProductDetailRainstar = ({
                             <div className="space-y-12 px-2 border-t border-gray-100 pt-12">
                                 {hasDesc && (
                                     <section>
-                                        <h2 className="text-sm font-bold tracking-widest mb-6 text-neutral-dark/60">
+                                        <h2 className="text-sm font-bold  mb-6 text-neutral-dark/60">
                                             01 / DESCRIPCIÓN
                                         </h2>
                                         <div
-                                            className="text-sm font-medium tracking-[0.1em] leading-loose text-neutral-dark prose prose-neutral max-w-none"
+                                            className="text-sm font-medium   text-neutral-dark prose prose-neutral max-w-none"
                                             dangerouslySetInnerHTML={{
                                                 __html: currentProduct?.description || item?.description,
                                             }}
@@ -1065,7 +1066,7 @@ const ProductDetailRainstar = ({
                                 )}
                                 {hasSpecs && (
                                     <section>
-                                        <h2 className="text-sm font-bold tracking-widest mb-6 text-neutral-dark/60">
+                                        <h2 className="text-sm font-bold  mb-6 text-neutral-dark/60">
                                             {hasDesc ? "02" : "01"} / ESPECIFICACIONES
                                         </h2>
                                         <div className="space-y-4">
@@ -1074,7 +1075,7 @@ const ProductDetailRainstar = ({
                                                     key={i}
                                                     className="flex justify-between items-center border-b border-gray-50 pb-4"
                                                 >
-                                                    <span className="text-sm font-bold tracking-wider text-neutral-dark">
+                                                    <span className="text-sm font-bold  text-neutral-dark">
                                                         {spec.title || "Factor"}
                                                     </span>
                                                     <span className="text-sm font-bold text-neutral-dark/40 text-right">
@@ -1095,7 +1096,7 @@ const ProductDetailRainstar = ({
                     >
                         <div className="flex items-center gap-6">
                             <Truck className="w-8 h-8 stroke-[1] text-neutral-dark/60" />
-                            <span className="text-sm font-bold tracking-wider text-neutral-dark">
+                            <span className="text-sm font-bold  text-neutral-dark">
                                 Política de Envío
                             </span>
                         </div>
@@ -1135,7 +1136,7 @@ const ProductDetailRainstar = ({
                     <div className="flex justify-between items-center mb-12 border-b border-gray-100 pb-6">
                         <div className="flex items-center gap-6">
                             <Truck className="w-10 h-10 stroke-[1] text-neutral-dark/40" />
-                            <h2 className="text-3xl font-black tracking-tighter text-neutral-dark">
+                            <h2 className="text-3xl font-black  text-neutral-dark">
                                 Política de Envío
                             </h2>
                         </div>
@@ -1146,14 +1147,14 @@ const ProductDetailRainstar = ({
                             <X className="w-6 h-6 stroke-[1]" />
                         </button>
                     </div>
-                    <div className="prose prose-neutral max-w-none prose-headings:font-bold prose-p:font-medium prose-p:tracking-widest prose-p:text-sm prose-p:leading-relaxed text-neutral-dark">
+                    <div className="prose prose-neutral max-w-none prose-headings:font-bold prose-p:font-medium prose-p: prose-p:text-sm prose-p: text-neutral-dark">
                         <div
                             dangerouslySetInnerHTML={{ __html: deliveryPolicy }}
                         />
                     </div>
                     <button
                         onClick={() => setDeliveryPolicyModalOpen(false)}
-                        className="mt-16 w-full py-5 bg-primary text-white font-bold tracking-widest text-sm hover:bg-primary/90 transition-colors uppercase"
+                        className="mt-16 w-full py-5 bg-primary text-white font-bold  text-sm hover:bg-primary/90 transition-colors uppercase"
                     >
                         Entendido
                     </button>
@@ -1171,7 +1172,7 @@ const ProductDetailRainstar = ({
                                 exit={{ opacity: 0, y: 20 }}
                                 className="bg-white border-4 border-neutral-dark p-6 mb-2 min-w-[280px] shadow-[15px_15px_0px_0px_rgba(0,0,0,0.1)]"
                             >
-                                <h4 className="text-sm font-black uppercase tracking-widest mb-6 border-b-2 border-neutral-dark pb-4">
+                                <h4 className="text-sm font-black uppercase  mb-6 border-b-2 border-neutral-dark pb-4">
                                     Consultar con Asesor
                                 </h4>
                                 <div className="space-y-3">
@@ -1185,7 +1186,7 @@ const ProductDetailRainstar = ({
                                             <div className="w-10 h-10 bg-primary text-white flex items-center justify-center font-black text-sm uppercase">
                                                 {adv.name?.charAt(0)}
                                             </div>
-                                            <span className="text-sm font-bold tracking-tight group-hover:italic">
+                                            <span className="text-sm font-bold  group-hover:italic">
                                                 {adv.name}
                                             </span>
                                         </a>
