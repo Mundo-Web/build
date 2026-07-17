@@ -131,8 +131,8 @@ const Blog = ({
                 switch (sortOption) {
                     case "newest": params.sort = [{ selector: "created_at", desc: true }]; break;
                     case "oldest": params.sort = [{ selector: "created_at", desc: false }]; break;
-                    case "title-asc": params.sort = [{ selector: "title", desc: false }]; break;
-                    case "title-desc": params.sort = [{ selector: "title", desc: true }]; break;
+                    case "title-asc": params.sort = [{ selector: "name", desc: false }]; break;
+                    case "title-desc": params.sort = [{ selector: "name", desc: true }]; break;
                 }
 
                 const response = await postsRest.paginate(params);

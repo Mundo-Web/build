@@ -1,44 +1,27 @@
-import React, { useState, useEffect, useRef } from "react";
-import { motion, AnimatePresence, useInView } from "framer-motion";
-import { ChevronDown, SlidersHorizontal, Sliders } from "lucide-react";
+import React, { useRef } from "react";
+import { motion, useInView } from "framer-motion";
+import { Sliders, ChevronLeft, ChevronRight } from "lucide-react";
 import { Loading } from "../../Components/Resources/Loading";
 import BlogPostCardRainstar from "./BlogPostCardRainstar";
 import SelectForm from "../../Filters/Components/SelectForm";
-import BlogCategoriesRest from "../../../../Actions/BlogCategoriesRest";
-
-const blogCategoriesRest = new BlogCategoriesRest();
 
 const BlogListRainstar = ({
     data,
-    postsLatest,
-    posts,
-    loading,
-    setLoading,
-    isFilter,
-    setIsFilter,
-    filteredData,
+    filterProps = {},
 }) => {
-    const [categories, setCategories] = useState([]);
-
-    useEffect(() => {
-        const fetchCategories = async () => {
-            try {
-                const response = await blogCategoriesRest.get();
-                if (response && response.data) {
-                    setCategories(response.data);
-                }
-            } catch (error) {
-                console.error("Error fetching blog categories:", error);
-            }
-        };
-        fetchCategories();
-    }, []);
-
-    const [activeCategory, setActiveCategory] = useState("all");
-    const [sortOption, setSortOption] = useState("newest");
-    const [currentPage, setCurrentPage] = useState(1);
-    const [filteredPosts, setFilteredPosts] = useState([]);
-    const postsPerPage = 9;
+    const {
+        categories = [],
+        activeCategory = "all",
+        setActiveCategory = () => {},
+        sortOption = "newest",
+        setSortOption = () => {},
+        currentPage = 1,
+        setCurrentPage = () => {},
+        filteredPosts = [],
+        listLoading = false,
+        totalPosts = 0,
+        gridPostsPerPage = 6
+    } = filterProps;
 
     const listRef = useRef(null);
     const listInView = useInView(listRef, { once: true, threshold: 0.1 });
@@ -50,44 +33,8 @@ const BlogListRainstar = ({
         { value: "title-desc", label: "TÍTULO Z-A" },
     ];
 
-    useEffect(() => {
-        let filtered = isFilter && posts.length > 0 ? posts : postsLatest || [];
-
-        if (activeCategory !== "all") {
-            filtered = filtered.filter(
-                (post) =>
-                    post.category && post.category.name === activeCategory,
-            );
-        }
-
-        filtered = [...filtered].sort((a, b) => {
-            switch (sortOption) {
-                case "newest":
-                    return new Date(b.created_at) - new Date(a.created_at);
-                case "oldest":
-                    return new Date(a.created_at) - new Date(b.created_at);
-                case "title-asc":
-                    return (a.title || a.name || "").localeCompare(
-                        b.title || b.name || "",
-                    );
-                case "title-desc":
-                    return (b.title || b.name || "").localeCompare(
-                        a.title || a.name || "",
-                    );
-                default:
-                    return 0;
-            }
-        });
-
-        setFilteredPosts(filtered);
-        setCurrentPage(1);
-    }, [activeCategory, sortOption, posts, postsLatest, isFilter]);
-
-    const totalPages = Math.ceil(filteredPosts.length / postsPerPage);
-    const currentPosts = filteredPosts.slice(
-        (currentPage - 1) * postsPerPage,
-        currentPage * postsPerPage,
-    );
+    const totalPages = Math.ceil(totalPosts / gridPostsPerPage);
+    const currentPosts = filteredPosts;
 
     return (
         <motion.section
@@ -115,7 +62,10 @@ const BlogListRainstar = ({
                                     ? "bg-neutral-dark text-white border-neutral-dark shadow-lg shadow-neutral-dark/10"
                                     : "bg-white text-neutral-dark/40 border-gray-200 hover:border-neutral-dark/20 hover:text-neutral-dark"
                             }`}
-                            onClick={() => setActiveCategory("all")}
+                            onClick={() => {
+                                setActiveCategory("all");
+                                setCurrentPage(1);
+                            }}
                         >
                             Todas
                         </button>
@@ -126,13 +76,14 @@ const BlogListRainstar = ({
                                 <button
                                     key={category.id}
                                     className={`px-5 py-2.5 text-[10px] font-black tracking-widest uppercase transition-colors duration-150 ease-in-out border ${
-                                        activeCategory === category.name
+                                        activeCategory === category.id
                                             ? "bg-neutral-dark text-white border-neutral-dark shadow-lg shadow-neutral-dark/10"
                                             : "bg-white text-neutral-dark/40 border-gray-200 hover:border-neutral-dark/20 hover:text-neutral-dark"
                                     }`}
-                                    onClick={() =>
-                                        setActiveCategory(category.name)
-                                    }
+                                    onClick={() => {
+                                        setActiveCategory(category.id);
+                                        setCurrentPage(1);
+                                    }}
                                 >
                                     {category.name}
                                 </button>
@@ -145,7 +96,10 @@ const BlogListRainstar = ({
                             options={sortOptions}
                             placeholder="ORDENAR"
                             value={sortOption}
-                            onChange={(value) => setSortOption(value)}
+                            onChange={(value) => {
+                                setSortOption(value);
+                                setCurrentPage(1);
+                            }}
                             labelKey="label"
                             valueKey="value"
                             generalIcon={<Sliders className="h-4 w-4" />}
@@ -158,7 +112,7 @@ const BlogListRainstar = ({
 
                 {/* ── Posts Grid ────────────────────────────────────────────── */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    {loading ? (
+                    {listLoading ? (
                         <div className="col-span-full py-32 text-center">
                             <Loading />
                         </div>
@@ -193,7 +147,7 @@ const BlogListRainstar = ({
 
                 {/* ── Pagination ────────────────────────────────────────────── */}
                 {totalPages > 1 && (
-                    <div className="flex flex-wrap justify-center mt-20 gap-3">
+                    <div className="flex flex-wrap justify-center items-center mt-20 gap-3">
                         <button
                             className={`w-12 h-12 border flex items-center justify-center text-xs font-black transition-all duration-300 ${
                                 currentPage === 1
@@ -205,25 +159,43 @@ const BlogListRainstar = ({
                             }
                             disabled={currentPage === 1}
                         >
-                            ‹
+                            <ChevronLeft size={16} />
                         </button>
 
-                        {Array.from(
-                            { length: totalPages },
-                            (_, i) => i + 1,
-                        ).map((page) => (
-                            <button
-                                key={page}
-                                className={`w-12 h-12 border flex items-center justify-center text-xs font-black transition-all duration-300 ${
-                                    currentPage === page
-                                        ? "bg-neutral-dark text-white border-neutral-dark shadow-lg shadow-neutral-dark/10"
-                                        : "border-gray-200 text-neutral-dark/40 hover:border-neutral-dark hover:text-neutral-dark"
-                                }`}
-                                onClick={() => setCurrentPage(page)}
-                            >
-                                {page}
-                            </button>
-                        ))}
+                        <div className="flex gap-2">
+                            {[...Array(totalPages)].map((_, index) => {
+                                const pageNumber = index + 1;
+                                if (
+                                    pageNumber === 1 ||
+                                    pageNumber === totalPages ||
+                                    (pageNumber >= currentPage - 1 && pageNumber <= currentPage + 1)
+                                ) {
+                                    return (
+                                        <button
+                                            key={pageNumber}
+                                            onClick={() => setCurrentPage(pageNumber)}
+                                            className={`w-12 h-12 border flex items-center justify-center text-xs font-black transition-all duration-300 ${
+                                                currentPage === pageNumber
+                                                    ? "bg-neutral-dark text-white border-neutral-dark shadow-lg shadow-neutral-dark/10"
+                                                    : "border-gray-200 text-neutral-dark/40 hover:border-neutral-dark hover:text-neutral-dark"
+                                            }`}
+                                        >
+                                            {pageNumber}
+                                        </button>
+                                    );
+                                } else if (
+                                    pageNumber === currentPage - 2 ||
+                                    pageNumber === currentPage + 2
+                                ) {
+                                    return (
+                                        <span key={pageNumber} className="px-2 flex items-center text-neutral-dark/30 font-bold">
+                                            ...
+                                        </span>
+                                    );
+                                }
+                                return null;
+                            })}
+                        </div>
 
                         <button
                             className={`w-12 h-12 border flex items-center justify-center text-xs font-black transition-all duration-300 ${
@@ -238,7 +210,7 @@ const BlogListRainstar = ({
                             }
                             disabled={currentPage === totalPages}
                         >
-                            ›
+                            <ChevronRight size={16} />
                         </button>
                     </div>
                 )}

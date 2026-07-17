@@ -21,7 +21,7 @@ const BlogHeaderRainstar = ({ data, headerPosts, filteredData }) => {
                         <span className="text-[11px] font-black tracking-[0.3em] text-neutral-dark/40 uppercase mb-4">
                             Explora nuestras
                         </span>
-                        <h1 className="text-4xl md:text-6xl lg:text-7xl font-black tracking-tight leading-[1.1] text-neutral-dark mb-6 max-w-4xl">
+                        <h1 className="text-4xl md:text-6xl font-title lg:text-7xl font-black tracking-tight leading-[1.1] text-neutral-dark mb-6 max-w-4xl">
                             {data?.title || "Últimas Noticias Y Artículos"}
                         </h1>
                         {data?.description && (
