@@ -152,7 +152,7 @@ const SearchOverlay = ({ isOpen, onClose }) => {
                             <input
                                 type="text"
                                 placeholder="¿Qué estás buscando?"
-                                className="w-full bg-transparent border-b-[3px] border-primary py-4 lg:py-8 text-xl lg:text-3xl md:text-6xl font-black  tracking-tighter placeholder-gray-200 focus:outline-none transition-colors focus:border-primary"
+                                className="w-full bg-transparent border-b-[3px] border-primary py-4 lg:py-8 text-xl lg:text-3xl md:text-6xl font-black  placeholder-gray-200 focus:outline-none transition-colors focus:border-primary"
                                 autoFocus
                                 value={searchValue}
                                 onChange={(e) =>
@@ -161,7 +161,7 @@ const SearchOverlay = ({ isOpen, onClose }) => {
                             />
                             <button
                                 type="submit"
-                                className="absolute right-0 bottom-5 lg:bottom-10 text-sm font-bold uppercase tracking-[0.3em] hover:text-primary transition-colors"
+                                className="absolute right-0 bottom-5 lg:bottom-10 text-sm font-bold uppercase -[0.3em] hover:text-primary transition-colors"
                             >
                                 Buscar
                             </button>
@@ -172,7 +172,7 @@ const SearchOverlay = ({ isOpen, onClose }) => {
                             {isLoadingSuggestions ? (
                                 <div className="col-span-full py-12 flex items-center justify-center gap-3 text-neutral-light">
                                     <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
-                                    <span className="text-xs font-bold uppercase tracking-widest">
+                                    <span className="text-sm font-bold uppercase ">
                                         Buscando...
                                     </span>
                                 </div>
@@ -183,9 +183,9 @@ const SearchOverlay = ({ isOpen, onClose }) => {
                                         onClick={() =>
                                             selectSuggestion(suggestion)
                                         }
-                                        className="flex items-center gap-6 p-4 rounded-2xl hover:bg-gray-50 transition-all text-left group"
+                                        className="flex items-center gap-6 p-4  hover:bg-gray-50 transition-all text-left group"
                                     >
-                                        <div className="w-20 h-20 bg-gray-100 rounded-xl overflow-hidden flex-shrink-0">
+                                        <div className="w-20 h-20 bg-gray-100  overflow-hidden flex-shrink-0">
                                             {suggestion.image ? (
                                                 <img
                                                     src={`/api/items/media/${suggestion.image}`}
@@ -199,11 +199,11 @@ const SearchOverlay = ({ isOpen, onClose }) => {
                                             )}
                                         </div>
                                         <div className="flex-1 min-w-0">
-                                            <p className="text-[10px] font-bold uppercase tracking-widest text-neutral-light mb-1">
+                                            <p className="text-[10px] font-bold uppercase text-neutral-light mb-1">
                                                 {suggestion.category?.name ||
                                                     "Producto"}
                                             </p>
-                                            <p className="font-black uppercase tracking-tighter truncate text-lg">
+                                            <p className="font-black uppercase truncate text-lg">
                                                 {highlightMatches(
                                                     suggestion.name,
                                                     searchValue,
@@ -220,13 +220,13 @@ const SearchOverlay = ({ isOpen, onClose }) => {
                                 ))
                             ) : searchValue.length >= 2 ? (
                                 <div className="col-span-full py-12 text-center text-neutral-light">
-                                    <p className="text-xs font-bold uppercase tracking-widest">
+                                    <p className="text-sm font-bold uppercase ">
                                         No se encontraron resultados
                                     </p>
                                 </div>
                             ) : (
                                 <div className="col-span-full hidden">
-                                    <p className="text-[10px] font-bold uppercase tracking-widest text-neutral-light mb-8 italic">
+                                    <p className="text-[10px] font-bold uppercase text-neutral-light mb-8 italic">
                                         Explora Tendencias:
                                     </p>
                                     <div className="flex flex-wrap gap-4">
@@ -239,7 +239,7 @@ const SearchOverlay = ({ isOpen, onClose }) => {
                                             <a
                                                 key={tag}
                                                 href={`/catalogo?search=${tag}`}
-                                                className="px-6 py-3 rounded-full border border-gray-100 text-[10px] font-bold uppercase tracking-widest hover:bg-black hover:text-white transition-all"
+                                                className="px-6 py-3 rounded-full border border-gray-100 text-[10px] font-bold uppercase hover:bg-black hover:text-white transition-all"
                                             >
                                                 {tag}
                                             </a>
@@ -423,7 +423,7 @@ const HeaderSticky = ({
                                             name={isUser.name}
                                             className="w-8 h-8 rounded-full border-2 border-primary transition-colors"
                                         />
-                                        <span className="hidden lg:block text-[10px] font-bold uppercase tracking-widest">
+                                        <span className="hidden lg:block text-[10px] font-bold uppercase ">
                                             {isUser.name}
                                         </span>
                                     </button>
@@ -433,7 +433,7 @@ const HeaderSticky = ({
                                         className="flex items-center gap-2 hover:opacity-70 transition-opacity"
                                     >
                                         <UserIcon size={22} strokeWidth={1.5} />
-                                        <span className="hidden lg:block text-[10px] font-bold uppercase tracking-widest">
+                                        <span className="hidden lg:block text-[10px] font-bold uppercase ">
                                             Iniciar Sesión
                                         </span>
                                     </a>
@@ -446,13 +446,13 @@ const HeaderSticky = ({
                                             initial={{ opacity: 0, y: 10 }}
                                             animate={{ opacity: 1, y: 0 }}
                                             exit={{ opacity: 0, y: 10 }}
-                                            className="absolute -left-24   lg:right-0 mt-4 w-56 lg:w-64 bg-white shadow-2xl rounded-2xl overflow-hidden text-black z-[60]"
+                                            className="absolute -left-24   lg:right-0 mt-4 w-56 lg:w-64 bg-white shadow-2xl  overflow-hidden text-black z-[60]"
                                         >
                                             <div className="p-6 bg-sections-color border-b border-gray-100 text-center">
-                                                <p className="text-[10px] uppercase tracking-widest text-neutral-light font-bold mb-1">
+                                                <p className="text-[10px] uppercase text-neutral-light font-bold mb-1">
                                                     Bienvenido
                                                 </p>
-                                                <p className="font-black uppercase tracking-tighter truncate">
+                                                <p className="font-black uppercase truncate">
                                                     {isUser?.name}
                                                 </p>
                                             </div>
@@ -461,37 +461,37 @@ const HeaderSticky = ({
                                                     <>
                                                         <a
                                                             href="/profile"
-                                                            className="flex items-center gap-3 p-3 hover:bg-gray-50 rounded-xl transition-colors group"
+                                                            className="flex items-center gap-3 p-3 hover:bg-gray-50  transition-colors group"
                                                         >
                                                             <UserIcon
                                                                 size={18}
                                                                 className="text-neutral-light group-hover:text-black"
                                                             />
-                                                            <span className="text-xs font-bold uppercase tracking-widest">
+                                                            <span className="text-sm font-bold uppercase ">
                                                                 Mi Perfil
                                                             </span>
                                                         </a>
                                                         <a
                                                             href="/customer/dashboard"
-                                                            className="flex items-center gap-3 p-3 hover:bg-gray-50 rounded-xl transition-colors group"
+                                                            className="flex items-center gap-3 p-3 hover:bg-gray-50  transition-colors group"
                                                         >
                                                             <ShoppingCart
                                                                 size={18}
                                                                 className="text-neutral-light group-hover:text-black"
                                                             />
-                                                            <span className="text-xs font-bold uppercase tracking-widest">
+                                                            <span className="text-sm font-bold uppercase ">
                                                                 Mis Pedidos
                                                             </span>
                                                         </a>
                                                         <a
                                                             href="/account"
-                                                            className="flex items-center gap-3 p-3 hover:bg-gray-50 rounded-xl transition-colors group"
+                                                            className="flex items-center gap-3 p-3 hover:bg-gray-50  transition-colors group"
                                                         >
                                                             <Settings
                                                                 size={18}
                                                                 className="text-neutral-light group-hover:text-black"
                                                             />
-                                                            <span className="text-xs font-bold uppercase tracking-widest">
+                                                            <span className="text-sm font-bold uppercase ">
                                                                 Configuración
                                                             </span>
                                                         </a>
@@ -499,23 +499,23 @@ const HeaderSticky = ({
                                                 ) : (
                                                     <a
                                                         href={dashboardUrl}
-                                                        className="flex items-center gap-3 p-3 hover:bg-gray-50 rounded-xl transition-colors group"
+                                                        className="flex items-center gap-3 p-3 hover:bg-gray-50  transition-colors group"
                                                     >
                                                         <Home
                                                             size={18}
                                                             className="text-neutral-light group-hover:text-black"
                                                         />
-                                                        <span className="text-xs font-bold  tracking-widest">
+                                                        <span className="text-sm font-bold  ">
                                                             Dashboard
                                                         </span>
                                                     </a>
                                                 )}
                                                 <button
                                                     onClick={Logout}
-                                                    className="w-full flex items-center gap-3 p-3 hover:bg-red-50 rounded-xl transition-colors group text-red-500"
+                                                    className="w-full flex items-center gap-3 p-3 hover:bg-red-50  transition-colors group text-red-500"
                                                 >
                                                     <LogOut size={18} />
-                                                    <span className="text-xs font-bold  tracking-widest">
+                                                    <span className="text-sm font-bold  ">
                                                         Cerrar Sesión
                                                     </span>
                                                 </button>
@@ -573,7 +573,7 @@ const HeaderSticky = ({
 
                         <div className="px-primary 2xl:px-0 2xl:max-w-7xl w-full  mx-auto grid grid-cols-1 md:grid-cols-2 gap-20 h-full relative">
                             {/* Navigation Section */}
-                            <nav className="flex flex-col justify-center">
+                            <nav className="flex flex-col justify-center ">
                                 <motion.ul
                                     className="space-y-6"
                                     initial="closed"
@@ -611,9 +611,9 @@ const HeaderSticky = ({
                                                         page.pseudo_path ||
                                                         page.path
                                                     }
-                                                    className="relative text-5xl md:text-8xl font-black uppercase tracking-tighter hover:text-primary transition-all inline-block group py-2 overflow-hidden"
+                                                    className="relative text-5xl md:text-8xl font-black uppercase hover:text-primary transition-all inline-block group py-2 overflow-hidden"
                                                 >
-                                                    <span className="relative z-10">
+                                                    <span className="relative z-10 font-title">
                                                         {page.name}
                                                     </span>
                                                     {/* Animated Underline Effect */}
@@ -631,10 +631,10 @@ const HeaderSticky = ({
                                     <div className="grid grid-cols-1 gap-12">
                                         <div className="grid grid-cols-2 gap-12">
                                             <div className="group">
-                                                <p className="text-sm font-bold uppercase tracking-widest text-neutral-light mb-4 flex items-center gap-2">
+                                                <p className="text-md font-bold uppercase text-neutral-dark mb-4 flex items-center gap-2">
                                                     Horarios
                                                 </p>
-                                                <p className="text-xs text-neutral-light font-bold leading-relaxed whitespace-pre-line group-hover:text-black transition-colors">
+                                                <p className="text-sm text-neutral-dark font-bold leading-relaxed whitespace-pre-line group-hover:text-black transition-colors">
                                                     {generals.find(
                                                         (g) =>
                                                             g.correlative ===
@@ -645,7 +645,7 @@ const HeaderSticky = ({
                                             </div>
 
                                             <div className="group">
-                                                <p className="text-sm font-bold uppercase tracking-widest text-neutral-light mb-4 flex items-center gap-2">
+                                                <p className="text-md font-bold uppercase text-neutral-dark mb-4 flex items-center gap-2">
                                                     Atención Directa
                                                 </p>
                                                 <div className="space-y-3">
@@ -662,7 +662,7 @@ const HeaderSticky = ({
                                                             <a
                                                                 key={`email-${idx}`}
                                                                 href={`mailto:${email.trim()}`}
-                                                                className="flex items-center gap-3 text-xs text-neutral-light font-bold group-hover:text-black transition-colors hover:text-primary w-fit"
+                                                                className="flex items-center gap-3 text-sm text-neutral-dark font-bold group-hover:text-black transition-colors hover:text-primary w-fit"
                                                             >
                                                                 <Mail
                                                                     size={14}
@@ -684,7 +684,7 @@ const HeaderSticky = ({
                                                             <a
                                                                 key={`phone-${idx}`}
                                                                 href={`tel:${phone.trim()}`}
-                                                                className="flex items-center gap-3 text-xs text-neutral-light font-bold group-hover:text-black transition-colors hover:text-primary w-fit"
+                                                                className="flex items-center gap-3 text-sm text-neutral-dark font-bold group-hover:text-black transition-colors hover:text-primary w-fit"
                                                             >
                                                                 <Phone
                                                                     size={14}
@@ -700,7 +700,7 @@ const HeaderSticky = ({
 
                                     {/* Refined Social Icon Grid */}
                                     <div>
-                                        <p className="text-sm font-bold uppercase tracking-widest text-neutral-light mb-8">
+                                        <p className="text-md font-bold uppercase text-neutral-dark mb-8">
                                             Síguenos en Redes
                                         </p>
                                         <div className="flex flex-wrap gap-6">
@@ -717,7 +717,7 @@ const HeaderSticky = ({
                                                                 }
                                                                 target="_blank"
                                                                 rel="noopener noreferrer"
-                                                                className="w-12 h-12 rounded-full  flex items-center justify-center text-xl transition-all duration-300 transform hover:bg-primary hover:text-white hover:scale-110 active:scale-95"
+                                                                className="w-12 h-12 rounded-full bg-primary text-white flex items-center justify-center text-xl transition-all duration-300 transform hover:bg-neutral-dark hover:scale-110 active:scale-95"
                                                             >
                                                                 <i
                                                                     className={
@@ -730,10 +730,10 @@ const HeaderSticky = ({
                                                 ))
                                             ) : (
                                                 <div className="flex gap-4">
-                                                    <span className="text-[10px] font-bold uppercase border-b border-primary pb-1">
+                                                    <span className="text-[10px] font-bold uppercase border-b border-primary pb-1 text-neutral-dark">
                                                         Instagram
                                                     </span>
-                                                    <span className="text-[10px] font-bold uppercase border-b border-primary pb-1">
+                                                    <span className="text-[10px] font-bold uppercase border-b border-primary pb-1 text-neutral-dark">
                                                         Facebook
                                                     </span>
                                                 </div>

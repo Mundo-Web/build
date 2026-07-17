@@ -1080,6 +1080,8 @@
         "image": "slider-premium.png",
         "data": [
           "class",
+          "class_slider_section",
+          "class_slider",
           "autoplayDelay"
         ],
         "using": {

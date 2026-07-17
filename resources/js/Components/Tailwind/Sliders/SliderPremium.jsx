@@ -38,7 +38,7 @@ const SliderPremium = ({ items, data, generals = [] }) => {
     return (
         <section
             id={data?.element_id || null}
-            className={`relative h-screen w-full overflow-hidden bg-black ${data?.class || ""}`}
+            className={`relative w-full overflow-hidden bg-black ${data?.class_slider_section || "h-screen"} ${data?.class || ""}`}
         >
             <Swiper
                 modules={[EffectFade, Autoplay, A11y, Keyboard]}
@@ -51,7 +51,7 @@ const SliderPremium = ({ items, data, generals = [] }) => {
                 }}
                 loop
                 keyboard={{ enabled: true }}
-                className="h-full w-full"
+                className={`w-full ${data?.class_slider || "h-full"}`}
                 onSwiper={setSwiperInstance}
                 onSlideChange={(swiper) => setActiveIndex(swiper.realIndex)}
             >
@@ -67,58 +67,56 @@ const SliderPremium = ({ items, data, generals = [] }) => {
                                             background:
                                                 slide?.overlay_type === "solid"
                                                     ? `${slide?.overlay_color || "#000000"}${Math.round(
-                                                          (slide?.overlay_opacity ??
-                                                              30) * 2.55,
-                                                      )
-                                                          .toString(16)
-                                                          .padStart(2, "0")}`
-                                                    : `linear-gradient(${
-                                                          slide?.overlay_direction ===
-                                                          "to-r"
-                                                              ? "to right"
-                                                              : slide?.overlay_direction ===
-                                                                  "to-l"
-                                                                ? "to left"
+                                                        (slide?.overlay_opacity ??
+                                                            30) * 2.55,
+                                                    )
+                                                        .toString(16)
+                                                        .padStart(2, "0")}`
+                                                    : `linear-gradient(${slide?.overlay_direction ===
+                                                        "to-r"
+                                                        ? "to right"
+                                                        : slide?.overlay_direction ===
+                                                            "to-l"
+                                                            ? "to left"
+                                                            : slide?.overlay_direction ===
+                                                                "to-t"
+                                                                ? "to top"
                                                                 : slide?.overlay_direction ===
-                                                                    "to-t"
-                                                                  ? "to top"
-                                                                  : slide?.overlay_direction ===
-                                                                      "to-b"
+                                                                    "to-b"
                                                                     ? "to bottom"
                                                                     : slide?.overlay_direction ===
                                                                         "to-tr"
-                                                                      ? "to top right"
-                                                                      : slide?.overlay_direction ===
-                                                                          "to-tl"
-                                                                        ? "to top left"
+                                                                        ? "to top right"
                                                                         : slide?.overlay_direction ===
-                                                                            "to-br"
-                                                                          ? "to bottom right"
-                                                                          : slide?.overlay_direction ===
-                                                                              "to-bl"
-                                                                            ? "to bottom left"
-                                                                            : "to bottom"
-                                                      }, ${slide?.overlay_color || "#000000"}${Math.round(
-                                                          (slide?.overlay_opacity ??
-                                                              40) * 2.55,
-                                                      )
-                                                          .toString(16)
-                                                          .padStart(
-                                                              2,
-                                                              "0",
-                                                          )}, transparent)`,
+                                                                            "to-tl"
+                                                                            ? "to top left"
+                                                                            : slide?.overlay_direction ===
+                                                                                "to-br"
+                                                                                ? "to bottom right"
+                                                                                : slide?.overlay_direction ===
+                                                                                    "to-bl"
+                                                                                    ? "to bottom left"
+                                                                                    : "to bottom"
+                                                    }, ${slide?.overlay_color || "#000000"}${Math.round(
+                                                        (slide?.overlay_opacity ??
+                                                            40) * 2.55,
+                                                    )
+                                                        .toString(16)
+                                                        .padStart(
+                                                            2,
+                                                            "0",
+                                                        )}, transparent)`,
                                         }}
                                     ></div>
                                 )}
                             {(slide?.show_overlay === false ||
                                 slide?.show_overlay === 0) && (
-                                <div
-                                    className={`absolute inset-0 z-10 transition-opacity duration-1000 ${
-                                        data?.class_overlay ||
-                                        "bg-gradient-to-b from-black/60 via-transparent to-black/80"
-                                    }`}
-                                ></div>
-                            )}
+                                    <div
+                                        className={`absolute inset-0 z-10 transition-opacity duration-1000 ${data?.class_overlay ||
+                                            "bg-gradient-to-b from-black/60 via-transparent to-black/80"
+                                            }`}
+                                    ></div>
+                                )}
                             <img
                                 src={`/storage/images/slider/${slide.bg_image}`}
                                 alt={slide.name}
@@ -141,29 +139,36 @@ const SliderPremium = ({ items, data, generals = [] }) => {
                                             }}
                                             className="max-w-4xl border-l-2 border-white pl-6 md:pl-10"
                                         >
-                                            <span
-                                                className="text-white font-medium tracking-[0.3em] uppercase text-xs md:text-sm mb-4 block"
-                                                style={{
-                                                    color:
-                                                        slide.subtitle_color ||
-                                                        "white",
-                                                }}
-                                            >
-                                                {slide.subtitle}
-                                            </span>
-                                            <h2
-                                                className="text-5xl md:text-8xl font-black text-white uppercase tracking-tighter mb-6 leading-[0.9]"
-                                                style={{
-                                                    color:
-                                                        slide.title_color ||
-                                                        "white",
-                                                }}
-                                            >
-                                                {slide.name}
-                                            </h2>
+                                            {slide.subtitle && (
+                                                <span
+                                                    className="text-white font-medium  uppercase text-xs md:text-sm mb-4 block"
+                                                    style={{
+                                                        color:
+                                                            slide.subtitle_color ||
+                                                            "white",
+                                                    }}
+                                                >
+                                                    {slide.subtitle}
+                                                </span>
+                                            )}
+                                            {slide.name && (() => {
+                                                const TitleTag = (slide.is_seo === true || slide.is_seo === "true" || slide.is_seo === 1 || slide.is_seo === "1") ? "h1" : "h2";
+                                                return (
+                                                    <TitleTag
+                                                        className="text-5xl md:text-8xl font-title font-black text-white uppercase  mb-6 "
+                                                        style={{
+                                                            color:
+                                                                slide.title_color ||
+                                                                "white",
+                                                        }}
+                                                    >
+                                                        {slide.name}
+                                                    </TitleTag>
+                                                );
+                                            })()}
                                             {slide.description && (
                                                 <p
-                                                    className="text-white/80 text-sm md:text-lg mb-8 max-w-2xl font-medium tracking-wide"
+                                                    className="text-white/80 text-sm md:text-lg mb-8 max-w-2xl font-medium "
                                                     style={{
                                                         color:
                                                             slide.description_color ||
@@ -173,22 +178,32 @@ const SliderPremium = ({ items, data, generals = [] }) => {
                                                     {slide.description}
                                                 </p>
                                             )}
-                                            {slide.button_text && (
-                                                <a
-                                                    href={
-                                                        slide.button_link || "#"
-                                                    }
-                                                    target={
-                                                        slide.button_new_tab
-                                                            ? "_blank"
-                                                            : "_self"
-                                                    }
-                                                    className="inline-flex items-center text-white text-sm font-bold uppercase tracking-widest border-b border-white pb-1 hover:text-gray-300 hover:border-gray-300 transition-all"
-                                                >
-                                                    {slide.button_text}{" "}
-                                                    <ArrowRight className="ml-3 w-4 h-4" />
-                                                </a>
-                                            )}
+                                            {((slide.button_text && slide.button_link) ||
+                                                (slide.secondary_button_text && slide.secondary_button_link)) && (
+                                                    <div className="flex flex-wrap gap-6 items-center">
+                                                        {slide.button_text && slide.button_link && (
+                                                            <a
+                                                                href={slide.button_link}
+                                                                target={slide.button_new_tab ? "_blank" : "_self"}
+                                                                rel={slide.button_new_tab ? "noopener noreferrer" : undefined}
+                                                                className="inline-flex items-center text-white text-sm font-bold uppercase  border-b border-white pb-1 hover:text-gray-300 hover:border-gray-300 transition-all"
+                                                            >
+                                                                {slide.button_text}{" "}
+                                                                <ArrowRight className="ml-3 w-4 h-4" />
+                                                            </a>
+                                                        )}
+                                                        {slide.secondary_button_text && slide.secondary_button_link && (
+                                                            <a
+                                                                href={slide.secondary_button_link}
+                                                                target={slide.secondary_button_new_tab ? "_blank" : "_self"}
+                                                                rel={slide.secondary_button_new_tab ? "noopener noreferrer" : undefined}
+                                                                className="inline-flex items-center text-white/70 text-sm font-bold uppercase  border-b border-white/35 pb-1 hover:text-white hover:border-white transition-all"
+                                                            >
+                                                                {slide.secondary_button_text}
+                                                            </a>
+                                                        )}
+                                                    </div>
+                                                )}
                                         </motion.div>
                                     )}
                                 </AnimatePresence>
@@ -205,7 +220,7 @@ const SliderPremium = ({ items, data, generals = [] }) => {
                         onClick={handlePrev}
                         className="w-16 h-16 md:w-24 md:h-24 flex items-center justify-center border-r border-gray-200 hover:bg-black hover:text-white transition-colors duration-300 group"
                     >
-                        <span className="text-[10px] font-black uppercase tracking-widest transform group-active:scale-95 transition-transform">
+                        <span className="text-[10px] font-black uppercase  transform group-active:scale-95 transition-transform">
                             <ArrowLeft className="w-6 h-6" />
                         </span>
                     </button>
@@ -213,8 +228,7 @@ const SliderPremium = ({ items, data, generals = [] }) => {
                         onClick={handleNext}
                         className="w-16 h-16 md:w-24 md:h-24 flex items-center justify-center hover:bg-black hover:text-white transition-colors duration-300 group"
                     >
-                        <span className="text-[10px] font-black uppercase tracking-widest transform group-active:scale-95 transition-transform">
-                            <ArrowRight className="w-6 h-6" />
+                        <span className="text-[10px] font-black uppercase  transform group-active:scale-95 transition-transform">
                         </span>
                     </button>
                 </div>
