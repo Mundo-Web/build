@@ -32,6 +32,7 @@ use App\Http\Controllers\Admin\ProfileController as AdminProfileController;
 use App\Http\Controllers\Test\PixelTestController;
 use App\Http\Controllers\Test\NotificationTestController;
 use App\Http\Controllers\Customer\SaleController as CustomerSaleController;
+use App\Http\Controllers\Customer\HomeController as CustomerHomeController;
 use App\Http\Controllers\Admin\AccountController as AdminAccountController;
 use App\Http\Controllers\Admin\AdController as AdminAdController;
 use App\Http\Controllers\Admin\BannerController as AdminBannerController;
@@ -201,7 +202,7 @@ Route::middleware(['can:Admin', 'auth'])->prefix('admin')->group(function () {
 });
 
 Route::middleware(['can:Customer', 'auth'])->prefix('customer')->group(function () {
-    Route::get('/dashboard', [CustomerSaleController::class, 'reactView'])->name('Customer/Sales.jsx');
+    Route::get('/dashboard', [CustomerHomeController::class, 'reactView'])->name('Customer/Dashboard.jsx');
     Route::get('/orders', [CustomerSaleController::class, 'reactView'])->name('Customer/Sales.jsx');
 });
 

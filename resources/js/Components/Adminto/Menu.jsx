@@ -146,17 +146,6 @@ const Menu = ({ session, hasRole }) => {
 
                     <ul className="list-inline">
                         <li className="list-inline-item">
-                            <Tippy content="Configuracion">
-                                <a
-                                    href="#"
-                                    className="text-muted left-user-info right-bar-toggle dropdown notification-list"
-                                >
-                                    <i className="mdi mdi-cog"></i>
-                                </a>
-                            </Tippy>
-                        </li>
-
-                        <li className="list-inline-item">
                             <Tippy content="Cerrar sesion">
                                 <a
                                     href="#"
@@ -419,16 +408,51 @@ const Menu = ({ session, hasRole }) => {
                         <ul id="side-menu">
                             <li className="menu-title">Panel del Cliente</li>
 
-                            {hasRole("Customer") && (
-                                <>
-                                    <MenuItem
-                                        href="/customer/orders"
-                                        icon="mdi mdi-cart-outline"
-                                    >
-                                        Mis Pedidos
-                                    </MenuItem>
-                                </>
-                            )}
+                            <MenuItem
+                                href="/customer/dashboard"
+                                icon="mdi mdi-view-dashboard-outline"
+                            >
+                                Panel de Inicio
+                            </MenuItem>
+
+                            <MenuItem
+                                href="/customer/orders"
+                                icon="mdi mdi-cart-outline"
+                            >
+                                Mis Pedidos
+                            </MenuItem>
+
+                            <li className="menu-title">Mi Cuenta</li>
+
+                            <MenuItem
+                                href="/profile"
+                                icon="mdi mdi-account-box-outline"
+                            >
+                                Mi Perfil
+                            </MenuItem>
+
+                            <MenuItem
+                                href="/account"
+                                icon="mdi mdi-shield-lock-outline"
+                            >
+                                Seguridad y Cuenta
+                            </MenuItem>
+
+                            <MenuItem
+                                href="/libro-reclamaciones"
+                                icon="mdi mdi-alert-circle-outline"
+                            >
+                                Libro de Reclamaciones
+                            </MenuItem>
+
+                            <li className="menu-title">Navegación</li>
+
+                            <MenuItem
+                                href="/"
+                                icon="mdi mdi-store-outline"
+                            >
+                                Volver a la Tienda
+                            </MenuItem>
                         </ul>
                     </div>
                 )}
