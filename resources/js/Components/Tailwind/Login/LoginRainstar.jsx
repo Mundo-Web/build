@@ -21,7 +21,7 @@ const InputField = ({
     ...props
 }) => (
     <div className="space-y-1.5 w-full text-left">
-        <label className="text-xs font-bold tracking-widest text-neutral-light block mb-1.5">
+        <label className="text-xs font-bold  text-neutral-light block mb-1.5">
             {label}
         </label>
         <div className="relative group">
@@ -32,11 +32,10 @@ const InputField = ({
                 value={value}
                 onChange={onChange}
                 placeholder={placeholder}
-                className={`w-full border-2 p-4 font-medium outline-none transition-all bg-white text-neutral-800 placeholder:text-neutral-300 text-sm ${
-                    error
-                        ? "border-red-400 bg-red-50"
-                        : "border-gray-200 focus:border-black hover:border-gray-400"
-                } ${Icon ? "pl-12" : ""} ${suffix ? "pr-16" : ""}`}
+                className={`w-full border-2 p-4 font-medium outline-none transition-all bg-white text-neutral-800 placeholder-neutral-300 ${error
+                    ? "border-red-400 bg-red-50"
+                    : "border-gray-100 focus:border-black hover:border-gray-200"
+                    } ${Icon ? "pl-12" : ""} ${suffix ? "pr-16" : ""}`}
             />
             {Icon && (
                 <div className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-300 group-hover:text-neutral-500 transition-colors">
@@ -50,7 +49,7 @@ const InputField = ({
             )}
         </div>
         {error && (
-            <p className="text-[10px] font-bold text-red-500 mt-1 uppercase tracking-wider">
+            <p className="text-[10px] font-bold text-red-500 mt-1 uppercase ">
                 {error}
             </p>
         )}
@@ -139,7 +138,7 @@ export default function LoginRainstar({ data }) {
                         <div className=" mx-auto lg:mx-0">
                             {/* Header moved here for readability */}
                             <div className="mb-12">
-                                <h1 className="text-5xl lg:text-6xl xl:text-7xl font-black uppercase tracking-tighter leading-[0.8] mb-8">
+                                <h1 className="text-5xl lg:text-6xl xl:text-7xl font-black uppercase   mb-8">
                                     Iniciar <br /> Sesión
                                 </h1>
                             </div>
@@ -177,7 +176,7 @@ export default function LoginRainstar({ data }) {
                                                 }
                                                 className="text-neutral-light hover:text-black transition-colors"
                                             >
-                                                <span className="text-[10px] uppercase font-black tracking-widest">
+                                                <span className="text-[10px] uppercase font-black ">
                                                     {showPassword
                                                         ? "Ocultar"
                                                         : "Ver"}
@@ -188,7 +187,7 @@ export default function LoginRainstar({ data }) {
                                     <div className="flex justify-end pt-2">
                                         <a
                                             href="/forgot-password"
-                                            className="text-[10px] font-bold  tracking-widest text-neutral-light hover:text-black transition-all border-b border-transparent hover:border-black"
+                                            className="text-xs font-bold   text-neutral-light hover:text-black transition-all border-b border-transparent hover:border-black"
                                         >
                                             ¿Olvidaste tu contraseña?
                                         </a>
@@ -214,7 +213,7 @@ export default function LoginRainstar({ data }) {
                                                 )}
                                             </div>
                                         </div>
-                                        <span className="text-[10px] font-black uppercase tracking-widest text-neutral-light group-hover:text-black transition-colors">
+                                        <span className="text-[10px] font-black uppercase  text-neutral-light group-hover:text-black transition-colors">
                                             Recordarme
                                         </span>
                                     </label>
@@ -222,7 +221,7 @@ export default function LoginRainstar({ data }) {
                                     <button
                                         type="submit"
                                         disabled={loading}
-                                        className="w-full py-6 text-[11px] font-black uppercase tracking-[0.4em] bg-black text-white hover:bg-neutral-800 disabled:bg-neutral-100 disabled:text-neutral-300 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-6 group shadow-2xl shadow-black/10"
+                                        className="w-full py-6 text-sm font-black uppercase  bg-black text-white hover:bg-neutral-800 disabled:bg-neutral-100 disabled:text-neutral-300 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-6 group shadow-2xl shadow-black/10"
                                     >
                                         {loading ? (
                                             <Loader2
@@ -243,7 +242,7 @@ export default function LoginRainstar({ data }) {
 
                                 {Global.GOOGLE_OAUTH_ENABLED && (
                                     <div className="pt-10 border-t border-neutral-100">
-                                        <p className="text-center text-[9px] font-black text-neutral-300 uppercase tracking-[0.5em] mb-8">
+                                        <p className="text-center text-[9px] font-black text-neutral-300 uppercase  mb-8">
                                             O accede vía
                                         </p>
                                         <div className="flex justify-center">
@@ -252,7 +251,7 @@ export default function LoginRainstar({ data }) {
                                                     (window.location.href = "/")
                                                 }
                                                 text="Google"
-                                                className="w-full py-5 border-2 border-neutral-100 text-[10px] font-black uppercase tracking-[0.2em] hover:border-black transition-all duration-300 flex items-center justify-center gap-4"
+                                                className="w-full py-5 border-2 border-neutral-100 text-[10px] font-black uppercase  hover:border-black transition-all duration-300 flex items-center justify-center gap-4"
                                             />
                                         </div>
                                     </div>
@@ -261,12 +260,12 @@ export default function LoginRainstar({ data }) {
 
                             {/* Signup link at the bottom for better flow */}
                             <div className="pt-12 border-t border-neutral-100 mt-12">
-                                <p className="text-[10px] text-neutral-light tracking-widest mb-4 font-black">
+                                <p className="text-xs text-neutral-light  mb-4 font-black">
                                     ¿Aún no tienes cuenta?
                                 </p>
                                 <a
                                     href="/crear-cuenta"
-                                    className="group inline-flex items-center gap-4 text-[11px] font-black uppercase tracking-[0.3em] transition-all"
+                                    className="group inline-flex items-center gap-4 text-xs font-black uppercase  transition-all"
                                 >
                                     UNIRSE AHORA
                                     <ArrowRight

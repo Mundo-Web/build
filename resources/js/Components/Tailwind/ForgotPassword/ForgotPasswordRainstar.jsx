@@ -24,7 +24,7 @@ const InputField = React.forwardRef(
         ref,
     ) => (
         <div className="space-y-1.5 w-full text-left">
-            <label className="text-xs font-bold tracking-widest text-neutral-light block mb-1.5">
+            <label className="text-xs font-bold  text-neutral-light block mb-1.5">
                 {label}
             </label>
             <div className="relative group">
@@ -36,20 +36,19 @@ const InputField = React.forwardRef(
                     value={value}
                     onChange={onChange}
                     placeholder={placeholder}
-                    className={`w-full border-2 p-4 font-medium outline-none transition-all bg-white text-neutral-800 placeholder:text-neutral-300 text-sm ${
-                        error
-                            ? "border-red-400 bg-red-50"
-                            : "border-gray-200 focus:border-black hover:border-gray-400"
-                    } ${Icon ? "pl-12" : ""}`}
+                    className={`w-full border-2 p-4 font-medium outline-none transition-all bg-white text-neutral-800 placeholder:text-neutral-300 text-sm ${error
+                        ? "border-red-400 bg-red-50"
+                        : "border-gray-200 focus:border-black hover:border-gray-400"
+                        } ${Icon ? "pl-12" : ""}`}
                 />
                 {Icon && (
-                    <div className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-300 group-hover:text-neutral-500 transition-colors">
+                    <div className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-300 group-hover:text-neutral-dark transition-colors">
                         <Icon size={18} />
                     </div>
                 )}
             </div>
             {error && (
-                <p className="text-[10px] font-bold text-red-500 mt-1 uppercase tracking-wider">
+                <p className="text-xs font-bold text-red-500 mt-1 uppercase ">
                     {error}
                 </p>
             )}
@@ -143,16 +142,14 @@ export default function ForgotPasswordRainstar({ data }) {
                     <div className="lg:col-span-6">
                         <div className=" mx-auto lg:mx-0 py-12">
                             <div className="mb-12">
-                                <span className="text-[10px] font-black uppercase tracking-[0.4em] text-neutral-light mb-6 block">
+                                <span className="text-xs font-black uppercase  text-neutral-light mb-6 block">
                                     Recuperar Cuenta
                                 </span>
-                                <h1 className="text-5xl lg:text-6xl xl:text-7xl font-black uppercase tracking-tighter leading-[0.8] mb-8">
+                                <h1 className="text-5xl lg:text-6xl xl:text-7xl font-black uppercase   mb-8">
                                     Olvidé mi <br /> Contraseña
                                 </h1>
-                                <p className="text-neutral-500 text-[11px] uppercase font-bold tracking-[0.2em] leading-relaxed max-w-sm">
-                                    Ingresa tu correo electrónico y te
-                                    enviaremos las instrucciones para
-                                    restablecer tu acceso.
+                                <p className="text-neutral-dark text-sm">
+                                    No te preocupes, suele pasar. Ingresa tu correo electrónico registrado y te enviaremos de inmediato un enlace seguro con las instrucciones para restablecer tu contraseña.
                                 </p>
                             </div>
 
@@ -175,7 +172,7 @@ export default function ForgotPasswordRainstar({ data }) {
                                     <button
                                         type="submit"
                                         disabled={loading}
-                                        className="w-full py-6 text-[11px] font-black uppercase tracking-[0.4em] bg-black text-white hover:bg-neutral-800 disabled:bg-neutral-100 disabled:text-neutral-300 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-6 group shadow-2xl shadow-black/10"
+                                        className="w-full py-6 text-sm font-black uppercase  bg-black text-white hover:bg-neutral-800 disabled:bg-neutral-100 disabled:text-neutral-300 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-6 group shadow-2xl shadow-black/10"
                                     >
                                         {loading ? (
                                             <Loader2
@@ -195,13 +192,13 @@ export default function ForgotPasswordRainstar({ data }) {
 
                                     <a
                                         href="/iniciar-sesion"
-                                        className="flex items-center justify-center gap-3 text-[10px] font-black uppercase tracking-[0.2em] text-neutral-light hover:text-black transition-colors group"
+                                        className="flex items-center justify-center gap-3 text-xs font-black uppercase  text-neutral-light hover:text-black transition-colors group"
                                     >
                                         <ArrowLeft
                                             size={14}
                                             className="group-hover:-translate-x-2 transition-transform"
                                         />
-                                        Volver al login
+                                        Ya tengo mi cuenta
                                     </a>
                                 </div>
                             </form>

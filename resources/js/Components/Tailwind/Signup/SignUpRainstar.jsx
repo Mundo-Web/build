@@ -26,7 +26,7 @@ const InputField = React.forwardRef(
         ref,
     ) => (
         <div className="space-y-1.5 w-full text-left">
-            <label className="text-xs font-bold tracking-widest text-neutral-light block mb-1.5">
+            <label className="text-xs font-bold  text-neutral-light block mb-1.5">
                 {label}
             </label>
             <div className="relative group">
@@ -38,14 +38,13 @@ const InputField = React.forwardRef(
                     value={value}
                     onChange={onChange}
                     placeholder={placeholder}
-                    className={`w-full border-2 p-4 font-medium outline-none transition-all bg-white text-neutral-800 placeholder:text-neutral-300 text-sm ${
-                        error
-                            ? "border-red-400 bg-red-50"
-                            : "border-gray-200 focus:border-black hover:border-gray-400"
-                    } ${Icon ? "pl-12" : ""} ${suffix ? "pr-16" : ""}`}
+                    className={`w-full border-2 p-4 font-medium outline-none transition-all bg-white text-neutral-800 placeholder:text-neutral-300 text-sm ${error
+                        ? "border-red-400 bg-red-50"
+                        : "border-gray-200 focus:border-black hover:border-gray-400"
+                        } ${Icon ? "pl-12" : ""} ${suffix ? "pr-16" : ""}`}
                 />
                 {Icon && (
-                    <div className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-300 group-hover:text-neutral-500 transition-colors">
+                    <div className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-300 group-hover:text-neutral-dark transition-colors">
                         <Icon size={18} />
                     </div>
                 )}
@@ -56,7 +55,7 @@ const InputField = React.forwardRef(
                 )}
             </div>
             {error && (
-                <p className="text-[10px] font-bold text-red-500 mt-1 uppercase tracking-wider">
+                <p className="text-xs font-bold text-red-500 mt-1 uppercase ">
                     {error}
                 </p>
             )}
@@ -91,8 +90,8 @@ export default function SignUpRainstar({ data }) {
                 invitationType === "seller"
                     ? `/api/seller-invitation/${invitationToken}`
                     : invitationType === "provider"
-                      ? `/api/provider-invitation/${invitationToken}`
-                      : null;
+                        ? `/api/provider-invitation/${invitationToken}`
+                        : null;
 
             if (endpoint) {
                 fetch(endpoint)
@@ -222,7 +221,7 @@ export default function SignUpRainstar({ data }) {
                     <div className="lg:col-span-6">
                         <div className=" mx-auto lg:mx-0 py-12">
                             <div className="mb-12">
-                                <h1 className="text-5xl lg:text-6xl xl:text-7xl font-black uppercase tracking-tighter leading-[0.8] mb-8">
+                                <h1 className="text-5xl lg:text-6xl xl:text-7xl font-black uppercase   mb-8">
                                     Crear <br /> Cuenta
                                 </h1>
                             </div>
@@ -243,7 +242,7 @@ export default function SignUpRainstar({ data }) {
                                             required
                                         />
                                         {invitationData?.name && (
-                                            <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-neutral-light mt-2">
+                                            <p className="text-xs font-bold uppercase  text-neutral-light mt-2">
                                                 Datos de tu solicitud
                                             </p>
                                         )}
@@ -259,7 +258,7 @@ export default function SignUpRainstar({ data }) {
                                             required
                                         />
                                         {invitationData?.name && (
-                                            <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-neutral-light mt-2">
+                                            <p className="text-xs font-bold uppercase  text-neutral-light mt-2">
                                                 Datos de tu solicitud
                                             </p>
                                         )}
@@ -279,7 +278,7 @@ export default function SignUpRainstar({ data }) {
                                         disabled={invitationData !== null}
                                     />
                                     {invitationData && (
-                                        <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-neutral-light mt-2">
+                                        <p className="text-xs font-bold uppercase  text-neutral-light mt-2">
                                             Este email está vinculado a tu
                                             invitación como{" "}
                                             {invitationData.type === "seller"
@@ -308,7 +307,7 @@ export default function SignUpRainstar({ data }) {
                                                 }
                                                 className="text-neutral-light hover:text-black transition-colors"
                                             >
-                                                <span className="text-[10px] uppercase font-black tracking-widest">
+                                                <span className="text-xs uppercase font-black ">
                                                     {showPassword
                                                         ? "Ocultar"
                                                         : "Ver"}
@@ -333,7 +332,7 @@ export default function SignUpRainstar({ data }) {
                                     <button
                                         type="submit"
                                         disabled={loading}
-                                        className="w-full py-6 text-[11px] font-black uppercase tracking-[0.4em] bg-black text-white hover:bg-neutral-800 disabled:bg-neutral-100 disabled:text-neutral-300 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-6 group shadow-2xl shadow-black/10"
+                                        className="w-full py-6 text-sm font-black uppercase  bg-black text-white hover:bg-neutral-800 disabled:bg-neutral-100 disabled:text-neutral-300 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-6 group shadow-2xl shadow-black/10"
                                     >
                                         {loading ? (
                                             <Loader2
@@ -354,7 +353,7 @@ export default function SignUpRainstar({ data }) {
 
                                 {Global.GOOGLE_OAUTH_ENABLED && (
                                     <div className="pt-10 border-t border-neutral-100">
-                                        <p className="text-center text-[9px] font-black text-neutral-300 uppercase tracking-[0.5em] mb-8">
+                                        <p className="text-center text-xs font-black text-neutral-300 uppercase  mb-8">
                                             O regístrate con
                                         </p>
                                         <div className="flex justify-center">
@@ -363,7 +362,7 @@ export default function SignUpRainstar({ data }) {
                                                     (window.location.href = "/")
                                                 }
                                                 text="Google"
-                                                className="w-full py-5 border-2 border-neutral-100 text-[10px] font-black uppercase tracking-[0.2em] hover:border-black transition-all duration-300 flex items-center justify-center gap-4"
+                                                className="w-full py-5 border-2 border-neutral-100 text-xs font-black uppercase  hover:border-black transition-all duration-300 flex items-center justify-center gap-4"
                                             />
                                         </div>
                                     </div>
@@ -371,12 +370,12 @@ export default function SignUpRainstar({ data }) {
                             </form>
 
                             <div className="pt-12 border-t border-neutral-100 mt-12">
-                                <p className="text-[10px] text-neutral-light  tracking-widest mb-4 font-black">
+                                <p className="text-xs text-neutral-light   mb-4 font-black">
                                     ¿Ya tienes cuenta?
                                 </p>
                                 <a
                                     href="/iniciar-sesion"
-                                    className="group inline-flex items-center gap-4 text-[11px] font-black uppercase tracking-[0.3em] transition-all"
+                                    className="group inline-flex items-center gap-4 text-sm font-black uppercase  transition-all"
                                 >
                                     INICIAR SESIÓN
                                     <ArrowRight
