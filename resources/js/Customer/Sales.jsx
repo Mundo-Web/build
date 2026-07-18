@@ -11,7 +11,7 @@ import Global from "../Utils/Global";
 import Number2Currency, { CurrencySymbol } from "../Utils/Number2Currency";
 import Modal from "../Components/Adminto/Modal";
 import Tippy from "@tippyjs/react";
-import SaleStatusesRest from "../Actions/Admin/SaleStatusesRest";
+import SaleStatusesRest from "../Actions/Customer/SaleStatusesRest";
 
 const salesRest = new SalesRest();
 const saleStatusesRest = new SaleStatusesRest();
@@ -53,24 +53,38 @@ const Sales = ({ statuses = [] }) => {
         setSaleLoaded(newSale.data);
         $(modalRef.current).modal("show");
     };
-
     useEffect(() => {
-        // if (!saleLoaded) return
-        // saleStatusesRest.bySale(saleLoaded.id).then((data) => {
-        //   if (data) setSaleStatuses(data)
-        //   else setSaleStatuses([])
-        // })
+        if (!saleLoaded) return;
+        saleStatusesRest.bySale(saleLoaded.id).then((data) => {
+            if (data) setSaleStatuses(data);
+            else setSaleStatuses([]);
+        });
     }, [saleLoaded]);
 
-    const totalAmount =
-        Number(saleLoaded?.amount) +
-        Number(saleLoaded?.delivery || 0) +
-        Number(saleLoaded?.seguro_importacion_total || 0) +
-        Number(saleLoaded?.derecho_arancelario_total || 0) +
-        Number(saleLoaded?.flete_total || 0) -
-        Number(saleLoaded?.bundle_discount || 0) -
-        Number(saleLoaded?.renewal_discount || 0) -
-        Number(saleLoaded?.coupon_discount || 0);
+    const totalFinal = parseFloat(saleLoaded?.amount || saleLoaded?.total_amount || 0);
+    const igv = parseFloat(saleLoaded?.igv_amount || saleLoaded?.igv || 0);
+    const perception = parseFloat(saleLoaded?.perception_amount || saleLoaded?.perception || 0);
+    const packaging = parseFloat(saleLoaded?.packaging_amount || saleLoaded?.packaging || 0);
+    const deliveryCost = parseFloat(saleLoaded?.delivery || 0);
+    const additionalShippingCost = parseFloat(saleLoaded?.additional_shipping_cost || 0);
+    const couponDiscountAmount = parseFloat(saleLoaded?.coupon_discount || 0);
+    const automaticDiscount = parseFloat(saleLoaded?.promotion_discount || saleLoaded?.automatic_discount_total || 0);
+    const bundleDiscount = parseFloat(saleLoaded?.bundle_discount || 0);
+    const renewalDiscount = parseFloat(saleLoaded?.renewal_discount || 0);
+
+    const totalProductsGross =
+        totalFinal -
+        perception -
+        packaging -
+        deliveryCost -
+        additionalShippingCost +
+        couponDiscountAmount +
+        automaticDiscount +
+        bundleDiscount +
+        renewalDiscount;
+
+    const subtotalReal = totalProductsGross - igv;
+    const totalAmount = totalFinal;
 
     return (
         <>
@@ -78,6 +92,7 @@ const Sales = ({ statuses = [] }) => {
                 gridRef={gridRef}
                 title="Pedidos"
                 rest={salesRest}
+                withRelations="details,status,store,packaging"
                 toolBar={(container) => {
                     container.unshift({
                         widget: "dxButton",
@@ -103,7 +118,6 @@ const Sales = ({ statuses = [] }) => {
                         caption: "Orden",
                         width: "250px",
                         cellTemplate: (container, { data }) => {
-                       
                             container.css("cursor", "pointer");
                             container.on("click", () => {
                                 onModalOpen(data.id);
@@ -136,9 +150,10 @@ const Sales = ({ statuses = [] }) => {
                         dataType: "date",
                         sortOrder: "desc",
                         cellTemplate: (container, { data }) => {
-                            // container.text(moment(data.created_at).fromNow())
                             container.text(
-                                moment(data.created_at).format("LLL")
+                                moment(data.created_at)
+                                    .subtract(5, "hours")
+                                    .format("LLL")
                             );
                         },
                     },
@@ -167,28 +182,8 @@ const Sales = ({ statuses = [] }) => {
                         caption: "Total",
                         dataType: "number",
                         cellTemplate: (container, { data }) => {
-                            const amount = Number(data.amount) || 0;
-                            const delivery = Number(data.delivery) || 0;
-                            const seguro_importacion = Number(data.seguro_importacion_total) || 0;
-                            const derecho_arancelario = Number(data.derecho_arancelario_total) || 0;
-                            const flete = Number(data.flete_total) || 0;
-                            const bundle_discount =
-                                Number(data.bundle_discount) || 0;
-                            const renewal_discount =
-                                Number(data.renewal_discount) || 0;
-                            const coupon_discount =
-                                Number(data.coupon_discount) || 0;
                             container.text(
-                                `${CurrencySymbol()} ${Number2Currency(
-                                    amount +
-                                    delivery +
-                                    seguro_importacion +
-                                    derecho_arancelario +
-                                    flete -
-                                    bundle_discount -
-                                    renewal_discount -
-                                    coupon_discount
-                                )}`
+                                `${CurrencySymbol()} ${Number2Currency(data?.total_amount || data?.amount || 0)}`
                             );
                         },
                     },
@@ -229,6 +224,18 @@ const Sales = ({ statuses = [] }) => {
                             <div className="card-body p-2">
                                 <table className="table table-borderless table-sm mb-0">
                                     <tbody>
+                                        {saleLoaded?.payment_method && (
+                                            <tr>
+                                                <th>Método de pago:</th>
+                                                <td>{saleLoaded?.payment_method}</td>
+                                            </tr>
+                                        )}
+                                        {saleLoaded?.culqi_charge_id && (
+                                            <tr>
+                                                <th>ID de transacción:</th>
+                                                <td>{saleLoaded?.culqi_charge_id}</td>
+                                            </tr>
+                                        )}
                                         <tr>
                                             <th>Nombres:</th>
                                             <td>{saleLoaded?.fullname}</td>
@@ -241,31 +248,73 @@ const Sales = ({ statuses = [] }) => {
                                             <th>Teléfono:</th>
                                             <td>{saleLoaded?.phone}</td>
                                         </tr>
-                                        {saleLoaded?.delivery_type ==
-                                            "express" && (
-                                                <tr>
-                                                    <th>Dirección:</th>
-                                                    <td>
-                                                        {saleLoaded?.address}{" "}
-                                                        {saleLoaded?.number}
-                                                        <small className="text-muted d-block">
-                                                            {saleLoaded?.province ??
-                                                                saleLoaded?.district}
-                                                            ,{" "}
-                                                            {saleLoaded?.department}
-                                                            , {saleLoaded?.country}{" "}
-                                                            {saleLoaded?.zip_code && (
-                                                                <>
-                                                                    -{" "}
-                                                                    {
-                                                                        saleLoaded?.zip_code
-                                                                    }
-                                                                </>
-                                                            )}
+                                        {(saleLoaded?.document_type || saleLoaded?.documentType) && (
+                                            <tr>
+                                                <th>Tipo de documento:</th>
+                                                <td>{saleLoaded?.document_type || saleLoaded?.documentType}</td>
+                                            </tr>
+                                        )}
+                                        {saleLoaded?.document && (
+                                            <tr>
+                                                <th>Número de documento:</th>
+                                                <td>{saleLoaded?.document}</td>
+                                            </tr>
+                                        )}
+                                        {saleLoaded?.delivery_type && (
+                                            <tr>
+                                                <th>Tipo de entrega:</th>
+                                                <td>
+                                                    <span className="badge bg-info">
+                                                        {saleLoaded?.delivery_type === "store_pickup"
+                                                            ? "Retiro en Tienda"
+                                                            : saleLoaded?.delivery_type === "free"
+                                                            ? "Envío Gratis"
+                                                            : saleLoaded?.delivery_type === "express"
+                                                            ? "Envío Express"
+                                                            : saleLoaded?.delivery_type === "standard"
+                                                            ? "Envío Estándar"
+                                                            : saleLoaded?.delivery_type === "agency"
+                                                            ? "Entrega en Agencia"
+                                                            : saleLoaded?.delivery_type}
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                        )}
+                                        {saleLoaded?.delivery_type === "store_pickup" && saleLoaded?.store && (
+                                            <tr>
+                                                <th>Tienda para retiro:</th>
+                                                <td>
+                                                    <strong>{saleLoaded?.store?.name}</strong>
+                                                    <small className="text-muted d-block">
+                                                        {saleLoaded?.store?.address}
+                                                        {saleLoaded?.store?.district && `, ${saleLoaded?.store?.district}`}
+                                                        {saleLoaded?.store?.province && `, ${saleLoaded?.store?.province}`}
+                                                    </small>
+                                                    {saleLoaded?.store?.phone && (
+                                                        <small className="text-info d-block">
+                                                            📞 {saleLoaded?.store?.phone}
                                                         </small>
-                                                    </td>
-                                                </tr>
-                                            )}
+                                                    )}
+                                                    {saleLoaded?.store?.schedule && (
+                                                        <small className="text-success d-block">
+                                                            🕒 {saleLoaded?.store?.schedule}
+                                                        </small>
+                                                    )}
+                                                </td>
+                                            </tr>
+                                        )}
+                                        {saleLoaded?.delivery_type && saleLoaded?.delivery_type !== "store_pickup" && (
+                                            <tr>
+                                                <th>Dirección de entrega:</th>
+                                                <td>
+                                                    {saleLoaded?.address} {saleLoaded?.number}
+                                                    <small className="text-muted d-block">
+                                                        {saleLoaded?.district}, {saleLoaded?.province}, {saleLoaded?.department}, {saleLoaded?.country}
+                                                        {saleLoaded?.zip_code && ` - ${saleLoaded?.zip_code}`}
+                                                    </small>
+                                                </td>
+                                            </tr>
+                                        )}
                                         {saleLoaded?.reference && (
                                             <tr>
                                                 <th>Referencia:</th>
@@ -278,27 +327,81 @@ const Sales = ({ statuses = [] }) => {
                                                 <td>{saleLoaded?.comment}</td>
                                             </tr>
                                         )}
+                                        {saleLoaded?.coupon_code && (
+                                            <tr>
+                                                <th>Cupón aplicado:</th>
+                                                <td>
+                                                    <span className="badge bg-success">{saleLoaded?.coupon_code}</span>
+                                                    <small className="text-success d-block">
+                                                        Descuento: {CurrencySymbol()} {Number2Currency(saleLoaded?.coupon_discount || 0)}
+                                                    </small>
+                                                </td>
+                                            </tr>
+                                        )}
+                                        {(saleLoaded?.applied_promotions || saleLoaded?.promotion_discount > 0) && (
+                                            <tr>
+                                                <th>Promociones aplicadas:</th>
+                                                <td>
+                                                    {saleLoaded?.applied_promotions &&
+                                                        (() => {
+                                                            try {
+                                                                const promotions = typeof saleLoaded.applied_promotions === "string"
+                                                                    ? JSON.parse(saleLoaded.applied_promotions)
+                                                                    : saleLoaded.applied_promotions;
+                                                                if (Array.isArray(promotions) && promotions.length > 0) {
+                                                                    return promotions.map((promo, idx) => (
+                                                                        <div key={idx} className="mb-2">
+                                                                            <span className="badge bg-primary me-2">
+                                                                                {promo.rule_name || promo.name || "Promoción"}
+                                                                            </span>
+                                                                            <small className="text-primary d-block">
+                                                                                {promo.description}
+                                                                            </small>
+                                                                            <small className="text-success d-block">
+                                                                                Descuento: {CurrencySymbol()} {Number2Currency(promo.discount_amount || promo.amount || 0)}
+                                                                            </small>
+                                                                        </div>
+                                                                    ));
+                                                                }
+                                                            } catch (e) {
+                                                                console.error("Error parsing promotions:", e);
+                                                            }
+                                                            return null;
+                                                        })()}
+                                                    {saleLoaded?.promotion_discount > 0 && (
+                                                        <div className="mt-2 pt-2 border-top">
+                                                            <strong className="text-primary">
+                                                                Total descuento promociones: {CurrencySymbol()} {Number2Currency(saleLoaded?.promotion_discount || 0)}
+                                                            </strong>
+                                                        </div>
+                                                    )}
+                                                </td>
+                                            </tr>
+                                        )}
+                                        {saleLoaded?.invoiceType && (
+                                            <tr>
+                                                <th>Comprobante solicitado:</th>
+                                                <td>
+                                                    <span className="text-uppercase fw-bold">{saleLoaded?.invoiceType}</span>
+                                                    {saleLoaded?.businessName && (
+                                                        <small className="d-block text-muted">
+                                                            {saleLoaded?.businessName} ({saleLoaded?.document})
+                                                        </small>
+                                                    )}
+                                                </td>
+                                            </tr>
+                                        )}
                                         {saleLoaded?.payment_proof && (
                                             <tr>
                                                 <th>Comprobante de pago:</th>
                                                 <td>
-                                                    <Tippy
-                                                        content="Ver comprobante de pago"
-                                                        placement="top"
-                                                    >
-                                                        <a
-                                                            href={`/storage/images/sale/${saleLoaded?.payment_proof}`}
-                                                            target="_blank"
-                                                        >
+                                                    <Tippy content="Ver comprobante de pago" placement="top">
+                                                        <a href={`/storage/images/sale/${saleLoaded?.payment_proof}`} target="_blank" rel="noreferrer">
                                                             <img
                                                                 src={`/storage/images/sale/${saleLoaded?.payment_proof}`}
                                                                 alt="Comprobante de pago"
                                                                 className="img-thumbnail"
-                                                                style={{
-                                                                    maxWidth:
-                                                                        "150px",
-                                                                    cursor: "pointer",
-                                                                }}
+                                                                style={{ maxWidth: "150px", cursor: "pointer" }}
                                                             />
                                                         </a>
                                                     </Tippy>
@@ -318,6 +421,7 @@ const Sales = ({ statuses = [] }) => {
                                 <table className="table table-striped table-bordered table-sm table-hover mb-0">
                                     <thead>
                                         <tr>
+                                            <th className="w-20" style={{ width: "80px" }}>Imagen</th>
                                             <th>Nombre</th>
                                             <th>Precio</th>
                                             <th>Cantidad</th>
@@ -325,68 +429,65 @@ const Sales = ({ statuses = [] }) => {
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {saleLoaded?.details?.map(
-                                            (detail, index) => {
-                                                const quantity =
-                                                    (detail.quantity * 100) /
-                                                    100;
-                                                const totalPrice =
-                                                    detail.price *
-                                                    detail.quantity;
-                                                return (
-                                                    <tr key={index}>
-                                                        <td>
-                                                            <div>
-                                                                <strong>{detail.name}</strong>
-
-                                                                {/* Verificar si es combo por diferentes campos */}
-                                                                {(detail.type === 'combo' || detail.combo_id) && (
-                                                                    <div className="mt-1">
-                                                                        <small className="text-muted d-block">
-                                                                            <span className="badge bg-info me-1">COMBO</span>
-                                                                            Contiene:
+                                        {saleLoaded?.details?.map((detail, index) => {
+                                            const quantity = (detail.quantity * 100) / 100;
+                                            const totalPrice = detail.price * detail.quantity;
+                                            return (
+                                                <tr key={index} style={{ verticalAlign: "middle" }}>
+                                                    <td className="p-0 text-center" style={{ width: "80px" }}>
+                                                        {detail.image ? (
+                                                            <img
+                                                                className="object-scale-down mx-auto block"
+                                                                src={detail?.type === "combo"
+                                                                    ? `/storage/images/combo/${detail.image}`
+                                                                    : `/storage/images/item/${detail.image}`}
+                                                                alt={detail.name}
+                                                                style={{ height: "4rem", width: "4rem", objectFit: "scale-down" }}
+                                                            />
+                                                        ) : null}
+                                                    </td>
+                                                    <td>
+                                                        <div>
+                                                            <strong>{detail.name}</strong>
+                                                            {detail.colors ? ` - ${detail.colors}` : ""}
+                                                            {(detail.type === "combo" || detail.combo_id) && (
+                                                                <div className="mt-1">
+                                                                    <small className="text-muted d-block">
+                                                                        <span className="badge bg-info me-1">COMBO</span>
+                                                                        Contiene:
+                                                                    </small>
+                                                                    {detail.combo_data && detail.combo_data.items && detail.combo_data.items.length > 0 ? (
+                                                                        <small className="text-muted">
+                                                                            {detail.combo_data.items.map((item, idx) => (
+                                                                                <span key={idx}>
+                                                                                    {item.quantity || 1}x {item.name}
+                                                                                    {idx < detail.combo_data.items.length - 1 ? ", " : ""}
+                                                                                </span>
+                                                                            ))}
                                                                         </small>
-
-                                                                        {/* Verificar diferentes estructuras de combo_data */}
-                                                                        {detail.combo_data && detail.combo_data.items && detail.combo_data.items.length > 0 ? (
-                                                                            <small className="text-muted">
-                                                                                {detail.combo_data.items.map((item, idx) => (
-                                                                                    <span key={idx}>
-                                                                                        {item.quantity}x {item.name}
-                                                                                        {idx < detail.combo_data.items.length - 1 ? ', ' : ''}
-                                                                                    </span>
-                                                                                ))}
-                                                                            </small>
-                                                                        ) : (
-                                                                            <small className="text-muted text-warning">
-                                                                                📋 Información de combo no disponible
-                                                                            </small>
-                                                                        )}
-                                                                    </div>
-                                                                )}
-                                                            </div>
-                                                        </td>
-                                                        <td align="right">
-                                                            <span className="text-nowrap">
-                                                                {CurrencySymbol()} {Number2Currency(
-                                                                    detail.price
-                                                                )}
-                                                            </span>
-                                                        </td>
-                                                        <td align="center">
-                                                            {quantity}
-                                                        </td>
-                                                        <td align="right">
-                                                            <span className="text-nowrap">
-                                                                {CurrencySymbol()} {Number2Currency(
-                                                                    totalPrice
-                                                                )}
-                                                            </span>
-                                                        </td>
-                                                    </tr>
-                                                );
-                                            }
-                                        )}
+                                                                    ) : (
+                                                                        <small className="text-muted text-warning">
+                                                                            📋 Información de combo no disponible
+                                                                        </small>
+                                                                    )}
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                    </td>
+                                                    <td align="right">
+                                                        <span className="text-nowrap">
+                                                            {CurrencySymbol()} {Number2Currency(detail.price)}
+                                                        </span>
+                                                    </td>
+                                                    <td align="center">{quantity}</td>
+                                                    <td align="right">
+                                                        <span className="text-nowrap">
+                                                            {CurrencySymbol()} {Number2Currency(totalPrice)}
+                                                        </span>
+                                                    </td>
+                                                </tr>
+                                            );
+                                        })}
                                     </tbody>
                                 </table>
                             </div>
@@ -399,59 +500,117 @@ const Sales = ({ statuses = [] }) => {
                             <div className="card-body p-2">
                                 <div className="d-flex justify-content-between">
                                     <b>Subtotal:</b>
-                                    <span>
-                                        {CurrencySymbol()} {Number2Currency(
-                                            saleLoaded?.amount * 1
-                                        )}
-                                    </span>
+                                    <span>{CurrencySymbol()} {Number2Currency(subtotalReal)}</span>
                                 </div>
+                                {saleLoaded?.igv_amount > 0 && (
+                                    <div className="d-flex justify-content-between">
+                                        <b>IGV ({Global.IGV_RATE}%):</b>
+                                        <span>{CurrencySymbol()} {Number2Currency(saleLoaded?.igv_amount)}</span>
+                                    </div>
+                                )}
                                 <div className="d-flex justify-content-between">
                                     <b>Envío:</b>
-                                    <span>
-                                        {CurrencySymbol()} {Number2Currency(saleLoaded?.delivery)}
-                                    </span>
+                                    <span>{CurrencySymbol()} {Number2Currency(saleLoaded?.delivery)}</span>
                                 </div>
-
+                                {saleLoaded?.perception_amount > 0 && (
+                                    <div className="d-flex justify-content-between">
+                                        <b>Percepción ({Global.PERCEPTION_RATE}%):</b>
+                                        <span>{CurrencySymbol()} {Number2Currency(saleLoaded?.perception_amount)}</span>
+                                    </div>
+                                )}
+                                {saleLoaded?.packaging_amount > 0 && (
+                                    <div className="d-flex justify-content-between">
+                                        <b>Empaque {saleLoaded?.packaging?.name ? `(${saleLoaded.packaging.name})` : ""}:</b>
+                                        <span>{CurrencySymbol()} {Number2Currency(saleLoaded?.packaging_amount)}</span>
+                                    </div>
+                                )}
+                                {saleLoaded?.additional_shipping_cost > 0 && (
+                                    <div className="d-flex justify-content-between text-warning">
+                                        <b>
+                                            Costo adicional de envío:
+                                            {saleLoaded?.additional_shipping_description && (
+                                                <small className="d-block text-muted" style={{ fontWeight: "normal" }}>
+                                                    ({saleLoaded.additional_shipping_description})
+                                                </small>
+                                            )}
+                                        </b>
+                                        <span>{CurrencySymbol()} {Number2Currency(saleLoaded?.additional_shipping_cost)}</span>
+                                    </div>
+                                )}
+                                
                                 {/* Mostrar costos de importación si existen */}
                                 {(saleLoaded?.seguro_importacion_total > 0 || saleLoaded?.derecho_arancelario_total > 0 || saleLoaded?.flete_total > 0) && (
                                     <>
                                         {saleLoaded?.seguro_importacion_total > 0 && (
                                             <div className="d-flex justify-content-between text-info">
                                                 <b>Seguro de Importación:</b>
-                                                <span>
-                                                    {CurrencySymbol()} {Number2Currency(saleLoaded?.seguro_importacion_total)}
-                                                </span>
+                                                <span>{CurrencySymbol()} {Number2Currency(saleLoaded?.seguro_importacion_total)}</span>
                                             </div>
                                         )}
-
                                         {saleLoaded?.derecho_arancelario_total > 0 && (
                                             <div className="d-flex justify-content-between text-info">
                                                 <b>Derecho Arancelario:</b>
-                                                <span>
-                                                    {CurrencySymbol()} {Number2Currency(saleLoaded?.derecho_arancelario_total)}
-                                                </span>
+                                                <span>{CurrencySymbol()} {Number2Currency(saleLoaded?.derecho_arancelario_total)}</span>
                                             </div>
                                         )}
-
                                         {saleLoaded?.flete_total > 0 && (
                                             <div className="d-flex justify-content-between text-info">
                                                 <b>Flete:</b>
-                                                <span>
-                                                    {CurrencySymbol()} {Number2Currency(saleLoaded?.flete_total)}
-                                                </span>
+                                                <span>{CurrencySymbol()} {Number2Currency(saleLoaded?.flete_total)}</span>
                                             </div>
                                         )}
                                     </>
                                 )}
+
+                                {/* Descuentos */}
+                                {saleLoaded?.promotion_discount > 0 && (
+                                    <div className="d-flex justify-content-between text-primary">
+                                        <b>Descuentos automáticos:</b>
+                                        <span>- {CurrencySymbol()} {Number2Currency(saleLoaded?.promotion_discount)}</span>
+                                    </div>
+                                )}
+                                {saleLoaded?.coupon_discount > 0 && (
+                                    <div className="d-flex justify-content-between text-success">
+                                        <b>Descuento por cupón:</b>
+                                        <span>- {CurrencySymbol()} {Number2Currency(saleLoaded?.coupon_discount)}</span>
+                                    </div>
+                                )}
+                                {saleLoaded?.bundle_discount > 0 && (
+                                    <div className="d-flex justify-content-between text-info">
+                                        <b>Descuento por paquete:</b>
+                                        <span>- {CurrencySymbol()} {Number2Currency(saleLoaded?.bundle_discount)}</span>
+                                    </div>
+                                )}
+                                {saleLoaded?.renewal_discount > 0 && (
+                                    <div className="d-flex justify-content-between text-warning">
+                                        <b>Descuento por renovación:</b>
+                                        <span>- {CurrencySymbol()} {Number2Currency(saleLoaded?.renewal_discount)}</span>
+                                    </div>
+                                )}
+                                
                                 <hr className="my-2" />
                                 <div className="d-flex justify-content-between">
                                     <b>Total:</b>
                                     <span>
-                                        <strong>
-                                            {CurrencySymbol()} {Number2Currency(totalAmount)}
-                                        </strong>
+                                        <strong>{CurrencySymbol()} {Number2Currency(totalAmount)}</strong>
                                     </span>
                                 </div>
+
+                                <small className="text-muted mt-2 d-block">
+                                    <strong>Cálculo:</strong> {Number2Currency(subtotalReal)} (subtotal) + {Number2Currency(saleLoaded?.delivery)} (envio)
+                                    {saleLoaded?.igv_amount > 0 && ` (incluye ${Number2Currency(saleLoaded?.igv_amount)} de IGV)`}
+                                    {saleLoaded?.perception_amount > 0 && ` + ${Number2Currency(saleLoaded?.perception_amount)} (percepción)`}
+                                    {saleLoaded?.packaging_amount > 0 && ` + ${Number2Currency(saleLoaded?.packaging_amount)} (empaque)`}
+                                    {saleLoaded?.additional_shipping_cost > 0 && ` + ${Number2Currency(saleLoaded?.additional_shipping_cost)} (costo adicional)`}
+                                    {saleLoaded?.seguro_importacion_total > 0 && ` + ${Number2Currency(saleLoaded?.seguro_importacion_total)} (seguro)`}
+                                    {saleLoaded?.derecho_arancelario_total > 0 && ` + ${Number2Currency(saleLoaded?.derecho_arancelario_total)} (derecho arancelario)`}
+                                    {saleLoaded?.flete_total > 0 && ` + ${Number2Currency(saleLoaded?.flete_total)} (flete)`}
+                                    {saleLoaded?.promotion_discount > 0 && ` - ${Number2Currency(saleLoaded?.promotion_discount)} (promociones)`}
+                                    {saleLoaded?.coupon_discount > 0 && ` - ${Number2Currency(saleLoaded?.coupon_discount)} (cupón)`}
+                                    {saleLoaded?.bundle_discount > 0 && ` - ${Number2Currency(saleLoaded?.bundle_discount)} (paquete)`}
+                                    {saleLoaded?.renewal_discount > 0 && ` - ${Number2Currency(saleLoaded?.renewal_discount)} (renovación)`}
+                                    = {CurrencySymbol()} {Number2Currency(totalAmount)}
+                                </small>
                             </div>
                         </div>
                     </div>
@@ -463,12 +622,7 @@ const Sales = ({ statuses = [] }) => {
                             </div>
                             <div className="card-body p-2">
                                 <div className="">
-                                    <label
-                                        htmlFor="statusSelect"
-                                        className="form-label"
-                                    >
-                                        Estado Actual
-                                    </label>
+                                    <label htmlFor="statusSelect" className="form-label">Estado Actual</label>
                                     <select
                                         className="form-select"
                                         id="statusSelect"
@@ -476,75 +630,61 @@ const Sales = ({ statuses = [] }) => {
                                         onChange={onStatusChange}
                                         disabled
                                     >
-                                        {statuses.map((status, index) => {
-                                            return (
-                                                <option value={status.id}>
-                                                    {status.name}
-                                                </option>
-                                            );
-                                        })}
+                                        {statuses.map((status, index) => (
+                                            <option key={index} value={status.id}>
+                                                {status.name}
+                                            </option>
+                                        ))}
                                     </select>
                                 </div>
                             </div>
                         </div>
 
-                        <div className="card" hidden>
-                            <div className="card-header p-2">
-                                <h5 className="card-title mb-0">
-                                    Cambios de Estado
-                                </h5>
-                            </div>
-                            <div className="card-body p-2 d-flex flex-column gap-1">
-                                {saleStatuses?.map((ss, index) => {
-                                    return (
+                        {saleStatuses && saleStatuses.length > 0 && (
+                            <div className="card">
+                                <div className="card-header p-2">
+                                    <h5 className="card-title mb-0">Seguimiento de Pedido</h5>
+                                </div>
+                                <div className="card-body p-2 d-flex flex-column gap-2">
+                                    {saleStatuses.map((ss, index) => (
                                         <article
                                             key={index}
-                                            class="border py-1 px-2 ms-3"
+                                            className="border py-2 px-3 ms-3"
                                             style={{
                                                 position: "relative",
-                                                borderRadius:
-                                                    "16px 4px 4px 16px",
-                                                backgroundColor: ss.status.color
-                                                    ? `${ss.status.color}2e`
-                                                    : "#3333332e",
+                                                borderRadius: "16px 4px 4px 16px",
+                                                backgroundColor: ss.color
+                                                    ? `${ss.color}15`
+                                                    : "#33333315",
+                                                borderColor: ss.color
+                                                    ? `${ss.color}33`
+                                                    : "#33333333",
+                                                borderStyle: "solid",
+                                                borderWidth: "1px"
                                             }}
                                         >
                                             <i
-                                                className="mdi mdi-circle left-2"
+                                                className={`${ss.icon || "mdi mdi-circle"} left-2`}
                                                 style={{
-                                                    color:
-                                                        ss.status.color ||
-                                                        "#333",
+                                                    color: ss.color || "#333",
                                                     position: "absolute",
                                                     left: "-25px",
                                                     top: "50%",
-                                                    transform:
-                                                        "translateY(-50%)",
+                                                    transform: "translateY(-50%)",
+                                                    fontSize: "14px"
                                                 }}
                                             ></i>
-                                            <b
-                                                style={{
-                                                    color:
-                                                        ss.status.color ||
-                                                        "#333",
-                                                }}
-                                            >
-                                                {ss?.status?.name}
+                                            <b style={{ color: ss.color || "#333" }}>
+                                                {ss?.name}
                                             </b>
-                                            <small className="d-block text-truncate">
-                                                {ss?.user?.name}{" "}
-                                                {ss?.user?.lastname}
-                                            </small>
-                                            <small className="d-block text-muted">
-                                                {moment(ss.created_at).format(
-                                                    "YYYY-MM-DD HH:mm"
-                                                )}
+                                            <small className="d-block text-muted mt-1">
+                                                {moment(ss.created_at).format("DD/MM/YYYY hh:mm A")}
                                             </small>
                                         </article>
-                                    );
-                                })}
+                                    ))}
+                                </div>
                             </div>
-                        </div>
+                        )}
                     </div>
                 </div>
             </Modal>
@@ -559,3 +699,4 @@ CreateReactScript((el, properties) => {
         </BaseAdminto>
     );
 });
+export default Sales;

@@ -838,6 +838,7 @@ Route::middleware('auth')->group(function () {
   });
 
   Route::middleware('can:Customer')->prefix('customer')->group(function () {
+    Route::get('/sale-statuses/by-sale/{id}', [\App\Http\Controllers\Admin\SaleStatusController::class, 'bySale']);
 
     Route::get('/sales/{id}', [CustomerSaleController::class, 'get']);
     Route::post('/sales', [CustomerSaleController::class, 'save']);
