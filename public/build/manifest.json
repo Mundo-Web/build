@@ -3139,7 +3139,7 @@
     ]
   },
   "resources/js/Admin/Statuses.jsx": {
-    "file": "assets/Statuses-D6W7KMJw.js",
+    "file": "assets/Statuses-CI26WRJR.js",
     "name": "Statuses",
     "src": "resources/js/Admin/Statuses.jsx",
     "isEntry": true,
@@ -13505,7 +13505,7 @@
     ]
   },
   "resources/js/Provider/Orders.jsx": {
-    "file": "assets/Orders-BtzYCd1X.js",
+    "file": "assets/Orders-DBDw6VJk.js",
     "name": "Orders",
     "src": "resources/js/Provider/Orders.jsx",
     "isEntry": true,
@@ -13520,8 +13520,8 @@
       "_ReactAppend-BinpQRD9.js",
       "_Modal-Bg7-5x60.js",
       "_SaleStatusesRest-44_hB-tA.js",
+      "resources/js/Components/Tailwind/Carts/CartKuchara.jsx",
       "resources/js/Components/Adminto/Footer.jsx",
-      "_vendor-swiper-DUKK6iF5.js",
       "_tippy-react.esm-SPbs-ND8.js",
       "resources/js/Components/Adminto/form/TippyButton.jsx",
       "_Logout-BcMqNz9G.js",
@@ -13533,6 +13533,7 @@
       "resources/js/Components/Adminto/Menu.jsx",
       "resources/js/Components/Tailwind/Products/Components/CardProductKatya.jsx",
       "_BooleanLimit-q2Ad9fGY.js",
+      "_vendor-swiper-DUKK6iF5.js",
       "_General-ClVW7qxN.js",
       "_LaravelSession-ByQnaUD3.js"
     ]

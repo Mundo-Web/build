@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class SaleStatus extends Model
 {
-    use HasFactory, HasUuids;
+    use HasFactory, HasUuids, HasDynamic;
     public $incrementing = false;
     protected $keyType = 'string';
 
@@ -20,6 +20,7 @@ class SaleStatus extends Model
         'color',
         'editable',
         'reversible',
+        'allowed_roles',
         'icon',
     ];
 

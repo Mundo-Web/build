@@ -13,6 +13,7 @@ import DxButton from '../Components/dx/DxButton';
 import CreateReactScript from '../Utils/CreateReactScript';
 import ReactAppend from '../Utils/ReactAppend';
 import StatusesRest from '../Actions/Admin/StatusesRest';
+import Fillable from '../Utils/Fillable';
 
 const statusesRest = new StatusesRest()
 
@@ -29,6 +30,12 @@ const Statuses = ({ icons }) => {
   const reversibleRef = useRef()
 
   const [isEditing, setIsEditing] = useState(false)
+  const [selectedRoles, setSelectedRoles] = useState({
+    Admin: false,
+    Provider: false,
+    Customer: false,
+    Seller: false
+  })
 
   const onModalOpen = (data) => {
     if (data?.id) setIsEditing(true)
@@ -41,11 +48,24 @@ const Statuses = ({ icons }) => {
     colorRef.current.value = data?.color ?? ''
     $(reversibleRef.current).prop('checked', data?.reversible == 0).trigger('click')
 
+    const rolesStr = data?.allowed_roles || '';
+    const rolesArr = rolesStr ? rolesStr.split(',').map(r => r.trim()) : [];
+    setSelectedRoles({
+      Admin: rolesArr.includes('Admin'),
+      Provider: rolesArr.includes('Provider'),
+      Customer: rolesArr.includes('Customer'),
+      Seller: rolesArr.includes('Seller'),
+    });
+
     $(modalRef.current).modal('show')
   }
 
   const onModalSubmit = async (e) => {
     e.preventDefault()
+
+    const rolesStr = Object.keys(selectedRoles)
+      .filter(role => selectedRoles[role])
+      .join(',');
 
     const request = {
       id: idRef.current.value || undefined,
@@ -54,6 +74,7 @@ const Statuses = ({ icons }) => {
       description: descriptionRef.current.value,
       color: colorRef.current.value,
       reversible: reversibleRef.current.checked,
+      allowed_roles: rolesStr,
     }
 
     const result = await statusesRest.save(request)
@@ -168,6 +189,29 @@ const Statuses = ({ icons }) => {
             })} />)
           }
         },
+        Fillable.has('sale_statuses', 'allowed_roles') && {
+          dataField: 'allowed_roles',
+          caption: 'Roles autorizados',
+          width: '180px',
+          cellTemplate: (container, { data }) => {
+            const roles = data.allowed_roles ? data.allowed_roles.split(',').map(r => r.trim()).filter(r => r && r !== 'Root') : [];
+            if (roles.length === 0) {
+              container.html('<span class="text-muted">Ninguno (Admin)</span>');
+              return;
+            }
+            const badges = roles.map(role => {
+              let badgeClass = 'bg-secondary';
+              if (role === 'Admin') badgeClass = 'bg-danger';
+              else if (role === 'Provider') badgeClass = 'bg-purple';
+              else if (role === 'Customer') badgeClass = 'bg-success';
+              else if (role === 'Seller') badgeClass = 'bg-info';
+
+              const inlineStyle = role === 'Provider' ? 'background-color: #6f42c1; color: white;' : '';
+              return `<span class="badge ${badgeClass} me-1" style="${inlineStyle}">${role}</span>`;
+            }).join('');
+            container.html(badges);
+          }
+        },
         {
           caption: 'Acciones',
           width: '150px',
@@ -202,6 +246,33 @@ const Statuses = ({ icons }) => {
         <TextareaFormGroup eRef={descriptionRef} label='Descripción' col='col-12' />
         <InputFormGroup eRef={colorRef} label='Color (#000000)' type="color" col='col-md-6' rows={2} required />
         <SwitchFormGroup eRef={reversibleRef} label='Reversible' info="Sirve para controlar si el estado se puede revertir o no" col='col-md-6' />
+        
+        {Fillable.has('sale_statuses', 'allowed_roles') && (
+          <div className="col-12 mt-3">
+            <label className="form-label d-block fw-bold" style={{ fontFamily: "'Outfit', sans-serif" }}>
+              Roles con permiso para asignar este estado:
+            </label>
+            <div className="d-flex flex-wrap gap-3">
+              {Object.keys(selectedRoles).map((role) => (
+                <div className="form-check" key={role}>
+                  <input
+                    type="checkbox"
+                    className="form-check-input"
+                    id={`role-${role}`}
+                    checked={selectedRoles[role]}
+                    onChange={(e) => setSelectedRoles(prev => ({
+                      ...prev,
+                      [role]: e.target.checked
+                    }))}
+                  />
+                  <label className="form-check-label text-dark fw-semibold" htmlFor={`role-${role}`} style={{ cursor: 'pointer' }}>
+                    {role}
+                  </label>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </Modal>
   </>

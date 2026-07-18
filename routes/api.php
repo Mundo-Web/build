@@ -359,6 +359,8 @@ Route::middleware('auth')->group(function () {
 
   Route::post('/seller/wallet/withdraw', [\App\Http\Controllers\Admin\WithdrawalController::class, 'storeRequest']);
   Route::get('/withdrawal/media/{uuid}', [\App\Http\Controllers\Admin\WithdrawalController::class, 'media']);
+  
+  Route::get('/sale-statuses/allowed', [\App\Http\Controllers\Admin\SaleStatusController::class, 'allowed']);
 
   // Ruta de exportación sin middleware de permisos
   Route::get('/admin/sales/export-data', [AdminSaleExportController::class, 'exportData']);
@@ -863,6 +865,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/items/variant/{id}', [\App\Http\Controllers\Provider\ItemController::class, 'deleteVariant']);
 
     Route::post('/orders/paginate', [\App\Http\Controllers\Provider\ProviderOrderController::class, 'paginate']);
+    Route::patch('/orders/status', [\App\Http\Controllers\Provider\ProviderOrderController::class, 'status']);
     Route::get('/orders/{id}', [\App\Http\Controllers\Provider\ProviderOrderController::class, 'get']);
     Route::post('/earnings/paginate', [\App\Http\Controllers\Provider\ProviderEarningController::class, 'paginate']);
     Route::get('/earnings/{id}', [\App\Http\Controllers\Provider\ProviderEarningController::class, 'get']);

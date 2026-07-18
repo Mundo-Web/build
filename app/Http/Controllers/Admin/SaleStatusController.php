@@ -89,4 +89,40 @@ class SaleStatusController extends BasicController
             );
         }
     }
+
+    public function allowed(Request $request)
+    {
+        $response = new \SoDe\Extend\Response();
+        try {
+            $user = \Illuminate\Support\Facades\Auth::user();
+            if (!$user) {
+                throw new \Exception('No autenticado');
+            }
+
+            $query = SaleStatus::where('visible', true);
+
+            // Si el usuario es Admin o Root, puede ver y asignar todos los estados
+            if (!$user->hasRole('Admin') && !$user->hasRole('Root')) {
+                $query->where(function ($q) use ($user) {
+                    $roles = ['Customer', 'Provider', 'Seller'];
+                    foreach ($roles as $role) {
+                        if ($user->hasRole($role)) {
+                            $q->orWhere('allowed_roles', 'like', "%{$role}%");
+                        }
+                    }
+                });
+            }
+
+            $statuses = $query->orderBy('name', 'asc')->get();
+
+            $response->status = 200;
+            $response->message = 'Operación correcta';
+            $response->data = $statuses;
+        } catch (\Exception $e) {
+            $response->status = 400;
+            $response->message = 'Error: ' . $e->getMessage();
+        } finally {
+            return response($response->toArray(), $response->status);
+        }
+    }
 }
