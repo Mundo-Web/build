@@ -181,9 +181,12 @@ const Sales = ({ statuses = [] }) => {
                         dataField: "amount",
                         caption: "Total",
                         dataType: "number",
+                        calculateCellValue: (data) => {
+                            return Number(data?.amount || 0);
+                        },
                         cellTemplate: (container, { data }) => {
                             container.text(
-                                `${CurrencySymbol()} ${Number2Currency(data?.total_amount || data?.amount || 0)}`
+                                `${CurrencySymbol()} ${Number2Currency(data?.amount || 0)}`
                             );
                         },
                     },
@@ -502,29 +505,29 @@ const Sales = ({ statuses = [] }) => {
                                     <b>Subtotal:</b>
                                     <span>{CurrencySymbol()} {Number2Currency(subtotalReal)}</span>
                                 </div>
-                                {saleLoaded?.igv_amount > 0 && (
+                                {igv > 0 && (
                                     <div className="d-flex justify-content-between">
                                         <b>IGV ({Global.IGV_RATE}%):</b>
-                                        <span>{CurrencySymbol()} {Number2Currency(saleLoaded?.igv_amount)}</span>
+                                        <span>{CurrencySymbol()} {Number2Currency(igv)}</span>
                                     </div>
                                 )}
                                 <div className="d-flex justify-content-between">
                                     <b>Envío:</b>
-                                    <span>{CurrencySymbol()} {Number2Currency(saleLoaded?.delivery)}</span>
+                                    <span>{CurrencySymbol()} {Number2Currency(deliveryCost)}</span>
                                 </div>
-                                {saleLoaded?.perception_amount > 0 && (
+                                {perception > 0 && (
                                     <div className="d-flex justify-content-between">
                                         <b>Percepción ({Global.PERCEPTION_RATE}%):</b>
-                                        <span>{CurrencySymbol()} {Number2Currency(saleLoaded?.perception_amount)}</span>
+                                        <span>{CurrencySymbol()} {Number2Currency(perception)}</span>
                                     </div>
                                 )}
-                                {saleLoaded?.packaging_amount > 0 && (
+                                {packaging > 0 && (
                                     <div className="d-flex justify-content-between">
                                         <b>Empaque {saleLoaded?.packaging?.name ? `(${saleLoaded.packaging.name})` : ""}:</b>
-                                        <span>{CurrencySymbol()} {Number2Currency(saleLoaded?.packaging_amount)}</span>
+                                        <span>{CurrencySymbol()} {Number2Currency(packaging)}</span>
                                     </div>
                                 )}
-                                {saleLoaded?.additional_shipping_cost > 0 && (
+                                {additionalShippingCost > 0 && (
                                     <div className="d-flex justify-content-between text-warning">
                                         <b>
                                             Costo adicional de envío:
@@ -534,7 +537,7 @@ const Sales = ({ statuses = [] }) => {
                                                 </small>
                                             )}
                                         </b>
-                                        <span>{CurrencySymbol()} {Number2Currency(saleLoaded?.additional_shipping_cost)}</span>
+                                        <span>{CurrencySymbol()} {Number2Currency(additionalShippingCost)}</span>
                                     </div>
                                 )}
                                 
@@ -563,28 +566,28 @@ const Sales = ({ statuses = [] }) => {
                                 )}
 
                                 {/* Descuentos */}
-                                {saleLoaded?.promotion_discount > 0 && (
+                                {automaticDiscount > 0 && (
                                     <div className="d-flex justify-content-between text-primary">
                                         <b>Descuentos automáticos:</b>
-                                        <span>- {CurrencySymbol()} {Number2Currency(saleLoaded?.promotion_discount)}</span>
+                                        <span>- {CurrencySymbol()} {Number2Currency(automaticDiscount)}</span>
                                     </div>
                                 )}
-                                {saleLoaded?.coupon_discount > 0 && (
+                                {couponDiscountAmount > 0 && (
                                     <div className="d-flex justify-content-between text-success">
                                         <b>Descuento por cupón:</b>
-                                        <span>- {CurrencySymbol()} {Number2Currency(saleLoaded?.coupon_discount)}</span>
+                                        <span>- {CurrencySymbol()} {Number2Currency(couponDiscountAmount)}</span>
                                     </div>
                                 )}
-                                {saleLoaded?.bundle_discount > 0 && (
+                                {bundleDiscount > 0 && (
                                     <div className="d-flex justify-content-between text-info">
                                         <b>Descuento por paquete:</b>
-                                        <span>- {CurrencySymbol()} {Number2Currency(saleLoaded?.bundle_discount)}</span>
+                                        <span>- {CurrencySymbol()} {Number2Currency(bundleDiscount)}</span>
                                     </div>
                                 )}
-                                {saleLoaded?.renewal_discount > 0 && (
+                                {renewalDiscount > 0 && (
                                     <div className="d-flex justify-content-between text-warning">
                                         <b>Descuento por renovación:</b>
-                                        <span>- {CurrencySymbol()} {Number2Currency(saleLoaded?.renewal_discount)}</span>
+                                        <span>- {CurrencySymbol()} {Number2Currency(renewalDiscount)}</span>
                                     </div>
                                 )}
                                 
@@ -597,18 +600,18 @@ const Sales = ({ statuses = [] }) => {
                                 </div>
 
                                 <small className="text-muted mt-2 d-block">
-                                    <strong>Cálculo:</strong> {Number2Currency(subtotalReal)} (subtotal) + {Number2Currency(saleLoaded?.delivery)} (envio)
-                                    {saleLoaded?.igv_amount > 0 && ` (incluye ${Number2Currency(saleLoaded?.igv_amount)} de IGV)`}
-                                    {saleLoaded?.perception_amount > 0 && ` + ${Number2Currency(saleLoaded?.perception_amount)} (percepción)`}
-                                    {saleLoaded?.packaging_amount > 0 && ` + ${Number2Currency(saleLoaded?.packaging_amount)} (empaque)`}
-                                    {saleLoaded?.additional_shipping_cost > 0 && ` + ${Number2Currency(saleLoaded?.additional_shipping_cost)} (costo adicional)`}
+                                    <strong>Cálculo:</strong> {Number2Currency(subtotalReal)} (subtotal) + {Number2Currency(deliveryCost)} (envio)
+                                    {igv > 0 && ` (incluye ${Number2Currency(igv)} de IGV)`}
+                                    {perception > 0 && ` + ${Number2Currency(perception)} (percepción)`}
+                                    {packaging > 0 && ` + ${Number2Currency(packaging)} (empaque)`}
+                                    {additionalShippingCost > 0 && ` + ${Number2Currency(additionalShippingCost)} (costo adicional)`}
                                     {saleLoaded?.seguro_importacion_total > 0 && ` + ${Number2Currency(saleLoaded?.seguro_importacion_total)} (seguro)`}
                                     {saleLoaded?.derecho_arancelario_total > 0 && ` + ${Number2Currency(saleLoaded?.derecho_arancelario_total)} (derecho arancelario)`}
                                     {saleLoaded?.flete_total > 0 && ` + ${Number2Currency(saleLoaded?.flete_total)} (flete)`}
-                                    {saleLoaded?.promotion_discount > 0 && ` - ${Number2Currency(saleLoaded?.promotion_discount)} (promociones)`}
-                                    {saleLoaded?.coupon_discount > 0 && ` - ${Number2Currency(saleLoaded?.coupon_discount)} (cupón)`}
-                                    {saleLoaded?.bundle_discount > 0 && ` - ${Number2Currency(saleLoaded?.bundle_discount)} (paquete)`}
-                                    {saleLoaded?.renewal_discount > 0 && ` - ${Number2Currency(saleLoaded?.renewal_discount)} (renovación)`}
+                                    {automaticDiscount > 0 && ` - ${Number2Currency(automaticDiscount)} (promociones)`}
+                                    {couponDiscountAmount > 0 && ` - ${Number2Currency(couponDiscountAmount)} (cupón)`}
+                                    {bundleDiscount > 0 && ` - ${Number2Currency(bundleDiscount)} (paquete)`}
+                                    {renewalDiscount > 0 && ` - ${Number2Currency(renewalDiscount)} (renovación)`}
                                     = {CurrencySymbol()} {Number2Currency(totalAmount)}
                                 </small>
                             </div>

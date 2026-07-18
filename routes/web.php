@@ -217,6 +217,7 @@ Route::middleware(['auth', 'can:Provider'])->prefix('provider')->group(function 
 
 Route::middleware(['auth', 'can:Seller'])->prefix('seller')->group(function () {
     Route::get('/home', [AdminSellerController::class, 'dashboard'])->name('Seller/Home.jsx');
+    Route::get('/orders', [\App\Http\Controllers\Seller\SellerOrderController::class, 'reactView'])->name('Seller/Orders.jsx');
     Route::get('/vault', [AdminSellerController::class, 'vault'])->name('Seller/Vault.jsx');
     Route::get('/profile', [AdminSellerController::class, 'profile'])->name('Seller/Profile.jsx');
     Route::get('/job-applications', [AdminSellerController::class, 'jobApplications'])->name('Seller/JobApplications.jsx');

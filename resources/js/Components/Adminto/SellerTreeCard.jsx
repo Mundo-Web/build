@@ -5,7 +5,7 @@ import Global from "../../Utils/Global";
 const sellersRest = new SellersRest();
 
 /* ───────────────────────────────────────────────
-   Utilidad: contar todos los descendientes
+   Utilidades: conteo, búsquedas e iniciales
    ─────────────────────────────────────────────── */
 const countDescendants = (node) => {
     const children = node.referrals_recursive || node.children || [];
@@ -15,6 +15,23 @@ const countDescendants = (node) => {
         count += countDescendants(child);
     });
     return count;
+};
+
+const hasMatchingChild = (node, query) => {
+    if (!query) return false;
+    const q = query.toLowerCase();
+    const children = node.referrals_recursive || node.children || [];
+    return children.some((child) => {
+        const nameMatch = `${child.name || ""} ${child.lastname || ""}`.toLowerCase().includes(q) || 
+                          (child.email && child.email.toLowerCase().includes(q));
+        return nameMatch || hasMatchingChild(child, query);
+    });
+};
+
+const getInitials = (name, lastname) => {
+    const first = name ? name[0] : "";
+    const second = lastname ? lastname[0] : "";
+    return (first + second).toUpperCase().slice(0, 2);
 };
 
 /* ───────────────────────────────────────────────
@@ -31,6 +48,10 @@ const SellerTreeCard = ({ isSellerView = false }) => {
     const [stats, setStats] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    
+    // Controles de interacción
+    const [searchQuery, setSearchQuery] = useState("");
+    const [zoom, setZoom] = useState(1);
 
     const loadTree = useCallback(async () => {
         setLoading(true);
@@ -199,75 +220,67 @@ const SellerTreeCard = ({ isSellerView = false }) => {
                             </small>
                         </div>
                     </div>
-                    <div className="d-flex align-items-center gap-2">
-                        {stats && (
-                            <>
-                                <div
-                                    style={{
-                                        background: "#f8fafc",
-                                        border: "1px solid #e2e8f0",
-                                        borderRadius: "12px",
-                                        padding: "8px 18px",
-                                        textAlign: "center",
-                                    }}
+                    <div className="d-flex align-items-center gap-2 flex-wrap">
+                        {/* Search Input */}
+                        <div className="position-relative me-2">
+                            <input
+                                type="text"
+                                className="form-control form-control-sm rounded-pill px-3 py-1.5"
+                                style={{
+                                    maxWidth: "180px",
+                                    fontSize: "12px",
+                                    paddingLeft: "28px",
+                                    border: "1px solid #e2e8f0",
+                                    background: "#f8fafc",
+                                }}
+                                placeholder="Buscar socio..."
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                            />
+                            <i 
+                                className="fas fa-search position-absolute text-muted" 
+                                style={{ left: "10px", top: "50%", transform: "translateY(-50%)", fontSize: "11px" }}
+                            ></i>
+                            {searchQuery && (
+                                <button
+                                    className="btn btn-link btn-sm p-0 position-absolute text-muted hover-text-dark"
+                                    style={{ right: "10px", top: "50%", transform: "translateY(-50%)", border: "0", background: "none" }}
+                                    onClick={() => setSearchQuery("")}
                                 >
-                                    <div
-                                        style={{
-                                            fontSize: "20px",
-                                            fontWeight: 800,
-                                            color: "#334155",
-                                            lineHeight: 1,
-                                            marginBottom: "2px",
-                                        }}
-                                    >
-                                        {stats.total_sellers || 0}
-                                    </div>
-                                    <div
-                                        style={{
-                                            fontSize: "9px",
-                                            color: "#64748b",
-                                            textTransform: "uppercase",
-                                            letterSpacing: "1px",
-                                            fontWeight: 700,
-                                        }}
-                                    >
-                                        Socios
-                                    </div>
-                                </div>
-                                <div
-                                    style={{
-                                        background: "#eff6ff",
-                                        border: "1px solid #dbeafe",
-                                        borderRadius: "12px",
-                                        padding: "8px 18px",
-                                        textAlign: "center",
-                                    }}
-                                >
-                                    <div
-                                        style={{
-                                            fontSize: "20px",
-                                            fontWeight: 800,
-                                            color: "#1e40af",
-                                            lineHeight: 1,
-                                            marginBottom: "2px",
-                                        }}
-                                    >
-                                        {stats.sellers_with_referrals || 0}
-                                    </div>
-                                    <div
-                                        style={{
-                                            fontSize: "9px",
-                                            color: "#3b82f6",
-                                            textTransform: "uppercase",
-                                            letterSpacing: "1px",
-                                            fontWeight: 700,
-                                        }}
-                                    >
-                                        Líderes
-                                    </div>
-                                </div>
-                            </>
-                        )}
+                                    <i className="fas fa-times-circle"></i>
+                                </button>
+                            )}
+                        </div>
+
+                        {/* Zoom Controls */}
+                        <div className="btn-group me-2" style={{ border: "1px solid #e2e8f0", borderRadius: "10px", overflow: "hidden" }}>
+                            <button
+                                className="btn btn-sm btn-white px-2 py-1.5"
+                                onClick={() => setZoom(Math.max(0.5, zoom - 0.1))}
+                                title="Alejar"
+                                style={{ background: "#ffffff", border: "0", color: "#64748b" }}
+                            >
+                                <i className="mdi mdi-magnify-minus-outline fs-5"></i>
+                            </button>
+                            <button
+                                className="btn btn-sm btn-white px-2 py-1.5 border-start border-end"
+                                onClick={() => setZoom(1)}
+                                title="Restablecer"
+                                style={{ background: "#ffffff", border: "0", color: "#64748b" }}
+                            >
+                                <span className="small fw-semibold">{Math.round(zoom * 100)}%</span>
+                            </button>
+                            <button
+                                className="btn btn-sm btn-white px-2 py-1.5"
+                                onClick={() => setZoom(Math.min(2, zoom + 0.1))}
+                                title="Acercar"
+                                style={{ background: "#ffffff", border: "0", color: "#64748b" }}
+                            >
+                                <i className="mdi mdi-magnify-plus-outline fs-5"></i>
+                            </button>
+                        </div>
+
+                        {/* Reload Button */}
                         <button
                             className="btn btn-sm"
                             onClick={loadTree}
@@ -369,7 +382,13 @@ const SellerTreeCard = ({ isSellerView = false }) => {
                         )}
 
                     {!loading && !error && treeData && treeData.length > 0 && (
-                        <div className="org-tree-wrapper">
+                        <div 
+                            className="org-tree-wrapper"
+                            style={{ 
+                                zoom: zoom,
+                                transition: 'zoom 0.15s ease-out'
+                            }}
+                        >
                             {isSellerView ? (
                                 treeData.map((node) => (
                                     <SellerTreeNode
@@ -378,6 +397,7 @@ const SellerTreeCard = ({ isSellerView = false }) => {
                                         level={0}
                                         isCompanyRoot={true}
                                         isSellerRoot={true}
+                                        searchQuery={searchQuery}
                                     />
                                 ))
                             ) : (
@@ -385,6 +405,7 @@ const SellerTreeCard = ({ isSellerView = false }) => {
                                     seller={companyRootNode}
                                     level={0}
                                     isCompanyRoot={true}
+                                    searchQuery={searchQuery}
                                 />
                             )}
                         </div>
@@ -411,8 +432,7 @@ const SellerTreeCard = ({ isSellerView = false }) => {
                                         width: "12px",
                                         height: "12px",
                                         borderRadius: "4px",
-                                        background:
-                                            "linear-gradient(135deg, #0f172a, #334155)",
+                                        background: "#0ea5e9", // Sky Blue
                                         display: "inline-block",
                                     }}
                                 ></span>
@@ -424,8 +444,7 @@ const SellerTreeCard = ({ isSellerView = false }) => {
                                         width: "12px",
                                         height: "12px",
                                         borderRadius: "4px",
-                                        background:
-                                            "linear-gradient(135deg, #6366f1, #8b5cf6)",
+                                        background: "#22c55e", // Green
                                         display: "inline-block",
                                     }}
                                 ></span>
@@ -437,8 +456,7 @@ const SellerTreeCard = ({ isSellerView = false }) => {
                                         width: "12px",
                                         height: "12px",
                                         borderRadius: "4px",
-                                        background:
-                                            "linear-gradient(135deg, #10b981, #059669)",
+                                        background: "#06b6d4", // Cyan
                                         display: "inline-block",
                                     }}
                                 ></span>
@@ -450,8 +468,7 @@ const SellerTreeCard = ({ isSellerView = false }) => {
                                         width: "12px",
                                         height: "12px",
                                         borderRadius: "4px",
-                                        background: "#fff",
-                                        border: "2px solid #e2e8f0",
+                                        background: "#eab308", // Yellow
                                         display: "inline-block",
                                     }}
                                 ></span>
@@ -480,6 +497,7 @@ const SellerTreeNode = ({
     level = 0,
     isCompanyRoot = false,
     isSellerRoot = false,
+    searchQuery = "",
 }) => {
     const [expanded, setExpanded] = useState(level < 2);
     const children = seller.referrals_recursive || seller.children || [];
@@ -492,46 +510,63 @@ const SellerTreeNode = ({
     const childCount = children.length;
     const totalDescendants = countDescendants(seller);
 
+    // Búsqueda interactiva: comprobar coincidencia del nodo
+    const nameStr = fullName.toLowerCase();
+    const emailStr = (seller.email || "").toLowerCase();
+    const q = searchQuery.trim().toLowerCase();
+    const isMatching = q ? (nameStr.includes(q) || emailStr.includes(q)) : false;
+
+    // Auto-expandir si algún descendiente coincide con la búsqueda
+    useEffect(() => {
+        if (q && hasMatchingChild(seller, q)) {
+            setExpanded(true);
+        }
+    }, [searchQuery, seller]);
+
     const getLevelStyle = () => {
         if (isCompanyRoot)
             return {
-                bg: "linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%)",
-                border: "#e2e8f0",
-                text: "#1e293b",
-                badge: "#94a3b8",
-                iconColor: "#475569",
-                shadow: "0 10px 25px rgba(0, 0, 0, 0.04)",
+                bg: "#ffffff",
+                border: "rgba(14, 165, 233, 0.15)", // Sky Blue accent border
+                text: "#0f172a",
+                badge: "#0ea5e9",
+                iconBg: "#e0f2fe", // Sky Blue pastel
+                iconColor: "#0284c7",
+                shadow: "0 10px 25px rgba(0, 0, 0, 0.03)",
             };
         if (level === 1)
             return {
-                bg: "linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%)",
-                border: "#bfdbfe",
-                text: "#1e40af",
-                badge: "#3b82f6",
-                iconColor: "#2563eb",
-                shadow: "0 6px 15px rgba(37, 99, 235, 0.06)",
+                bg: "#ffffff",
+                border: "rgba(34, 197, 94, 0.15)", // Green accent border
+                text: "#0f172a",
+                badge: "#22c55e",
+                iconBg: "#dcfce7", // Green pastel
+                iconColor: "#16a34a",
+                shadow: "0 6px 15px rgba(0, 0, 0, 0.03)",
             };
         if (hasChildren)
             return {
-                bg: "linear-gradient(135deg, #f0fdfa 0%, #ccfbf1 100%)",
-                border: "#99f6e4",
-                text: "#0f766e",
-                badge: "#14b8a6",
-                iconColor: "#0d9488",
-                shadow: "0 6px 15px rgba(20, 184, 166, 0.06)",
+                bg: "#ffffff",
+                border: "rgba(6, 182, 212, 0.15)", // Cyan accent border
+                text: "#0f172a",
+                badge: "#06b6d4",
+                iconBg: "#ecfeff", // Cyan pastel
+                iconColor: "#0891b2",
+                shadow: "0 6px 15px rgba(0, 0, 0, 0.03)",
             };
         return {
             bg: "#ffffff",
-            border: "#f1f5f9",
-            text: "#64748b",
-            badge: "#cbd5e1",
-            iconColor: "#94a3b8",
-            shadow: "0 4px 10px rgba(0, 0, 0, 0.03)",
+            border: "rgba(234, 179, 8, 0.15)", // Yellow accent border
+            text: "#475569",
+            badge: "#eab308",
+            iconBg: "#fef9c3", // Yellow pastel
+            iconColor: "#ca8a04",
+            shadow: "0 4px 10px rgba(0, 0, 0, 0.02)",
         };
     };
 
     const style = getLevelStyle();
-    const isColoredNode = isCompanyRoot || level === 1 || hasChildren;
+    const initials = isCompanyRoot && !isSellerRoot ? "RW" : getInitials(seller.name, seller.lastname);
 
     return (
         <div className="org-tree-node">
@@ -540,7 +575,7 @@ const SellerTreeNode = ({
                 onClick={() => hasChildren && setExpanded(!expanded)}
                 style={{
                     background: style.bg,
-                    border: `2px solid ${style.border}`,
+                    border: isMatching ? "3px solid #6366f1" : `1px solid ${style.border}`,
                     borderRadius: isCompanyRoot ? "14px" : "10px",
                     padding: isCompanyRoot
                         ? "18px 28px"
@@ -555,20 +590,21 @@ const SellerTreeNode = ({
                     maxWidth: "260px",
                     textAlign: "center",
                     cursor: hasChildren ? "pointer" : "default",
-                    boxShadow: style.shadow,
-                    transition: "transform 0.2s ease",
+                    boxShadow: isMatching ? "0 0 20px rgba(99, 102, 241, 0.6)" : style.shadow,
+                    transform: isMatching ? "scale(1.05)" : "none",
+                    transition: "transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease",
                     position: "relative",
                     userSelect: "none",
                     display: "inline-block",
                 }}
                 onMouseEnter={(e) => {
-                    e.currentTarget.style.transform = "translateY(-2px)";
+                    if (!isMatching) e.currentTarget.style.transform = "translateY(-2px)";
                 }}
                 onMouseLeave={(e) => {
-                    e.currentTarget.style.transform = "translateY(0)";
+                    if (!isMatching) e.currentTarget.style.transform = "translateY(0)";
                 }}
             >
-                {/* Avatar */}
+                {/* Avatar / Iniciales */}
                 <div
                     style={{
                         width: isCompanyRoot
@@ -582,31 +618,23 @@ const SellerTreeNode = ({
                               ? "38px"
                               : "30px",
                         borderRadius: "50%",
-                        background: "rgba(255, 255, 255, 0.4)",
+                        background: isMatching ? "#eff6ff" : style.iconBg,
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center",
                         margin: "0 auto 8px",
-                        border: `2px solid ${style.border}`,
+                        border: isMatching ? "2px solid #6366f1" : `1px solid ${style.border}`,
+                        fontSize: isCompanyRoot
+                            ? "14px"
+                            : level === 1
+                              ? "12px"
+                              : "10px",
+                        fontWeight: 800,
+                        color: isMatching ? "#2563eb" : style.iconColor,
+                        fontFamily: "'Outfit', sans-serif"
                     }}
                 >
-                    <i
-                        className={
-                            isCompanyRoot
-                                ? "fas fa-building"
-                                : level === 1
-                                  ? "fas fa-crown"
-                                  : "fas fa-user"
-                        }
-                        style={{
-                            fontSize: isCompanyRoot
-                                ? "18px"
-                                : level === 1
-                                  ? "14px"
-                                  : "11px",
-                            color: style.iconColor,
-                        }}
-                    ></i>
+                    {initials || <i className="fas fa-user"></i>}
                 </div>
 
                 {/* Nombre */}
@@ -658,11 +686,12 @@ const SellerTreeNode = ({
                                 fontWeight: 800,
                                 padding: "2px 8px",
                                 borderRadius: "20px",
-                                background: "#f1f5f9",
-                                color: "#475569",
+                                background: style.iconBg,
+                                color: style.iconColor,
                                 textTransform: "uppercase",
                                 letterSpacing: "0.5px",
-                                border: "1px solid #e2e8f0",
+                                border: `1px solid ${style.border}`,
+                                fontFamily: "'Outfit', sans-serif"
                             }}
                         >
                             {childCount} dir.
@@ -674,9 +703,10 @@ const SellerTreeNode = ({
                                     fontWeight: 700,
                                     padding: "2px 8px",
                                     borderRadius: "20px",
-                                    background: "#f8fafc",
-                                    color: "#64748b",
-                                    border: "1px solid #f1f5f9",
+                                    background: "#ffffff",
+                                    color: style.iconColor,
+                                    border: `1px solid ${style.border}`,
+                                    fontFamily: "'Outfit', sans-serif"
                                 }}
                             >
                                 {totalDescendants} tot.
@@ -725,6 +755,7 @@ const SellerTreeNode = ({
                                     seller={child}
                                     level={level + 1}
                                     isCompanyRoot={false}
+                                    searchQuery={searchQuery}
                                 />
                             </div>
                         ))}

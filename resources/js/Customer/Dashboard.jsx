@@ -39,11 +39,10 @@ const Dashboard = ({ stats, recentOrders = [], support = {}, session }) => {
     };
 
     // Clean, beautiful stats cards style
-    const getCardStyle = (accentColor) => ({
+    const getCardStyle = () => ({
         transition: "all 0.25s ease-in-out",
         borderRadius: "12px",
-        border: "1px solid rgba(0,0,0,0.06)",
-        borderLeft: `5px solid ${accentColor}`,
+        border: "1px solid rgba(0,0,0,0.05)",
         background: "#ffffff"
     });
 
@@ -87,27 +86,27 @@ const Dashboard = ({ stats, recentOrders = [], support = {}, session }) => {
                 {/* Pedidos Totales */}
                 <motion.div className="col-xl-3 col-md-6" variants={itemVariants}>
                     <div 
-                        className="card widget-flat h-100 shadow-sm card-hover-effect" 
-                        style={getCardStyle("#1e40af")} // Azul Oscuro
+                        className="card border-0 h-100 shadow-sm card-hover-effect" 
+                        style={getCardStyle()}
                     >
-                        <div className="card-body p-4">
-                            <div className="d-flex align-items-center justify-content-between">
-                                <div>
-                                    <h6 className="text-muted text-uppercase fw-bold mb-1" style={{ fontSize: "11px", letterSpacing: "0.05em" }}>
-                                        Pedidos Totales
-                                    </h6>
-                                    <h2 className="fw-black mb-0 text-dark" style={{ fontSize: "36px", lineHeight: "1.1" }}>{stats.total_orders}</h2>
-                                </div>
-                                <div 
-                                    className="rounded-circle d-flex align-items-center justify-content-center" 
-                                    style={{ width: "50px", height: "50px", background: "#eff6ff" }}
-                                >
-                                    <i className="mdi mdi-cart-outline text-primary fs-3"></i>
-                                </div>
+                        <div className="card-body p-4 d-flex align-items-center gap-3">
+                            <div 
+                                className="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0" 
+                                style={{ width: "56px", height: "56px", background: "#eff6ff" }}
+                            >
+                                <i className="mdi mdi-cart-outline text-primary fs-3"></i>
                             </div>
-                            <div className="text-muted small mt-3 d-flex align-items-center gap-1">
-                                <i className="mdi mdi-format-list-bulleted text-primary"></i>
-                                <span>Historial completo registrado</span>
+                            <div className="d-flex flex-column justify-content-center">
+                                <h2 className="fw-black mb-1 text-dark" style={{ fontSize: "28px", lineHeight: "1", fontFamily: "'Outfit', sans-serif" }}>
+                                    {stats.total_orders}
+                                </h2>
+                                <h6 className="text-muted text-uppercase fw-bold mb-1" style={{ fontSize: "11px", letterSpacing: "0.05em" }}>
+                                    Pedidos Totales
+                                </h6>
+                                <div className="text-muted small d-flex align-items-center gap-1" style={{ fontSize: "11px" }}>
+                                    <i className="mdi mdi-format-list-bulleted text-primary"></i>
+                                    <span>Historial registrado</span>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -116,27 +115,27 @@ const Dashboard = ({ stats, recentOrders = [], support = {}, session }) => {
                 {/* Pedidos en Proceso */}
                 <motion.div className="col-xl-3 col-md-6" variants={itemVariants}>
                     <div 
-                        className="card widget-flat h-100 shadow-sm card-hover-effect" 
-                        style={getCardStyle("#d97706")} // Ambar/Naranja
+                        className="card border-0 h-100 shadow-sm card-hover-effect" 
+                        style={getCardStyle()}
                     >
-                        <div className="card-body p-4">
-                            <div className="d-flex align-items-center justify-content-between">
-                                <div>
-                                    <h6 className="text-muted text-uppercase fw-bold mb-1" style={{ fontSize: "11px", letterSpacing: "0.05em" }}>
-                                        En Proceso
-                                    </h6>
-                                    <h2 className="fw-black mb-0 text-warning" style={{ fontSize: "36px", lineHeight: "1.1" }}>{stats.pending_orders}</h2>
-                                </div>
-                                <div 
-                                    className="rounded-circle d-flex align-items-center justify-content-center" 
-                                    style={{ width: "50px", height: "50px", background: "#fffbeb" }}
-                                >
-                                    <i className="mdi mdi-truck-delivery-outline text-warning fs-3"></i>
-                                </div>
+                        <div className="card-body p-4 d-flex align-items-center gap-3">
+                            <div 
+                                className="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0" 
+                                style={{ width: "56px", height: "56px", background: "#fffbeb" }}
+                            >
+                                <i className="mdi mdi-truck-delivery-outline text-warning fs-3"></i>
                             </div>
-                            <div className="text-muted small mt-3 d-flex align-items-center gap-1">
-                                <i className="mdi mdi-sync mdi-spin text-warning"></i>
-                                <span>En verificación, producción o envío</span>
+                            <div className="d-flex flex-column justify-content-center">
+                                <h2 className="fw-black mb-1 text-warning" style={{ fontSize: "28px", lineHeight: "1", fontFamily: "'Outfit', sans-serif" }}>
+                                    {stats.pending_orders}
+                                </h2>
+                                <h6 className="text-muted text-uppercase fw-bold mb-1" style={{ fontSize: "11px", letterSpacing: "0.05em" }}>
+                                    En Proceso
+                                </h6>
+                                <div className="text-muted small d-flex align-items-center gap-1" style={{ fontSize: "11px" }}>
+                                    <i className="mdi mdi-sync mdi-spin text-warning"></i>
+                                    <span>En producción o envío</span>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -145,27 +144,27 @@ const Dashboard = ({ stats, recentOrders = [], support = {}, session }) => {
                 {/* Pedidos Entregados */}
                 <motion.div className="col-xl-3 col-md-6" variants={itemVariants}>
                     <div 
-                        className="card widget-flat h-100 shadow-sm card-hover-effect" 
-                        style={getCardStyle("#059669")} // Verde Esmeralda
+                        className="card border-0 h-100 shadow-sm card-hover-effect" 
+                        style={getCardStyle()}
                     >
-                        <div className="card-body p-4">
-                            <div className="d-flex align-items-center justify-content-between">
-                                <div>
-                                    <h6 className="text-muted text-uppercase fw-bold mb-1" style={{ fontSize: "11px", letterSpacing: "0.05em" }}>
-                                        Completados
-                                    </h6>
-                                    <h2 className="fw-black mb-0 text-success" style={{ fontSize: "36px", lineHeight: "1.1" }}>{stats.completed_orders}</h2>
-                                </div>
-                                <div 
-                                    className="rounded-circle d-flex align-items-center justify-content-center" 
-                                    style={{ width: "50px", height: "50px", background: "#ecfdf5" }}
-                                >
-                                    <i className="mdi mdi-checkbox-marked-circle-outline text-success fs-3"></i>
-                                </div>
+                        <div className="card-body p-4 d-flex align-items-center gap-3">
+                            <div 
+                                className="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0" 
+                                style={{ width: "56px", height: "56px", background: "#ecfdf5" }}
+                            >
+                                <i className="mdi mdi-checkbox-marked-circle-outline text-success fs-3"></i>
                             </div>
-                            <div className="text-muted small mt-3 d-flex align-items-center gap-1">
-                                <i className="mdi mdi-check text-success"></i>
-                                <span>Entregados con éxito</span>
+                            <div className="d-flex flex-column justify-content-center">
+                                <h2 className="fw-black mb-1 text-success" style={{ fontSize: "28px", lineHeight: "1", fontFamily: "'Outfit', sans-serif" }}>
+                                    {stats.completed_orders}
+                                </h2>
+                                <h6 className="text-muted text-uppercase fw-bold mb-1" style={{ fontSize: "11px", letterSpacing: "0.05em" }}>
+                                    Completados
+                                </h6>
+                                <div className="text-muted small d-flex align-items-center gap-1" style={{ fontSize: "11px" }}>
+                                    <i className="mdi mdi-check text-success"></i>
+                                    <span>Entregados con éxito</span>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -174,29 +173,27 @@ const Dashboard = ({ stats, recentOrders = [], support = {}, session }) => {
                 {/* Total Invertido */}
                 <motion.div className="col-xl-3 col-md-6" variants={itemVariants}>
                     <div 
-                        className="card widget-flat h-100 shadow-sm card-hover-effect" 
-                        style={getCardStyle("#0891b2")} // Cyan
+                        className="card border-0 h-100 shadow-sm card-hover-effect" 
+                        style={getCardStyle()}
                     >
-                        <div className="card-body p-4">
-                            <div className="d-flex align-items-center justify-content-between">
-                                <div>
-                                    <h6 className="text-muted text-uppercase fw-bold mb-1" style={{ fontSize: "11px", letterSpacing: "0.05em" }}>
-                                        Total Invertido
-                                    </h6>
-                                    <h2 className="fw-black mb-0 text-info" style={{ fontSize: "36px", lineHeight: "1.1" }}>
-                                        {CurrencySymbol()} {Number2Currency(stats.total_spent)}
-                                    </h2>
-                                </div>
-                                <div 
-                                    className="rounded-circle d-flex align-items-center justify-content-center" 
-                                    style={{ width: "50px", height: "50px", background: "#ecfeff" }}
-                                >
-                                    <i className="mdi mdi-cash-multiple text-info fs-3"></i>
-                                </div>
+                        <div className="card-body p-4 d-flex align-items-center gap-3">
+                            <div 
+                                className="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0" 
+                                style={{ width: "56px", height: "56px", background: "#ecfeff" }}
+                            >
+                                <i className="mdi mdi-cash-multiple text-info fs-3"></i>
                             </div>
-                            <div className="text-muted small mt-3 d-flex align-items-center gap-1">
-                                <i className="mdi mdi-shield-check-outline text-info"></i>
-                                <span>Excluye anulados/rechazados</span>
+                            <div className="d-flex flex-column justify-content-center">
+                                <h2 className="fw-black mb-1 text-info" style={{ fontSize: "28px", lineHeight: "1", fontFamily: "'Outfit', sans-serif" }}>
+                                    {CurrencySymbol()} {Number2Currency(stats.total_spent)}
+                                </h2>
+                                <h6 className="text-muted text-uppercase fw-bold mb-1" style={{ fontSize: "11px", letterSpacing: "0.05em" }}>
+                                    Total Invertido
+                                </h6>
+                                <div className="text-muted small d-flex align-items-center gap-1" style={{ fontSize: "11px" }}>
+                                    <i className="mdi mdi-shield-check-outline text-info"></i>
+                                    <span>Excluye anulaciones</span>
+                                </div>
                             </div>
                         </div>
                     </div>

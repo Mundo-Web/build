@@ -75,6 +75,13 @@ const Menu = ({ session, hasRole }) => {
             .filter((section) => section.items.length > 0); // Eliminar secciones vacías
     }, [searchQuery]);
 
+    let profileUrl = "/profile";
+    if (hasRole("Seller") && !hasAnyRole(["Root", "Admin"])) {
+        profileUrl = "/seller/profile";
+    } else if (hasRole("Provider") && !hasAnyRole(["Root", "Admin"])) {
+        profileUrl = "/provider/profile";
+    }
+
     return (
         <div className="left-side-menu left-side-menu-admin">
             <div className="h-100" data-simplebar>
@@ -106,7 +113,7 @@ const Menu = ({ session, hasRole }) => {
                         </a>
                         <div className="dropdown-menu user-pro-dropdown">
                             <a
-                                href="/profile"
+                                href={profileUrl}
                                 className="dropdown-item notify-item"
                             >
                                 <i className="fe-user me-1"></i>
@@ -468,6 +475,12 @@ const Menu = ({ session, hasRole }) => {
                                 Dashboard
                             </MenuItem>
                             <MenuItem
+                                href="/seller/orders"
+                                icon="mdi mdi-cart-outline"
+                            >
+                                Mis Pedidos
+                            </MenuItem>
+                            <MenuItem
                                 href="/seller/vault"
                                 icon="mdi mdi-safe-square-outline"
                             >
@@ -506,6 +519,14 @@ const Menu = ({ session, hasRole }) => {
                                 icon="mdi mdi-shield-lock-outline"
                             >
                                 Mi Cuenta
+                            </MenuItem>
+
+                            <li className="menu-title">Navegación</li>
+                            <MenuItem
+                                href="/"
+                                icon="mdi mdi-store-outline"
+                            >
+                                Volver a la Tienda
                             </MenuItem>
                         </ul>
                     </div>
@@ -554,6 +575,14 @@ const Menu = ({ session, hasRole }) => {
                                 icon="mdi mdi-shield-lock-outline"
                             >
                                 Mi Cuenta
+                            </MenuItem>
+
+                            <li className="menu-title">Navegación</li>
+                            <MenuItem
+                                href="/"
+                                icon="mdi mdi-store-outline"
+                            >
+                                Volver a la Tienda
                             </MenuItem>
                         </ul>
                     </div>

@@ -871,6 +871,9 @@ Route::middleware('auth')->group(function () {
   });
   Route::middleware('can:Seller')->prefix('seller')->group(function () {
     Route::post('/vault/paginate', [SellerController::class, 'paginateVault']);
+    Route::post('/orders/paginate', [\App\Http\Controllers\Seller\SellerOrderController::class, 'paginate']);
+    Route::get('/orders/{id}', [\App\Http\Controllers\Seller\SellerOrderController::class, 'get']);
+    Route::get('/sale-statuses/by-sale/{id}', [\App\Http\Controllers\Admin\SaleStatusController::class, 'bySale']);
   });
 });
 

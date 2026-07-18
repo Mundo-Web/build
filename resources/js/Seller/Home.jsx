@@ -138,39 +138,36 @@ const Home = ({
 
             {/* KPI Cards (Admin Style) */}
             <div className="row g-4 mb-5">
-                {/* Prendas Vendidas */}
+                {/* Prendas Personales */}
                 <div className="col-xl-3 col-md-6">
                     <div
-                        className="card border-0 h-100"
+                        className="card border-0 h-100 shadow-sm"
                         style={{
-                            borderRadius: "1rem",
-                            boxShadow: "0 8px 25px rgba(0,0,0,0.08)",
+                            borderRadius: "12px",
+                            border: "1px solid rgba(0,0,0,0.05)",
+                            background: "#ffffff",
                         }}
                     >
-                        <div className="card-body p-4">
-                            <div className="d-flex align-items-center justify-content-between mb-3">
-                                <div
-                                    className="rounded-3 p-3"
-                                    style={{ background: "#fef3c7" }}
-                                >
-                                    <i className="fas fa-tshirt text-warning fs-4"></i>
-                                </div>
-                                <div className="text-end">
-                                    <div className="fs-2 fw-bold text-dark mb-0">
-                                        {Math.round(user.total_items || 0)}
-                                    </div>
-                                    <div className="text-muted small">
-                                        Prendas Personales
-                                    </div>
-                                </div>
+                        <div className="card-body p-4 d-flex align-items-center gap-3">
+                            <div
+                                className="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0"
+                                style={{
+                                    width: "56px",
+                                    height: "56px",
+                                    background: "#e0f2fe", // Sky/Blue pastel
+                                }}
+                            >
+                                <i className="mdi mdi-tshirt-crew text-info fs-3"></i>
                             </div>
-                            <div className="d-flex align-items-center justify-content-between">
-                                <span className="text-muted small">
-                                    Total Grupo:{" "}
-                                    {Math.round(user.group_items || 0)}
-                                </span>
-                                <div className="badge bg-warning bg-opacity-10 text-warning px-2 py-1 rounded-pill">
-                                    Plan Carrera
+                            <div className="d-flex flex-column justify-content-center">
+                                <h2 className="mb-0 text-dark fw-black" style={{ fontSize: "28px", lineHeight: "1", fontFamily: "'Outfit', sans-serif" }}>
+                                    {Math.round(user.total_items || 0)}
+                                </h2>
+                                <div className="text-muted small fw-medium mt-1">
+                                    Prendas Personales
+                                </div>
+                                <div className="text-success fw-semibold mt-1" style={{ fontSize: "11px" }}>
+                                    <i className="mdi mdi-arrow-up-bold-outline me-1"></i>Grupo: {Math.round(user.group_items || 0)}
                                 </div>
                             </div>
                         </div>
@@ -180,35 +177,34 @@ const Home = ({
                 {/* Comisiones Hoy */}
                 <div className="col-xl-3 col-md-6">
                     <div
-                        className="card border-0 h-100"
+                        className="card border-0 h-100 shadow-sm"
                         style={{
-                            borderRadius: "1rem",
-                            boxShadow: "0 8px 25px rgba(0,0,0,0.08)",
+                            borderRadius: "12px",
+                            border: "1px solid rgba(0,0,0,0.05)",
+                            background: "#ffffff",
                         }}
                     >
-                        <div className="card-body p-4">
-                            <div className="d-flex align-items-center justify-content-between mb-3">
-                                <div
-                                    className="rounded-3 p-3"
-                                    style={{ background: "#d1fae5" }}
-                                >
-                                    <i className="fas fa-hand-holding-usd text-success fs-4"></i>
-                                </div>
-                                <div className="text-end">
-                                    <div className="fs-2 fw-bold text-dark mb-0">
-                                        {CurrencySymbol()}{" "}
-                                        {formatIncome(commissionsToday)}
-                                    </div>
-                                    <div className="text-muted small">
-                                        Ganancia Hoy
-                                    </div>
-                                </div>
+                        <div className="card-body p-4 d-flex align-items-center gap-3">
+                            <div
+                                className="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0"
+                                style={{
+                                    width: "56px",
+                                    height: "56px",
+                                    background: "#dcfce7", // Green pastel
+                                }}
+                            >
+                                <i className="mdi mdi-currency-usd text-success fs-3"></i>
                             </div>
-                            <div className="d-flex align-items-center justify-content-between">
-                                <span className="text-muted small">
-                                    Ganancia Mes: {CurrencySymbol()}{" "}
-                                    {formatIncome(commissionsMonth)}
-                                </span>
+                            <div className="d-flex flex-column justify-content-center">
+                                <h2 className="mb-0 text-dark fw-black" style={{ fontSize: "28px", lineHeight: "1", fontFamily: "'Outfit', sans-serif" }}>
+                                    {CurrencySymbol()} {formatIncome(commissionsToday)}
+                                </h2>
+                                <div className="text-muted small fw-medium mt-1">
+                                    Ganancia Hoy
+                                </div>
+                                <div className="text-success fw-semibold mt-1" style={{ fontSize: "11px" }}>
+                                    <i className="mdi mdi-arrow-up-bold-outline me-1"></i>Mes: {CurrencySymbol()} {formatIncome(commissionsMonth)}
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -217,37 +213,34 @@ const Home = ({
                 {/* Comisiones Totales */}
                 <div className="col-xl-3 col-md-6">
                     <div
-                        className="card border-0 h-100"
+                        className="card border-0 h-100 shadow-sm"
                         style={{
-                            borderRadius: "1rem",
-                            boxShadow: "0 8px 25px rgba(0,0,0,0.08)",
+                            borderRadius: "12px",
+                            border: "1px solid rgba(0,0,0,0.05)",
+                            background: "#ffffff",
                         }}
                     >
-                        <div className="card-body p-4">
-                            <div className="d-flex align-items-center justify-content-between mb-3">
-                                <div
-                                    className="rounded-3 p-3"
-                                    style={{ background: "#ddd6fe" }}
-                                >
-                                    <i
-                                        className="fas fa-wallet fs-4"
-                                        style={{ color: "#8b5cf6" }}
-                                    ></i>
-                                </div>
-                                <div className="text-end">
-                                    <div className="fs-2 fw-bold text-dark mb-0">
-                                        {CurrencySymbol()}{" "}
-                                        {formatIncome(totalCommissions)}
-                                    </div>
-                                    <div className="text-muted small">
-                                        Acumulado Total
-                                    </div>
-                                </div>
+                        <div className="card-body p-4 d-flex align-items-center gap-3">
+                            <div
+                                className="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0"
+                                style={{
+                                    width: "56px",
+                                    height: "56px",
+                                    background: "#eff6ff", // Blue pastel
+                                }}
+                            >
+                                <i className="mdi mdi-wallet-outline text-primary fs-3"></i>
                             </div>
-                            <div className="d-flex align-items-center justify-content-between">
-                                <span className="text-muted small">
-                                    Billetera histórica
-                                </span>
+                            <div className="d-flex flex-column justify-content-center">
+                                <h2 className="mb-0 text-dark fw-black" style={{ fontSize: "28px", lineHeight: "1", fontFamily: "'Outfit', sans-serif" }}>
+                                    {CurrencySymbol()} {formatIncome(totalCommissions)}
+                                </h2>
+                                <div className="text-muted small fw-medium mt-1">
+                                    Acumulado Total
+                                </div>
+                                <div className="text-muted mt-1" style={{ fontSize: "11px" }}>
+                                    <i className="mdi mdi-history me-1"></i>Billetera histórica
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -256,39 +249,34 @@ const Home = ({
                 {/* Referidos Directos */}
                 <div className="col-xl-3 col-md-6">
                     <div
-                        className="card border-0 h-100"
+                        className="card border-0 h-100 shadow-sm"
                         style={{
-                            borderRadius: "1rem",
-                            boxShadow: "0 8px 25px rgba(0,0,0,0.08)",
+                            borderRadius: "12px",
+                            border: "1px solid rgba(0,0,0,0.05)",
+                            background: "#ffffff",
                         }}
                     >
-                        <div className="card-body p-4">
-                            <div className="d-flex align-items-center justify-content-between mb-3">
-                                <div
-                                    className="rounded-3 p-3"
-                                    style={{ background: "#ffedd5" }}
-                                >
-                                    <i
-                                        className="fas fa-users text-orange fs-4"
-                                        style={{ color: "#f97316" }}
-                                    ></i>
-                                </div>
-                                <div className="text-end">
-                                    <div className="fs-2 fw-bold text-dark mb-0">
-                                        {directReferrals}
-                                    </div>
-                                    <div className="text-muted small">
-                                        Vendedores Directos
-                                    </div>
-                                </div>
+                        <div className="card-body p-4 d-flex align-items-center gap-3">
+                            <div
+                                className="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0"
+                                style={{
+                                    width: "56px",
+                                    height: "56px",
+                                    background: "#fef9c3", // Yellow pastel
+                                }}
+                            >
+                                <i className="mdi mdi-account-group-outline text-warning fs-3"></i>
                             </div>
-                            <div className="d-flex align-items-center justify-content-between">
-                                <span className="text-muted small">
-                                    Volumen Red: {CurrencySymbol()}{" "}
-                                    {parseFloat(
-                                        user.group_points || 0,
-                                    ).toLocaleString()}
-                                </span>
+                            <div className="d-flex flex-column justify-content-center">
+                                <h2 className="mb-0 text-dark fw-black" style={{ fontSize: "28px", lineHeight: "1", fontFamily: "'Outfit', sans-serif" }}>
+                                    {directReferrals}
+                                </h2>
+                                <div className="text-muted small fw-medium mt-1">
+                                    Vendedores Directos
+                                </div>
+                                <div className="text-success fw-semibold mt-1" style={{ fontSize: "11px" }}>
+                                    <i className="mdi mdi-arrow-up-bold-outline me-1"></i>Red: {CurrencySymbol()} {parseFloat(user.group_points || 0).toLocaleString()}
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -498,11 +486,16 @@ const Home = ({
                 <div className="col-lg-8">
                     <div
                         className="card border-0 shadow-sm h-100"
-                        style={{ borderRadius: "1.25rem" }}
+                        style={{
+                            borderRadius: "12px",
+                            border: "1px solid rgba(0,0,0,0.05)",
+                            background: "#ffffff",
+                        }}
                     >
-                        <div className="card-header bg-transparent border-0 p-4 d-flex justify-content-between align-items-center">
+                        <div className="card-header bg-transparent border-0 p-4 pb-0 d-flex justify-content-between align-items-center">
                             <div>
-                                <h5 className="fw-bold mb-0">
+                                <h5 className="fw-bold mb-1 text-dark" style={{ fontFamily: "'Outfit', sans-serif" }}>
+                                    <i className="mdi mdi-trending-up me-2 text-info fs-4"></i>
                                     Análisis de Desempeño
                                 </h5>
                                 <small className="text-muted">
@@ -515,8 +508,7 @@ const Home = ({
                                 <i
                                     className={`fas fa-caret-${growthPercentage >= 0 ? "up" : "down"} me-1`}
                                 ></i>
-                                {Math.abs(growthPercentage).toFixed(1)}% vs mes
-                                anterior
+                                {Math.abs(growthPercentage).toFixed(1)}% vs mes anterior
                             </div>
                         </div>
                         <div className="card-body p-4 pt-0">
@@ -527,14 +519,14 @@ const Home = ({
                                         toolbar: { show: false },
                                         zoom: { enabled: false },
                                     },
-                                    colors: ["#3b82f6"],
+                                    colors: ["#06b6d4"], // Cyan area as in the mockup image
                                     fill: {
                                         type: "gradient",
                                         gradient: {
                                             shadeIntensity: 1,
-                                            opacityFrom: 0.45,
-                                            opacityTo: 0.05,
-                                            stops: [20, 100],
+                                            opacityFrom: 0.4,
+                                            opacityTo: 0.01,
+                                            stops: [30, 100],
                                         },
                                     },
                                     dataLabels: { enabled: false },
@@ -544,14 +536,14 @@ const Home = ({
                                             (h) => h.date,
                                         ),
                                         labels: {
-                                            style: { colors: "#94a3b8" },
+                                            style: { colors: "#94a3b8", fontFamily: "'Outfit', sans-serif" },
                                         },
                                         axisBorder: { show: false },
                                         axisTicks: { show: false },
                                     },
                                     yaxis: {
                                         labels: {
-                                            style: { colors: "#94a3b8" },
+                                            style: { colors: "#94a3b8", fontFamily: "'Outfit', sans-serif" },
                                         },
                                     },
                                     grid: { borderColor: "#f1f5f9" },
@@ -760,25 +752,25 @@ const Home = ({
             </div>
 
             {/* Links y Herramientas */}
-            <div className="row g-4">
+            <div className="row g-4 mt-1">
                 <div className="col-lg-6">
                     <div
-                        className="card border-0 h-100"
+                        className="card border-0 h-100 shadow-sm"
                         style={{
-                            borderRadius: "1rem",
-                            boxShadow: "0 8px 25px rgba(0,0,0,0.08)",
+                            borderRadius: "12px",
+                            border: "1px solid rgba(0,0,0,0.05)",
+                            background: "#ffffff",
                         }}
                     >
                         <div className="card-header bg-transparent border-0 p-4 pb-0">
-                            <h5 className="fw-bold mb-0">
+                            <h5 className="fw-bold mb-0 text-dark" style={{ fontFamily: "'Outfit', sans-serif" }}>
+                                <i className="mdi mdi-storefront-outline me-2 text-primary fs-5"></i>
                                 Mi Enlace de Tienda
                             </h5>
                         </div>
                         <div className="card-body p-4">
                             <p className="text-muted small mb-4">
-                                Comparte este enlace con tus clientes. Todas las
-                                compras realizadas aquí te generarán comisiones
-                                automáticamente.
+                                Comparte este enlace con tus clientes. Todas las compras realizadas aquí te generarán comisiones automáticamente.
                             </p>
                             <div className="input-group mb-3">
                                 <input
@@ -786,12 +778,14 @@ const Home = ({
                                     className="form-control bg-light border-0"
                                     value={storeUrl}
                                     readOnly
+                                    style={{ borderRadius: "8px 0 0 8px" }}
                                 />
                                 <button
                                     className="btn btn-primary px-4"
                                     onClick={() =>
                                         copyToClipboard(storeUrl, "store")
                                     }
+                                    style={{ borderRadius: "0 8px 8px 0" }}
                                 >
                                     <i
                                         className={`fas ${copiedStore ? "fa-check" : "fa-copy"} me-2`}
@@ -803,6 +797,7 @@ const Home = ({
                                 href={storeUrl}
                                 target="_blank"
                                 className="btn btn-soft-primary w-100 mt-2"
+                                style={{ borderRadius: "8px" }}
                             >
                                 <i className="fas fa-external-link-alt me-2"></i>{" "}
                                 Abrir mi tienda
@@ -813,22 +808,22 @@ const Home = ({
 
                 <div className="col-lg-6">
                     <div
-                        className="card border-0 h-100"
+                        className="card border-0 h-100 shadow-sm"
                         style={{
-                            borderRadius: "1rem",
-                            boxShadow: "0 8px 25px rgba(0,0,0,0.08)",
+                            borderRadius: "12px",
+                            border: "1px solid rgba(0,0,0,0.05)",
+                            background: "#ffffff",
                         }}
                     >
                         <div className="card-header bg-transparent border-0 p-4 pb-0">
-                            <h5 className="fw-bold mb-0">
+                            <h5 className="fw-bold mb-0 text-dark" style={{ fontFamily: "'Outfit', sans-serif" }}>
+                                <i className="mdi mdi-link-variant me-2 text-primary fs-5"></i>
                                 Enlace de Reclutamiento
                             </h5>
                         </div>
                         <div className="card-body p-4">
                             <p className="text-muted small mb-4">
-                                Invita a otros a unirse a tu red. Cuando se
-                                registren con este link, formarán parte de tu
-                                equipo de ventas.
+                                Invita a otros a unirse a tu red. Cuando se registren con este link, formarán parte de tu equipo de ventas.
                             </p>
                             <div className="input-group mb-3">
                                 <input
@@ -836,12 +831,14 @@ const Home = ({
                                     className="form-control bg-light border-0"
                                     value={inviteUrl}
                                     readOnly
+                                    style={{ borderRadius: "8px 0 0 8px" }}
                                 />
                                 <button
                                     className="btn btn-primary px-4"
                                     onClick={() =>
                                         copyToClipboard(inviteUrl, "referral")
                                     }
+                                    style={{ borderRadius: "0 8px 8px 0" }}
                                 >
                                     <i
                                         className={`fas ${copiedReferral ? "fa-check" : "fa-copy"} me-2`}
@@ -849,12 +846,12 @@ const Home = ({
                                     {copiedReferral ? "Copiado" : "Copiar"}
                                 </button>
                             </div>
-                            <div className="mt-3 p-3 bg-soft-warning rounded-3 border border-warning border-opacity-25">
-                                <small className="text-dark">
-                                    <i className="fas fa-info-circle me-1"></i>
+                            <div className="mt-3 p-3 bg-soft-warning rounded-3 border border-warning border-opacity-25 small">
+                                <span className="text-dark">
+                                    <i className="fas fa-info-circle me-1 text-warning"></i>
                                     Tu código de referido es:{" "}
                                     <strong>{user.uuid}</strong>
-                                </small>
+                                </span>
                             </div>
                         </div>
                     </div>

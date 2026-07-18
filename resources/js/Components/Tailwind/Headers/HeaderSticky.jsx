@@ -330,6 +330,9 @@ const HeaderSticky = ({
         0;
 
     let isCustomer = false;
+    let isSeller = false;
+    let isProvider = false;
+    let isAdmin = false;
     let dashboardUrl = "/admin/home";
 
     if (isUser && Array.isArray(isUser.roles)) {
@@ -339,6 +342,10 @@ const HeaderSticky = ({
             !roleNames.includes("root") &&
             !roleNames.includes("seller") &&
             !roleNames.includes("provider");
+
+        isSeller = roleNames.includes("seller");
+        isProvider = roleNames.includes("provider");
+        isAdmin = roleNames.includes("admin") || roleNames.includes("root");
 
         if (roleNames.includes("seller")) {
             dashboardUrl = "/seller/home";
@@ -461,7 +468,7 @@ const HeaderSticky = ({
                                                 </p>
                                             </div>
                                             <div className="p-2">
-                                                {isCustomer ? (
+                                                {isCustomer && (
                                                     <>
                                                         <a
                                                             href="/profile"
@@ -500,7 +507,175 @@ const HeaderSticky = ({
                                                             </span>
                                                         </a>
                                                     </>
-                                                ) : (
+                                                )}
+
+                                                {isSeller && (
+                                                    <>
+                                                        <a
+                                                            href="/seller/home"
+                                                            className="flex items-center gap-3 p-3 hover:bg-gray-50  transition-colors group"
+                                                        >
+                                                            <Home
+                                                                size={18}
+                                                                className="text-neutral-light group-hover:text-black"
+                                                            />
+                                                            <span className="text-xs font-bold  ">
+                                                                Dashboard
+                                                            </span>
+                                                        </a>
+                                                        <a
+                                                            href="/seller/orders"
+                                                            className="flex items-center gap-3 p-3 hover:bg-gray-50  transition-colors group"
+                                                        >
+                                                            <ShoppingCart
+                                                                size={18}
+                                                                className="text-neutral-light group-hover:text-black"
+                                                            />
+                                                            <span className="text-xs font-bold  ">
+                                                                Mis Pedidos
+                                                            </span>
+                                                        </a>
+                                                        <a
+                                                            href="/seller/vault"
+                                                            className="flex items-center gap-3 p-3 hover:bg-gray-50  transition-colors group"
+                                                        >
+                                                            <ShoppingBag
+                                                                size={18}
+                                                                className="text-neutral-light group-hover:text-black"
+                                                            />
+                                                            <span className="text-xs font-bold  ">
+                                                                Mi Bóveda
+                                                            </span>
+                                                        </a>
+                                                        <a
+                                                            href="/seller/referrals"
+                                                            className="flex items-center gap-3 p-3 hover:bg-gray-50  transition-colors group"
+                                                        >
+                                                            <UserIcon
+                                                                size={18}
+                                                                className="text-neutral-light group-hover:text-black"
+                                                            />
+                                                            <span className="text-xs font-bold  ">
+                                                                Mis Referidos
+                                                            </span>
+                                                        </a>
+                                                        <a
+                                                            href="/seller/wallet"
+                                                            className="flex items-center gap-3 p-3 hover:bg-gray-50  transition-colors group"
+                                                        >
+                                                            <Settings
+                                                                size={18}
+                                                                className="text-neutral-light group-hover:text-black"
+                                                            />
+                                                            <span className="text-xs font-bold  ">
+                                                                Mi Billetera
+                                                            </span>
+                                                        </a>
+                                                        <a
+                                                            href="/seller/profile"
+                                                            className="flex items-center gap-3 p-3 hover:bg-gray-50  transition-colors group"
+                                                        >
+                                                            <UserIcon
+                                                                size={18}
+                                                                className="text-neutral-light group-hover:text-black"
+                                                            />
+                                                            <span className="text-xs font-bold  ">
+                                                                Mi Perfil
+                                                            </span>
+                                                        </a>
+                                                        <a
+                                                            href="/account"
+                                                            className="flex items-center gap-3 p-3 hover:bg-gray-50  transition-colors group"
+                                                        >
+                                                            <Settings
+                                                                size={18}
+                                                                className="text-neutral-light group-hover:text-black"
+                                                            />
+                                                            <span className="text-xs font-bold  ">
+                                                                Mi Cuenta
+                                                            </span>
+                                                        </a>
+                                                    </>
+                                                )}
+
+                                                {isProvider && (
+                                                    <>
+                                                        <a
+                                                            href="/provider/home"
+                                                            className="flex items-center gap-3 p-3 hover:bg-gray-50  transition-colors group"
+                                                        >
+                                                            <Home
+                                                                size={18}
+                                                                className="text-neutral-light group-hover:text-black"
+                                                            />
+                                                            <span className="text-xs font-bold  ">
+                                                                Dashboard
+                                                            </span>
+                                                        </a>
+                                                        <a
+                                                            href="/provider/items"
+                                                            className="flex items-center gap-3 p-3 hover:bg-gray-50  transition-colors group"
+                                                        >
+                                                            <ShoppingBag
+                                                                size={18}
+                                                                className="text-neutral-light group-hover:text-black"
+                                                            />
+                                                            <span className="text-xs font-bold  ">
+                                                                Mis Productos
+                                                            </span>
+                                                        </a>
+                                                        <a
+                                                            href="/provider/orders"
+                                                            className="flex items-center gap-3 p-3 hover:bg-gray-50  transition-colors group"
+                                                        >
+                                                            <ShoppingCart
+                                                                size={18}
+                                                                className="text-neutral-light group-hover:text-black"
+                                                            />
+                                                            <span className="text-xs font-bold  ">
+                                                                Mis Pedidos
+                                                            </span>
+                                                        </a>
+                                                        <a
+                                                            href="/provider/wallet"
+                                                            className="flex items-center gap-3 p-3 hover:bg-gray-50  transition-colors group"
+                                                        >
+                                                            <Settings
+                                                                size={18}
+                                                                className="text-neutral-light group-hover:text-black"
+                                                            />
+                                                            <span className="text-xs font-bold  ">
+                                                                Mi Billetera
+                                                            </span>
+                                                        </a>
+                                                        <a
+                                                            href="/provider/profile"
+                                                            className="flex items-center gap-3 p-3 hover:bg-gray-50  transition-colors group"
+                                                        >
+                                                            <UserIcon
+                                                                size={18}
+                                                                className="text-neutral-light group-hover:text-black"
+                                                            />
+                                                            <span className="text-xs font-bold  ">
+                                                                Mi Perfil
+                                                            </span>
+                                                        </a>
+                                                        <a
+                                                            href="/account"
+                                                            className="flex items-center gap-3 p-3 hover:bg-gray-50  transition-colors group"
+                                                        >
+                                                            <Settings
+                                                                size={18}
+                                                                className="text-neutral-light group-hover:text-black"
+                                                            />
+                                                            <span className="text-xs font-bold  ">
+                                                                Mi Cuenta
+                                                            </span>
+                                                        </a>
+                                                    </>
+                                                )}
+
+                                                {isAdmin && (
                                                     <a
                                                         href={dashboardUrl}
                                                         className="flex items-center gap-3 p-3 hover:bg-gray-50  transition-colors group"
@@ -514,6 +689,7 @@ const HeaderSticky = ({
                                                         </span>
                                                     </a>
                                                 )}
+
                                                 <button
                                                     onClick={Logout}
                                                     className="w-full flex items-center gap-3 p-3 hover:bg-red-50  transition-colors group text-red-500"

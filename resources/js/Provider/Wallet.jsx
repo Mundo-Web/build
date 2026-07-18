@@ -95,34 +95,73 @@ const Wallet = ({ wallet, history, user_financial_details }) => {
                 </div>
 
                 <div className="col-md-4">
-                    <div className="card border-0 shadow-sm overflow-hidden" style={{ borderRadius: '1rem' }}>
-                        <div className="card-body p-4 bg-info text-white position-relative">
-                            <div className="position-relative z-1">
-                                <p className="text-white-50 small fw-bold text-uppercase mb-1">Saldo Liquidable</p>
-                                <h2 className="fw-black mb-0 text-white">{CurrencySymbol()} {wallet.available.toLocaleString('es-PE', { minimumFractionDigits: 2 })}</h2>
-                                <p className="mt-2 mb-0 small opacity-75">Monto total disponible para retiro.</p>
+                    <div className="card border-0 h-100 shadow-sm" style={{ borderRadius: '12px', border: '1px solid rgba(0,0,0,0.05)', background: '#ffffff' }}>
+                        <div className="card-body p-4 d-flex align-items-center gap-3">
+                            <div 
+                                className="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0" 
+                                style={{ width: "56px", height: "56px", background: "#eff6ff" }}
+                            >
+                                <i className="mdi mdi-wallet-outline text-primary fs-3"></i>
                             </div>
-                            <i className="mdi mdi-wallet-outline position-absolute" style={{ fontSize: '100px', right: '-10px', bottom: '-20px', opacity: '0.1' }}></i>
+                            <div className="d-flex flex-column justify-content-center">
+                                <h2 className="fw-black mb-1 text-primary" style={{ fontSize: "28px", lineHeight: "1", fontFamily: "'Outfit', sans-serif" }}>
+                                    {CurrencySymbol()} {wallet.available.toLocaleString('es-PE', { minimumFractionDigits: 2 })}
+                                </h2>
+                                <h6 className="text-muted text-uppercase fw-bold mb-1" style={{ fontSize: "11px", letterSpacing: "0.05em" }}>
+                                    Saldo Liquidable
+                                </h6>
+                                <div className="text-muted small" style={{ fontSize: "11px" }}>
+                                    Disponible para retiro
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
 
                 <div className="col-md-4">
-                    <div className="card border-0 shadow-sm" style={{ borderRadius: '1rem' }}>
-                        <div className="card-body p-4">
-                            <p className="text-muted small fw-bold text-uppercase mb-1">Ganancias en Proceso</p>
-                            <h2 className="fw-bold mb-0 text-dark">{CurrencySymbol()} {wallet.pending.toLocaleString('es-PE', { minimumFractionDigits: 2 })}</h2>
-                            <p className="mt-2 mb-0 small text-muted">Ventas entregadas pendientes de validación.</p>
+                    <div className="card border-0 h-100 shadow-sm" style={{ borderRadius: '12px', border: '1px solid rgba(0,0,0,0.05)', background: '#ffffff' }}>
+                        <div className="card-body p-4 d-flex align-items-center gap-3">
+                            <div 
+                                className="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0" 
+                                style={{ width: "56px", height: "56px", background: "#fffbeb" }}
+                            >
+                                <i className="mdi mdi-clock-outline text-warning fs-3"></i>
+                            </div>
+                            <div className="d-flex flex-column justify-content-center">
+                                <h2 className="fw-bold mb-1 text-dark" style={{ fontSize: "28px", lineHeight: "1", fontFamily: "'Outfit', sans-serif" }}>
+                                    {CurrencySymbol()} {wallet.pending.toLocaleString('es-PE', { minimumFractionDigits: 2 })}
+                                </h2>
+                                <h6 className="text-muted text-uppercase fw-bold mb-1" style={{ fontSize: "11px", letterSpacing: "0.05em" }}>
+                                    Ganancias en Proceso
+                                </h6>
+                                <div className="text-muted small" style={{ fontSize: "11px" }}>
+                                    Pendiente de validación
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
 
                 <div className="col-md-4">
-                    <div className="card border-0 shadow-sm" style={{ borderRadius: '1rem' }}>
-                        <div className="card-body p-4">
-                            <p className="text-muted small fw-bold text-uppercase mb-1">Ventas Históricas</p>
-                            <h2 className="fw-bold mb-0 text-success">{CurrencySymbol()} {wallet.total_earned.toLocaleString('es-PE', { minimumFractionDigits: 2 })}</h2>
-                            <p className="mt-2 mb-0 small text-muted">Monto total generado por tus productos.</p>
+                    <div className="card border-0 h-100 shadow-sm" style={{ borderRadius: '12px', border: '1px solid rgba(0,0,0,0.05)', background: '#ffffff' }}>
+                        <div className="card-body p-4 d-flex align-items-center gap-3">
+                            <div 
+                                className="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0" 
+                                style={{ width: "56px", height: "56px", background: "#ecfdf5" }}
+                            >
+                                <i className="mdi mdi-trending-up text-success fs-3"></i>
+                            </div>
+                            <div className="d-flex flex-column justify-content-center">
+                                <h2 className="fw-bold mb-1 text-success" style={{ fontSize: "28px", lineHeight: "1", fontFamily: "'Outfit', sans-serif" }}>
+                                    {CurrencySymbol()} {wallet.total_earned.toLocaleString('es-PE', { minimumFractionDigits: 2 })}
+                                </h2>
+                                <h6 className="text-muted text-uppercase fw-bold mb-1" style={{ fontSize: "11px", letterSpacing: "0.05em" }}>
+                                    Ventas Históricas
+                                </h6>
+                                <div className="text-muted small" style={{ fontSize: "11px" }}>
+                                    Acumulado histórico total
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
