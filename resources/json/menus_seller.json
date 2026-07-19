@@ -1,0 +1,32 @@
+[
+  {
+    "title": "Ventas",
+    "items": [
+      { "label": "Dashboard", "href": "/seller/home", "icon": "mdi mdi-view-dashboard-outline" },
+      { "label": "Mis Pedidos", "href": "/seller/orders", "icon": "mdi mdi-cart-outline" },
+      { "label": "Catálogos PDF", "href": "/seller/catalogs", "icon": "mdi mdi-book-open-page-variant-outline" },
+      { "label": "Mi Bóveda", "href": "/seller/vault", "icon": "mdi mdi-safe-square-outline" }
+    ]
+  },
+  {
+    "title": "Mi Red",
+    "items": [
+      { "label": "Mis Referidos", "href": "/seller/referrals", "icon": "mdi mdi-account-group-outline" },
+      { "label": "Mis Solicitudes", "href": "/seller/job-applications", "icon": "mdi mdi-clipboard-text-outline" },
+      { "label": "Mi Billetera", "href": "/seller/wallet", "icon": "mdi mdi-wallet-outline" }
+    ]
+  },
+  {
+    "title": "Configuración",
+    "items": [
+      { "label": "Mi Perfil", "href": "/seller/profile", "icon": "mdi mdi-account-cog-outline" },
+      { "label": "Mi Cuenta", "href": "/account", "icon": "mdi mdi-shield-lock-outline" }
+    ]
+  },
+  {
+    "title": "Navegación",
+    "items": [
+      { "label": "Volver a la Tienda", "href": "/", "icon": "mdi mdi-store-outline" }
+    ]
+  }
+]

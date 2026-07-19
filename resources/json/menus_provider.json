@@ -1,0 +1,24 @@
+[
+  {
+    "title": "Gestión",
+    "items": [
+      { "label": "Dashboard", "href": "/provider/home", "icon": "mdi mdi-view-dashboard-outline" },
+      { "label": "Mis Productos", "href": "/provider/items", "icon": "mdi mdi-package-variant-closed" },
+      { "label": "Mis Pedidos", "href": "/provider/orders", "icon": "mdi mdi-cart-outline" },
+      { "label": "Mi Billetera", "href": "/provider/wallet", "icon": "mdi mdi-wallet-outline" }
+    ]
+  },
+  {
+    "title": "Perfil",
+    "items": [
+      { "label": "Mi Perfil", "href": "/provider/profile", "icon": "mdi mdi-account-box-outline" },
+      { "label": "Mi Cuenta", "href": "/account", "icon": "mdi mdi-shield-lock-outline" }
+    ]
+  },
+  {
+    "title": "Navegación",
+    "items": [
+      { "label": "Volver a la Tienda", "href": "/", "icon": "mdi mdi-store-outline" }
+    ]
+  }
+]

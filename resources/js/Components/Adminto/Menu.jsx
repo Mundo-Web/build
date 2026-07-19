@@ -5,12 +5,75 @@ import Logout from "../../Actions/Logout";
 import MenuItem from "../MenuItem";
 import MenuItemContainer from "../MenuItemContainer";
 import menus from "../../../json/menus.json";
+import menusSeller from "../../../json/menus_seller.json";
+import menusProvider from "../../../json/menus_provider.json";
+import menusCustomer from "../../../json/menus_customer.json";
 import CanAccess from "../../Utils/CanAccess";
 
 const Menu = ({ session, hasRole }) => {
     const mainRole = session.roles[0];
     const hasAnyRole = (roles) => roles.some((role) => hasRole(role));
     const [searchQuery, setSearchQuery] = useState("");
+
+    const renderDynamicMenu = (menuData) => {
+        return menuData.map((section) => {
+            const sectionKey = section.id || section.title || JSON.stringify(section);
+            const filteredItems = section.items.filter((item) => {
+                if (item.children) {
+                    return item.children.some((child) => CanAccess[child.id || child.href]);
+                }
+                const accessKey = item.id || item.href;
+                if (item.role && !hasRole(item.role)) return false;
+                return CanAccess[accessKey];
+            });
+
+            if (filteredItems.length === 0) return null;
+
+            return (
+                <React.Fragment key={sectionKey}>
+                    <li className="menu-title">{section.title}</li>
+                    {filteredItems.map((item) => {
+                        const itemKey = item.id || item.href || `${sectionKey}-${item.label}`;
+
+                        if (item.children) {
+                            const accessibleChildren = item.children.filter(
+                                (child) => CanAccess[child.id || child.href]
+                            );
+                            return (
+                                <MenuItemContainer
+                                    key={itemKey}
+                                    title={item.label}
+                                    icon={item.icon}
+                                >
+                                    {accessibleChildren.map((child) => (
+                                        <MenuItem
+                                            key={child.id || child.href || `${itemKey}-${child.label}`}
+                                            href={child.href}
+                                            icon={child.icon}
+                                        >
+                                            {child.label}
+                                        </MenuItem>
+                                    ))}
+                                </MenuItemContainer>
+                            );
+                        }
+
+                        return (
+                            <MenuItem
+                                key={itemKey}
+                                href={item.href}
+                                icon={item.icon}
+                                target={item.target}
+                            >
+                                {item.label}
+                                {item.target && <i className="mdi mdi-arrow-top-right ms-1"></i>}
+                            </MenuItem>
+                        );
+                    })}
+                </React.Fragment>
+            );
+        });
+    };
 
     // Función para filtrar menús según la búsqueda
     const filteredMenus = useMemo(() => {
@@ -413,177 +476,21 @@ const Menu = ({ session, hasRole }) => {
                 {hasRole("Customer") && (
                     <div id="sidebar-menu" className="show">
                         <ul id="side-menu">
-                            <li className="menu-title">Panel del Cliente</li>
-
-                            <MenuItem
-                                href="/customer/dashboard"
-                                icon="mdi mdi-view-dashboard-outline"
-                            >
-                                Panel de Inicio
-                            </MenuItem>
-
-                            <MenuItem
-                                href="/customer/orders"
-                                icon="mdi mdi-cart-outline"
-                            >
-                                Mis Pedidos
-                            </MenuItem>
-
-                            <li className="menu-title">Mi Cuenta</li>
-
-                            <MenuItem
-                                href="/profile"
-                                icon="mdi mdi-account-box-outline"
-                            >
-                                Mi Perfil
-                            </MenuItem>
-
-                            <MenuItem
-                                href="/account"
-                                icon="mdi mdi-shield-lock-outline"
-                            >
-                                Seguridad y Cuenta
-                            </MenuItem>
-
-                            <MenuItem
-                                href="/libro-reclamaciones"
-                                icon="mdi mdi-alert-circle-outline"
-                            >
-                                Libro de Reclamaciones
-                            </MenuItem>
-
-                            <li className="menu-title">Navegación</li>
-
-                            <MenuItem
-                                href="/"
-                                icon="mdi mdi-store-outline"
-                            >
-                                Volver a la Tienda
-                            </MenuItem>
+                            {renderDynamicMenu(menusCustomer)}
                         </ul>
                     </div>
                 )}
                 {hasRole("Seller") && !hasAnyRole(["Root", "Admin"]) && (
                     <div id="sidebar-menu" className="show">
                         <ul id="side-menu">
-                            <li className="menu-title">Ventas</li>
-
-                            <MenuItem
-                                href="/seller/home"
-                                icon="mdi mdi-view-dashboard-outline"
-                            >
-                                Dashboard
-                            </MenuItem>
-                            <MenuItem
-                                href="/seller/orders"
-                                icon="mdi mdi-cart-outline"
-                            >
-                                Mis Pedidos
-                            </MenuItem>
-                            <MenuItem
-                                href="/seller/vault"
-                                icon="mdi mdi-safe-square-outline"
-                            >
-                                Mi Bóveda
-                            </MenuItem>
-
-                            <li className="menu-title">Mi Red</li>
-                            <MenuItem
-                                href="/seller/referrals"
-                                icon="mdi mdi-account-group-outline"
-                            >
-                                Mis Referidos
-                            </MenuItem>
-                            <MenuItem
-                                href="/seller/job-applications"
-                                icon="mdi mdi-clipboard-text-outline"
-                            >
-                                Mis Solicitudes
-                            </MenuItem>
-                            <MenuItem
-                                href="/seller/wallet"
-                                icon="mdi mdi-wallet-outline"
-                            >
-                                Mi Billetera
-                            </MenuItem>
-
-                            <li className="menu-title">Configuración</li>
-                            <MenuItem
-                                href="/seller/profile"
-                                icon="mdi mdi-account-cog-outline"
-                            >
-                                Mi Perfil
-                            </MenuItem>
-                            <MenuItem
-                                href="/account"
-                                icon="mdi mdi-shield-lock-outline"
-                            >
-                                Mi Cuenta
-                            </MenuItem>
-
-                            <li className="menu-title">Navegación</li>
-                            <MenuItem
-                                href="/"
-                                icon="mdi mdi-store-outline"
-                            >
-                                Volver a la Tienda
-                            </MenuItem>
+                            {renderDynamicMenu(menusSeller)}
                         </ul>
                     </div>
                 )}
                 {hasRole("Provider") && !hasAnyRole(["Root", "Admin"]) && (
                     <div id="sidebar-menu" className="show">
                         <ul id="side-menu">
-                            <MenuItem
-                                href="/provider/home"
-                                icon="mdi mdi-view-dashboard-outline"
-                            >
-                                Dashboard
-                            </MenuItem>
-
-                            <MenuItem
-                                href="/provider/items"
-                                icon="mdi mdi-package-variant-closed"
-                            >
-                                Mis Productos
-                            </MenuItem>
-
-                            <MenuItem
-                                href="/provider/orders"
-                                icon="mdi mdi-cart-outline"
-                            >
-                                Mis Pedidos
-                            </MenuItem>
-
-                            <MenuItem
-                                href="/provider/wallet"
-                                icon="mdi mdi-wallet-outline"
-                            >
-                                Mi Billetera
-                            </MenuItem>
-
-                            <li className="menu-title">Perfil</li>
-                            <MenuItem
-                                href="/provider/profile"
-                                icon="mdi mdi-account-box-outline"
-                            >
-                                Mi Perfil
-                            </MenuItem>
-
-                            <MenuItem
-                                href="/account"
-                                icon="mdi mdi-shield-lock-outline"
-                            >
-                                Mi Cuenta
-                            </MenuItem>
-
-                            <li className="menu-title">Navegación</li>
-                            <MenuItem
-                                href="/"
-                                icon="mdi mdi-store-outline"
-                            >
-                                Volver a la Tienda
-                            </MenuItem>
+                            {renderDynamicMenu(menusProvider)}
                         </ul>
                     </div>
                 )}

@@ -99,7 +99,8 @@
     "title": "Recursos",
     "items": [
       { "label": "Galeria", "href": "/admin/gallery", "icon": "mdi mdi-image-multiple" },
-      { "label": "Repositorio", "href": "/admin/repository", "icon": "mdi mdi-database" }
+      { "label": "Repositorio", "href": "/admin/repository", "icon": "mdi mdi-database" },
+      { "label": "Catálogos PDF", "href": "/admin/catalogs", "icon": "mdi mdi-book-open-page-variant" }
     ]
   },
   {

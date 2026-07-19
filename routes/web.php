@@ -53,6 +53,7 @@ use App\Http\Controllers\Admin\CouponController as AdminCouponController;
 use App\Http\Controllers\Admin\DiscountRulesController as AdminDiscountRulesController;
 use App\Http\Controllers\Admin\FaqController as AdminFaqController;
 use App\Http\Controllers\Admin\RankController as AdminRankController;
+use App\Http\Controllers\Admin\CatalogController as AdminCatalogController;
 use App\Http\Controllers\Admin\RepositoryController as AdminRepositoryController;
 use App\Http\Controllers\Admin\SaleStatusController as AdminSaleStatusController;
 use App\Http\Controllers\Admin\ComplaintController as AdminComplaintController;
@@ -196,6 +197,7 @@ Route::middleware(['can:Admin', 'auth'])->prefix('admin')->group(function () {
 
     Route::get('/gallery', [AdminGalleryController::class, 'reactView'])->name('Admin/Gallery.jsx');
     Route::get('/repository', [AdminRepositoryController::class, 'reactView'])->name('Admin/Repository.jsx');
+    Route::get('/catalogs', [AdminCatalogController::class, 'reactView'])->name('Admin/Catalogs.jsx');
 
     Route::middleware(['can:Root'])->get('/system', [AdminSystemController::class, 'reactView'])->name('Admin/System.jsx');
     Route::middleware(['can:Root'])->get('/menus', [RoleHasMenuController::class, 'reactView'])->name('Admin/Menus.jsx');
@@ -224,6 +226,7 @@ Route::middleware(['auth', 'can:Seller'])->prefix('seller')->group(function () {
     Route::get('/referrals', [AdminSellerController::class, 'referrals'])->name('Seller/Referrals.jsx');
     Route::get('/wallet', [\App\Http\Controllers\Admin\WithdrawalController::class, 'wallet'])->name('Seller/Wallet.jsx');
     Route::post('/wallet/withdraw', [\App\Http\Controllers\Admin\WithdrawalController::class, 'storeRequest']);
+    Route::get('/catalogs', [\App\Http\Controllers\Seller\CatalogController::class, 'reactView'])->name('Seller/Catalogs.jsx');
 });
 
 // Email verification route

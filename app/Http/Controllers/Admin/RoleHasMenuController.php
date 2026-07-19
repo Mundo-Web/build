@@ -18,9 +18,11 @@ class RoleHasMenuController extends BasicController
 
     public function setReactViewProperties(Request $request)
     {
-        $menus = RoleHasMenu::where('role_id', 1)->get();
+        $menus = RoleHasMenu::all();
+        $roles = Role::where('name', '!=', 'Root')->get();
         return [
-            'menus' => $menus
+            'menus' => $menus,
+            'roles' => $roles
         ];
     }
 
@@ -34,11 +36,12 @@ class RoleHasMenuController extends BasicController
 
             $menu = $body['menu'] ?? null;
             $canAccess = $body['can_access'] ?? true;
+            $roleId = $body['role_id'] ?? 1;
 
             if (!$menu) throw new \Exception('El campo menu es requerido');
 
             $jpa = RoleHasMenu::updateOrCreate([
-                'role_id' => 1,
+                'role_id' => $roleId,
                 'menu' => $menu
             ], [
                 'can_access' => $canAccess

@@ -1,1 +1,0 @@
-var e=Object.defineProperty,t=(t,s,a)=>((t,s,a)=>s in t?e(t,s,{enumerable:!0,configurable:!0,writable:!0,value:a}):t[s]=a)(t,"symbol"!=typeof s?s+"":s,a);import{B as s}from"./BasicRest-DMVvWTck.js";class a extends s{constructor(){super(...arguments),t(this,"path","admin/attributes"),t(this,"hasFiles",!1)}}export{a as A};

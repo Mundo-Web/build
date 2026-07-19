@@ -70,6 +70,7 @@ use App\Http\Controllers\Admin\ImageUploadController;
 use App\Http\Controllers\Admin\NotificationVariableController;
 use App\Http\Controllers\Api\NotificationVariablesController;
 use App\Http\Controllers\Admin\RepositoryController as AdminRepositoryController;
+use App\Http\Controllers\Admin\CatalogController as AdminCatalogController;
 use App\Http\Controllers\Admin\SettingController as AdminSettingController;
 use App\Http\Controllers\Admin\CouponController as AdminCouponController;
 use App\Http\Controllers\Admin\SaleStatusController as AdminSaleStatusController;
@@ -818,6 +819,12 @@ Route::middleware('auth')->group(function () {
     Route::post('/repository/paginate', [AdminRepositoryController::class, 'paginate']);
     Route::delete('/repository/{id}', [AdminRepositoryController::class, 'delete']);
 
+    Route::post('/catalogs', [AdminCatalogController::class, 'save']);
+    Route::post('/catalogs/paginate', [AdminCatalogController::class, 'paginate']);
+    Route::patch('/catalogs/status', [AdminCatalogController::class, 'status']);
+    Route::patch('/catalogs/{field}', [AdminCatalogController::class, 'boolean']);
+    Route::delete('/catalogs/{id}', [AdminCatalogController::class, 'delete']);
+
     Route::post('/settings', [AdminSettingController::class, 'save']);
     Route::post('/settings/paginate', [AdminSettingController::class, 'paginate']);
     Route::patch('/settings/status', [AdminSettingController::class, 'status']);
@@ -877,6 +884,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/orders/paginate', [\App\Http\Controllers\Seller\SellerOrderController::class, 'paginate']);
     Route::get('/orders/{id}', [\App\Http\Controllers\Seller\SellerOrderController::class, 'get']);
     Route::get('/sale-statuses/by-sale/{id}', [\App\Http\Controllers\Admin\SaleStatusController::class, 'bySale']);
+    Route::post('/catalogs/paginate', [\App\Http\Controllers\Seller\CatalogController::class, 'paginate']);
   });
 });
 

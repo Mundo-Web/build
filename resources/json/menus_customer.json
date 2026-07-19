@@ -1,0 +1,23 @@
+[
+  {
+    "title": "Panel del Cliente",
+    "items": [
+      { "label": "Panel de Inicio", "href": "/customer/dashboard", "icon": "mdi mdi-view-dashboard-outline" },
+      { "label": "Mis Pedidos", "href": "/customer/orders", "icon": "mdi mdi-cart-outline" }
+    ]
+  },
+  {
+    "title": "Mi Cuenta",
+    "items": [
+      { "label": "Mi Perfil", "href": "/profile", "icon": "mdi mdi-account-box-outline" },
+      { "label": "Seguridad y Cuenta", "href": "/account", "icon": "mdi mdi-shield-lock-outline" },
+      { "label": "Libro de Reclamaciones", "href": "/libro-reclamaciones", "icon": "mdi mdi-alert-circle-outline" }
+    ]
+  },
+  {
+    "title": "Navegación",
+    "items": [
+      { "label": "Volver a la Tienda", "href": "/", "icon": "mdi mdi-store-outline" }
+    ]
+  }
+]
