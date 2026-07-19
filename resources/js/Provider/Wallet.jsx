@@ -169,67 +169,102 @@ const Wallet = ({ wallet, history, user_financial_details }) => {
 
             <div className="row">
                 <div className="col-lg-8">
-                    <div className="card border-0 shadow-sm" style={{ borderRadius: '1rem' }}>
-                        <div className="card-header bg-transparent border-0 pt-4 px-4">
-                            <h5 className="card-title mb-0">Historial Financiero</h5>
+                    <div className="card border-0 shadow-sm" style={{ borderRadius: '1rem', overflow: 'hidden' }}>
+                        <div className="card-header bg-transparent border-0 pt-4 px-4 pb-2 d-flex align-items-center justify-content-between">
+                            <h5 className="card-title mb-0 fw-bold text-dark" style={{ fontFamily: "'Outfit', sans-serif" }}>Historial Financiero</h5>
+                            <span className="badge bg-light text-muted border px-2 py-1" style={{ fontSize: '11px' }}>
+                                {history.length} {history.length === 1 ? 'movimiento' : 'movimientos'}
+                            </span>
                         </div>
                         <div className="card-body p-0">
                             <div className="table-responsive">
                                 <table className="table table-hover align-middle mb-0">
-                                    <thead className="bg-light">
+                                    <thead className="bg-light" style={{ borderBottom: '1px solid rgba(0,0,0,0.06)' }}>
                                         <tr>
-                                            <th className="px-4 border-0">Fecha</th>
-                                            <th className="border-0">Concepto</th>
-                                            <th className="border-0">Tipo</th>
-                                            <th className="border-0">Monto</th>
-                                            <th className="px-4 border-0 text-end">Estado</th>
+                                            <th className="px-4 py-3 border-0 text-uppercase text-muted fw-bold" style={{ fontSize: '11px', letterSpacing: '0.05em', fontFamily: "'Outfit', sans-serif" }}>Fecha</th>
+                                            <th className="py-3 border-0 text-uppercase text-muted fw-bold" style={{ fontSize: '11px', letterSpacing: '0.05em', fontFamily: "'Outfit', sans-serif" }}>Concepto</th>
+                                            <th className="py-3 border-0 text-uppercase text-muted fw-bold" style={{ fontSize: '11px', letterSpacing: '0.05em', fontFamily: "'Outfit', sans-serif" }}>Tipo</th>
+                                            <th className="py-3 border-0 text-uppercase text-muted fw-bold" style={{ fontSize: '11px', letterSpacing: '0.05em', fontFamily: "'Outfit', sans-serif" }}>Monto</th>
+                                            <th className="px-4 py-3 border-0 text-uppercase text-muted fw-bold text-end" style={{ fontSize: '11px', letterSpacing: '0.05em', fontFamily: "'Outfit', sans-serif" }}>Estado</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {history.map((item, index) => (
-                                            <tr key={index}>
-                                                <td className="px-4 text-muted small">
-                                                    {new Date(item.created_at).toLocaleDateString()}
-                                                </td>
-                                                <td>
-                                                    <span className="fw-medium text-dark">{item.description}</span>
-                                                </td>
-                                                <td>
-                                                    {item.type !== 'withdrawal' ? 
-                                                        <span className="badge badge-soft-info px-2">Venta</span> : 
-                                                        <span className="badge badge-soft-warning px-2">Retiro</span>
-                                                    }
-                                                </td>
-                                                <td className={item.type !== 'withdrawal' ? 'text-success fw-bold' : 'text-danger fw-bold'}>
-                                                    {item.type !== 'withdrawal' ? '+' : '-'} {CurrencySymbol()} {parseFloat(item.amount).toLocaleString('es-PE', { minimumFractionDigits: 2 })}
-                                                </td>
-                                                <td className="px-4 text-end">
-                                                    <div className="d-flex align-items-center justify-content-end gap-2">
-                                                        {item.receipt_path && (
-                                                            <a 
-                                                                href={`/api/withdrawal/media/${item.receipt_path}`} 
-                                                                target="_blank" 
-                                                                rel="noopener noreferrer"
-                                                                className="btn btn-sm btn-soft-primary rounded-circle p-1 d-flex align-items-center justify-content-center"
-                                                                style={{ width: '28px', height: '28px' }}
-                                                                title="Ver Comprobante de Pago"
+                                        {history.map((item, index) => {
+                                            const isWithdrawal = item.type === 'withdrawal';
+                                            return (
+                                                <tr key={index} style={{ borderBottom: '1px solid rgba(0,0,0,0.04)' }}>
+                                                    <td className="px-4 text-secondary fw-medium" style={{ fontSize: '13px' }}>
+                                                        {new Date(item.created_at).toLocaleDateString('es-PE', { day: '2-digit', month: '2-digit', year: 'numeric' })}
+                                                    </td>
+                                                    <td>
+                                                        <div className="d-flex align-items-center">
+                                                            <div 
+                                                                className={`rounded-circle d-flex align-items-center justify-content-center me-2 flex-shrink-0`}
+                                                                style={{ 
+                                                                    width: '28px', 
+                                                                    height: '28px', 
+                                                                    background: isWithdrawal ? '#fff5f5' : '#f0fdf4',
+                                                                    color: isWithdrawal ? '#ef4444' : '#22c55e'
+                                                                }}
                                                             >
-                                                                <i className="mdi mdi-eye fs-5"></i>
-                                                            </a>
+                                                                <i className={`mdi ${isWithdrawal ? 'mdi-minus-circle-outline' : 'mdi-plus-circle-outline'} fs-5`}></i>
+                                                            </div>
+                                                            <span className="fw-semibold text-dark-50" style={{ fontSize: '13px' }}>
+                                                                {item.description}
+                                                            </span>
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        {isWithdrawal ? (
+                                                            <span className="badge bg-soft-danger text-danger rounded-pill px-2 py-1" style={{ fontSize: '10px', fontWeight: 'bold' }}>Retiro</span>
+                                                        ) : (
+                                                            <span className="badge bg-soft-success text-success rounded-pill px-2 py-1" style={{ fontSize: '10px', fontWeight: 'bold' }}>Ingreso</span>
                                                         )}
-                                                        <span className={`badge rounded-pill px-3 ${
-                                                            item.status === 'completed' || item.status === 'paid' || item.status === 'approved' ? 'bg-success' : 
-                                                            item.status === 'pending' ? 'bg-warning text-dark' : 'bg-danger'
-                                                        }`}>
-                                                            {item.status.charAt(0).toUpperCase() + item.status.slice(1)}
-                                                        </span>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        ))}
+                                                    </td>
+                                                    <td className={`${!isWithdrawal ? 'text-success' : 'text-danger'} fw-bold`} style={{ fontSize: '14px', fontFamily: "'Outfit', sans-serif" }}>
+                                                        {!isWithdrawal ? '+' : '-'} {CurrencySymbol()} {parseFloat(item.amount).toLocaleString('es-PE', { minimumFractionDigits: 2 })}
+                                                    </td>
+                                                    <td className="px-4 text-end">
+                                                        <div className="d-flex align-items-center justify-content-end gap-2">
+                                                            {item.receipt_path && (
+                                                                <a 
+                                                                    href={`/api/withdrawal/media/${item.receipt_path}`} 
+                                                                    target="_blank" 
+                                                                    rel="noopener noreferrer"
+                                                                    className="btn btn-xs btn-soft-primary d-inline-flex align-items-center gap-1 border-0 rounded-pill px-2 py-1 transition-all"
+                                                                    style={{ fontSize: '11px', fontWeight: '600' }}
+                                                                    title="Ver Comprobante de Pago"
+                                                                >
+                                                                    <i className="mdi mdi-file-document-outline"></i>
+                                                                    Comprobante
+                                                                </a>
+                                                            )}
+                                                            {(() => {
+                                                                const statusLower = String(item.status).toLowerCase();
+                                                                switch(statusLower) {
+                                                                    case 'completed':
+                                                                    case 'paid':
+                                                                    case 'approved':
+                                                                        return <span className="badge bg-soft-success text-success rounded-pill px-3 py-1 fw-bold" style={{ fontSize: '11px' }}>Completado</span>;
+                                                                    case 'pending':
+                                                                        return <span className="badge bg-soft-warning text-warning rounded-pill px-3 py-1 fw-bold" style={{ fontSize: '11px' }}>Pendiente</span>;
+                                                                    case 'rejected':
+                                                                    case 'cancelled':
+                                                                    case 'failed':
+                                                                        return <span className="badge bg-soft-danger text-danger rounded-pill px-3 py-1 fw-bold" style={{ fontSize: '11px' }}>Rechazado</span>;
+                                                                    default:
+                                                                        return <span className="badge bg-soft-secondary text-secondary rounded-pill px-3 py-1 fw-bold" style={{ fontSize: '11px' }}>{item.status}</span>;
+                                                                }
+                                                            })()}
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            );
+                                        })}
                                         {history.length === 0 && (
                                             <tr>
-                                                <td colSpan="5" className="text-center py-5 text-muted italic">
+                                                <td colSpan="5" className="text-center py-5 text-muted fw-medium italic" style={{ fontSize: '13px' }}>
+                                                    <i className="mdi mdi-information-outline me-1 fs-5 align-middle"></i>
                                                     No se encontraron movimientos en tu billetera.
                                                 </td>
                                             </tr>
