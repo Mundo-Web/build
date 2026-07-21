@@ -705,8 +705,18 @@
           "message_whatsapp",
           "cintillo"
         ]
+      },
+      {
+        "id": "HeaderFimesac",
+        "name": "Header Fimesac",
+        "image": "header-simple.png",
+        "data": [
+          "class"
+        ],
+        "generals": []
       }
     ]
+
   },
   {
     "id": "floating",
@@ -894,6 +904,22 @@
         ]
       },
       {
+        "id": "SliderFimesac",
+        "name": "Slider Fimesac",
+        "image": "slider-simple.png",
+        "data": [
+          "class",
+          "bool:infiniteLoop:Loop Infinito",
+          "bool:showNavigation:Mostrar Flechas de Navegación",
+          "bool:showPagination:Mostrar Paginación",
+          "bool:animation_slider:Animación de Imagen (Efecto Ken Burns)"
+        ],
+        "using": {
+          "model": "Slider"
+        }
+      },
+      {
+
         "id": "SliderMultivet",
         "name": "Slider Multivet",
         "image": "slider-simple.png",
@@ -2330,6 +2356,20 @@
             "featured"
           ]
         }
+      },
+      {
+        "id": "CategoryFimesac",
+        "name": "Categorías Fimesac",
+        "image": "categories-simple.png",
+        "data": [
+          "path",
+          "title",
+          "class"
+        ],
+        "using": {
+          "model": "Category",
+          "limit": 8
+        }
       }
     ]
   },
@@ -2504,6 +2544,25 @@
           ]
         },
         "generals": []
+      },
+      {
+        "id": "IndicatorFimesac",
+        "name": "Indicadores Fimesac",
+        "image": "indicator-simple.png",
+        "data": [
+          "class"
+        ],
+        "using": {
+          "model": "Indicator",
+          "fields": [
+            "symbol",
+            "name",
+            "subtitle",
+            "badge",
+            "description",
+            "order_index"
+          ]
+        }
       }
     ]
   },
@@ -3281,6 +3340,31 @@
           "limit": 24
         },
         "generals": []
+      },
+      {
+        "id": "ProductFimesac",
+        "name": "Productos Fimesac",
+        "image": "products-grid-rainstar.png",
+        "data": [
+          "title_recommended",
+          "title_new",
+          "path",
+          "class"
+        ],
+        "using": {
+          "model": "Item",
+          "filters": [
+            "featured",
+            "recommended",
+            "is_new",
+            "most_view"
+          ],
+          "with": [
+            "category",
+            "brand"
+          ],
+          "limit": 12
+        }
       }
     ]
   },

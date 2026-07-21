@@ -18,6 +18,7 @@ const SYSTEM_FIELDS = [
     { key: "subcategoria", dbKey: "subcategory_id", label: "Subcategoría", required: false, description: "Subcategoría" },
     { key: "descuento", dbKey: "discount", label: "Precio Descuento", required: false, description: "Precio promocional" },
     { key: "stock", dbKey: "stock", label: "Stock / Inventario", required: false, description: "Cantidad disponible" },
+    { key: "stock_unlimited", dbKey: "stock_unlimited", label: "Stock Ilimitado", required: false, description: "1 / Sí / True (Si es ilimitado)" },
     { key: "color", dbKey: "color", label: "Color", required: false, description: "Color específico" },
     { key: "talla", dbKey: "size", label: "Talla", required: false, description: "Tamaño o dimensión" },
     { key: "summary", dbKey: "summary", label: "Resumen Corto", required: false, description: "Descripción corta" },
@@ -63,6 +64,7 @@ const ModalImportItem = ({ gridRef, modalRef, excelTemplate }) => {
         if (field.key === "promociones") return true;
         if (field.key === "atributos") return true;
         if (field.key === "valores") return true;
+        if (field.key === "stock_unlimited") return true;
 
         return Fillable.has("items", field.dbKey);
     });

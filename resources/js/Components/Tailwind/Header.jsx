@@ -40,6 +40,7 @@ const HeaderWebQuirurgica = React.lazy(
 const HeaderWebQuirurgica2 = React.lazy(
     () => import("./Headers/HeaderWebQuirurgica2"),
 );
+const HeaderFimesac = React.lazy(() => import("./Headers/HeaderFimesac"));
 
 const Header = ({
     data,
@@ -382,6 +383,14 @@ const Header = ({
                         totalPrice={totalPrice}
                         pages={pages}
                         isUser={isUser}
+                        generals={generals}
+                    />
+                );
+            case "HeaderFimesac":
+                return (
+                    <HeaderFimesac
+                        data={data}
+                        pages={pages}
                         generals={generals}
                     />
                 );

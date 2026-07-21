@@ -48,7 +48,14 @@ class UnifiedItemImport implements ToModel, WithHeadingRow, SkipsOnError, SkipsO
     public function __construct(array $options = [])
     {
         $this->importMode = $options['mode'] ?? 'reset';
-        $this->truncateMode = ($this->importMode === 'reset') ? true : false;
+        
+        // Respetar explícitamente el parámetro 'truncate' si se pasa en $options (ej. al previsualizar)
+        if (array_key_exists('truncate', $options)) {
+            $this->truncateMode = filter_var($options['truncate'], FILTER_VALIDATE_BOOLEAN);
+        } else {
+            $this->truncateMode = ($this->importMode === 'reset');
+        }
+
         $this->fieldMappings = $options['fieldMappings'] ?? $this->getDefaultFieldMappings();
 
         self::$downloadCache = [];
@@ -77,6 +84,7 @@ class UnifiedItemImport implements ToModel, WithHeadingRow, SkipsOnError, SkipsO
             'precio' => ['precio', 'price', 'Precio'],
             'descuento' => ['descuento', 'discount', 'precio_descuento'],
             'stock' => ['stock', 'cantidad', 'inventory', 'Stock'],
+            'stock_unlimited' => ['stock_unlimited', 'is_stock_unlimited', 'stock_ilimitado', 'es_stock_ilimitado', 'ilimitado', 'Stock ilimitado', 'Stock Ilimitado', 'stock_unlimited_1_0'],
             'color' => ['color', 'colour'],
             'talla' => ['size', 'talla', 'size_talla'],
             'agrupador' => ['agrupador'],
@@ -327,6 +335,12 @@ class UnifiedItemImport implements ToModel, WithHeadingRow, SkipsOnError, SkipsO
                 }
             }
 
+            // Determinar si el stock es ilimitado
+            $rawStock = strtolower(trim((string)$this->getFieldValue($row, 'stock', '')));
+            $isUnlimitedByStockField = in_array($rawStock, ['ilimitado', 'unlimited', 'infinito', '-1']);
+            $isUnlimitedByField = $this->getBooleanValue($row, 'stock_unlimited', false);
+            $stockUnlimited = $isUnlimitedByStockField || $isUnlimitedByField;
+
             $itemData = [
                 'sku' => $sku,
                 'agrupador' => $this->getFieldValue($row, 'agrupador', ''),
@@ -344,7 +358,8 @@ class UnifiedItemImport implements ToModel, WithHeadingRow, SkipsOnError, SkipsO
                 'store_id' => $store ? $store->id : null,
                 'image' => $this->resolveMainImage($row, $sku),
                 'slug' => $slug,
-                'stock' => $this->getNumericValue($row, 'stock', 10),
+                'stock' => $stockUnlimited ? 0 : $this->getNumericValue($row, 'stock', 10),
+                'stock_unlimited' => $stockUnlimited,
                 'weight' => $this->getNumericValue($row, 'peso', 0),
                 'pdf' => $this->getPdfFile($sku),
                 // Nuevos campos booleanos

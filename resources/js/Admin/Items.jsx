@@ -1345,6 +1345,50 @@ const Items = ({
                         dataType: "number",
                         width: "75px",
                     },
+                    Fillable.has("items", "stock") && {
+                        dataField: "stock",
+                        caption: "Stock",
+                        dataType: "number",
+                        width: "85px",
+                        cellTemplate: (container, { data }) => {
+                            const isUnlimited =
+                                data.stock_unlimited === 1 ||
+                                data.stock_unlimited === "1" ||
+                                data.stock_unlimited === true;
+                            container.html(
+                                renderToString(
+                                    <span className={isUnlimited ? "badge bg-info-subtle text-info border border-info" : "fw-bold"}>
+                                        {isUnlimited ? "Ilimitado" : (data.stock ?? 0)}
+                                    </span>,
+                                ),
+                            );
+                        },
+                    },
+                    Fillable.has("items", "stock_unlimited") && {
+                        dataField: "stock_unlimited",
+                        caption: "Stock Ilimitado",
+                        dataType: "boolean",
+                        width: "115px",
+                        cellTemplate: (container, { data }) => {
+                            const isUnlimited =
+                                data.stock_unlimited === 1 ||
+                                data.stock_unlimited === "1" ||
+                                data.stock_unlimited === true;
+                            ReactAppend(
+                                container,
+                                <SwitchFormGroup
+                                    checked={isUnlimited}
+                                    onChange={(e) =>
+                                        onBooleanChange({
+                                            id: data.id,
+                                            field: "stock_unlimited",
+                                            value: e.target.checked ? 1 : 0,
+                                        })
+                                    }
+                                />,
+                            );
+                        },
+                    },
                     {
                         dataField: "image",
                         caption: "Imagen",
@@ -2455,7 +2499,7 @@ const Items = ({
                                         </div>
                                     </div>
                                 )}
-                                {Fillable.has("items", "stock") && (
+                                {(Fillable.has("items", "stock") || Fillable.has("items", "stock_unlimited")) && (
                                     <div className="col-md-6">
                                         <div className="card border-0 shadow-sm h-100">
                                             <div className="card-header">
@@ -2465,28 +2509,32 @@ const Items = ({
                                                 </h6>
                                             </div>
                                             <div className="card-body">
-                                                <div className="mb-3">
-                                                    <SwitchFormGroup
-                                                        label="Stock Ilimitado"
-                                                        checked={isStockUnlimited}
-                                                        onChange={(e) =>
-                                                            setIsStockUnlimited(
-                                                                e.target.checked,
-                                                            )
-                                                        }
+                                                {Fillable.has("items", "stock_unlimited") && (
+                                                    <div className="mb-3">
+                                                        <SwitchFormGroup
+                                                            label="Stock Ilimitado"
+                                                            checked={isStockUnlimited}
+                                                            onChange={(e) =>
+                                                                setIsStockUnlimited(
+                                                                    e.target.checked,
+                                                                )
+                                                            }
+                                                        />
+                                                    </div>
+                                                )}
+                                                {Fillable.has("items", "stock") && (
+                                                    <InputFormGroup
+                                                        label="Stock Disponible"
+                                                        eRef={stockRef}
+                                                        type="number"
+                                                        required={!isStockUnlimited}
+                                                        disabled={isStockUnlimited}
                                                     />
-                                                </div>
-                                                <InputFormGroup
-                                                    label="Stock Disponible"
-                                                    eRef={stockRef}
-                                                    type="number"
-                                                    required={!isStockUnlimited}
-                                                    disabled={isStockUnlimited}
-                                                />
+                                                )}
                                             </div>
                                         </div>
                                     </div>
-                                )}{" "}
+                                )}
                             </div>
                         </div>
 
