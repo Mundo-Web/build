@@ -19,11 +19,10 @@ const HeaderFimesac = ({ data, pages, generals = [] }) => {
         <>
             <header
                 id={data?.element_id || null}
-                className={`bg-white sticky top-0 z-50 border-b border-slate-200 transition-all duration-300 ${
-                    isFixed ? "shadow-md py-1" : "py-2"
-                } ${data?.class || ""}`}
+                className={`bg-white sticky top-0 z-50 border-b border-slate-200 transition-all duration-300 ${isFixed ? "shadow-md py-1" : "py-2"
+                    } ${data?.class || ""}`}
             >
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div className=" mx-auto px-primary 2xl:px-0 2xl:max-w-7xl">
                     <div className="flex justify-between items-center h-20">
                         {/* Logo Section */}
                         <div className="flex items-center">
@@ -53,11 +52,10 @@ const HeaderFimesac = ({ data, pages, generals = [] }) => {
                                         <a
                                             key={index}
                                             href={page.pseudo_path || page.path}
-                                            className={`text-sm font-medium transition-colors uppercase tracking-widest ${
-                                                isActive
+                                            className={`text-sm font-medium transition-colors uppercase tracking-widest ${isActive
                                                     ? "text-primary"
                                                     : "text-neutral-dark hover:text-primary"
-                                            }`}
+                                                }`}
                                         >
                                             {page.name}
                                         </a>
@@ -104,11 +102,10 @@ const HeaderFimesac = ({ data, pages, generals = [] }) => {
                                             key={index}
                                             href={page.pseudo_path || page.path}
                                             onClick={() => setIsOpen(false)}
-                                            className={`block px-4 py-3 text-base font-medium font-display transition-colors border-l-2 ${
-                                                isActive
+                                            className={`block px-4 py-3 text-base font-medium font-display transition-colors border-l-2 ${isActive
                                                     ? "text-primary border-primary bg-blue-50/50"
                                                     : "text-neutral-dark border-transparent hover:text-primary hover:bg-slate-50 hover:border-slate-300"
-                                            }`}
+                                                }`}
                                         >
                                             {page.name}
                                         </a>

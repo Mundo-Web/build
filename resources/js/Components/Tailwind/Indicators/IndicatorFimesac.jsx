@@ -17,7 +17,7 @@ const IndicatorFimesac = ({ items = [], data }) => {
             className={`bg-primary text-white  relative z-20 py-6 ${data?.class || ""
                 }`}
         >
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className=" mx-auto px-primary 2xl:px-0 2xl:max-w-7xl">
                 <Swiper
                     modules={[Autoplay]}
                     spaceBetween={0}

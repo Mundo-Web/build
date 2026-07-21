@@ -562,6 +562,11 @@ const Banners = ({ pages, systems: systemsFromProps = [] }) => {
     // Tipos de banners disponibles - basados en components.json
     const bannerTypes = [
         {
+            id: "BannerFimesac",
+            name: "Banner Fimesac (Fondo Imagen)",
+            icon: "mdi mdi-image-area",
+        },
+        {
             id: "BannerSimple",
             name: "Banner Simple",
             icon: "mdi mdi-image-size-select-large",

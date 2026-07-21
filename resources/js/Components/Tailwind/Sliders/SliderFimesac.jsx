@@ -298,7 +298,7 @@ const SliderFimesac = ({ items = [], data, generals = [] }) => {
                         slide.show_content !== 0 &&
                         slide.show_content !== "0" &&
                         slide.show_content !== "false" && (
-                            <div className="absolute inset-0 z-20 flex flex-col justify-center max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full mt-16 md:mt-0">
+                            <div className="absolute inset-0 z-20 flex flex-col justify-center  mx-auto px-primary 2xl:px-0 2xl:max-w-7xl w-full mt-16 md:mt-0">
                                 <AnimatePresence>
                                     {currentSlide === index && (
                                         <motion.div

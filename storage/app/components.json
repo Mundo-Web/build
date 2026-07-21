@@ -2708,6 +2708,34 @@
         }
       },
       {
+        "id": "ProductFimesac",
+        "name": "Productos Fimesac",
+        "image": "products-list.png",
+        "data": [
+          "title",
+          "description",
+          "subtitle",
+          "path",
+          "link_catalog",
+          "class"
+        ],
+        "using": {
+          "model": "Item",
+          "filters": [
+            "featured",
+            "recommended",
+            "is_new",
+            "most_view"
+          ],
+          "with": [
+            "category",
+            "subcategory",
+            "brand"
+          ],
+          "limit": 12
+        }
+      },
+      {
         "id": "ProductSwiperBanners",
         "name": "Carrusel de Banners de Productos (ProductSwiperBanners)",
         "image": "product-infinite.png",
@@ -3514,6 +3542,20 @@
           "class_image_container",
           "class_image",
           "class_overlay"
+        ]
+      },
+      {
+        "id": "BannerFimesac",
+        "name": "Banner Fimesac (Fondo Imagen)",
+        "image": "banner-multivet.png",
+        "data": [
+          "subtitle",
+          "class_section",
+          "class_container",
+          "class_content",
+          "class_title",
+          "class_description",
+          "class_button"
         ]
       },
       {

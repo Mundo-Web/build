@@ -7,6 +7,9 @@ const ProductCarousel = React.lazy(() => import("./Products/ProductCarousel"));
 const ProductList = React.lazy(() => import("./Products/ProductList"));
 const ProductSlider = React.lazy(() => import("./Products/ProductSlider"));
 const ProductInfinite = React.lazy(() => import("./Products/ProductInfinite"));
+const ProductFimesac = React.lazy(() => import("./Products/ProductFimesac"));
+
+
 const ProductIbergruas = React.lazy(
     () => import("./Products/ProductIbergruas"),
 );
@@ -64,9 +67,6 @@ const ProductSwiperBanners = React.lazy(
 );
 const ProductSwiperTwenty = React.lazy(
     () => import("./Products/ProductSwiperTwenty"),
-);
-const ProductFimesac = React.lazy(
-    () => import("./Products/ProductFimesac"),
 );
 
 const Product = ({
@@ -135,6 +135,15 @@ const Product = ({
             case "ProductInfinite":
                 return (
                     <ProductInfinite
+                        data={data}
+                        items={items}
+                        cart={cart}
+                        setCart={setCart}
+                    />
+                );
+            case "ProductFimesac":
+                return (
+                    <ProductFimesac
                         data={data}
                         items={items}
                         cart={cart}
