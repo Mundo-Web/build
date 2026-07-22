@@ -73,7 +73,7 @@ const CardProductFimesac = ({ product = {}, data = {} }) => {
                         </span>
                     </div>
 
-                    <h3 className="font-display font-bold text-neutral-dark text-base md:text-lg  group-hover:text-primary transition-colors line-clamp-2 mb-2">
+                    <h3 className="font-display font-bold line-clamp-1 text-neutral-dark text-base md:text-lg  group-hover:text-primary transition-colors  mb-2">
                         {product.name}
                     </h3>
                 </div>

@@ -3404,9 +3404,15 @@
         "id": "BannerSimple",
         "name": "Simple",
         "data": [
-          "overlay",
-          "btn_secondary",
-          "class_button"
+          "select:variant:Estilo de Variante:original|Original (Redondeado),rounded-none|Bordes Rectos (Fimesac)",
+          "bool:overlay:Mostrar Capa Oscura (Overlay)",
+          "class_section",
+          "class_container",
+          "class_title",
+          "class_description",
+          "class_button",
+          "class_overlay",
+          "btn_secondary"
         ]
       },
       {
