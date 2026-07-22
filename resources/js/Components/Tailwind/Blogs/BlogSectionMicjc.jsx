@@ -6,6 +6,18 @@ import TextWithHighlight from "../../../Utils/TextWithHighlight";
 const BlogSectionMicjc = ({ data, items = [] }) => {
     if (!items || items.length === 0) return null;
 
+    // Variant support ("original" or "rounded-none" / "fimesac")
+    const variant = data?.variant || data?.type_variant || data?.class_variant || "original";
+    const isSharp =
+        variant === "rounded-none" ||
+        variant === "fimesac" ||
+        variant === "flat" ||
+        variant === "sharp";
+
+    const roundedCardClass = isSharp ? "rounded-none" : "rounded-[2.5rem]";
+    const roundedSecondaryCardClass = isSharp ? "rounded-none" : "rounded-[2rem]";
+    const roundedButtonClass = isSharp ? "rounded-none" : "rounded-full";
+
     // Take the latest 4 posts
     const latestPosts = items.slice(0, 4);
     const featuredPost = latestPosts[0];
@@ -100,7 +112,7 @@ const BlogSectionMicjc = ({ data, items = [] }) => {
 
                     <a
                         href={data?.blog_url || "/blogs"}
-                        className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-white border border-gray-200 hover:border-primary hover:text-primary rounded-full text-neutral-dark font-bold text-sm transition-all active:scale-95 shadow-sm whitespace-nowrap"
+                        className={`inline-flex items-center justify-center gap-2 px-6 py-3 bg-white border border-gray-200 hover:border-primary hover:text-primary ${roundedButtonClass} text-neutral-dark font-bold text-sm transition-all active:scale-95 shadow-sm whitespace-nowrap ${data?.class_button || ""}`}
                     >
                         {data?.view_all_text || "Ver todos los artículos"} <ArrowUpRight size={16} />
                     </a>
@@ -120,7 +132,7 @@ const BlogSectionMicjc = ({ data, items = [] }) => {
                             <article className="h-full">
                                 <a
                                     href={`/post/${featuredPost.slug}`}
-                                    className="group flex flex-col overflow-hidden transition-all duration-500 h-full rounded-[2.5rem] shadow-md hover:shadow-xl bg-white border border-transparent hover:border-gray-100 w-full"
+                                    className={`group flex flex-col overflow-hidden transition-all duration-500 h-full ${roundedCardClass} shadow-md hover:shadow-xl bg-white border border-transparent hover:border-gray-100 w-full ${data?.class_card || ""}`}
                                 >
                                     {/* Image Section - aspect-[4/3] with rounded corners */}
                                     <div className="relative w-full aspect-[4/3] overflow-hidden flex-shrink-0 bg-neutral-100">
@@ -182,7 +194,7 @@ const BlogSectionMicjc = ({ data, items = [] }) => {
                                 <article className="group h-full">
                                     <a
                                         href={`/post/${post.slug}`}
-                                        className="flex flex-col sm:flex-row overflow-hidden transition-all duration-500 h-full rounded-[2rem] shadow-md hover:shadow-lg bg-white border border-transparent hover:border-gray-100 w-full"
+                                        className={`flex flex-col sm:flex-row overflow-hidden transition-all duration-500 h-full ${roundedSecondaryCardClass} shadow-md hover:shadow-lg bg-white border border-transparent hover:border-gray-100 w-full ${data?.class_card || ""}`}
                                     >
                                         {/* Left: Small Image - aspect-video (16/9) */}
                                         <div className="relative w-full md:w-[40%] min-h-[160px] sm:min-h-full overflow-hidden bg-neutral-100 flex-shrink-0">

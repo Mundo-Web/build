@@ -4934,6 +4934,7 @@
         "name": "BlogSectionMicjc",
         "image": "blog-section-micjc.png",
         "data": [
+          "select:variant:Estilo de Variante:original|Original (Redondeado),rounded-none|Bordes Rectos (Fimesac)",
           "title",
           "subtitle",
           "posts_per_page",
@@ -4941,6 +4942,7 @@
           "read_more_text",
           "view_all_text",
           "class_section",
+          "class_title",
           "class_card",
           "class_button",
           "class_badge_category"
@@ -4975,8 +4977,13 @@
         "name": "Blog Micjc",
         "image": "blog-micjc.png",
         "data": [
+          "select:variant:Estilo de Variante:original|Original (Redondeado),rounded-none|Bordes Rectos (Fimesac)",
           "title",
-          "description"
+          "description",
+          "class_section",
+          "class_title",
+          "class_card",
+          "class_button"
         ],
         "using": {
           "model": "Post",

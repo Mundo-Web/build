@@ -11,6 +11,19 @@ const BlogMicjc = ({
     postsLatest = [],
     filterProps = {},
 }) => {
+    // Variant support ("original" or "rounded-none" / "fimesac")
+    const variant = data?.variant || data?.type_variant || data?.class_variant || "original";
+    const isSharp =
+        variant === "rounded-none" ||
+        variant === "fimesac" ||
+        variant === "flat" ||
+        variant === "sharp";
+
+    const roundedCardClass = isSharp ? "rounded-none" : "rounded-[2.5rem]";
+    const roundedSecondaryCardClass = isSharp ? "rounded-none" : "rounded-[2rem]";
+    const roundedButtonClass = isSharp ? "rounded-none" : "rounded-full";
+    const roundedDropdownClass = isSharp ? "rounded-none" : "rounded-[1.5rem]";
+
     // Extraer propiedades globales pasadas desde Blog.jsx
     const {
         categories = [],
@@ -139,7 +152,7 @@ const BlogMicjc = ({
                                 <article className="h-full">
                                     <a
                                         href={`/post/${featuredPost.slug}`}
-                                        className="group flex flex-col overflow-hidden transition-all duration-500 h-full rounded-[2.5rem] shadow-md hover:shadow-xl bg-white border border-transparent hover:border-gray-100 w-full"
+                                        className={`group flex flex-col overflow-hidden transition-all duration-500 h-full ${roundedCardClass} shadow-md hover:shadow-xl bg-white border border-transparent hover:border-gray-100 w-full ${data?.class_card || ""}`}
                                     >
                                         <div className="relative w-full aspect-[4/3] overflow-hidden flex-shrink-0 bg-neutral-100">
                                             <img
@@ -178,7 +191,7 @@ const BlogMicjc = ({
                                         <article className="group h-full">
                                             <a
                                                 href={`/post/${post.slug}`}
-                                                className="flex flex-col sm:flex-row overflow-hidden transition-all duration-500 h-full rounded-[2rem] shadow-md hover:shadow-lg bg-white border border-transparent hover:border-gray-100 w-full"
+                                                className={`flex flex-col sm:flex-row overflow-hidden transition-all duration-500 h-full ${roundedSecondaryCardClass} shadow-md hover:shadow-lg bg-white border border-transparent hover:border-gray-100 w-full ${data?.class_card || ""}`}
                                             >
                                                 <div className="relative w-full md:w-[40%] min-h-[160px] sm:min-h-full overflow-hidden bg-neutral-100 flex-shrink-0">
                                                     <img
@@ -234,8 +247,8 @@ const BlogMicjc = ({
                                         value={activeCategory}
                                         placeholder="Seleccionar Categoría"
                                         onChange={(val) => { setActiveCategory(val); setCurrentPage(1); }}
-                                        className="bg-white border-2 border-gray-200 hover:border-primary rounded-full font-bold text-sm text-neutral-dark shadow-sm transition-all duration-300"
-                                        classNameDropdown="rounded-[1.5rem] shadow-xl border border-gray-100"
+                                        className={`bg-white border-2 border-gray-200 hover:border-primary ${roundedButtonClass} font-bold text-sm text-neutral-dark shadow-sm transition-all duration-300`}
+                                        classNameDropdown={`${roundedDropdownClass} shadow-xl border border-gray-100`}
                                     />
                                 </div>
 
@@ -246,8 +259,8 @@ const BlogMicjc = ({
                                         value={sortOption}
                                         placeholder="Ordenar por"
                                         onChange={(val) => { setSortOption(val); setCurrentPage(1); }}
-                                        className="bg-white border-2 border-gray-200 hover:border-primary rounded-full font-bold text-sm text-neutral-dark shadow-sm transition-all duration-300"
-                                        classNameDropdown="rounded-[1.5rem] shadow-xl border border-gray-100"
+                                        className={`bg-white border-2 border-gray-200 hover:border-primary ${roundedButtonClass} font-bold text-sm text-neutral-dark shadow-sm transition-all duration-300`}
+                                        classNameDropdown={`${roundedDropdownClass} shadow-xl border border-gray-100`}
                                     />
                                 </div>
                             </div>
@@ -275,7 +288,7 @@ const BlogMicjc = ({
                                     <article className="h-full">
                                         <a
                                             href={`/post/${post.slug}`}
-                                            className="group flex flex-col overflow-hidden transition-all duration-500 h-full rounded-[2.5rem] shadow-md hover:shadow-xl bg-white border border-transparent hover:border-gray-100 w-full"
+                                            className={`group flex flex-col overflow-hidden transition-all duration-500 h-full ${roundedCardClass} shadow-md hover:shadow-xl bg-white border border-transparent hover:border-gray-100 w-full ${data?.class_card || ""}`}
                                         >
                                             <div className="relative w-full aspect-[4/3] overflow-hidden flex-shrink-0 bg-neutral-100">
                                                 <img
@@ -316,7 +329,7 @@ const BlogMicjc = ({
                         <button
                             onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
                             disabled={currentPage === 1}
-                            className="w-12 h-12 flex items-center justify-center rounded-full border-2 border-gray-200 text-neutral-dark disabled:opacity-50 disabled:cursor-not-allowed hover:border-primary hover:text-primary hover:bg-primary/5 transition-all duration-300"
+                            className={`w-12 h-12 flex items-center justify-center ${roundedButtonClass} border-2 border-gray-200 text-neutral-dark disabled:opacity-50 disabled:cursor-not-allowed hover:border-primary hover:text-primary hover:bg-primary/5 transition-all duration-300`}
                         >
                             <ChevronLeft size={20} />
                         </button>
@@ -333,7 +346,7 @@ const BlogMicjc = ({
                                         <button
                                             key={pageNumber}
                                             onClick={() => setCurrentPage(pageNumber)}
-                                            className={`w-12 h-12 rounded-full text-sm font-bold font-body transition-all duration-300 ${currentPage === pageNumber
+                                            className={`w-12 h-12 ${roundedButtonClass} text-sm font-bold font-body transition-all duration-300 ${currentPage === pageNumber
                                                 ? "bg-primary text-white shadow-md border-2 border-primary"
                                                 : "border-2 border-gray-200 text-neutral-dark hover:border-primary hover:text-primary hover:bg-primary/5"
                                                 }`}
@@ -358,7 +371,7 @@ const BlogMicjc = ({
                         <button
                             onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
                             disabled={currentPage === totalPages}
-                            className="w-12 h-12 flex items-center justify-center rounded-full border-2 border-gray-200 text-neutral-dark disabled:opacity-50 disabled:cursor-not-allowed hover:border-primary hover:text-primary hover:bg-primary/5 transition-all duration-300"
+                            className={`w-12 h-12 flex items-center justify-center ${roundedButtonClass} border-2 border-gray-200 text-neutral-dark disabled:opacity-50 disabled:cursor-not-allowed hover:border-primary hover:text-primary hover:bg-primary/5 transition-all duration-300`}
                         >
                             <ChevronRight size={20} />
                         </button>
