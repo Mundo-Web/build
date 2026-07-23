@@ -5142,7 +5142,8 @@
         "image": "post-detail-rainstar.png",
         "data": [
           "title",
-          "class_title"
+          "class_title",
+          "select:variant:Estilo de Card y Variante:Rainstar|Rainstar,rounded-none|Fimesac (Rounded None),original|Micjc (Rounded)"
         ],
         "using": {
           "model": "Post",

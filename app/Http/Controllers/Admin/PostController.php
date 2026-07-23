@@ -89,9 +89,11 @@ class PostController extends BasicController
                 if (Uuid::isValid($tag)) {
                     $tagId = $tag;
                 } else {
+                    // 'post_inline' = tags auto-creados desde el editor de posts (texto libre)
+                    // 'post' = tags maestros gestionados desde el panel Admin/PostTags
                     $tagJpa = Tag::firstOrCreate(
-                        ['name' => $tag, 'tag_type' => 'post'],
-                        ['tag_type' => 'post']
+                        ['name' => $tag, 'tag_type' => 'post_inline'],
+                        ['tag_type' => 'post_inline']
                     );
                     $tagId = $tagJpa->id;
                 }

@@ -28,11 +28,11 @@ const BlogMicjc = ({
     const {
         categories = [],
         activeCategory = "all",
-        setActiveCategory = () => {},
+        setActiveCategory = () => { },
         sortOption = "newest",
-        setSortOption = () => {},
+        setSortOption = () => { },
         currentPage = 1,
-        setCurrentPage = () => {},
+        setCurrentPage = () => { },
         filteredPosts = [],
         listLoading = false,
         totalPosts = 0,
@@ -131,7 +131,7 @@ const BlogMicjc = ({
                             />
                         </h2>
                         {data?.description && (
-                            <p className="text-neutral-500 text-base md:text-lg font-paragraph leading-relaxed mt-3">
+                            <p className="text-neutral-500 text-base md:text-lg font-paragraph  mt-3">
                                 {data.description}
                             </p>
                         )}
@@ -165,10 +165,10 @@ const BlogMicjc = ({
                                         </div>
                                         <div className="p-8 md:p-10 flex flex-col flex-grow text-left justify-between bg-white">
                                             <div className="w-full mb-6">
-                                                <span className="text-neutral-light text-xs md:text-sm font-bold uppercase tracking-widest mb-3 block">
+                                                <span className="text-neutral-light text-xs md:text-sm font-bold uppercase  mb-3 block">
                                                     {featuredPost?.category?.name || "Noticias"}
                                                 </span>
-                                                <h3 className="text-xl md:text-3xl font-bold font-title text-primary mb-4 group-hover:text-primary transition-colors duration-300 leading-snug">
+                                                <h3 className="text-xl md:text-3xl font-bold font-title text-primary mb-4 group-hover:text-primary transition-colors duration-300 ">
                                                     {featuredPost.title || featuredPost.name}
                                                 </h3>
                                                 <p className="text-sm md:text-base text-neutral-light font-paragraph mb-2 line-clamp-3">
@@ -203,13 +203,13 @@ const BlogMicjc = ({
                                                 </div>
                                                 <div className="p-6 flex flex-col justify-between flex-grow sm:w-[62%] bg-white">
                                                     <div className="w-full mb-3">
-                                                        <span className="text-primary text-[10px] md:text-xs font-bold uppercase tracking-wider mb-2 block">
+                                                        <span className="text-primary text-[10px] md:text-xs font-bold uppercase  mb-2 block">
                                                             {post?.category?.name || "Noticias"}
                                                         </span>
-                                                        <h4 className="text-base md:text-lg font-bold font-title text-neutral-dark mb-2 line-clamp-2 leading-snug">
+                                                        <h4 className="text-base md:text-lg font-bold font-title text-neutral-dark mb-2 line-clamp-2 ">
                                                             {post.title || post.name}
                                                         </h4>
-                                                        <p className="text-xs md:text-sm text-neutral-500 font-paragraph leading-relaxed mb-1 line-clamp-2">
+                                                        <p className="text-xs md:text-sm text-neutral-500 font-paragraph  mb-1 line-clamp-2">
                                                             {extractText(post.extract || post.summary || post.description || "", 115)}
                                                         </p>
                                                     </div>
@@ -300,10 +300,10 @@ const BlogMicjc = ({
                                             </div>
                                             <div className="p-8 flex flex-col flex-grow text-left justify-between bg-white">
                                                 <div className="w-full mb-6">
-                                                    <span className="text-neutral-light text-xs font-bold uppercase tracking-widest mb-3 block">
+                                                    <span className="text-neutral-light text-xs font-bold uppercase  mb-3 block">
                                                         {post?.category?.name || "Noticias"}
                                                     </span>
-                                                    <h4 className="text-xl font-bold font-title text-primary mb-3 group-hover:text-primary transition-colors duration-300 leading-snug line-clamp-2">
+                                                    <h4 className="text-xl font-bold font-title text-primary mb-3 group-hover:text-primary transition-colors duration-300  line-clamp-2">
                                                         {post.title || post.name}
                                                     </h4>
                                                     <p className="text-sm text-neutral-light font-paragraph mb-2 line-clamp-3">

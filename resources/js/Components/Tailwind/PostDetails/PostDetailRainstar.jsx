@@ -88,6 +88,20 @@ export default function PostDetailRainstar({ item, data }) {
         fetchRelated();
     }, [item]);
 
+    const variant = data?.variant || data?.type_variant || data?.class_variant || "Rainstar";
+    const isSharp =
+        variant === "rounded-none" ||
+        variant === "fimesac" ||
+        variant === "flat" ||
+        variant === "sharp";
+    const isMicjc = variant === "original" || variant === "micjc";
+
+    const roundedClass = isSharp
+        ? "rounded-none"
+        : isMicjc
+            ? "rounded-[2.5rem]"
+            : "rounded-none";
+
     const mins = readTime(item?.description);
 
     return (
@@ -102,7 +116,7 @@ export default function PostDetailRainstar({ item, data }) {
                 <div className="max-w-4xl mx-auto mb-8">
                     <a
                         href="/blog"
-                        className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-neutral-dark/60 hover:text-neutral-dark transition-colors duration-200"
+                        className="inline-flex items-center gap-2 text-xs font-bold uppercase  text-neutral-dark/60 hover:text-neutral-dark transition-colors duration-200"
                     >
                         <ArrowLeft size={14} strokeWidth={2.5} />
                         Volver al blog
@@ -112,7 +126,7 @@ export default function PostDetailRainstar({ item, data }) {
                 {/* Header Section */}
                 <div className="max-w-4xl mx-auto text-center mb-12">
                     {/* Category & Date */}
-                    <div className="flex flex-wrap justify-center items-center gap-4 text-xs font-bold tracking-widest text-neutral-dark/40 mb-8 uppercase">
+                    <div className="flex flex-wrap justify-center items-center gap-4 text-xs font-bold  text-neutral-dark/40 mb-8 uppercase">
                         <span className="hover:text-primary transition-colors cursor-pointer border-b border-transparent hover:border-primary pb-0.5" itemProp="articleSection">
                             {item?.category?.name}
                         </span>
@@ -124,7 +138,7 @@ export default function PostDetailRainstar({ item, data }) {
 
                     {/* Title */}
                     <h1
-                        className={`text-4xl md:text-5xl lg:text-6xl font-black tracking-tighter leading-[0.9] mb-10 text-neutral-dark ${data?.class_title || ""}`}
+                        className={`text-4xl md:text-5xl lg:text-6xl font-black   mb-10 text-neutral-dark ${data?.class_title || ""}`}
                         itemProp="headline"
                     >
                         <TextWithHighlight text={item?.name} />
@@ -136,7 +150,7 @@ export default function PostDetailRainstar({ item, data }) {
                             {item.tags.map((tag, idx) => (
                                 <span
                                     key={idx}
-                                    className="inline-block border border-gray-200 bg-gray-50 px-6 py-2 text-xs font-bold tracking-wider text-neutral-dark/60 rounded-none hover:bg-neutral-dark hover:text-white transition-all cursor-default"
+                                    className={`inline-block border border-gray-200 bg-gray-50 px-6 py-2 text-xs font-bold  text-neutral-dark/60 ${isMicjc ? "rounded-full" : "rounded-none"} hover:bg-neutral-dark hover:text-white transition-all cursor-default`}
                                 >
                                     #{tag.name}
                                 </span>
@@ -153,8 +167,8 @@ export default function PostDetailRainstar({ item, data }) {
                     transition={{ duration: 0.8 }}
                     className="w-full mb-16 md:mb-24"
                 >
-                    <div className="mx-auto w-full max-w-7xl border border-gray-100 p-3 bg-white shadow-2xl rounded-none">
-                        <div className="relative aspect-[21/9] w-full bg-gray-50 overflow-hidden rounded-none">
+                    <div className={`mx-auto w-full max-w-7xl border border-gray-100 p-3 bg-white shadow-2xl ${roundedClass}`}>
+                        <div className={`relative aspect-[21/9] w-full bg-gray-50 overflow-hidden ${roundedClass}`}>
                             <img
                                 src={`/storage/images/post/${item?.image}`}
                                 alt={item?.name}
@@ -171,9 +185,9 @@ export default function PostDetailRainstar({ item, data }) {
                 {/* Content */}
                 <div className="max-w-3xl mx-auto">
                     <div
-                        className="prose prose-lg md:prose-xl max-w-none 
-                        prose-headings:font-black prose-headings:tracking-tighter prose-headings:text-neutral-dark 
-                        prose-p:text-neutral-dark/80 prose-p:font-medium prose-p:leading-relaxed 
+                        className="prose prose-base md:prose-lg max-w-none 
+                        prose-headings:font-black  prose-headings:text-neutral-dark 
+                        prose-p:text-neutral-dark/80 prose-p:font-medium prose-p: 
                         prose-strong:text-neutral-dark 
                         prose-blockquote:border-l-4 prose-blockquote:border-primary prose-blockquote:bg-gray-50 
                         prose-blockquote:py-8 prose-blockquote:pl-8 prose-blockquote:italic prose-blockquote:font-bold 
@@ -184,7 +198,7 @@ export default function PostDetailRainstar({ item, data }) {
 
                     {/* Share Section */}
                     <div className="mt-24 pt-12 border-t border-gray-100 flex flex-col items-center">
-                        <h3 className="text-xs font-bold tracking-widest text-neutral-dark/40 mb-10 uppercase">
+                        <h3 className="text-xs font-bold  text-neutral-dark/40 mb-10 uppercase">
                             Compartir este artículo
                         </h3>
                         <div className="flex flex-col items-center gap-4">
@@ -212,14 +226,14 @@ export default function PostDetailRainstar({ item, data }) {
                                     <Link className="w-5 h-5 stroke-[1.5]" />
                                 </button>
                             </div>
-                            
+
                             <AnimatePresence>
                                 {copied && (
                                     <motion.p
                                         initial={{ opacity: 0, y: 4 }}
                                         animate={{ opacity: 1, y: 0 }}
                                         exit={{ opacity: 0 }}
-                                        className="text-xs font-bold uppercase tracking-wider text-primary mt-2"
+                                        className="text-xs font-bold uppercase  text-primary mt-2"
                                     >
                                         ✓ Enlace copiado al portapapeles
                                     </motion.p>
@@ -234,17 +248,17 @@ export default function PostDetailRainstar({ item, data }) {
                     <div className="mt-24 md:mt-40 border-t border-black/5 pt-24">
                         <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-8">
                             <div className="max-w-2xl">
-                                <span className="text-[11px] font-black tracking-[0.2em] text-primary mb-4 block uppercase whitespace-nowrap">
+                                <span className="text-[11px] font-black  text-primary mb-4 block uppercase whitespace-nowrap">
                                     SIGUE EXPLORANDO
                                 </span>
-                                <h2 className="text-4xl md:text-6xl font-black tracking-tighter leading-none text-neutral-dark">
+                                <h2 className="text-4xl md:text-6xl font-black   text-neutral-dark">
                                     Artículos Relacionados
                                 </h2>
                             </div>
                             <div className="shrink-0">
                                 <a
                                     href="/blog"
-                                    className="text-[11px] font-black tracking-[0.2em] uppercase border-b-2 border-neutral-dark pb-2 hover:text-primary hover:border-primary transition-all duration-300"
+                                    className="text-sm font-black  uppercase border-b-2 border-neutral-dark pb-2 hover:text-primary hover:border-primary transition-all duration-300"
                                 >
                                     Ver Todo el Blog
                                 </a>
@@ -256,6 +270,7 @@ export default function PostDetailRainstar({ item, data }) {
                                 <BlogPostCardRainstar
                                     key={post.id}
                                     post={post}
+                                    data={data}
                                 />
                             ))}
                         </div>

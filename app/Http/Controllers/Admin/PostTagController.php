@@ -12,15 +12,19 @@ class PostTagController extends BasicController
     public $reactView = 'Admin/PostTags';
     public $imageFields = ['image','icon'];
     public $manageFillable = [Tag::class];
+    public $skipStatusFilter = true; // Mostrar todos (activos e inactivos) en el admin
 
     /**
-     * Aplicar filtro para mostrar solo tags de posts
+     * Aplicar filtro para mostrar tags de posts:
+     * - 'post'        = tags maestros gestionados desde el panel Admin/PostTags
+     * - 'post_inline' = tags auto-creados al escribir texto libre en un post
+     * Ambos son válidos para asignar a posts desde Posts.jsx
      */
     public function beforeIndex(Request $request)
     {
         return [
             'filter' => function($query) {
-                $query->where('tag_type', 'post');
+                $query->whereIn('tag_type', ['post', 'post_inline']);
             }
         ];
     }

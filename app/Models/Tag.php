@@ -130,11 +130,13 @@ class Tag extends Model
     }
 
     /**
-     * Scope para obtener solo tags de posts
+     * Scope para obtener solo tags de posts:
+     * - 'post'        = tags maestros del panel Admin/PostTags
+     * - 'post_inline' = tags auto-creados al escribir texto libre en un post
      */
     public function scopeForPosts($query)
     {
-        return $query->where('tag_type', 'post');
+        return $query->whereIn('tag_type', ['post', 'post_inline']);
     }
 
     /**
