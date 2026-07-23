@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay, Navigation } from 'swiper/modules';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, ArrowRight } from 'lucide-react';
 import 'swiper/css';
 import 'swiper/css/autoplay';
 import 'swiper/css/navigation';
@@ -17,6 +17,61 @@ const FilterHuaillys = ({ items, data, cart, setCart, filteredData, setFavorites
     const navigationPrevRef = useRef(null);
     const navigationNextRef = useRef(null);
 
+    // Soporte para variante ("original" o "rounded-none" / "fimesac")
+    const variant =
+        data?.variant ||
+        data?.type_variant ||
+        data?.class_variant ||
+        data?.style ||
+        data?.option ||
+        "original";
+
+    const isSharp =
+        variant === "rounded-none" ||
+        variant === "fimesac" ||
+        variant === "flat" ||
+        variant === "sharp" ||
+        (typeof data?.class_section === "string" &&
+            data?.class_section.includes("rounded-none")) ||
+        (typeof data?.class === "string" &&
+            data?.class.includes("rounded-none"));
+
+    const typeCategoryCard =
+        data?.type_category_card ||
+        data?.type_card_category ||
+        (isSharp ? "CategoryFimesac" : "default");
+
+    const isFimesacCategoryCard =
+        typeCategoryCard === "CategoryFimesac" ||
+        typeCategoryCard === "fimesac" ||
+        isSharp;
+
+    const cardTypeToRender =
+        data?.type_card_product ||
+        (isSharp ? "CardProductFimesac" : "ProductCard");
+
+    // Helper robusto para obtener la URL correcta de la imagen de categoría
+    const getCategoryImageUrl = (cat) => {
+        const img =
+            cat?.image ||
+            cat?.banner ||
+            cat?.imagen ||
+            cat?.icon ||
+            cat?.picture ||
+            cat?.image_url ||
+            cat?.url;
+        if (!img || typeof img !== "string")
+            return "/assets/img/noimage/no_imagen_circular.png";
+        if (img.startsWith("http://") || img.startsWith("https://")) return img;
+        if (img.includes("storage/")) {
+            const index = img.indexOf("storage/");
+            return `/${img.substring(index)}`;
+        }
+        if (img.startsWith("/")) return img;
+        if (img.includes("/")) return `/storage/${img}`;
+        return `/storage/images/category/${img}`;
+    };
+
     const [categories, setCategories] = useState([]);
     const [selectedCategory, setSelectedCategory] = useState(null);
     const [products, setProducts] = useState([]);
@@ -25,28 +80,38 @@ const FilterHuaillys = ({ items, data, cart, setCart, filteredData, setFavorites
         category_id: [], // Inicialmente vacío, se llenará después de cargar categorías
     });
 
-    // Cargar categorías desde filteredData
+    // Cargar categorías desde filteredData, data o items como fallback
     useEffect(() => {
-        if (filteredData?.categories) {
-            setCategories(filteredData.categories);
+        const cats =
+            filteredData?.categories ||
+            data?.categories ||
+            (Array.isArray(items) &&
+                items.length > 0 &&
+                items.some((i) => i.name && (i.image || i.banner || i.slug))
+                ? items
+                : []);
 
-            
+        if (cats && cats.length > 0) {
+            setCategories(cats);
+
             // Si viene category desde URL, seleccionarla y convertir slug a ID
-            if (GET.category && filteredData.categories.length > 0) {
-                const categoryFromUrl = filteredData.categories.find(
-                    cat => cat.slug === GET.category || cat.id === parseInt(GET.category)
+            if (GET.category) {
+                const categoryFromUrl = cats.find(
+                    (cat) =>
+                        cat.slug === GET.category ||
+                        cat.id === parseInt(GET.category)
                 );
                 if (categoryFromUrl) {
                     setSelectedCategory(categoryFromUrl);
                     // Actualizar filtros con el ID de la categoría
-                    setSelectedFilters(prev => ({
+                    setSelectedFilters((prev) => ({
                         ...prev,
-                        category_id: [categoryFromUrl.id]
+                        category_id: [categoryFromUrl.id],
                     }));
                 }
             }
         }
-    }, [filteredData]);
+    }, [filteredData, data, items]);
 
     // Función para transformar filtros al formato del backend (como CatalagoFiltros)
     const transformFilters = (filters) => {
@@ -59,7 +124,7 @@ const FilterHuaillys = ({ items, data, cart, setCart, filteredData, setFavorites
                 "=",
                 id,
             ]);
-            
+
             if (categoryConditions.length === 1) {
                 transformedFilters.push(categoryConditions[0]);
             } else if (categoryConditions.length > 1) {
@@ -73,12 +138,12 @@ const FilterHuaillys = ({ items, data, cart, setCart, filteredData, setFavorites
         }
 
         // Si no hay filtros, devolver un array vacío para obtener todos los productos
-        return transformedFilters.length > 0 ? 
-            (transformedFilters.length === 1 ? transformedFilters[0] : 
+        return transformedFilters.length > 0 ?
+            (transformedFilters.length === 1 ? transformedFilters[0] :
                 transformedFilters.reduce((acc, filter, index) => {
                     if (index === 0) return filter;
                     return [acc, 'and', filter];
-                })) 
+                }))
             : [];
     };
 
@@ -89,8 +154,8 @@ const FilterHuaillys = ({ items, data, cart, setCart, filteredData, setFavorites
         try {
             const filters = transformFilters(selectedFilters);
             const itemsPerPage = 24;
-            
-           
+
+
 
             const params = {
                 filter: filters,
@@ -133,14 +198,14 @@ const FilterHuaillys = ({ items, data, cart, setCart, filteredData, setFavorites
     // Función para procesar texto con formato ** para customtext-primary
     const processHighlightText = (text) => {
         if (!text) return null;
-        
+
         const parts = text.split(/(\*.*?\*)/g);
         return parts.map((part, index) => {
             if (part.startsWith('*') && part.endsWith('*')) {
                 const cleanText = part.replace(/\*/g, '');
                 return (
                     <span key={index} className="font-title customtext-primary ">
-                        <br/>
+                        <br />
                         {cleanText}
                     </span>
                 );
@@ -159,7 +224,7 @@ const FilterHuaillys = ({ items, data, cart, setCart, filteredData, setFavorites
             setSelectedFilters({
                 category_id: [],
             });
-            
+
             // Actualizar URL
             const url = new URL(window.location.href);
             url.searchParams.delete('category');
@@ -169,7 +234,7 @@ const FilterHuaillys = ({ items, data, cart, setCart, filteredData, setFavorites
             setSelectedFilters({
                 category_id: [category.id], // Usar ID numérico
             });
-            
+
             // Actualizar URL con slug
             const url = new URL(window.location.href);
             url.searchParams.set('category', category.slug || category.id);
@@ -186,7 +251,7 @@ const FilterHuaillys = ({ items, data, cart, setCart, filteredData, setFavorites
         <div id={data?.element_id || null} className="w-full bg-white font-paragraph">
             {/* Hero Section con Imagen de Fondo */}
             {data?.background_image && (
-                <div 
+                <div
                     className="relative w-full h-64 lg:h-72 bg-cover  flex items-center justify-center"
                     style={{
                         backgroundImage: `url(${data.background_image})`,
@@ -211,12 +276,12 @@ const FilterHuaillys = ({ items, data, cart, setCart, filteredData, setFavorites
             {/* Sección de Categorías */}
             <section className="py-8 lg:py-16 bg-secondary">
                 <div className="w-full px-[5%] 2xl:px-0 2xl:max-w-7xl mx-auto">
-                   
+
 
                     {/* Slider de Categorías */}
                     {categories && categories.length > 0 && (
                         <div className="relative">
-                            
+
 
                             <Swiper
                                 modules={[Autoplay, Navigation]}
@@ -255,54 +320,120 @@ const FilterHuaillys = ({ items, data, cart, setCart, filteredData, setFavorites
                             >
                                 {categories.map((category) => (
                                     <SwiperSlide key={category.id}>
-                                        <div 
-                                            className={`group cursor-pointer rounded-2xl overflow-hidden hover:shadow-xl transition-all duration-300 h-full my-4 ${
-                                                selectedCategory?.id === category.id
+                                        {isFimesacCategoryCard ? (
+                                            /* UI Tarjeta de Categoría Fimesac */
+                                            <div
+                                                className={`group relative flex flex-col justify-between aspect-square md:aspect-[4/5] bg-white border border-slate-200 overflow-hidden cursor-pointer hover:border-primary transition-all duration-500 ${isSharp ? "rounded-none" : "rounded-lg"
+                                                    } hover:shadow-xl p-6 md:p-8 my-4 h-full ${selectedCategory?.id === category.id
+                                                        ? `border-primary ring-2 ring-primary ${data?.class_category_card_selected || ""}`
+                                                        : ""
+                                                    }`}
+                                                onClick={() => handleCategoryClick(category)}
+                                            >
+                                                {/* Smooth left-to-right top industrial accent line */}
+                                                <div
+                                                    className={`absolute top-0 left-0 w-full h-1 bg-primary transform ${selectedCategory?.id === category.id ? "scale-x-100" : "scale-x-0 group-hover:scale-x-100"
+                                                        } transition-transform origin-left duration-500 z-20`}
+                                                ></div>
+
+                                                <div className="w-full flex justify-between items-start z-10">
+                                                    <h3
+                                                        className={`text-base sm:text-lg md:text-xl font-display font-bold uppercase transition-all duration-500 group-hover:translate-x-1 ${selectedCategory?.id === category.id
+                                                            ? "text-primary"
+                                                            : "text-neutral-dark group-hover:text-primary"
+                                                            } ${data?.class_category_card_title || ""}`}
+                                                    >
+                                                        {category.name || category.nombre}
+                                                    </h3>
+                                                </div>
+
+                                                <div className="relative w-full flex-1 flex items-center justify-center min-h-0 z-10 py-4">
+                                                    <img
+                                                        src={getCategoryImageUrl(category)}
+                                                        alt={category.name || category.nombre}
+                                                        className="max-w-[85%] max-h-[140px] md:max-h-[180px] object-contain group-hover:scale-110 group-hover:-translate-y-2 transition-all duration-700 ease-out"
+                                                        onError={(e) => {
+                                                            e.target.onerror = null;
+                                                            e.target.src =
+                                                                "/assets/img/noimage/no_imagen_circular.png";
+                                                        }}
+                                                    />
+                                                    {selectedCategory?.id === category.id && (
+                                                        <div className="absolute inset-0 bg-primary/10 flex items-center justify-center pointer-events-none">
+                                                            <div className={`w-12 h-12 bg-primary ${isSharp ? "rounded-none" : "rounded-full"} flex items-center justify-center shadow-lg`}>
+                                                                <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                                                                </svg>
+                                                            </div>
+                                                        </div>
+                                                    )}
+                                                </div>
+
+                                                <div className="w-full flex justify-between items-center z-10 pt-4 border-t border-slate-100 transition-colors">
+                                                    <span className="text-xs font-mono font-bold text-neutral-light uppercase group-hover:text-neutral-dark transition-colors">
+                                                        {selectedCategory?.id === category.id ? "Seleccionado" : "Ver catálogo"}
+                                                    </span>
+                                                    <div
+                                                        className={`w-8 h-8 ${isSharp ? "rounded-none" : "rounded-full"
+                                                            } ${selectedCategory?.id === category.id
+                                                                ? "bg-primary text-white"
+                                                                : "bg-slate-50 text-neutral-light group-hover:bg-primary group-hover:text-white"
+                                                            } flex items-center justify-center transition-colors`}
+                                                    >
+                                                        <ArrowRight className="w-4 h-4 transition-colors" />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        ) : (
+                                            /* UI Tarjeta de Categoría Estándar (Huaillys) */
+                                            <div
+                                                className={`group cursor-pointer ${isSharp ? "rounded-none" : "rounded-2xl"} overflow-hidden hover:shadow-xl transition-all duration-300 h-full my-4 ${selectedCategory?.id === category.id
                                                     ? `bg-white ${data?.class_category_card_selected || ''}`
                                                     : 'bg-white'
-                                            }`}
-                                            onClick={() => handleCategoryClick(category)}
-                                        >
-                                            {/* Imagen de la categoría */}
-                                            <div className="relative aspect-[4/3] overflow-hidden rounded-t-2xl bg-gray-100">
-                                                <img
-                                                    src={`/storage/images/category/${category.image}`}
-                                                    alt={category.name || category.nombre}
-                                                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                                                    onError={(e) => {
-                                                        e.target.src = '/assets/img/noimage/no_img.jpg';
-                                                    }}
-                                                />
-                                                
-                                                {/* Overlay con check si está seleccionada */}
-                                                {selectedCategory?.id === category.id && (
-                                                    <div className="absolute inset-0 bg-primary/20 flex items-center justify-center">
-                                                        <div className="w-16 h-16 bg-primary rounded-full flex items-center justify-center">
-                                                            <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                                                            </svg>
-                                                        </div>
-                                                    </div>
-                                                )}
-                                            </div>
+                                                    }`}
+                                                onClick={() => handleCategoryClick(category)}
+                                            >
+                                                {/* Imagen de la categoría */}
+                                                <div className={`relative aspect-[4/3] overflow-hidden ${isSharp ? "rounded-none" : "rounded-t-2xl"} bg-gray-100`}>
+                                                    <img
+                                                        src={getCategoryImageUrl(category)}
+                                                        alt={category.name || category.nombre}
+                                                        className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                                                        onError={(e) => {
+                                                            e.target.onerror = null;
+                                                            e.target.src = '/assets/img/noimage/no_img.jpg';
+                                                        }}
+                                                    />
 
-                                            {/* Contenido de la tarjeta */}
-                                            <div className={`p-4 lg:px-6 transition-colors duration-300 rounded-b-2xl ${
-                                                selectedCategory?.id === category.id
+                                                    {/* Overlay con check si está seleccionada */}
+                                                    {selectedCategory?.id === category.id && (
+                                                        <div className="absolute inset-0 bg-primary/20 flex items-center justify-center">
+                                                            <div className={`w-16 h-16 bg-primary ${isSharp ? "rounded-none" : "rounded-full"} flex items-center justify-center`}>
+                                                                <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                                                                </svg>
+                                                            </div>
+                                                        </div>
+                                                    )}
+                                                </div>
+
+                                                {/* Contenido de la tarjeta */}
+                                                <div className={`p-4 lg:px-6 transition-colors duration-300 ${isSharp ? "rounded-none" : "rounded-b-2xl"} ${selectedCategory?.id === category.id
                                                     ? 'bg-primary text-white'
                                                     : 'bg-white group-hover:bg-primary group-hover:text-white'
-                                            }`}>
-                                                <h3 className={`text-lg lg:text-xl font-bold transition-colors duration-300 text-left ${data?.class_category_card_title || ''}`}>
-                                                    {category.name || category.nombre}
-                                                </h3>
-                                                
-                                                {(category.description || category.descripcion) && (
-                                                    <p className={`text-sm font-paragraph text-left mt-2 line-clamp-2 opacity-90 ${data?.class_category_card_description || ''}`}>
-                                                        {category.description || category.descripcion}
-                                                    </p>
-                                                )}
+                                                    }`}>
+                                                    <h3 className={`text-lg lg:text-xl font-bold transition-colors duration-300 text-left ${data?.class_category_card_title || ''}`}>
+                                                        {category.name || category.nombre}
+                                                    </h3>
+
+                                                    {(category.description || category.descripcion) && (
+                                                        <p className={`text-sm font-paragraph text-left mt-2 line-clamp-2 opacity-90 ${data?.class_category_card_description || ''}`}>
+                                                            {category.description || category.descripcion}
+                                                        </p>
+                                                    )}
+                                                </div>
                                             </div>
-                                        </div>
+                                        )}
                                     </SwiperSlide>
                                 ))}
                             </Swiper>
@@ -310,14 +441,14 @@ const FilterHuaillys = ({ items, data, cart, setCart, filteredData, setFavorites
                             {/* Botones de navegación de categorías */}
                             <button
                                 ref={navigationPrevRef}
-                                className="absolute left-0 top-1/2 -translate-y-1/2 z-10 w-10 h-10 lg:w-12 lg:h-12 flex items-center justify-center rounded-full bg-white shadow-lg hover:bg-primary hover:text-white transition-all duration-300 -ml-5 lg:-ml-6 disabled:opacity-50 disabled:cursor-not-allowed"
+                                className={`absolute left-0 top-1/2 -translate-y-1/2 z-10 w-10 h-10 lg:w-12 lg:h-12 flex items-center justify-center ${isSharp ? "rounded-none" : "rounded-full"} bg-white shadow-lg hover:bg-primary hover:text-white transition-all duration-300 -ml-5 lg:-ml-6 disabled:opacity-50 disabled:cursor-not-allowed`}
                                 aria-label="Anterior"
                             >
                                 <ChevronLeft className="w-5 h-5 lg:w-6 lg:h-6" />
                             </button>
                             <button
                                 ref={navigationNextRef}
-                                className="absolute right-0 top-1/2 -translate-y-1/2 z-10 w-10 h-10 lg:w-12 lg:h-12 flex items-center justify-center rounded-full bg-white shadow-lg hover:bg-primary hover:text-white transition-all duration-300 -mr-5 lg:-mr-6 disabled:opacity-50 disabled:cursor-not-allowed"
+                                className={`absolute right-0 top-1/2 -translate-y-1/2 z-10 w-10 h-10 lg:w-12 lg:h-12 flex items-center justify-center ${isSharp ? "rounded-none" : "rounded-full"} bg-white shadow-lg hover:bg-primary hover:text-white transition-all duration-300 -mr-5 lg:-mr-6 disabled:opacity-50 disabled:cursor-not-allowed`}
                                 aria-label="Siguiente"
                             >
                                 <ChevronRight className="w-5 h-5 lg:w-6 lg:h-6" />
@@ -340,12 +471,12 @@ const FilterHuaillys = ({ items, data, cart, setCart, filteredData, setFavorites
                                     {data.product_description}
                                 </p>
                             )}
-                            
+
                             {/* Mostrar categoría seleccionada */}
                             {selectedCategory && (
                                 <div className="mt-4 flex flex-wrap items-center gap-2">
                                     <span className="text-sm customtext-neutral-light">Mostrando:</span>
-                                    <span className="bg-primary text-white px-4 py-2 rounded-full font-bold text-sm">
+                                    <span className={`bg-primary text-white px-4 py-2 ${isSharp ? "rounded-none" : "rounded-full"} font-bold text-sm`}>
                                         {selectedCategory.name || selectedCategory.nombre}
                                     </span>
                                     <button
@@ -356,8 +487,8 @@ const FilterHuaillys = ({ items, data, cart, setCart, filteredData, setFavorites
                                     </button>
                                 </div>
                             )}
-                            
-                           
+
+
                         </div>
                     </div>
 
@@ -369,7 +500,7 @@ const FilterHuaillys = ({ items, data, cart, setCart, filteredData, setFavorites
                             {products.map((product) => (
                                 <ProductCardSelector
                                     key={product.id}
-                                    cardType={data?.type_card_product || 'ProductCard'}
+                                    cardType={cardTypeToRender}
                                     product={product}
                                     data={data}
                                     cart={cart}

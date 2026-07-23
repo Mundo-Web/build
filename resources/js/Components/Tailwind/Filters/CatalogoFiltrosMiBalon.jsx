@@ -114,7 +114,7 @@ const modernFilterStyles = {
         "relative overflow-hidden before:absolute before:inset-0 before:-translate-x-full before:animate-[shimmer_2s_infinite] before:bg-gradient-to-r before:from-transparent before:via-white/20 before:to-transparent",
 };
 
-const SkeletonCard = ({ delay = 0 }) => {
+const SkeletonCard = ({ delay = 0, isSharp = false }) => {
     return (
         <motion.div
             className="group w-full h-full"
@@ -127,11 +127,11 @@ const SkeletonCard = ({ delay = 0 }) => {
             }}
         >
             <div className="px-2 h-full">
-                <div className="bg-white rounded-3xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden h-full">
+                <div className={`bg-white ${isSharp ? "rounded-none" : "rounded-3xl"} shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden h-full`}>
                     {/* Contenedor principal con altura fija similar a las tarjetas reales */}
                     <div className="flex flex-col h-[400px] lg:h-[460px] xl:h-[400px] 2xl:h-[430px]">
                         {/* Imagen del producto skeleton */}
-                        <div className="relative flex-1 bg-gray-100 rounded-t-3xl overflow-hidden">
+                        <div className={`relative flex-1 bg-gray-100 ${isSharp ? "rounded-none" : "rounded-t-3xl"} overflow-hidden`}>
                             {/* Efecto shimmer mejorado */}
                             <div className="absolute inset-0 bg-gradient-to-br from-gray-200 via-gray-100 to-gray-200">
                                 {/* Shimmer principal */}
@@ -222,6 +222,50 @@ const CatalogoFiltrosMiBalon = ({
     favorites,
     onClickTracking,
 }) => {
+    // Soporte para variante ("original" o "rounded-none" / "fimesac")
+    const variant =
+        data?.variant ||
+        data?.type_variant ||
+        data?.class_variant ||
+        data?.style ||
+        data?.option ||
+        "original";
+
+    const isSharp =
+        variant === "rounded-none" ||
+        variant === "fimesac" ||
+        variant === "flat" ||
+        variant === "sharp" ||
+        (typeof data?.class_section === "string" &&
+            data?.class_section.includes("rounded-none")) ||
+        (typeof data?.class === "string" &&
+            data?.class.includes("rounded-none"));
+
+    const roundedButtonClass = isSharp ? "rounded-none" : "rounded-full";
+
+    // Estilos CSS modernos dinámicos basados en la variante
+    const modernFilterStyles = {
+        filterContainer: `bg-white border border-gray-100 ${isSharp ? "rounded-none" : "rounded-[2rem]"} shadow-lg`,
+        filterHeader: `bg-white border-b border-gray-100 ${isSharp ? "rounded-none" : "rounded-t-[2rem]"}`,
+        filterSection: `group transition-all duration-300 hover:bg-neutral-50 ${isSharp ? "rounded-none" : "rounded-2xl"}`,
+        filterButton: `w-full flex items-center justify-between p-4 ${isSharp ? "rounded-none" : "rounded-2xl"} transition-all duration-300 hover:bg-neutral-50 group`,
+        filterContent: `bg-neutral-50/50 ${isSharp ? "rounded-none" : "rounded-2xl"} border border-gray-100`,
+        searchInput: `w-full pl-12 pr-4 py-3 bg-white border border-gray-200 ${isSharp ? "rounded-none" : "rounded-full"} focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all duration-300 placeholder:text-neutral-400 text-neutral-dark`,
+        checkbox: `appearance-none relative min-h-5 min-w-5 shrink-0 ${isSharp ? "rounded-none" : "rounded-[6px]"} border-2 border-gray-300 bg-white checked:bg-primary checked:border-primary focus:outline-none focus:ring-4 focus:ring-primary/20 transition-all duration-200 cursor-pointer ` +
+            "checked:after:content-[''] checked:after:absolute checked:after:left-[6px] checked:after:top-[2px] checked:after:w-[5px] checked:after:h-[10px] checked:after:border-white checked:after:border-b-[2.5px] checked:after:border-r-[2.5px] checked:after:rotate-45",
+        label: `flex items-center gap-3 py-1.5 px-3 ${isSharp ? "rounded-none" : "rounded-lg"} transition-all duration-200 hover:bg-neutral-100 cursor-pointer group`,
+        activeFilter: "bg-primary text-white shadow-md",
+        badge: `inline-flex items-center gap-1.5 px-3 py-1.5 bg-neutral-100 border border-gray-200 ${isSharp ? "rounded-none" : "rounded-full"} text-sm font-bold text-neutral-dark hover:bg-neutral-200`,
+        glowEffect: "shadow-md shadow-primary/20 ring-1 ring-primary/20",
+        pulseAnimation: "animate-pulse",
+        shimmerEffect:
+            "relative overflow-hidden before:absolute before:inset-0 before:-translate-x-full before:animate-[shimmer_2s_infinite] before:bg-gradient-to-r before:from-transparent before:via-white/20 before:to-transparent",
+    };
+
+    const cardTypeToRender =
+        data?.type_card_product ||
+        (isSharp ? "CardProductFimesac" : "CardProductMiBalon");
+
     // Opciones de ordenación (mover al inicio para evitar problemas de hoisting)
     const sortOptions = [
         { value: "created_at:desc", label: "Más reciente" },
@@ -1677,7 +1721,8 @@ const CatalogoFiltrosMiBalon = ({
                                 }}
                                 labelKey="label"
                                 valueKey="value"
-                                className={`text-neutral-dark border-primary rounded-full ${data?.class_sort_options}`}
+                                className={`text-neutral-dark border-primary ${isSharp ? "rounded-none" : "rounded-full"} ${data?.class_sort_options}`}
+                                classNameDropdown={isSharp ? "rounded-none" : "rounded-2xl"}
                                 generalIcon={
                                     <ListFilter className="w-5 h-5 mr-2 text-primary" />
                                 }
@@ -1696,7 +1741,7 @@ const CatalogoFiltrosMiBalon = ({
                                 position="bottom"
                             >
                                 <motion.button
-                                    className="w-full h-12 flex items-center justify-center gap-2 px-4 bg-primary text-white rounded-full shadow-xl shadow-blue-500/25 hover:shadow-2xl hover:shadow-blue-500/40 transition-all duration-300 overflow-hidden relative"
+                                    className={`w-full h-12 flex items-center justify-center gap-2 px-4 bg-primary text-white ${isSharp ? "rounded-none" : "rounded-full"} shadow-xl shadow-blue-500/25 hover:shadow-2xl hover:shadow-blue-500/40 transition-all duration-300 overflow-hidden relative`}
                                     onClick={() => setFiltersOpen(true)}
                                     whileHover={{ scale: 1.02, y: -3 }}
                                     whileTap={{ scale: 0.98 }}
@@ -1715,7 +1760,7 @@ const CatalogoFiltrosMiBalon = ({
 
                                     <div className="flex items-center gap-2 relative z-10">
                                         <motion.div
-                                            className="p-1.5 bg-white/20 rounded-full backdrop-blur-sm"
+                                            className={`p-1.5 bg-white/20 ${isSharp ? "rounded-none" : "rounded-full"} backdrop-blur-sm`}
                                             animate={{
                                                 rotate: [0, 10, 0],
                                                 scale: [1, 1.1, 1],
@@ -1772,7 +1817,8 @@ const CatalogoFiltrosMiBalon = ({
                                 }}
                                 labelKey="label"
                                 valueKey="value"
-                                className={`!w-full text-neutral-dark border-primary rounded-full text-sm h-12  ${data?.class_sort_options}`}
+                                className={`!w-full text-neutral-dark border-primary ${isSharp ? "rounded-none" : "rounded-full"} text-sm h-12 ${data?.class_sort_options}`}
+                                classNameDropdown={isSharp ? "rounded-none" : "rounded-2xl"}
                             />
                         </motion.div>
                     </div>
@@ -1803,12 +1849,12 @@ const CatalogoFiltrosMiBalon = ({
                             className={`${filtersOpen
                                 ? "flex flex-col h-full bg-transparent"
                                 : modernFilterStyles.filterContainer
-                                } lg:backdrop-blur-xl lg:border lg:border-gray-200/60 lg:rounded-3xl lg:shadow-2xl lg:shadow-gray-900/10`}
+                                } lg:backdrop-blur-xl lg:border lg:border-gray-200/60 ${isSharp ? "lg:rounded-none" : "lg:rounded-3xl"} lg:shadow-2xl lg:shadow-gray-900/10`}
                         >
                             {/* Contenido principal del modal mobile - ocupando todo excepto el footer */}
                             <div
                                 className={`${filtersOpen
-                                    ? "mx-4 mt-4 mb-2 bg-white rounded-t-3xl shadow-2xl flex flex-col flex-1 overflow-hidden safe-area-top mobile-filter-content"
+                                    ? `mx-4 mt-4 mb-2 bg-white ${isSharp ? "rounded-none" : "rounded-t-3xl"} shadow-2xl flex flex-col flex-1 overflow-hidden safe-area-top mobile-filter-content`
                                     : ""
                                     }`}
                             >
@@ -1821,7 +1867,7 @@ const CatalogoFiltrosMiBalon = ({
                                 >
                                     <div className="flex items-center gap-3">
                                         <motion.div
-                                            className="p-2 bg-primary rounded-full shadow-lg"
+                                            className={`p-2 bg-primary ${isSharp ? "rounded-none" : "rounded-full"} shadow-lg`}
                                             whileHover={{ rotate: 360 }}
                                             transition={{ duration: 0.6 }}
                                         >
@@ -3555,7 +3601,7 @@ const CatalogoFiltrosMiBalon = ({
                                         transition={{ delay: 0.6 }}
                                     >
                                         <motion.button
-                                            className={`w-full p-4  rounded-full shadow-lg hover:shadow-xl transition-all duration-300 font-semibold ${data?.class_clear_button || "bg-secondary text-neutral-dark hover:bg-primary hover:text-white"}`}
+                                            className={`w-full p-4 ${isSharp ? "rounded-none" : "rounded-full"} shadow-lg hover:shadow-xl transition-all duration-300 font-semibold ${data?.class_clear_button || "bg-secondary text-neutral-dark hover:bg-primary hover:text-white"}`}
                                             onClick={() => {
                                                 // Limpiar cada filtro individualmente usando setSelectedFilters con función
                                                 // Esto simula el comportamiento de handleFilterChange que funciona correctamente
@@ -3604,7 +3650,7 @@ const CatalogoFiltrosMiBalon = ({
                         <div className="fixed bottom-0 left-0 right-0 bg-gradient-to-r from-white via-white to-gray-50 border-t border-gray-200 p-4 shadow-2xl backdrop-blur-xl lg:hidden z-50">
                             <div className="flex items-center gap-3">
                                 <motion.button
-                                    className="flex-1 bg-primary text-white py-3 px-6 rounded-full font-bold shadow-lg hover:shadow-xl transition-all duration-300"
+                                    className={`flex-1 bg-primary text-white py-3 px-6 ${isSharp ? "rounded-none" : "rounded-full"} font-bold shadow-lg hover:shadow-xl transition-all duration-300`}
                                     onClick={() => {
                                         setFiltersOpen(false);
                                         // Removido el scroll automático - solo cerrar el panel
@@ -3622,7 +3668,7 @@ const CatalogoFiltrosMiBalon = ({
                                 </motion.button>
 
                                 <motion.button
-                                    className="p-3 bg-gray-100 hover:bg-gray-200 text-neutral-dark rounded-full transition-colors duration-200"
+                                    className={`p-3 bg-gray-100 hover:bg-gray-200 text-neutral-dark ${isSharp ? "rounded-none" : "rounded-full"} transition-colors duration-200`}
                                     onClick={() => setFiltersOpen(false)}
                                     whileHover={{ scale: 1.1 }}
                                     whileTap={{ scale: 0.9 }}
@@ -3777,10 +3823,7 @@ const CatalogoFiltrosMiBalon = ({
                                                 }}
                                             >
                                                 <ProductCardSelector
-                                                    cardType={
-                                                        data?.type_card_product ||
-                                                        "CardProductMiBalon"
-                                                    }
+                                                    cardType={cardTypeToRender}
                                                     product={product}
                                                     data={data}
                                                     cart={cart}
@@ -3901,7 +3944,7 @@ const CatalogoFiltrosMiBalon = ({
                         {/* Paginación mejorada */}
                         {Array.isArray(products) && products.length > 0 && (
                             <motion.div
-                                className="flex flex-col md:flex-row justify-between items-center mb-4 w-full mt-12 gap-4 p-6 bg-white rounded-2xl border border-gray-200/60 backdrop-blur-sm"
+                                className={`flex flex-col md:flex-row justify-between items-center mb-4 w-full mt-12 gap-4 p-6 bg-white ${isSharp ? "rounded-none" : "rounded-2xl"} border border-gray-200/60 backdrop-blur-sm`}
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: 0.4 }}
@@ -3911,7 +3954,7 @@ const CatalogoFiltrosMiBalon = ({
                                     <div className="overflow-x-auto pb-2">
                                         <nav className="flex items-center gap-x-2 min-w-max">
                                             <motion.button
-                                                className={`p-3 inline-flex items-center gap-2 rounded-full transition-all duration-300 ${pagination.currentPage === 1
+                                                className={`p-3 inline-flex items-center gap-2 ${isSharp ? "rounded-none" : "rounded-full"} transition-all duration-300 ${pagination.currentPage === 1
                                                     ? "opacity-50 cursor-not-allowed bg-gray-100"
                                                     : "bg-white text-primary border "
                                                     }`}
@@ -3940,12 +3983,12 @@ const CatalogoFiltrosMiBalon = ({
                                                 (page, index) => (
                                                     <React.Fragment key={index}>
                                                         {page === "..." ? (
-                                                            <span className="w-10 h-10 bg-transparent p-2 inline-flex items-center justify-center rounded-full text-neutral-dark">
+                                                            <span className={`w-10 h-10 bg-transparent p-2 inline-flex items-center justify-center ${isSharp ? "rounded-none" : "rounded-full"} text-neutral-dark`}>
                                                                 ...
                                                             </span>
                                                         ) : (
                                                             <motion.button
-                                                                className={`w-10 h-10 p-2 inline-flex items-center justify-center rounded-full transition-all duration-300 font-semibold
+                                                                className={`w-10 h-10 p-2 inline-flex items-center justify-center ${isSharp ? "rounded-none" : "rounded-full"} transition-all duration-300 font-semibold
                                                         ${page ===
                                                                         pagination.currentPage
                                                                         ? " bg-primary text-white shadow-lg "
@@ -3972,7 +4015,7 @@ const CatalogoFiltrosMiBalon = ({
                                             )}
 
                                             <motion.button
-                                                className={`p-3 inline-flex items-center gap-2 rounded-full transition-all duration-300 ${pagination.currentPage ===
+                                                className={`p-3 inline-flex items-center gap-2 ${isSharp ? "rounded-none" : "rounded-full"} transition-all duration-300 ${pagination.currentPage ===
                                                     pagination.totalPages
                                                     ? "opacity-50 cursor-not-allowed bg-gray-100"
                                                     : "bg-white text-primary border "

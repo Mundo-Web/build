@@ -2,6 +2,16 @@ import React from "react";
 import { ArrowRight } from "lucide-react";
 
 const CategoryFimesac = ({ data = {}, items = [] }) => {
+    const getCategoryImageUrl = (cat) => {
+        const img = cat?.image || cat?.banner || cat?.imagen;
+        if (!img) return "/assets/img/noimage/no_imagen_circular.png";
+        if (img.startsWith("http://") || img.startsWith("https://")) return img;
+        if (img.startsWith("/storage/")) return img;
+        if (img.startsWith("storage/")) return `/${img}`;
+        if (img.startsWith("/")) return img;
+        return `/storage/images/category/${img}`;
+    };
+
     return (
         <section
             id={data?.element_id || null}
@@ -20,7 +30,7 @@ const CategoryFimesac = ({ data = {}, items = [] }) => {
                     {items.map((cat, i) => (
                         <a
                             key={cat.slug || i}
-                            href={`/${data?.path || "productos"}/${cat.slug}`}
+                            href={`/catalogo?category=${cat.slug}`}
                             className="group relative flex flex-col justify-between aspect-square md:aspect-[4/5] bg-white border border-slate-200 overflow-hidden cursor-pointer hover:border-primary transition-all duration-500 rounded-lg hover:shadow-xl p-6 md:p-8"
                         >
                             {/* Smooth left-to-right top industrial accent line */}
@@ -35,11 +45,7 @@ const CategoryFimesac = ({ data = {}, items = [] }) => {
 
                             <div className="relative w-full flex-1 flex items-center justify-center min-h-0 z-10 py-4">
                                 <img
-                                    src={
-                                        cat.image?.startsWith("http")
-                                            ? cat.image
-                                            : `/storage/images/category/${cat.image}`
-                                    }
+                                    src={getCategoryImageUrl(cat)}
                                     alt={cat.name}
                                     className="max-w-[85%] max-h-[140px] md:max-h-[180px] object-contain group-hover:scale-110 group-hover:-translate-y-2 transition-all duration-700 ease-out"
                                     onError={(e) => {
