@@ -4063,6 +4063,20 @@
         ]
       },
       {
+        "id": "ProductDetailFimesac",
+        "name": "ProductDetailFimesac - Industrial Fimesac",
+        "image": "product-detail-rainstar.png",
+        "data": [
+          "link_cart",
+          "background"
+        ],
+        "generals": [
+          "phone_whatsapp",
+          "message_whatsapp",
+          "delivery_policy"
+        ]
+      },
+      {
         "id": "ProductDetailMiBalon",
         "name": "ProductDetailMiBalon",
         "image": "product-detail-rainstar.png",
