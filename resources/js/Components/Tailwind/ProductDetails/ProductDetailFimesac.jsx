@@ -432,8 +432,8 @@ const ProductDetailFimesac = ({
     );
 
     return (
-        <main id={data?.element_id || null} className="bg-white min-h-screen text-neutral-dark py-12 px-4 md:px-6 2xl:px-0">
-            <div className="container mx-auto 2xl:max-w-7xl">
+        <main id={data?.element_id || null} className="bg-white min-h-screen text-neutral-dark py-12 mx-auto 2xl:max-w-7xl    px-primary 2xl:px-0">
+            <div className="w-full ">
                 {/* Product Layout Grid */}
                 <article
                     itemScope={true}
@@ -706,7 +706,7 @@ const ProductDetailFimesac = ({
                                 Productos Relacionados
                             </h2>
                         </div>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 items-stretch">
+                        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-4 gap-6 items-stretch">
                             {relationsItems.map((relProduct, index) => (
                                 <CardProductFimesac
                                     key={relProduct.id || index}

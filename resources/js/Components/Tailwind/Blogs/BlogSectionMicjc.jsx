@@ -88,9 +88,9 @@ const BlogSectionMicjc = ({ data, items = [] }) => {
     return (
         <section
             id={data?.element_id || null}
-            className={`py-16 md:py-24 bg-gradient-to-b from-[#F8FAFC] to-[#F1F5F9] border-y border-gray-100 ${data?.class_section || ""}`}
+            className={`py-16 md:py-24 bg-sections-color border-y border-gray-100 ${data?.class_section || ""}`}
         >
-            <div className="container mx-auto px-primary 2xl:px-0 2xl:max-w-7xl">
+            <div className="w-full mx-auto px-primary 2xl:px-0 2xl:max-w-7xl">
                 {/* Header Section */}
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12 md:mb-16">
                     <div className="text-left max-w-2xl">

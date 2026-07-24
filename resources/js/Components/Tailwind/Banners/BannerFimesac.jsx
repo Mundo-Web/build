@@ -18,8 +18,8 @@ const BannerMiBalon = ({ data }) => {
 
     return (
         <section className={`py-12 md:py-16 bg-white ${customClass}`}>
-            <div className="container mx-auto px-primary 2xl:px-0 2xl:max-w-7xl">
-                <div className="relative w-full rounded-none overflow-hidden shadow-xl min-h-[400px] md:min-h-[500px] flex items-center">
+            <div className="w-full mx-auto px-primary 2xl:px-0 2xl:max-w-7xl">
+                <div className="relative w-full rounded-none overflow-hidden shadow-xl min-h-[500px] md:min-h-[500px] flex items-center">
                     {/* Background Image */}
                     <div className="absolute inset-0 z-0">
                         <img

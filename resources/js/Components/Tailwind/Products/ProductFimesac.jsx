@@ -21,7 +21,7 @@ const ProductFimesac = ({ items = [], data }) => {
         >
             <div className=" mx-auto px-primary 2xl:px-0 2xl:max-w-7xl">
                 <div>
-                    <div className="flex justify-between items-end mb-8 border-b border-slate-200 pb-4">
+                    <div className="flex flex-col lg:flex-row justify-between lg:items-end gap-4 lg:gap-0 mb-8 border-b border-slate-200 pb-4">
                         <div>
                             <h2 className="text-3xl lg:text-4xl font-display font-bold text-neutral-dark">
                                 {data?.title || "Productos de clase mundial"}
@@ -32,7 +32,7 @@ const ProductFimesac = ({ items = [], data }) => {
                                 </p>
                             )}
                         </div>
-                        <div className="flex items-center gap-3">
+                        <div className="flex justify-between lg:justify-end items-center gap-3">
                             {items.length > 4 && (
                                 <div className="flex gap-2">
                                     <button

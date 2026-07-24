@@ -24,7 +24,7 @@ const TopBarSimple = ({ data, generals }) => {
             ref={divRef}
             className={` bg-primary py-3 font-bold px-primary flex justify-center items-center text-sm font-paragraph ${data?.class_content || ""}`}
         >
-            <p className={` ${data?.class_text || ""}`}>
+            <p className={` ${data?.class_text || "text-center"}`}>
                 <AnimatedCintillo generals={generals} />
             </p>
         </div>

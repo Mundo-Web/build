@@ -286,7 +286,7 @@ const FilterHuaillys = ({ items, data, cart, setCart, filteredData, setFavorites
                             <Swiper
                                 modules={[Autoplay, Navigation]}
                                 spaceBetween={16}
-                                slidesPerView={1}
+                                slidesPerView={2}
                                 autoplay={{
                                     delay: 3000,
                                     disableOnInteraction: false,
@@ -308,11 +308,11 @@ const FilterHuaillys = ({ items, data, cart, setCart, filteredData, setFavorites
                                         spaceBetween: 16,
                                     },
                                     768: {
-                                        slidesPerView: 2,
+                                        slidesPerView: 3,
                                         spaceBetween: 20,
                                     },
                                     1024: {
-                                        slidesPerView: 3,
+                                        slidesPerView: 4,
                                         spaceBetween: 24,
                                     },
                                     1200: {
@@ -327,8 +327,8 @@ const FilterHuaillys = ({ items, data, cart, setCart, filteredData, setFavorites
                                         {isFimesacCategoryCard ? (
                                             /* UI Tarjeta de Categoría Fimesac */
                                             <div
-                                                className={`group relative flex flex-col justify-between aspect-square md:aspect-[4/5] bg-white border border-slate-200 overflow-hidden cursor-pointer hover:border-primary transition-all duration-500 ${isSharp ? "rounded-none" : "rounded-lg"
-                                                    } hover:shadow-xl p-6 md:p-8 my-4 h-full ${selectedCategory?.id === category.id
+                                                className={`group relative flex flex-col justify-between aspect-[3/4] sm:aspect-[4/5] bg-white border border-slate-200 overflow-hidden cursor-pointer hover:border-primary transition-all duration-500 ${isSharp ? "rounded-none" : "rounded-lg"
+                                                    } hover:shadow-xl p-4 sm:p-5 md:p-6 my-2 md:my-4 h-full ${selectedCategory?.id === category.id
                                                         ? `border-primary ring-2 ring-primary ${data?.class_category_card_selected || ""}`
                                                         : ""
                                                     }`}
@@ -340,9 +340,10 @@ const FilterHuaillys = ({ items, data, cart, setCart, filteredData, setFavorites
                                                         } transition-transform origin-left duration-500 z-20`}
                                                 ></div>
 
-                                                <div className="w-full flex justify-between items-start z-10">
+                                                {/* Title Header */}
+                                                <div className="w-full shrink-0 z-10 mb-2">
                                                     <h3
-                                                        className={`text-base sm:text-lg md:text-xl font-display font-bold uppercase transition-all duration-500 group-hover:translate-x-1 ${selectedCategory?.id === category.id
+                                                        className={`text-sm sm:text-base md:text-lg font-display font-bold uppercase leading-snug line-clamp-2 transition-colors duration-300 ${selectedCategory?.id === category.id
                                                             ? "text-primary"
                                                             : "text-neutral-dark group-hover:text-primary"
                                                             } ${data?.class_category_card_title || ""}`}
@@ -351,11 +352,12 @@ const FilterHuaillys = ({ items, data, cart, setCart, filteredData, setFavorites
                                                     </h3>
                                                 </div>
 
-                                                <div className="relative w-full flex-1 flex items-center justify-center min-h-0 z-10 py-4">
+                                                {/* Image Container */}
+                                                <div className="relative w-full flex-1 flex items-center justify-center min-h-[90px] sm:min-h-[120px] py-2 z-0 overflow-hidden">
                                                     <img
                                                         src={getCategoryImageUrl(category)}
                                                         alt={category.name || category.nombre}
-                                                        className="max-w-[85%] max-h-[140px] md:max-h-[180px] object-contain group-hover:scale-110 group-hover:-translate-y-2 transition-all duration-700 ease-out"
+                                                        className="max-w-[85%] max-h-[85px] sm:max-h-[115px] md:max-h-[145px] w-auto h-auto object-contain group-hover:scale-105 transition-transform duration-500 ease-out"
                                                         onError={(e) => {
                                                             e.target.onerror = null;
                                                             e.target.src =
@@ -363,9 +365,9 @@ const FilterHuaillys = ({ items, data, cart, setCart, filteredData, setFavorites
                                                         }}
                                                     />
                                                     {selectedCategory?.id === category.id && (
-                                                        <div className="absolute inset-0 bg-primary/10 flex items-center justify-center pointer-events-none">
-                                                            <div className={`w-12 h-12 bg-primary ${isSharp ? "rounded-none" : "rounded-full"} flex items-center justify-center shadow-lg`}>
-                                                                <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <div className="absolute inset-0 bg-primary/10 flex items-center justify-center pointer-events-none rounded-sm">
+                                                            <div className={`w-10 h-10 sm:w-12 sm:h-12 bg-primary ${isSharp ? "rounded-none" : "rounded-full"} flex items-center justify-center shadow-lg`}>
+                                                                <svg className="w-6 h-6 sm:w-8 sm:h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
                                                                 </svg>
                                                             </div>
@@ -373,18 +375,19 @@ const FilterHuaillys = ({ items, data, cart, setCart, filteredData, setFavorites
                                                     )}
                                                 </div>
 
-                                                <div className="w-full flex justify-between items-center z-10 pt-4 border-t border-slate-100 transition-colors">
-                                                    <span className="text-xs font-mono font-bold text-neutral-light uppercase group-hover:text-neutral-dark transition-colors">
+                                                {/* Footer */}
+                                                <div className="w-full shrink-0 flex justify-between items-center z-10 pt-3 mt-1 border-t border-slate-100 transition-colors">
+                                                    <span className="text-[10px] sm:text-xs font-mono font-bold text-neutral-light uppercase group-hover:text-neutral-dark transition-colors truncate me-1">
                                                         {selectedCategory?.id === category.id ? "Seleccionado" : "Ver catálogo"}
                                                     </span>
                                                     <div
-                                                        className={`w-8 h-8 ${isSharp ? "rounded-none" : "rounded-full"
+                                                        className={`w-7 h-7 sm:w-8 sm:h-8 shrink-0 ${isSharp ? "rounded-none" : "rounded-full"
                                                             } ${selectedCategory?.id === category.id
                                                                 ? "bg-primary text-white"
                                                                 : "bg-slate-50 text-neutral-light group-hover:bg-primary group-hover:text-white"
                                                             } flex items-center justify-center transition-colors`}
                                                     >
-                                                        <ArrowRight className="w-4 h-4 transition-colors" />
+                                                        <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4 transition-colors" />
                                                     </div>
                                                 </div>
                                             </div>
@@ -445,14 +448,14 @@ const FilterHuaillys = ({ items, data, cart, setCart, filteredData, setFavorites
                             {/* Botones de navegación de categorías */}
                             <button
                                 ref={navigationPrevRef}
-                                className={`absolute left-0 top-1/2 -translate-y-1/2 z-10 w-10 h-10 lg:w-12 lg:h-12 flex items-center justify-center ${isSharp ? "rounded-none" : "rounded-full"} bg-white shadow-lg hover:bg-primary hover:text-white transition-all duration-300 -ml-5 lg:-ml-6 disabled:opacity-50 disabled:cursor-not-allowed`}
+                                className={`absolute left-0 top-1/2 -translate-y-1/2 z-10 w-10 h-10 lg:w-12 lg:h-12 flex items-center justify-center ${isSharp ? "rounded-none" : "rounded-full"} bg-white shadow-lg hover:bg-primary text-neutral-dark hover:text-white transition-all duration-300 -ml-5 lg:-ml-6 disabled:opacity-50 disabled:cursor-not-allowed`}
                                 aria-label="Anterior"
                             >
                                 <ChevronLeft className="w-5 h-5 lg:w-6 lg:h-6" />
                             </button>
                             <button
                                 ref={navigationNextRef}
-                                className={`absolute right-0 top-1/2 -translate-y-1/2 z-10 w-10 h-10 lg:w-12 lg:h-12 flex items-center justify-center ${isSharp ? "rounded-none" : "rounded-full"} bg-white shadow-lg hover:bg-primary hover:text-white transition-all duration-300 -mr-5 lg:-mr-6 disabled:opacity-50 disabled:cursor-not-allowed`}
+                                className={`absolute right-0 top-1/2 -translate-y-1/2 z-10 w-10 h-10 lg:w-12 lg:h-12 flex items-center justify-center ${isSharp ? "rounded-none" : "rounded-full"} bg-white shadow-lg hover:bg-primary text-neutral-dark hover:text-white transition-all duration-300 -mr-5 lg:-mr-6 disabled:opacity-50 disabled:cursor-not-allowed`}
                                 aria-label="Siguiente"
                             >
                                 <ChevronRight className="w-5 h-5 lg:w-6 lg:h-6" />
@@ -500,7 +503,7 @@ const FilterHuaillys = ({ items, data, cart, setCart, filteredData, setFavorites
                     {loading ? (
                         <Loading />
                     ) : products && products.length > 0 ? (
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 lg:gap-6">
+                        <div className="grid grid-cols-2  lg:grid-cols-4 xl:grid-cols-4 gap-2 md:gap-6">
                             {products.map((product) => (
                                 <ProductCardSelector
                                     key={product.id}

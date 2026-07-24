@@ -30,7 +30,7 @@ const BannerSimple = ({ data }) => {
         >
             <div className="px-primary 2xl:max-w-7xl 2xl:px-0 w-full mx-auto">
                 <div
-                    className={`relative w-full aspect-[5/2] min-h-[300px] flex flex-col items-center justify-center bg-white shadow-lg overflow-hidden ${containerRoundedClass} ${data?.class_container || ""}`}
+                    className={`relative w-full aspect-[5/2] min-h-[500px] flex flex-col items-center justify-center bg-white shadow-lg overflow-hidden ${containerRoundedClass} ${data?.class_container || ""}`}
                     style={{
                         backgroundImage: `url(${backgroundUrl})`,
                         backgroundSize: "cover",

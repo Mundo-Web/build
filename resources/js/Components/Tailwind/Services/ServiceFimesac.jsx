@@ -66,7 +66,7 @@ const ServiceFimesac = ({ data, items = [], generals = [], onClickTracking }) =>
             id={data?.element_id || null}
             className={`py-16 md:py-24 bg-white text-neutral-dark ${data?.class_section || ""}`}
         >
-            <div className="container mx-auto px-4 md:px-6 2xl:px-0 2xl:max-w-7xl">
+            <div className="w-full mx-auto px-4 md:px-6 2xl:px-0 2xl:max-w-7xl">
                 {/* Section Header - Centered with ProductFimesac typography */}
                 {(data?.title || data?.subtitle || data?.description) && (
                     <div className="mb-12 text-center max-w-3xl mx-auto">
@@ -106,15 +106,15 @@ const ServiceFimesac = ({ data, items = [], generals = [], onClickTracking }) =>
                                         key={service.id || index}
                                         onClick={() => handleServiceClick(service)}
                                         className={`w-full text-left px-5 py-4 font-bold text-sm md:text-base uppercase tracking-wider transition-all flex items-center justify-between group rounded-none border-l-4 ${isSelected
-                                                ? "bg-primary text-white border-primary shadow-sm"
-                                                : "bg-white text-neutral-dark border-slate-200 hover:bg-slate-100 hover:text-primary"
+                                            ? "bg-primary text-white border-primary shadow-sm"
+                                            : "bg-white text-neutral-dark border-slate-200 hover:bg-slate-100 hover:text-primary"
                                             }`}
                                     >
                                         <span className="truncate me-3">{service.name}</span>
                                         <ChevronRight
                                             className={`w-5 h-5 shrink-0 transition-transform ${isSelected
-                                                    ? "translate-x-1 text-white"
-                                                    : "text-neutral-light group-hover:text-primary"
+                                                ? "translate-x-1 text-white"
+                                                : "text-neutral-light group-hover:text-primary"
                                                 }`}
                                         />
                                     </button>

@@ -116,7 +116,7 @@ const FooterRainstar = ({ pages = [], generals = [], data, socials = [] }) => {
             id={data?.element_id || null}
             className={`bg-accent text-white pt-24 pb-8 overflow-hidden ${data?.class || ""}`}
         >
-            <div className="container mx-auto px-primary 2xl:px-0 2xl:max-w-7xl">
+            <div className="w-full mx-auto px-primary 2xl:px-0 2xl:max-w-7xl">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-10 mb-24">
                     {/* Brand Section */}
                     <div className="lg:col-span-4 space-y-8">
@@ -304,7 +304,7 @@ const FooterRainstar = ({ pages = [], generals = [], data, socials = [] }) => {
                                             <img
                                                 src="/assets/resources/libro-reclamaciones.png"
                                                 alt="Libro de Reclamaciones"
-                                                className="w-full h-auto object-contain transition-all duration-300"
+                                                className="w-40 lg:w-full h-auto object-contain transition-all duration-300"
                                                 onError={(e) =>
                                                 (e.target.style.display =
                                                     "none")
