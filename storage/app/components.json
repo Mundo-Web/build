@@ -6651,6 +6651,9 @@
         ],
         "using": {
           "model": "Service",
+          "with": [
+            "features"
+          ],
           "type": "many"
         },
         "generals": [

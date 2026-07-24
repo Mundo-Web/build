@@ -1,11 +1,23 @@
 import React from "react";
 import { ArrowUpRight } from "lucide-react";
 import { CurrencySymbol } from "../../../../Utils/Number2Currency";
+import ItemsRest from "../../../../Actions/ItemsRest";
+
+const itemsRest = new ItemsRest();
 
 const CardProductFimesac = ({ product = {}, data = {} }) => {
-    const goToDetail = (e) => {
-        e.preventDefault();
-        e.stopPropagation();
+    const goToDetail = async (e) => {
+        if (e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+        if (product.id) {
+            try {
+                await itemsRest.updateClicks({ id: product.id });
+            } catch (err) {
+                console.error("Error actualizando clics de producto:", err);
+            }
+        }
         if (product.slug) {
             window.location.href = `/product/${product.slug}`;
         } else if (product.id) {

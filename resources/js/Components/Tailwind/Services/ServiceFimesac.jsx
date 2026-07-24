@@ -2,6 +2,9 @@ import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowRight, ChevronRight, CheckCircle2 } from "lucide-react";
 import General from "../../../Utils/General";
+import ServicesRest from "../../../Actions/ServicesRest";
+
+const servicesRest = new ServicesRest();
 
 const ServiceFimesac = ({ data, items = [], generals = [], onClickTracking }) => {
     const [selectedService, setSelectedService] = useState(items[0] || null);
@@ -13,14 +16,31 @@ const ServiceFimesac = ({ data, items = [], generals = [], onClickTracking }) =>
         ""
     ).replace(/[^0-9]/g, "");
 
-    const handleServiceClick = (service) => {
-        setSelectedService(service);
-        if (onClickTracking && typeof onClickTracking === "function") {
-            onClickTracking(service);
+    const trackServiceClick = async (service) => {
+        if (!service?.id) return;
+        try {
+            if (onClickTracking && typeof onClickTracking === "function") {
+                onClickTracking(service);
+            }
+            await servicesRest.updateClicks({
+                id: service.id,
+                page_url: window.location.href,
+                referrer: document.referrer || null,
+                user_agent: navigator.userAgent,
+                timestamp: new Date().toISOString(),
+            });
+        } catch (error) {
+            console.error("Error registrando click de servicio:", error);
         }
     };
 
+    const handleServiceClick = (service) => {
+        setSelectedService(service);
+        trackServiceClick(service);
+    };
+
     const handleWhatsAppClick = (service) => {
+        trackServiceClick(service);
         if (!mainPhone) return;
         const msg = encodeURIComponent(
             `Hola, solicito información sobre el servicio: ${service?.name || ""}`,
@@ -162,7 +182,9 @@ const ServiceFimesac = ({ data, items = [], generals = [], onClickTracking }) =>
                                                         >
                                                             <CheckCircle2 className="w-4 h-4 text-primary shrink-0" />
                                                             <span className="text-sm font-medium text-neutral-dark">
-                                                                {typeof feat === "string" ? feat : feat.name || feat.title}
+                                                                {typeof feat === "string"
+                                                                    ? feat
+                                                                    : feat.feature || feat.name || feat.title || feat.description}
                                                             </span>
                                                         </div>
                                                     ))}
@@ -185,6 +207,7 @@ const ServiceFimesac = ({ data, items = [], generals = [], onClickTracking }) =>
                                         {selectedService.link && (
                                             <a
                                                 href={selectedService.link}
+                                                onClick={() => trackServiceClick(selectedService)}
                                                 className="py-4 px-6 bg-white border-2 border-neutral-dark text-neutral-dark font-bold text-sm uppercase tracking-wider flex items-center justify-center gap-2 hover:bg-neutral-dark hover:text-white transition-all rounded-none"
                                             >
                                                 <span>VER MÁS DETALLES</span>
