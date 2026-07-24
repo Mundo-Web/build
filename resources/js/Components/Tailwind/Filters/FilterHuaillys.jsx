@@ -308,10 +308,14 @@ const FilterHuaillys = ({ items, data, cart, setCart, filteredData, setFavorites
                                         spaceBetween: 16,
                                     },
                                     768: {
-                                        slidesPerView: 3,
+                                        slidesPerView: 2,
                                         spaceBetween: 20,
                                     },
                                     1024: {
+                                        slidesPerView: 3,
+                                        spaceBetween: 24,
+                                    },
+                                    1200: {
                                         slidesPerView: 4,
                                         spaceBetween: 24,
                                     },
