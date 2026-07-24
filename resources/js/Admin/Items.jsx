@@ -2362,8 +2362,17 @@ const Items = ({
                                     </div>
                                 </div>
 
-                                <div className="col-12">
-                                    <div className="card border-0 shadow-sm">
+                                <div className="col-12" >
+                                    <div className="card border-0 shadow-sm" hidden={!Fillable.has(
+                                        "items",
+                                        "summary",
+                                    ) && !Fillable.has(
+                                        "items",
+                                        "store_id",
+                                    ) && !Fillable.has(
+                                        "items",
+                                        "is_tags",
+                                    )}>
                                         <div className="card-header">
                                             <h6 className="mb-0">
                                                 <i className="fas fa-align-left me-2"></i>
