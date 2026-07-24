@@ -54,22 +54,24 @@ const ServiceSidebar = ({ data, items = [] }) => {
                                         {/* Description Content (Izquierda - Fondo oscuro) */}
                                         <div className="p-12 text-white flex flex-col justify-center">
                                             {selectedService.description && (
-                                              
-                                                <p className=" max-w-none text-lg text-white whitespace-pre-line">
-                                                    {selectedService.description}
-                                                </p>
+                                                <div
+                                                    className="max-w-none text-lg text-white prose prose-invert font-normal leading-relaxed"
+                                                    dangerouslySetInnerHTML={{ __html: selectedService.description }}
+                                                />
                                             )}
 
                                             {!selectedService.description && selectedService.extract && (
-                                                <p className="text-white text-lg leading-relaxed">
-                                                    {selectedService.extract}
-                                                </p>
+                                                <div
+                                                    className="text-white text-lg leading-relaxed prose prose-invert font-normal"
+                                                    dangerouslySetInnerHTML={{ __html: selectedService.extract }}
+                                                />
                                             )}
 
                                             {!selectedService.description && !selectedService.extract && selectedService.summary && (
-                                                <p className="text-white text-lg leading-relaxed">
-                                                    {selectedService.summary}
-                                                </p>
+                                                <div
+                                                    className="text-white text-lg leading-relaxed prose prose-invert font-normal"
+                                                    dangerouslySetInnerHTML={{ __html: selectedService.summary }}
+                                                />
                                             )}
 
                                             {/* CTA Button */}

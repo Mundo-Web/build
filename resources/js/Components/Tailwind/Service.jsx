@@ -15,6 +15,7 @@ const ServiceWebQuirurgica = React.lazy(
 const ServiceWebQuirurgica2 = React.lazy(
     () => import("./Services/ServiceWebQuirurgica2"),
 );
+const ServiceFimesac = React.lazy(() => import("./Services/ServiceFimesac"));
 
 const servicesRest = new ServicesRest();
 
@@ -96,6 +97,15 @@ const Service = ({ data, items, which, generals }) => {
             case "ServiceWebQuirurgica2":
                 return (
                     <ServiceWebQuirurgica2
+                        data={data}
+                        items={items}
+                        onClickTracking={handleClickTracking}
+                        generals={generals}
+                    />
+                );
+            case "ServiceFimesac":
+                return (
+                    <ServiceFimesac
                         data={data}
                         items={items}
                         onClickTracking={handleClickTracking}

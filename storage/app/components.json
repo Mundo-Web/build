@@ -6639,6 +6639,23 @@
           "whatsapp_advisors",
           "services.file_catalogo_url"
         ]
+      },
+      {
+        "id": "ServiceFimesac",
+        "name": "Servicios Fimesac (Sidebar Industrial)",
+        "image": "service-sidebar.png",
+        "data": [
+          "title",
+          "subtitle",
+          "class_section"
+        ],
+        "using": {
+          "model": "Service",
+          "type": "many"
+        },
+        "generals": [
+          "phone_whatsapp"
+        ]
       }
     ]
   },
