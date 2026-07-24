@@ -216,90 +216,104 @@ const FooterRainstar = ({ pages = [], generals = [], data, socials = [] }) => {
                             Legal
                         </h4>
                         <ul className="space-y-6">
-                            <li>
-                                <a
-                                    href="/politicas-de-privacidad"
-                                    className="text-white hover:text-white transition-colors flex items-center justify-between group text-sm w-full text-left"
-                                >
-                                    <span className="font-medium">
-                                        Política de Privacidad
-                                    </span>
-                                    <ArrowUpRight
-                                        size={12}
-                                        className="opacity-0 group-hover:opacity-100 transition-opacity"
-                                    />
-                                </a>
-                            </li>
-                            <li>
-                                <a
-                                    href="/terminos-y-condiciones"
-                                    className="text-white hover:text-white transition-colors flex items-center justify-between group text-sm w-full text-left"
-                                >
-                                    <span className="font-medium">
-                                        Términos y Condiciones
-                                    </span>
-                                    <ArrowUpRight
-                                        size={12}
-                                        className="opacity-0 group-hover:opacity-100 transition-opacity"
-                                    />
-                                </a>
-                            </li>
-                            <li>
-                                <a
-                                    href="/politicas-de-devolucion-y-cambio"
-                                    className="text-white hover:text-white transition-colors flex items-center justify-between group text-sm w-full text-left"
-                                >
-                                    <span className="font-medium">
-                                        Políticas de Devolución y Cambio
-                                    </span>
-                                    <ArrowUpRight
-                                        size={12}
-                                        className="opacity-0 group-hover:opacity-100 transition-opacity"
-                                    />
-                                </a>
-                            </li>
-                            <li>
-                                <a
-                                    href="/politicas-de-envio"
-                                    className="text-white hover:text-white transition-colors flex items-center justify-between group text-sm w-full text-left"
-                                >
-                                    <span className="font-medium">
-                                        Políticas de Envío
-                                    </span>
-                                    <ArrowUpRight
-                                        size={12}
-                                        className="opacity-0 group-hover:opacity-100 transition-opacity"
-                                    />
-                                </a>
-                            </li>
-                            <li className="pt-2">
-                                <div className="space-y-4">
+                            {(data?.show_privacy_policy !== false && data?.show_privacy_policy !== 0 && data?.show_privacy_policy !== "0" && data?.show_privacy_policy !== "false") && (
+                                <li>
                                     <a
-                                        href="/libro-reclamaciones"
-                                        className="text-white hover:text-white transition-colors flex items-center justify-between group text-xs font-bold  uppercase"
+                                        href="/politica-de-privacidad"
+                                        className="text-white hover:text-white transition-colors flex items-center justify-between group text-sm w-full text-left"
                                     >
-                                        <span>Libro de Reclamaciones</span>
+                                        <span className="font-medium">
+                                            Política de Privacidad
+                                        </span>
                                         <ArrowUpRight
-                                            size={14}
+                                            size={12}
                                             className="opacity-0 group-hover:opacity-100 transition-opacity"
                                         />
                                     </a>
+                                </li>
+                            )}
+
+                            {(data?.show_terms_conditions !== false && data?.show_terms_conditions !== 0 && data?.show_terms_conditions !== "0" && data?.show_terms_conditions !== "false") && (
+                                <li>
                                     <a
-                                        href="/libro-reclamaciones"
-                                        className="block  hover:opacity-80 transition-opacity"
+                                        href="/terminos-y-condiciones"
+                                        className="text-white hover:text-white transition-colors flex items-center justify-between group text-sm w-full text-left"
                                     >
-                                        <img
-                                            src="/assets/resources/libro-reclamaciones.png"
-                                            alt="Libro de Reclamaciones"
-                                            className="w-full h-auto object-contain transition-all duration-300"
-                                            onError={(e) =>
-                                            (e.target.style.display =
-                                                "none")
-                                            }
+                                        <span className="font-medium">
+                                            Términos y Condiciones
+                                        </span>
+                                        <ArrowUpRight
+                                            size={12}
+                                            className="opacity-0 group-hover:opacity-100 transition-opacity"
                                         />
                                     </a>
-                                </div>
-                            </li>
+                                </li>
+                            )}
+
+                            {(data?.show_return_policy !== false && data?.show_return_policy !== 0 && data?.show_return_policy !== "0" && data?.show_return_policy !== "false") && (
+                                <li>
+                                    <a
+                                        href="/politicas-de-devolucion-y-cambio"
+                                        className="text-white hover:text-white transition-colors flex items-center justify-between group text-sm w-full text-left"
+                                    >
+                                        <span className="font-medium">
+                                            Políticas de Devolución y Cambio
+                                        </span>
+                                        <ArrowUpRight
+                                            size={12}
+                                            className="opacity-0 group-hover:opacity-100 transition-opacity"
+                                        />
+                                    </a>
+                                </li>
+                            )}
+
+                            {(data?.show_shipping_policy !== false && data?.show_shipping_policy !== 0 && data?.show_shipping_policy !== "0" && data?.show_shipping_policy !== "false") && (
+                                <li>
+                                    <a
+                                        href="/politicas-de-envio"
+                                        className="text-white hover:text-white transition-colors flex items-center justify-between group text-sm w-full text-left"
+                                    >
+                                        <span className="font-medium">
+                                            Políticas de Envío
+                                        </span>
+                                        <ArrowUpRight
+                                            size={12}
+                                            className="opacity-0 group-hover:opacity-100 transition-opacity"
+                                        />
+                                    </a>
+                                </li>
+                            )}
+
+                            {(data?.show_complaints_book !== false && data?.show_complaints_book !== 0 && data?.show_complaints_book !== "0" && data?.show_complaints_book !== "false") && (
+                                <li className="pt-2">
+                                    <div className="space-y-4">
+                                        <a
+                                            href="/libro-reclamaciones"
+                                            className="text-white hover:text-white transition-colors flex items-center justify-between group text-xs font-bold  uppercase"
+                                        >
+                                            <span>Libro de Reclamaciones</span>
+                                            <ArrowUpRight
+                                                size={14}
+                                                className="opacity-0 group-hover:opacity-100 transition-opacity"
+                                            />
+                                        </a>
+                                        <a
+                                            href="/libro-reclamaciones"
+                                            className="block  hover:opacity-80 transition-opacity"
+                                        >
+                                            <img
+                                                src="/assets/resources/libro-reclamaciones.png"
+                                                alt="Libro de Reclamaciones"
+                                                className="w-full h-auto object-contain transition-all duration-300"
+                                                onError={(e) =>
+                                                (e.target.style.display =
+                                                    "none")
+                                                }
+                                            />
+                                        </a>
+                                    </div>
+                                </li>
+                            )}
                         </ul>
                     </div>
 

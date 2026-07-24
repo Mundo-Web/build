@@ -38,11 +38,10 @@ const InputField = ({ label, name, error, ...props }) => (
             <input
                 {...props}
                 name={name}
-                className={`w-full border-2 p-4 font-medium outline-none transition-all bg-white text-neutral-800 placeholder-neutral-300 ${
-                    error
-                        ? "border-red-400 bg-red-50"
-                        : "border-gray-200 focus:border-black hover:border-gray-400"
-                }`}
+                className={`w-full border-2 p-4 font-medium outline-none transition-all bg-white text-neutral-800 placeholder-neutral-300 ${error
+                    ? "border-red-400 bg-red-50"
+                    : "border-gray-200 focus:border-black hover:border-gray-400"
+                    }`}
             />
         </div>
         {error && (
@@ -70,11 +69,10 @@ const SelectField = ({ label, options, placeholder, error, ...props }) => {
             <div className="relative group">
                 <select
                     {...props}
-                    className={`w-full border-2 p-4 font-medium outline-none appearance-none bg-white cursor-pointer transition-all text-neutral-800 ${
-                        error
-                            ? "border-red-400 bg-red-50"
-                            : "border-gray-200 focus:border-black hover:border-gray-400"
-                    }`}
+                    className={`w-full border-2 p-4 font-medium outline-none appearance-none bg-white cursor-pointer transition-all text-neutral-800 ${error
+                        ? "border-red-400 bg-red-50"
+                        : "border-gray-200 focus:border-black hover:border-gray-400"
+                        }`}
                 >
                     <option value="" disabled>
                         {placeholder}
@@ -776,13 +774,15 @@ export default function ComplaintRainstar({ generals = [], data }) {
                                         >
                                             Declaro que la información es
                                             conforme y acepto los{" "}
-                                            <button
-                                                type="button"
-                                                onClick={() => openModal(0)}
-                                                className="underline hover:text-primary transition-colors font-black"
+                                            <a
+                                                href="/terminos-y-condiciones"
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                title="Terminos y condiciones"
+                                                className="underline hover:text-white transition-colors font-black"
                                             >
                                                 términos y condiciones
-                                            </button>{" "}
+                                            </a>{" "}
                                             del libro de reclamaciones de
                                             Rainstar.
                                         </label>
@@ -841,7 +841,7 @@ export default function ComplaintRainstar({ generals = [], data }) {
                 const title = policyItems[key];
                 const content = Array.isArray(generals)
                     ? (generals.find((x) => x.correlative == key)
-                          ?.description ?? "")
+                        ?.description ?? "")
                     : "";
                 return (
                     <ReactModal

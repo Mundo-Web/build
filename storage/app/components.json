@@ -5861,6 +5861,11 @@
         "image": "footer-rainstar.png",
         "data": [
           "bool:show_join_us:Mostrar opción Únete a Nosotros",
+          "bool:show_privacy_policy:Mostrar Política de Privacidad",
+          "bool:show_terms_conditions:Mostrar Términos y Condiciones",
+          "bool:show_return_policy:Mostrar Políticas de Devolución y Cambio",
+          "bool:show_shipping_policy:Mostrar Políticas de Envío",
+          "bool:show_complaints_book:Mostrar Libro de Reclamaciones",
           "class"
         ],
         "generals": [
