@@ -3,6 +3,9 @@ import { motion } from "framer-motion";
 import TextWithHighlight from "../../../Utils/TextWithHighlight";
 
 const AboutMiBalon = ({ data, filteredData, items }) => {
+    const variant = data?.variant || "original";
+    const isSharp = variant === "rounded-none";
+
     const aboutuses = items;
     const history = items?.find(
         (item) => item.correlative === "section-historia",
@@ -74,7 +77,7 @@ const AboutMiBalon = ({ data, filteredData, items }) => {
     return (
         <main
             id={data?.element_id || null}
-            className="min-h-screen  px-4 md:px-6 2xl:px-0 2xl:max-w-7xl mx-auto w-full py-8 md:py-12 lg:py-16 "
+            className="min-h-screen px-primary 2xl:px-0 2xl:max-w-7xl mx-auto w-full py-8 md:py-12 lg:py-16"
         >
             {/* Hero Section - Historia */}
             <motion.section
@@ -85,7 +88,9 @@ const AboutMiBalon = ({ data, filteredData, items }) => {
             >
                 <motion.div
                     variants={fadeInUp}
-                    className="w-full rounded-[2rem] overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-500 bg-white p-2"
+                    className={`w-full overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-500 bg-white p-2 ${
+                        isSharp ? "rounded-none border border-slate-200" : "rounded-[2rem]"
+                    }`}
                     {...imageHover}
                 >
                     <img
@@ -94,7 +99,9 @@ const AboutMiBalon = ({ data, filteredData, items }) => {
                             (e.target.src = "/api/cover/thumbnail/null")
                         }
                         alt={history?.title}
-                        className="w-full h-[300px] sm:h-[350px] md:h-[450px] lg:h-[500px] object-cover rounded-[1.5rem] transition-transform duration-700"
+                        className={`w-full h-[300px] sm:h-[350px] md:h-[450px] lg:h-[500px] object-cover transition-transform duration-700 ${
+                            isSharp ? "rounded-none" : "rounded-[1.5rem]"
+                        }`}
                     />
                 </motion.div>
             </motion.section>
@@ -107,7 +114,9 @@ const AboutMiBalon = ({ data, filteredData, items }) => {
             >
                 <motion.h2
                     variants={fadeInUp}
-                    className={`text-3xl md:text-4xl lg:text-7xl font-title  text-center text-primary uppercase max-w-5xl mx-auto ${data?.class_title || ""}`}
+                    className={`text-3xl md:text-4xl lg:text-7xl font-title text-center text-primary uppercase max-w-5xl mx-auto ${
+                        data?.class_title || ""
+                    }`}
                 >
                     <TextWithHighlight
                         text={history?.title}
@@ -132,7 +141,9 @@ const AboutMiBalon = ({ data, filteredData, items }) => {
                         if (isLongText) {
                             return (
                                 <div
-                                    className="columns-1 lg:columns-2 gap-6 md:gap-8 lg:gap-12 text-neutral-dark text-base md:text-base bg-white p-8 md:p-10 rounded-[2rem] shadow-sm prose  max-w-none ql-editor [&>*]:break-inside-avoid"
+                                    className={`columns-1 lg:columns-2 gap-6 md:gap-8 lg:gap-12 text-neutral-dark text-base md:text-base bg-white p-8 md:p-10 shadow-sm prose max-w-none ql-editor [&>*]:break-inside-avoid ${
+                                        isSharp ? "rounded-none border border-slate-200" : "rounded-[2rem]"
+                                    }`}
                                     dangerouslySetInnerHTML={{
                                         __html:
                                             history?.description?.replace(
@@ -144,9 +155,13 @@ const AboutMiBalon = ({ data, filteredData, items }) => {
                             );
                         } else {
                             return (
-                                <div className="max-w-5xl mx-auto text-center bg-white p-8 md:p-12 rounded-[2rem] shadow-sm">
+                                <div
+                                    className={`max-w-5xl mx-auto text-center bg-white p-8 md:p-12 shadow-sm ${
+                                        isSharp ? "rounded-none border border-slate-200" : "rounded-[2rem]"
+                                    }`}
+                                >
                                     <div
-                                        className="text-neutral-dark text-base md:text-base  prose  max-w-none ql-editor"
+                                        className="text-neutral-dark text-base md:text-base prose max-w-none ql-editor"
                                         dangerouslySetInnerHTML={{
                                             __html:
                                                 history?.description?.replace(
@@ -173,7 +188,9 @@ const AboutMiBalon = ({ data, filteredData, items }) => {
                     >
                         <motion.h2
                             variants={fadeInUp}
-                            className={`text-3xl sm:text-3xl md:text-4xl lg:text-7xl  font-title text-primary max-w-4xl mx-auto text-center uppercase ${data?.class_title || ""}`}
+                            className={`text-3xl sm:text-3xl md:text-4xl lg:text-7xl font-title text-primary max-w-4xl mx-auto text-center uppercase ${
+                                data?.class_title || ""
+                            }`}
                         >
                             <TextWithHighlight
                                 text={values?.title}
@@ -198,7 +215,9 @@ const AboutMiBalon = ({ data, filteredData, items }) => {
                                 {strengths?.slice(0, 2).map((item, index) => (
                                     <motion.div
                                         key={index}
-                                        className="group bg-white rounded-[2rem] p-6 md:p-8 cursor-pointer border border-gray-100 hover:border-primary/30 shadow-sm hover:shadow-lg transition-all duration-300 relative overflow-hidden"
+                                        className={`group bg-white p-6 md:p-8 cursor-pointer border border-gray-100 hover:border-primary/30 shadow-sm hover:shadow-lg transition-all duration-300 relative overflow-hidden ${
+                                            isSharp ? "rounded-none border border-slate-200" : "rounded-[2rem]"
+                                        }`}
                                         variants={fadeInUp}
                                         initial={{ opacity: 0, y: 30 }}
                                         whileInView={{ opacity: 1, y: 0 }}
@@ -209,12 +228,20 @@ const AboutMiBalon = ({ data, filteredData, items }) => {
                                         }}
                                         {...cardHover}
                                     >
-                                        <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-bl-[100px] -z-10 transition-transform duration-500 group-hover:scale-110"></div>
+                                        <div
+                                            className={`absolute top-0 right-0 w-32 h-32 bg-primary/5 -z-10 transition-transform duration-500 group-hover:scale-110 ${
+                                                isSharp ? "rounded-none" : "rounded-bl-[100px]"
+                                            }`}
+                                        ></div>
                                         <motion.div
                                             className="mb-4 md:mb-6"
                                             {...iconFloat}
                                         >
-                                            <div className="bg-primary text-primary rounded-full w-16 h-16 flex items-center justify-center shadow-sm group-hover:bg-primary group-hover:text-white transition-colors duration-300">
+                                            <div
+                                                className={`bg-primary text-primary w-16 h-16 flex items-center justify-center shadow-sm group-hover:bg-primary group-hover:text-white transition-colors duration-300 ${
+                                                    isSharp ? "rounded-none" : "rounded-full"
+                                                }`}
+                                            >
                                                 <img
                                                     src={`/storage/images/strength/${item?.image}`}
                                                     alt={item?.name}
@@ -227,10 +254,10 @@ const AboutMiBalon = ({ data, filteredData, items }) => {
                                             </div>
                                         </motion.div>
                                         <div className="space-y-3">
-                                            <h3 className="text-xl lg:text-2xl font-title  text-neutral-dark group-hover:text-primary transition-colors duration-300">
+                                            <h3 className="text-xl lg:text-2xl font-title text-neutral-dark group-hover:text-primary transition-colors duration-300">
                                                 {item?.name}
                                             </h3>
-                                            <p className="text-neutral-dark text-base ">
+                                            <p className="text-neutral-dark text-base">
                                                 {item?.description}
                                             </p>
                                         </div>
@@ -248,7 +275,9 @@ const AboutMiBalon = ({ data, filteredData, items }) => {
                                 transition={{ duration: 0.6, delay: 0.2 }}
                             >
                                 <motion.div
-                                    className="w-full rounded-[2rem] overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-500 bg-white p-2"
+                                    className={`w-full overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-500 bg-white p-2 ${
+                                        isSharp ? "rounded-none border border-slate-200" : "rounded-[2rem]"
+                                    }`}
                                     {...imageHover}
                                 >
                                     <img
@@ -258,7 +287,9 @@ const AboutMiBalon = ({ data, filteredData, items }) => {
                                             "/api/cover/thumbnail/null")
                                         }
                                         alt={values?.title}
-                                        className="w-full h-[350px] lg:h-[450px] xl:h-[550px] object-cover rounded-[1.5rem] transition-transform duration-700"
+                                        className={`w-full h-[350px] lg:h-[450px] xl:h-[550px] object-cover transition-transform duration-700 ${
+                                            isSharp ? "rounded-none" : "rounded-[1.5rem]"
+                                        }`}
                                     />
                                 </motion.div>
                             </motion.div>
@@ -271,7 +302,9 @@ const AboutMiBalon = ({ data, filteredData, items }) => {
                                 {strengths?.slice(2, 4).map((item, index) => (
                                     <motion.div
                                         key={index}
-                                        className="group bg-white rounded-[2rem] p-6 md:p-8 cursor-pointer border border-gray-100 hover:border-primary/30 shadow-sm hover:shadow-lg transition-all duration-300 relative overflow-hidden"
+                                        className={`group bg-white p-6 md:p-8 cursor-pointer border border-gray-100 hover:border-primary/30 shadow-sm hover:shadow-lg transition-all duration-300 relative overflow-hidden ${
+                                            isSharp ? "rounded-none border border-slate-200" : "rounded-[2rem]"
+                                        }`}
                                         variants={fadeInUp}
                                         initial={{ opacity: 0, y: 30 }}
                                         whileInView={{ opacity: 1, y: 0 }}
@@ -282,12 +315,20 @@ const AboutMiBalon = ({ data, filteredData, items }) => {
                                         }}
                                         {...cardHover}
                                     >
-                                        <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-bl-[100px] -z-10 transition-transform duration-500 group-hover:scale-110"></div>
+                                        <div
+                                            className={`absolute top-0 right-0 w-32 h-32 bg-primary/5 -z-10 transition-transform duration-500 group-hover:scale-110 ${
+                                                isSharp ? "rounded-none" : "rounded-bl-[100px]"
+                                            }`}
+                                        ></div>
                                         <motion.div
                                             className="mb-4 md:mb-6"
                                             {...iconFloat}
                                         >
-                                            <div className="bg-primary text-primary rounded-full w-16 h-16 flex items-center justify-center shadow-sm group-hover:bg-primary group-hover:text-white transition-colors duration-300">
+                                            <div
+                                                className={`bg-primary text-primary w-16 h-16 flex items-center justify-center shadow-sm group-hover:bg-primary group-hover:text-white transition-colors duration-300 ${
+                                                    isSharp ? "rounded-none" : "rounded-full"
+                                                }`}
+                                            >
                                                 <img
                                                     src={`/storage/images/strength/${item?.image}`}
                                                     alt={item?.name}
@@ -300,7 +341,7 @@ const AboutMiBalon = ({ data, filteredData, items }) => {
                                             </div>
                                         </motion.div>
                                         <div className="space-y-3">
-                                            <h3 className="text-xl lg:text-2xl font-title  text-neutral-dark group-hover:text-primary transition-colors duration-300">
+                                            <h3 className="text-xl lg:text-2xl font-title text-neutral-dark group-hover:text-primary transition-colors duration-300">
                                                 {item?.name}
                                             </h3>
                                             <p className="text-neutral-dark text-base leading-relaxed">
@@ -329,7 +370,9 @@ const AboutMiBalon = ({ data, filteredData, items }) => {
                 >
                     <motion.div
                         variants={fadeInLeft}
-                        className="w-full rounded-[2rem] overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-500 bg-white p-2 order-2 lg:order-1"
+                        className={`w-full overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-500 bg-white p-2 order-2 lg:order-1 ${
+                            isSharp ? "rounded-none border border-slate-200" : "rounded-[2rem]"
+                        }`}
                         {...imageHover}
                     >
                         <img
@@ -338,7 +381,9 @@ const AboutMiBalon = ({ data, filteredData, items }) => {
                                 (e.target.src = "/api/cover/thumbnail/null")
                             }
                             alt={vision?.title || mision?.title}
-                            className="w-full aspect-square object-cover rounded-[1.5rem] transition-transform duration-700"
+                            className={`w-full aspect-square object-cover transition-transform duration-700 ${
+                                isSharp ? "rounded-none" : "rounded-[1.5rem]"
+                            }`}
                         />
                     </motion.div>
 
@@ -348,12 +393,18 @@ const AboutMiBalon = ({ data, filteredData, items }) => {
                     >
                         {mision && (
                             <motion.div
-                                className="group bg-white rounded-[2rem] p-8 md:p-10 shadow-sm hover:shadow-lg transition-all duration-300 border border-gray-100 hover:border-primary/30 relative overflow-hidden"
+                                className={`group bg-white p-8 md:p-10 shadow-sm hover:shadow-lg transition-all duration-300 border border-gray-100 hover:border-primary/30 relative overflow-hidden ${
+                                    isSharp ? "rounded-none border border-slate-200" : "rounded-[2rem]"
+                                }`}
                                 variants={fadeInUp}
                                 {...cardHover}
                             >
-                                <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-bl-[100px] -z-10 transition-transform duration-500 group-hover:scale-110"></div>
-                                <motion.h3 className={`text-3xl lg:text-4xl  text-primary font-title mb-4 md:mb-6 uppercase ${data?.class_title || ""}`}>
+                                <div
+                                    className={`absolute top-0 right-0 w-32 h-32 bg-primary/5 -z-10 transition-transform duration-500 group-hover:scale-110 ${
+                                        isSharp ? "rounded-none" : "rounded-bl-[100px]"
+                                    }`}
+                                ></div>
+                                <motion.h3 className={`text-3xl lg:text-4xl text-primary font-title mb-4 md:mb-6 uppercase ${data?.class_title || ""}`}>
                                     <TextWithHighlight
                                         text={mision?.title}
                                         className="font-title"
@@ -370,12 +421,18 @@ const AboutMiBalon = ({ data, filteredData, items }) => {
 
                         {vision && (
                             <motion.div
-                                className="group bg-white rounded-[2rem] p-8 md:p-10 shadow-sm hover:shadow-lg transition-all duration-300 border border-gray-100 hover:border-primary/30 relative overflow-hidden"
+                                className={`group bg-white p-8 md:p-10 shadow-sm hover:shadow-lg transition-all duration-300 border border-gray-100 hover:border-primary/30 relative overflow-hidden ${
+                                    isSharp ? "rounded-none border border-slate-200" : "rounded-[2rem]"
+                                }`}
                                 variants={fadeInUp}
                                 {...cardHover}
                             >
-                                <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-bl-[100px] -z-10 transition-transform duration-500 group-hover:scale-110"></div>
-                                <motion.h3 className={`text-3xl lg:text-4xl  text-primary font-title mb-4 md:mb-6 uppercase ${data?.class_title || ""}`}>
+                                <div
+                                    className={`absolute top-0 right-0 w-32 h-32 bg-primary/5 -z-10 transition-transform duration-500 group-hover:scale-110 ${
+                                        isSharp ? "rounded-none" : "rounded-bl-[100px]"
+                                    }`}
+                                ></div>
+                                <motion.h3 className={`text-3xl lg:text-4xl text-primary font-title mb-4 md:mb-6 uppercase ${data?.class_title || ""}`}>
                                     <TextWithHighlight
                                         text={vision?.title}
                                         className="font-title"

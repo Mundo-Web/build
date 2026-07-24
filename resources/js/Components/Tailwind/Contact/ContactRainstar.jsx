@@ -230,7 +230,7 @@ const ContactRainstar = ({ data, contacts: passedContacts, generals }) => {
         >
             <div className=" mx-auto px-primary 2xl:px-0 2xl:max-w-7xl">
                 {/* ── Header Section ─────────────────────────────────────────── */}
-                <div className="mb-24">
+                <div className="mb-10 md:mb-16">
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         whileInView={{ opacity: 1, y: 0 }}
@@ -238,10 +238,10 @@ const ContactRainstar = ({ data, contacts: passedContacts, generals }) => {
                         className="flex flex-col md:flex-row md:items-end justify-between gap-3   border-b-[6px] border-neutral-dark"
                     >
                         <div className="max-w-4xl">
-                            <span className="text-[11px] font-bold text-primary  block">
+                            <span className="text-sm font-bold text-primary  block">
                                 Estamos para ayudarte
                             </span>
-                            <h1 className="text-5xl md:text-7xl lg:text-8xl font-black uppercase  text-neutral-dark lg:mb-4">
+                            <h1 className="text-4xl md:text-6xl lg:text-7xl font-black uppercase  text-neutral-dark lg:mb-4">
                                 <TextWithHighlight
                                     text={data?.title || "Hablemos *Hoy*"}
                                     className="font-title"
@@ -421,7 +421,7 @@ const ContactRainstar = ({ data, contacts: passedContacts, generals }) => {
                                 <button
                                     type="submit"
                                     disabled={sending}
-                                    className="px-12 py-6 text-[11px] font-black uppercase  bg-neutral-dark text-white hover:bg-primary disabled:bg-neutral-100 disabled:text-neutral-300 disabled:cursor-not-allowed transition-all duration-500 flex items-center justify-center gap-6 group w-full md:w-auto shadow-xl"
+                                    className="px-12 py-6 text-sm font-black uppercase  bg-neutral-dark text-white hover:bg-primary disabled:bg-neutral-100 disabled:text-neutral-300 disabled:cursor-not-allowed transition-all duration-500 flex items-center justify-center gap-6 group w-full md:w-auto shadow-xl"
                                 >
                                     {sending ? (
                                         <>

@@ -31,7 +31,7 @@ const FaqRainstar = ({ data, faqs }) => {
                         <span className="text-sm font-bold text-primary  block">
                             Despeja tus dudas
                         </span>
-                        <h1 className="text-5xl font-black uppercase   text-neutral-dark mb-4">
+                        <h1 className="text-4xl md:text-5xl font-black uppercase   text-neutral-dark mb-4">
                             <TextWithHighlight
                                 text={data?.title || "Preguntas Frecuentes"}
                                 className="font-title"
@@ -58,7 +58,7 @@ const FaqRainstar = ({ data, faqs }) => {
                             >
                                 <div className="flex items-center gap-5">
                                     <span
-                                        className={`text-[11px] font-black italic transition-all duration-500 ${expandedFaqs.has(faq.id) ? "text-primary opacity-100" : "opacity-20"}`}
+                                        className={`text-[11px] font-black italic transition-all text-primary duration-500 ${expandedFaqs.has(faq.id) ? "text-primary opacity-100" : "opacity-20"}`}
                                     >
                                         {(index + 1)
                                             .toString()
