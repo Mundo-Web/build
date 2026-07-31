@@ -352,14 +352,14 @@ const ServiceDetailCatalogNgs = ({
                     <div className="max-w-4xl mx-auto text-center">
                         {/* Subtitle / Badge */}
                         {(data?.badge || data?.subtitle) && (
-                            <span className="inline-flex items-center gap-2 px-4 py-1.5 bg-primary/10 text-primary font-semibold text-xs uppercase tracking-wider rounded-full mb-4 border border-primary/20">
+                            <span className="inline-flex items-center gap-2 px-4 py-1.5 bg-primary/10 text-primary font-semibold text-xs uppercase  rounded-full mb-4 border border-primary/20">
                                 <ShieldCheck className="w-4 h-4 text-primary" />
                                 {data?.badge || data?.subtitle}
                             </span>
                         )}
 
                         {/* Title */}
-                        <h2 className="text-4xl md:text-5xl xl:text-6xl text-center uppercase font-title font-bold text-neutral-dark leading-tight">
+                        <h2 className="text-4xl md:text-5xl xl:text-6xl text-center uppercase font-title font-bold text-neutral-dark ">
                             <TextWithHighlight
                                 text={data?.title || "Nuestras *Soluciones* Especializadas"}
                                 color="bg-secondary"
@@ -369,7 +369,7 @@ const ServiceDetailCatalogNgs = ({
 
                         {/* Description */}
                         {data?.description && (
-                            <p className="text-base text-neutral-light font-paragraph leading-relaxed mt-3 max-w-2xl mx-auto">
+                            <p className="text-base text-neutral-light font-paragraph  mt-3 max-w-2xl mx-auto">
                                 {data.description}
                             </p>
                         )}
@@ -381,7 +381,7 @@ const ServiceDetailCatalogNgs = ({
                     <section className="bg-white rounded-3xl p-6 md:p-8 border border-slate-200/80 shadow-md">
                         <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
                             <div>
-                                <span className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-primary/10 text-primary border border-primary/20 mb-2">
+                                <span className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full text-xs font-bold uppercase  bg-primary/10 text-primary border border-primary/20 mb-2">
                                     <ShieldCheck className="w-3.5 h-3.5" />
                                     <span>Nuestras Especialidades</span>
                                 </span>
@@ -504,7 +504,7 @@ const ServiceDetailCatalogNgs = ({
                                         </div>
 
                                         <div className="flex-1 min-w-0 pr-1">
-                                            <h4 className={`text-base md:text-lg font-title font-bold leading-snug line-clamp-2 ${isActive ? "text-white" : "text-neutral-dark group-hover:text-primary"}`}>
+                                            <h4 className={`text-sm md:text-base font-title font-medium  line-clamp-2 ${isActive ? "text-white" : "text-neutral-dark group-hover:text-primary"}`}>
                                                 {service.name || service.title}
                                             </h4>
                                             {service.subcategory && (
@@ -540,11 +540,11 @@ const ServiceDetailCatalogNgs = ({
 
                             <div className="absolute bottom-6 left-6 right-6 sm:bottom-8 sm:left-8 sm:right-8 text-white space-y-3">
                                 {selectedService.category?.name && (
-                                    <span className="inline-block px-3.5 py-1.5 bg-secondary text-white text-xs font-bold uppercase rounded-full tracking-wider shadow-sm">
+                                    <span className="inline-block px-3.5 py-1.5 bg-secondary text-white text-xs font-bold uppercase rounded-full  shadow-sm">
                                         {selectedService.category.name}
                                     </span>
                                 )}
-                                <h1 className="text-3xl sm:text-5xl lg:text-6xl font-title font-bold leading-tight drop-shadow-lg">
+                                <h1 className="text-3xl sm:text-5xl lg:text-6xl font-title font-bold  drop-shadow-lg">
                                     {selectedService.name || selectedService.title}
                                 </h1>
                             </div>
@@ -553,9 +553,9 @@ const ServiceDetailCatalogNgs = ({
                         {/* Description Body */}
                         {(selectedService.description || selectedService.summary) && (
                             <div
-                                className="prose prose-base md:prose-lg max-w-none 
+                                className="prose prose-base md:prose-lg max-w-none  
                                 prose-headings:font-title prose-headings:font-bold prose-headings:text-neutral-dark 
-                                prose-p:text-neutral-dark/85 prose-p:font-paragraph prose-p:leading-relaxed 
+                                prose-p:text-neutral-light prose-p:font-paragraph prose-p: 
                                 prose-strong:text-neutral-dark prose-strong:font-bold 
                                 prose-blockquote:border-l-4 prose-blockquote:border-primary prose-blockquote:bg-slate-50 
                                 prose-blockquote:py-4 prose-blockquote:px-6 prose-blockquote:italic 
@@ -570,36 +570,48 @@ const ServiceDetailCatalogNgs = ({
                         {getCharacteristics(selectedService).length > 0 && (
                             <div className="space-y-4 pt-6 border-t border-slate-100">
                                 <h3 className="text-2xl font-title font-bold text-neutral-dark">Características</h3>
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                                <div className="grid grid-cols-1 sm:grid-cols-1 gap-3.5">
                                     {getCharacteristics(selectedService).map((feat, idx) => (
                                         <div key={idx} className="flex items-center gap-3.5 px-5 py-3 bg-slate-50 border border-slate-200/80 hover:bg-slate-100 rounded-full transition-all">
                                             <CheckCircle2 className="w-5 h-5 text-secondary shrink-0" />
-                                            <span className="text-sm sm:text-base text-slate-700 font-medium leading-snug">{feat}</span>
+                                            <span className="text-sm sm:text-lg text-neutral-light font-medium ">{feat}</span>
                                         </div>
                                     ))}
                                 </div>
                             </div>
                         )}
 
-                        {/* Technical Specifications */}
+                        {/* Technical Specifications Table */}
                         {specifications.length > 0 && (
                             <div className="space-y-4 pt-4 border-t border-slate-100">
                                 <h3 className="text-xl font-title font-bold text-neutral-dark">Especificaciones Técnicas</h3>
-                                <div className="border border-slate-200 bg-slate-50/70 rounded-2xl overflow-hidden">
-                                    <div className="p-4 space-y-3">
-                                        {specifications.map((spec, idx) => (
-                                            <div key={idx} className="flex items-start gap-3 text-sm">
-                                                <Shield className="w-4 h-4 text-primary mt-0.5 shrink-0" />
-                                                <div className="flex-1">
-                                                    {spec.title && (
-                                                        <span className="font-bold text-neutral-dark uppercase text-xs me-2">
-                                                            {spec.title}:
-                                                        </span>
-                                                    )}
-                                                    <span className="text-slate-700">{spec.description || spec.value}</span>
-                                                </div>
-                                            </div>
-                                        ))}
+                                <div className="border border-slate-200/80 bg-white rounded-2xl overflow-hidden shadow-xs">
+                                    <div className="overflow-x-auto">
+                                        <table className="w-full text-left text-sm border-collapse">
+                                            <tbody>
+                                                {specifications.map((spec, idx) => (
+                                                    <tr
+                                                        key={idx}
+                                                        className="border-b border-slate-100 last:border-b-0 odd:bg-white even:bg-slate-50/60 hover:bg-slate-100/50 transition-colors"
+                                                    >
+                                                        {spec.title ? (
+                                                            <>
+                                                                <td className="py-3.5 px-5 font-bold text-neutral-dark text-xs uppercase  w-1/3 sm:w-2/5 align-top bg-slate-50/40 border-r border-slate-100">
+                                                                    {spec.title}
+                                                                </td>
+                                                                <td className="py-3.5 px-5 text-neutral-dark/90 font-medium align-top ">
+                                                                    {spec.description || spec.value}
+                                                                </td>
+                                                            </>
+                                                        ) : (
+                                                            <td colSpan={2} className="py-3.5 px-5 text-neutral-dark/90 font-medium ">
+                                                                {spec.description || spec.value}
+                                                            </td>
+                                                        )}
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </table>
                                     </div>
                                 </div>
                             </div>
@@ -627,13 +639,12 @@ const ServiceDetailCatalogNgs = ({
                                                 >
                                                     <span>{faq.question}</span>
                                                     <ChevronDown
-                                                        className={`w-5 h-5 text-primary shrink-0 transition-transform duration-200 ${
-                                                            isOpen ? "rotate-180" : ""
-                                                        }`}
+                                                        className={`w-5 h-5 text-primary shrink-0 transition-transform duration-200 ${isOpen ? "rotate-180" : ""
+                                                            }`}
                                                     />
                                                 </button>
                                                 {isOpen && (
-                                                    <div className="px-5 pb-5 text-slate-700 font-paragraph text-sm sm:text-base leading-relaxed border-t border-slate-200/60 pt-3">
+                                                    <div className="px-5 pb-5 text-neutral-light font-paragraph text-sm sm:text-lg  border-t border-slate-200/60 pt-3">
                                                         {faq.answer}
                                                     </div>
                                                 )}
@@ -654,7 +665,7 @@ const ServiceDetailCatalogNgs = ({
                                             href={`/storage/images/service/${pdfFiles[0].url || pdfFiles[0]}`}
                                             target="_blank"
                                             rel="noopener noreferrer"
-                                            className="w-full py-4 px-6 bg-slate-100 hover:bg-slate-200 text-neutral-dark rounded-full font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition-all"
+                                            className="w-full py-4 px-6 bg-slate-100 hover:bg-slate-200 text-neutral-dark rounded-full font-bold text-xs uppercase  flex items-center justify-center gap-2 transition-all"
                                         >
                                             <Download className="w-4 h-4 text-primary" />
                                             <span>DESCARGAR FICHA PDF</span>
@@ -663,7 +674,7 @@ const ServiceDetailCatalogNgs = ({
                                         <>
                                             <button
                                                 onClick={() => setIsPdfDropdownOpen(!isPdfDropdownOpen)}
-                                                className="w-full py-4 px-6 bg-slate-100 hover:bg-slate-200 text-neutral-dark rounded-full font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition-all"
+                                                className="w-full py-4 px-6 bg-slate-100 hover:bg-slate-200 text-neutral-dark rounded-full font-bold text-xs uppercase  flex items-center justify-center gap-2 transition-all"
                                             >
                                                 <Download className="w-4 h-4 text-primary" />
                                                 <span>DOCUMENTOS PDF</span>
@@ -697,7 +708,7 @@ const ServiceDetailCatalogNgs = ({
                                     <>
                                         <button
                                             onClick={() => setIsAdvisorDropdownOpen(!isAdvisorDropdownOpen)}
-                                            className="w-full py-4 px-6 bg-accent hover:bg-primary text-white rounded-full font-bold text-sm uppercase tracking-wider flex items-center justify-center gap-2.5 transition-all shadow-lg active:scale-95 cursor-pointer"
+                                            className="w-full py-4 px-6 bg-accent hover:bg-primary text-white rounded-full font-bold text-sm uppercase  flex items-center justify-center gap-2.5 transition-all shadow-lg active:scale-95 cursor-pointer"
                                         >
                                             <svg className="w-5 h-5 fill-current shrink-0" viewBox="0 0 24 24">
                                                 <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.892 3.386" />
@@ -726,7 +737,7 @@ const ServiceDetailCatalogNgs = ({
                                 ) : (
                                     <button
                                         onClick={handleSingleAdvisorClick}
-                                        className="w-full py-4 px-6 bg-accent hover:bg-primary text-white rounded-full font-bold text-sm uppercase tracking-wider flex items-center justify-center gap-2.5 transition-all shadow-lg active:scale-95 cursor-pointer"
+                                        className="w-full py-4 px-6 bg-accent hover:bg-primary text-white rounded-full font-bold text-sm uppercase  flex items-center justify-center gap-2.5 transition-all shadow-lg active:scale-95 cursor-pointer"
                                     >
                                         <svg className="w-5 h-5 fill-current shrink-0" viewBox="0 0 24 24">
                                             <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.892 3.386" />

@@ -1,0 +1,308 @@
+import BaseAdminto from "@Adminto/Base";
+import SwitchFormGroup from "@Adminto/form/SwitchFormGroup";
+import TextareaFormGroup from "@Adminto/form/TextareaFormGroup";
+import React, { useRef, useState } from "react";
+import { createRoot } from "react-dom/client";
+import Swal from "sweetalert2";
+import ProjectCategoriesRest from "../Actions/Admin/ProjectCategoriesRest";
+import ImageFormGroup from "../Components/Adminto/form/ImageFormGroup";
+import Modal from "../Components/Adminto/Modal";
+import Table from "../Components/Adminto/Table";
+import DxButton from "../Components/dx/DxButton";
+import CreateReactScript from "../Utils/CreateReactScript";
+import ReactAppend from "../Utils/ReactAppend";
+import InputFormGroup from "../Components/Adminto/form/InputFormGroup";
+
+const projectCategoriesRest = new ProjectCategoriesRest();
+
+const ProjectCategories = () => {
+    const gridRef = useRef();
+    const modalRef = useRef();
+
+    // Form elements ref
+    const idRef = useRef();
+    const nameRef = useRef();
+    const descriptionRef = useRef();
+    const imageRef = useRef();
+
+    const [isEditing, setIsEditing] = useState(false);
+
+    const onModalOpen = (data) => {
+        if (data?.id) setIsEditing(true);
+        else setIsEditing(false);
+
+        if (idRef.current) idRef.current.value = data?.id ?? "";
+        if (nameRef.current) nameRef.current.value = data?.name ?? "";
+        if (descriptionRef.current) descriptionRef.current.value = data?.description ?? "";
+
+        if (imageRef.current && imageRef.image) {
+            imageRef.image.src = data?.image ? `/storage/images/project_category/${data.image}` : '';
+            imageRef.current.value = null;
+            if (imageRef.resetDeleteFlag) imageRef.resetDeleteFlag();
+        }
+
+        $(modalRef.current).modal("show");
+    };
+
+    const onModalSubmit = async (e) => {
+        e.preventDefault();
+
+        const formData = new FormData();
+        if (idRef.current?.value) formData.append("id", idRef.current.value);
+        formData.append("name", nameRef.current.value);
+        if (descriptionRef.current) formData.append("description", descriptionRef.current.value);
+
+        if (imageRef.current) {
+            const file = imageRef.current.files[0];
+            if (file) {
+                formData.append("image", file);
+            }
+            if (imageRef.getDeleteFlag && imageRef.getDeleteFlag()) {
+                formData.append('image_delete', 'DELETE');
+            }
+        }
+
+        const result = await projectCategoriesRest.save(formData);
+        if (!result) return;
+
+        if (imageRef.current && imageRef.resetDeleteFlag) imageRef.resetDeleteFlag();
+
+        $(gridRef.current).dxDataGrid("instance").refresh();
+        $(modalRef.current).modal("hide");
+    };
+
+    const onVisibleChange = async ({ id, value }) => {
+        const result = await projectCategoriesRest.boolean({
+            id,
+            field: "visible",
+            value,
+        });
+        if (!result) return;
+        $(gridRef.current).dxDataGrid("instance").refresh();
+    };
+
+    const onDeleteClicked = async (row) => {
+        const { isConfirmed } = await Swal.fire({
+            title: "Eliminar registro",
+            text: "¿Estás seguro de eliminar esta categoría?",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Sí, eliminar",
+            cancelButtonText: "Cancelar",
+        });
+        if (!isConfirmed) return;
+        const result = await projectCategoriesRest.delete(row.id);
+        if (!result) return;
+        $(gridRef.current).dxDataGrid("instance").refresh();
+    };
+
+    const onReorder = async (e) => {
+        const newOrderIndex = e.toIndex;
+        try {
+            const result = await projectCategoriesRest.reorder(e.itemData.id, newOrderIndex);
+            if (result) {
+                await e.component.refresh();
+            }
+        } catch (error) {
+            console.error('Error reordering project category:', error);
+        }
+    };
+
+    return (
+        <>
+            <Table
+                gridRef={gridRef}
+                title="Categorías de Proyectos"
+                rest={projectCategoriesRest}
+                rowDragging={{
+                    allowReordering: true,
+                    onReorder: onReorder,
+                    dropFeedbackMode: 'push'
+                }}
+                sorting={{
+                    mode: 'single'
+                }}
+                toolBar={(container) => {
+                    container.unshift({
+                        widget: "dxButton",
+                        location: "after",
+                        options: {
+                            icon: "refresh",
+                            hint: "Refrescar tabla",
+                            onClick: () =>
+                                $(gridRef.current)
+                                    .dxDataGrid("instance")
+                                    .refresh(),
+                        },
+                    });
+                    container.unshift({
+                        widget: "dxButton",
+                        location: "after",
+                        options: {
+                            icon: "plus",
+                            text: "Agregar",
+                            hint: "Agregar",
+                            onClick: () => onModalOpen(),
+                        },
+                    });
+                }}
+                columns={[
+                    {
+                        dataField: "id",
+                        caption: "ID",
+                        visible: false,
+                    },
+                    {
+                        dataField: 'order_index',
+                        caption: 'Orden',
+                        visible: false,
+                        sortOrder: 'asc',
+                        sortIndex: 0
+                    },
+                    {
+                        dataField: "image",
+                        caption: "Imagen",
+                        width: "90px",
+                        allowFiltering: false,
+                        cellTemplate: (container, { data }) => {
+                            const src = data.image ? `/storage/images/project_category/${data.image}` : '/assets/resources/logo.png';
+                            ReactAppend(
+                                container,
+                                <img
+                                    src={src}
+                                    style={{
+                                        width: "60px",
+                                        height: "45px",
+                                        objectFit: "cover",
+                                        borderRadius: "6px",
+                                    }}
+                                    onError={(e) => {
+                                        e.target.src = "/assets/resources/logo.png";
+                                    }}
+                                />
+                            );
+                        },
+                    },
+                    {
+                        dataField: "name",
+                        caption: "Nombre de la Categoría",
+                        width: "35%",
+                    },
+                    {
+                        dataField: "description",
+                        caption: "Descripción",
+                        width: "45%",
+                    },
+                    {
+                        dataField: "visible",
+                        caption: "Visible",
+                        dataType: "boolean",
+                        width: "100px",
+                        cellTemplate: (container, { data }) => {
+                            ReactAppend(
+                                container,
+                                <SwitchFormGroup
+                                    checked={data.visible == 1}
+                                    onChange={() =>
+                                        onVisibleChange({
+                                            id: data.id,
+                                            value: !data.visible,
+                                        })
+                                    }
+                                />
+                            );
+                        },
+                    },
+                    {
+                        caption: "Acciones",
+                        width: "100px",
+                        cellTemplate: (container, { data }) => {
+                            ReactAppend(
+                                container,
+                                <div className="d-flex gap-1">
+                                    <DxButton
+                                        icon="edit"
+                                        type="default"
+                                        title="Editar"
+                                        onClick={() => onModalOpen(data)}
+                                    />
+                                    <DxButton
+                                        icon="trash"
+                                        type="danger"
+                                        title="Eliminar"
+                                        onClick={() => onDeleteClicked(data)}
+                                    />
+                                </div>
+                            );
+                        },
+                        allowFiltering: false,
+                        allowExporting: false,
+                    },
+                ]}
+            />
+            <Modal
+                modalRef={modalRef}
+                title={isEditing ? "Editar Categoría de Proyecto" : "Agregar Categoría de Proyecto"}
+                onSubmit={onModalSubmit}
+                size="lg"
+            >
+                <input ref={idRef} type="hidden" />
+                
+                <div className="row g-3">
+                    <div className="col-12">
+                        <div className="card border-0 shadow-sm">
+                            <div className="card-header bg-light">
+                                <h6 className="mb-0">
+                                    <i className="fas fa-info-circle me-2 text-primary"></i>
+                                    Información de la Categoría
+                                </h6>
+                            </div>
+                            <div className="card-body">
+                                <InputFormGroup
+                                    eRef={nameRef}
+                                    label="Nombre de la Categoría"
+                                    placeholder="Ej. Proyectos Industriales"
+                                    required
+                                />
+                                <TextareaFormGroup
+                                    eRef={descriptionRef}
+                                    label="Descripción"
+                                    rows={3}
+                                    placeholder="Breve descripción para la categoría de proyectos..."
+                                />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="col-12">
+                        <div className="card border-0 shadow-sm">
+                            <div className="card-header bg-light">
+                                <h6 className="mb-0">
+                                    <i className="fas fa-image me-2 text-success"></i>
+                                    Imagen Representativa
+                                </h6>
+                            </div>
+                            <div className="card-body text-center">
+                                <ImageFormGroup
+                                    eRef={imageRef}
+                                    name="image"
+                                    label="Seleccionar imagen de la categoría"
+                                />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </Modal>
+        </>
+    );
+};
+
+CreateReactScript((el, properties) => {
+    createRoot(el).render(
+        <BaseAdminto {...properties} title="Categorías de Proyectos">
+            <ProjectCategories {...properties} />
+        </BaseAdminto>
+    );
+});
+
+export default ProjectCategories;

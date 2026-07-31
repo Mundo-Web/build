@@ -93,6 +93,7 @@ const Agradecimientos = React.lazy(
 const Support = React.lazy(() => import("./Components/Tailwind/Support"));
 const FirstClass = React.lazy(() => import("./Components/Tailwind/FirstClass"));
 const Store = React.lazy(() => import("./Components/Tailwind/Store"));
+const Project = React.lazy(() => import("./Components/Tailwind/Project"));
 const Hotel = React.lazy(() => import("./Components/Tailwind/Hotel"));
 const Legal = React.lazy(() => import("./Components/Tailwind/Legal"));
 
@@ -638,6 +639,15 @@ const System = ({
             case "service":
                 return wrapWithAnimation(
                     <Service
+                        which={value}
+                        data={dataWithElementId}
+                        items={getItems(itemsId)}
+                        generals={generals}
+                    />,
+                );
+            case "project":
+                return wrapWithAnimation(
+                    <Project
                         which={value}
                         data={dataWithElementId}
                         items={getItems(itemsId)}

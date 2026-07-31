@@ -36,7 +36,7 @@ const CardCategoryNgs = ({ category }) => {
             </div>
 
             {/* Category Name */}
-            <h3 className="text-xl min-h-[calc(1.75rem*2)] font-title font-bold text-neutral-dark group-hover:text-primary transition-colors mt-4 text-center line-clamp-2">
+            <h3 className="text-xl font-medium text-neutral-dark group-hover:text-primary transition-colors mt-4 text-center line-clamp-1">
                 {category.name}
             </h3>
         </div>

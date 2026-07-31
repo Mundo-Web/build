@@ -122,12 +122,12 @@ const BlogMicjc = ({
             <div className="w-full mx-auto px-primary 2xl:px-0 2xl:max-w-7xl">
                 {/* Header Section */}
                 <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
-                    <div className="text-left max-w-2xl">
-                        <h2 className={`font-title text-neutral-dark mb-4 font-bold text-3xl md:text-4xl lg:text-5xl ${data?.class_title || "text-3xl md:text-4xl lg:text-5xl"}`}>
+                    <div className="text-left max-w-4xl">
+                        <h2 className={`font-title text-neutral-dark mb-4 font-bold ${data?.class_title || "text-3xl md:text-4xl lg:text-5xl"}`}>
                             <TextWithHighlight
                                 text={data?.title || "Nuestro *Blog* y Novedades"}
-                                className=" font-title"
-                                color="bg-primary"
+                                className="font-title"
+                                color="bg-secondary"
                             />
                         </h2>
                         {data?.description && (
@@ -228,8 +228,12 @@ const BlogMicjc = ({
 
                     {/* Filters & Sorting Section for Grid */}
                     <div className="pt-16 pb-8">
-                        <h3 className="text-3xl md:text-4xl lg:text-5xl font-bold font-title text-neutral-dark mb-10 text-center lg:text-left">
-                            Revisa todas nuestras publicaciones
+                        <h3 className={`font-title text-neutral-dark mb-10 text-center lg:text-left font-bold ${data?.class_title_all || "text-3xl md:text-4xl lg:text-5xl"}`}>
+                            <TextWithHighlight
+                                text={data?.title_all || "Revisa todas nuestras publicaciones"}
+                                className="font-title"
+                                color="bg-secondary"
+                            />
                         </h3>
 
                         <div className="flex flex-col lg:flex-row gap-4 items-center justify-between">

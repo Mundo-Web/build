@@ -17,6 +17,8 @@ use App\Http\Controllers\Admin\CollectionController as AdminCollectionController
 use App\Http\Controllers\Admin\PostController as AdminPostController;
 use App\Http\Controllers\Admin\InnovationController as AdminInnovationController;
 use App\Http\Controllers\Admin\ServiceController as AdminServiceController;
+use App\Http\Controllers\Admin\ProjectController as AdminProjectController;
+use App\Http\Controllers\Admin\ProjectCategoryController as AdminProjectCategoryController;
 use App\Http\Controllers\Admin\ServiceCategoryController as AdminServiceCategoryController;
 use App\Http\Controllers\Admin\ServiceSubCategoryController as AdminServiceSubCategoryController;
 use App\Http\Controllers\Admin\SocialController as AdminSocialController;
@@ -164,6 +166,8 @@ Route::middleware(['can:Admin', 'auth'])->prefix('admin')->group(function () {
     Route::get('/posts', [AdminPostController::class, 'reactView'])->name('Admin/Posts.jsx');
     Route::get('/innovations', [AdminInnovationController::class, 'reactView'])->name('Admin/Innovations.jsx');
     Route::get('/services', [AdminServiceController::class, 'reactView'])->name('Admin/Services.jsx');
+    Route::get('/projects', [AdminProjectController::class, 'reactView'])->name('Admin/Projects.jsx');
+    Route::get('/project-categories', [AdminProjectCategoryController::class, 'reactView'])->name('Admin/ProjectCategories.jsx');
     Route::get('/service-categories', [AdminServiceCategoryController::class, 'reactView'])->name('Admin/ServiceCategories.jsx');
     Route::get('/service-subcategories', [AdminServiceSubCategoryController::class, 'reactView'])->name('Admin/ServiceSubcategory.jsx');
     Route::get('/about', [AdminAboutusController::class, 'reactView'])->name('Admin/About.jsx');

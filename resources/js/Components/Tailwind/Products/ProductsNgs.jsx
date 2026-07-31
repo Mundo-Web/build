@@ -95,8 +95,8 @@ const ProductsNgs = ({ items = [], data }) => {
                         breakpoints={{
                             480: { slidesPerView: 2, spaceBetween: 10 },
                             768: { slidesPerView: 3, spaceBetween: 10 },
-                            1024: { slidesPerView: 4, spaceBetween: 10 },
-                            1280: { slidesPerView: 4, spaceBetween: 10 },
+                            1024: { slidesPerView: 4, spaceBetween: 16 },
+                            1280: { slidesPerView: 4, spaceBetween: 16 },
                         }}
                         className="w-full !py-6"
                     >

@@ -76,7 +76,7 @@ const CardProductNgs = ({ product = {}, data = {} }) => {
                 {/* Description */}
                 {description && (
                     <div
-                        className="text-base text-neutral-light font-title line-clamp-2  [&>p]:m-0 [&>p]:inline [&>span]:m-0"
+                        className="text-base text-neutral-light  line-clamp-2  [&>p]:m-0 [&>p]:inline [&>span]:m-0"
                         dangerouslySetInnerHTML={{ __html: description }}
                     />
                 )}
@@ -85,7 +85,7 @@ const CardProductNgs = ({ product = {}, data = {} }) => {
                 {/* CTA */}
                 <button
                     onClick={goToDetail}
-                    className="mt-1 w-full py-4 mt-4 rounded-full bg-secondary hover:bg-primary text-white text-xs font-bold uppercase tracking-wider transition-all duration-300 flex items-center justify-center gap-2 shadow-md hover:shadow-lg hover:shadow-accent/25 active:scale-95 overflow-hidden relative"
+                    className=" w-full py-4 mt-4 rounded-full bg-secondary hover:bg-primary text-white text-xs font-bold uppercase  transition-all duration-300 flex items-center justify-center gap-2 shadow-md hover:shadow-lg hover:shadow-accent/25 active:scale-95 overflow-hidden relative"
                 >
                     <span className="relative z-10">Ver detalles</span>
                     <MoveRight

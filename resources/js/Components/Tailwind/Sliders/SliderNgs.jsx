@@ -134,10 +134,10 @@ const SliderNgs = ({ items = [], data, generals = [] }) => {
                         key={index}
                         className="relative font-title inline-block text-white font-bold  group"
                     >
-                        <span className="relative z-10">{part.slice(1, -1)}</span>
+                        <span className="relative z-10 font-title">{part.slice(1, -1)}</span>
                         {/* Subrayado con estilo visual en text-secondary */}
 
-                        <span className="absolute bottom-3 left-0 w-full h-1.5 bg-secondary rounded-full -z-0 shadow-sm" />
+                        <span className="absolute bottom-1 left-0 w-full h-1.5 bg-secondary rounded-full -z-0 shadow-sm" />
                     </span>
                 );
             }
@@ -324,7 +324,7 @@ const SliderNgs = ({ items = [], data, generals = [] }) => {
 
                                             {/* Main Title — Colores dinámicos por defecto de la base de datos */}
                                             <h2
-                                                className="text-5xl font-title lg:text-8xl font-bold   mb-8 "
+                                                className="text-5xl font-title lg:text-7xl font-bold   mb-8 "
                                                 style={{
                                                     color:
                                                         slide.title_color ||

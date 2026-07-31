@@ -3856,12 +3856,8 @@
         "name": "Banner Destacado NGS Solutions",
         "image": "banner-premium-campaign.png",
         "data": [
-          "title",
-          "subtitle",
-          "description",
-          "button_text",
-          "button_link",
-          "background",
+       
+        
           "bool:show_overlay:Mostrar Capa Oscura (Overlay)",
           "class",
           "class_title",
@@ -5181,12 +5177,14 @@
           "select:variant:Estilo de Variante:original|Original (Redondeado),rounded-none|Bordes Rectos (Fimesac)",
           "title",
           "subtitle",
+          "title_all",
           "posts_per_page",
           "blog_url",
           "read_more_text",
           "view_all_text",
           "class_section",
           "class_title",
+          "class_title_all",
           "class_card",
           "class_button",
           "class_badge_category"
@@ -5224,8 +5222,10 @@
           "select:variant:Estilo de Variante:original|Original (Redondeado),rounded-none|Bordes Rectos (Fimesac)",
           "title",
           "description",
+          "title_all",
           "class_section",
           "class_title",
+          "class_title_all",
           "class_card",
           "class_button"
         ],
@@ -6797,6 +6797,35 @@
         "using": {
           "model": "Innovation",
           "type": "many"
+        }
+      }
+    ]
+  },
+  {
+    "id": "project",
+    "icon": "mdi mdi-folder-multiple-image",
+    "name": "Proyectos",
+    "options": [
+      {
+        "id": "ProjectsGalleryNgs",
+        "name": "Galería de Proyectos NGS (Filtros por Categoría & Modal Galería)",
+        "image": "projects-gallery-ngs.png",
+        "data": [
+          "title",
+          "badge",
+          "description",
+          "class_section",
+          "class_title",
+          "class_title_all",
+          "data_title_all"
+        ],
+        "using": {
+          "model": "Project",
+          "type": "many",
+          "with": [
+            "category",
+            "images"
+          ]
         }
       }
     ]

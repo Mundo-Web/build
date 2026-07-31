@@ -21,6 +21,8 @@ use App\Http\Controllers\Admin\InnovationController as AdminInnovationController
 use App\Http\Controllers\Admin\ApplicationController as AdminApplicationController;
 use App\Http\Controllers\Admin\AttributeController as AdminAttributeController;
 use App\Http\Controllers\Admin\ServiceController as AdminServiceController;
+use App\Http\Controllers\Admin\ProjectController as AdminProjectController;
+use App\Http\Controllers\Admin\ProjectCategoryController as AdminProjectCategoryController;
 use App\Http\Controllers\Admin\ServiceCategoryController as AdminServiceCategoryController;
 use App\Http\Controllers\Admin\ServiceSubCategoryController as AdminServiceSubCategoryController;
 use App\Http\Controllers\Admin\SocialController as AdminSocialController;
@@ -204,6 +206,7 @@ Route::get('/testimonies/media/{uuid}', [AdminTestimonyController::class, 'media
 Route::get('/posts/media/{uuid}', [AdminPostController::class, 'media']);
 Route::get('/innovations/media/{uuid}', [AdminInnovationController::class, 'media']);
 Route::get('/services/media/{uuid}', [AdminServiceController::class, 'media']);
+Route::get('/projects/media/{uuid}', [AdminProjectController::class, 'media']);
 Route::get('/service-categories/media/{uuid}', [AdminServiceCategoryController::class, 'media']);
 Route::get('/service-subcategories/media/{uuid}', [AdminServiceSubCategoryController::class, 'media']);
 
@@ -496,6 +499,8 @@ Route::middleware('auth')->group(function () {
     Route::patch('/innovations/{field}', [AdminInnovationController::class, 'boolean']);
     Route::delete('/innovations/{id}', [AdminInnovationController::class, 'delete']);
 
+    Route::get('/services', [AdminServiceController::class, 'all']);
+    Route::get('/services/{id}', [AdminServiceController::class, 'get']);
     Route::post('/services', [AdminServiceController::class, 'save']);
     Route::post('/services/paginate', [AdminServiceController::class, 'paginate']);
     Route::patch('/services/status', [AdminServiceController::class, 'status']);
@@ -503,6 +508,26 @@ Route::middleware('auth')->group(function () {
     Route::put('/services/{id}/reorder', [AdminServiceController::class, 'reorder']);
     Route::delete('/services/{id}', [AdminServiceController::class, 'delete']);
 
+    Route::get('/projects', [AdminProjectController::class, 'all']);
+    Route::get('/projects/{id}', [AdminProjectController::class, 'get']);
+    Route::post('/projects', [AdminProjectController::class, 'save']);
+    Route::post('/projects/paginate', [AdminProjectController::class, 'paginate']);
+    Route::patch('/projects/status', [AdminProjectController::class, 'status']);
+    Route::patch('/projects/{field}', [AdminProjectController::class, 'boolean']);
+    Route::put('/projects/{id}/reorder', [AdminProjectController::class, 'reorder']);
+    Route::delete('/projects/{id}', [AdminProjectController::class, 'delete']);
+
+    Route::get('/project-categories', [AdminProjectCategoryController::class, 'all']);
+    Route::get('/project-categories/{id}', [AdminProjectCategoryController::class, 'get']);
+    Route::post('/project-categories', [AdminProjectCategoryController::class, 'save']);
+    Route::post('/project-categories/paginate', [AdminProjectCategoryController::class, 'paginate']);
+    Route::patch('/project-categories/status', [AdminProjectCategoryController::class, 'status']);
+    Route::patch('/project-categories/{field}', [AdminProjectCategoryController::class, 'boolean']);
+    Route::put('/project-categories/{id}/reorder', [AdminProjectCategoryController::class, 'reorder']);
+    Route::delete('/project-categories/{id}', [AdminProjectCategoryController::class, 'delete']);
+
+    Route::get('/service-categories', [AdminServiceCategoryController::class, 'all']);
+    Route::get('/service-categories/{id}', [AdminServiceCategoryController::class, 'get']);
     Route::post('/service-categories', [AdminServiceCategoryController::class, 'save']);
     Route::post('/service-categories/paginate', [AdminServiceCategoryController::class, 'paginate']);
     Route::patch('/service-categories/status', [AdminServiceCategoryController::class, 'status']);
@@ -510,6 +535,8 @@ Route::middleware('auth')->group(function () {
     Route::put('/service-categories/{id}/reorder', [AdminServiceCategoryController::class, 'reorder']);
     Route::delete('/service-categories/{id}', [AdminServiceCategoryController::class, 'delete']);
 
+    Route::get('/service-subcategories', [AdminServiceSubCategoryController::class, 'all']);
+    Route::get('/service-subcategories/{id}', [AdminServiceSubCategoryController::class, 'get']);
     Route::post('/service-subcategories', [AdminServiceSubCategoryController::class, 'save']);
     Route::post('/service-subcategories/paginate', [AdminServiceSubCategoryController::class, 'paginate']);
     Route::patch('/service-subcategories/status', [AdminServiceSubCategoryController::class, 'status']);

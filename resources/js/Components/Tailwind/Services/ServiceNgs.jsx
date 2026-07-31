@@ -79,14 +79,14 @@ const ServiceNgs = ({ data = {}, items = [], onClickTracking }) => {
                     <div className="max-w-4xl mx-auto text-center">
                         {/* Subtitle / Badge */}
                         {(data?.badge || data?.subtitle) && (
-                            <span className="inline-flex items-center gap-2 px-4 py-1.5 bg-primary/10 text-primary font-semibold text-xs uppercase tracking-wider rounded-full mb-4 border border-primary/20">
+                            <span className="inline-flex items-center gap-2 px-4 py-1.5 bg-primary/10 text-primary font-semibold text-xs uppercase  rounded-full mb-4 border border-primary/20">
                                 <ShieldCheck className="w-4 h-4 text-primary" />
                                 {data?.badge || data?.subtitle}
                             </span>
                         )}
 
                         {/* Title */}
-                        <h2 className="text-4xl md:text-5xl xl:text-6xl uppercase font-title font-bold text-neutral-dark leading-tight">
+                        <h2 className="text-4xl md:text-5xl xl:text-6xl uppercase font-title font-bold text-neutral-dark ">
                             <TextWithHighlight
                                 text={data?.title || "Soluciones Tecnológicas Integrales"}
                                 color="bg-secondary"
@@ -96,7 +96,7 @@ const ServiceNgs = ({ data = {}, items = [], onClickTracking }) => {
 
                         {/* Description */}
                         {data?.description && (
-                            <p className="text-base text-neutral-light font-paragraph leading-relaxed mt-3 max-w-2xl mx-auto">
+                            <p className="text-base text-neutral-light font-paragraph  mt-3 max-w-2xl mx-auto">
                                 {data.description}
                             </p>
                         )}
@@ -172,20 +172,20 @@ const ServiceNgs = ({ data = {}, items = [], onClickTracking }) => {
                                         <div>
                                             {/* Category or Tag */}
                                             {(currentService.category?.name || currentService.badge) && (
-                                                <span className="inline-block text-xs font-title font-bold uppercase tracking-wider text-secondary mb-2">
+                                                <span className="inline-block text-xs font-title font-bold uppercase  text-secondary mb-2">
                                                     {currentService.category?.name || currentService.badge}
                                                 </span>
                                             )}
 
                                             {/* Title */}
-                                            <h3 className="font-title text-2xl sm:text-3xl lg:text-4xl font-bold text-neutral-dark mb-4 leading-tight">
+                                            <h3 className="font-title text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-neutral-dark mb-4 ">
                                                 {currentService.name || currentService.title}
                                             </h3>
 
                                             {/* Summary */}
                                             {(currentService.summary || currentService.description) && (
                                                 <div
-                                                    className="text-neutral-light text-sm sm:text-base font-paragraph leading-relaxed mb-6 [&>p]:m-0 line-clamp-4 lg:line-clamp-6"
+                                                    className="text-neutral-light text-sm sm:text-base font-paragraph  mb-6 [&>p]:m-0 line-clamp-4 lg:line-clamp-6"
                                                     dangerouslySetInnerHTML={{
                                                         __html: currentService.summary || currentService.description,
                                                     }}
@@ -198,7 +198,7 @@ const ServiceNgs = ({ data = {}, items = [], onClickTracking }) => {
                                                     {getCharacteristics(currentService).slice(0, 4).map((char, i) => (
                                                         <div key={i} className="flex items-start gap-3">
                                                             <CheckCircle2 className="w-5 h-5 text-secondary mt-0.5 shrink-0" />
-                                                            <span className="text-slate-700 font-medium text-sm md:text-base leading-snug">
+                                                            <span className="text-neutral-light font-medium text-sm md:text-base ">
                                                                 {char}
                                                             </span>
                                                         </div>
@@ -212,7 +212,7 @@ const ServiceNgs = ({ data = {}, items = [], onClickTracking }) => {
                                             <a
                                                 href={currentService.link || data?.button_link || "/contacto"}
                                                 onClick={() => handleServiceClick(currentService)}
-                                                className="inline-flex items-center justify-center gap-2.5 px-8 py-4 rounded-full bg-accent hover:bg-primary text-white font-bold text-sm uppercase tracking-wider transition-all duration-300 shadow-lg hover:shadow-accent/20 active:scale-95"
+                                                className="inline-flex items-center justify-center gap-2.5 px-8 py-4 rounded-full bg-accent hover:bg-primary text-white font-bold text-sm uppercase  transition-all duration-300 shadow-lg hover:shadow-accent/20 active:scale-95"
                                             >
                                                 <span>{data?.button_text || "Solicitar Cotización"}</span>
                                                 <ArrowRight className="w-4 h-4" />

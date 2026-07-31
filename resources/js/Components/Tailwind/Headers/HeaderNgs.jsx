@@ -70,15 +70,15 @@ const HeaderNgs = ({ data, items = [], pages = [], generals = [] }) => {
                     <nav className="hidden md:flex items-center space-x-7">
                         {/* Nav Item: Productos / Catálogo Mega Menu */}
                         {sortedCategories.length > 0 && (
-                            <div className="relative">
+                            <div className="relative font-title">
                                 <button
                                     onClick={() => setIsMegaMenuOpen(!isMegaMenuOpen)}
-                                    className={`inline-flex items-center gap-1.5 text-base font-medium uppercase py-1 transition-colors relative ${isMegaMenuOpen
+                                    className={`inline-flex items-center  gap-1.5 text-base font-medium uppercase py-1 transition-colors relative ${isMegaMenuOpen
                                         ? "text-primary font-bold"
-                                        : "text-neutral-light hover:text-primary"
+                                        : "text-neutral-dark hover:text-primary"
                                         }`}
                                 >
-                                    <span>Productos</span>
+                                    <span className="font-title">Productos</span>
                                     <ChevronDown
                                         className={`h-4 w-4 transition-transform duration-300 ${isMegaMenuOpen ? "rotate-180 text-primary" : ""
                                             }`}
@@ -102,9 +102,9 @@ const HeaderNgs = ({ data, items = [], pages = [], generals = [] }) => {
                                     <a
                                         key={index}
                                         href={path}
-                                        className={`text-base font-medium transition-colors uppercase relative py-1 ${isActive
+                                        className={`text-base font-title font-medium transition-colors uppercase relative py-1 ${isActive
                                             ? "text-primary font-bold"
-                                            : "text-neutral-light hover:text-primary"
+                                            : "text-neutral-dark hover:text-primary"
                                             }`}
                                     >
                                         {page.name}
@@ -140,11 +140,11 @@ const HeaderNgs = ({ data, items = [], pages = [], generals = [] }) => {
 
             {/* Mega Menu Dropdown */}
             {isMegaMenuOpen && sortedCategories.length > 0 && (
-                <div className="absolute left-0 right-0 top-[100%] w-full bg-white border-t border-b border-slate-100 shadow-2xl z-50 overflow-hidden animate-in fade-in slide-in-from-top-1 duration-200">
+                <div className="absolute left-0 right-0 top-[100%] w-full bg-gradient-to-r from-sections-color to-white border-t border-b border-slate-100 shadow-2xl z-50 overflow-hidden animate-in fade-in slide-in-from-top-1 duration-200">
                     <div className="mx-auto px-primary 2xl:px-0 2xl:max-w-7xl flex h-[65dvh]">
                         {/* Panel Izquierdo: Categorías */}
                         <div className="w-1/4 border-r border-slate-100 bg-sections-color p-4 space-y-2 overflow-y-auto">
-                            <p className="text-xs font-bold uppercase  text-neutral-light px-3 py-1 mb-2">
+                            <p className="text-xs font-bold uppercase  text-neutral-dark px-3 py-1 mb-2">
                                 Categorías
                             </p>
                             {sortedCategories.map((category) => {
@@ -156,7 +156,7 @@ const HeaderNgs = ({ data, items = [], pages = [], generals = [] }) => {
                                         onClick={() => setActiveCategory(category)}
                                         className={`w-full text-left px-5 py-3.5 rounded-full transition-all duration-300 flex items-center justify-between font-semibold text-sm group ${isActive
                                             ? "bg-primary text-white shadow-md font-bold translate-x-1"
-                                            : "text-slate-700 hover:bg-slate-100 hover:text-primary"
+                                            : "text-neutral-dark hover:bg-slate-100 hover:text-primary"
                                             }`}
                                     >
                                         <div className="flex items-center gap-3 min-w-0">
@@ -208,16 +208,16 @@ const HeaderNgs = ({ data, items = [], pages = [], generals = [] }) => {
 
                                 {/* Grid de Subcategorías o Estado Ilustrado sin texto adicional */}
                                 {activeCategory?.subcategories && activeCategory.subcategories.length > 0 ? (
-                                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                                    <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                                         {activeCategory.subcategories.map((sub) => (
                                             <a
                                                 key={sub.slug}
                                                 href={`/catalogo?subcategory=${sub.slug}`}
                                                 onClick={() => setIsMegaMenuOpen(false)}
-                                                className="group flex flex-col p-3 rounded-2xl border border-slate-100 hover:border-primary/30 hover:shadow-md transition-all duration-300 bg-white"
+                                                className="group flex flex-col p-2 rounded-3xl border border-slate-100 hover:border-primary/30 hover:shadow-md transition-all duration-300 bg-white"
                                             >
                                                 {/* Imagen de la Subcategoría */}
-                                                <div className="w-full aspect-square bg-slate-50 rounded-xl overflow-hidden mb-2.5 flex items-center justify-center p-2 group-hover:bg-slate-100 transition-colors">
+                                                <div className="w-full aspect-square bg-slate-50 rounded-2xl overflow-hidden mb-2.5 flex items-center justify-center p-2 group-hover:bg-slate-100 transition-colors">
                                                     {sub.image ? (
                                                         <img
                                                             src={`/storage/images/sub_category/${sub.image}`}
@@ -234,7 +234,7 @@ const HeaderNgs = ({ data, items = [], pages = [], generals = [] }) => {
                                                 </div>
 
                                                 {/* Nombre */}
-                                                <span className="font-semibold text-xs text-slate-700 group-hover:text-primary text-center line-clamp-2 transition-colors">
+                                                <span className="font-semibold text-sm text-neutral-dark group-hover:text-primary text-center line-clamp-2 transition-colors">
                                                     {sub.name}
                                                 </span>
                                             </a>
@@ -377,7 +377,7 @@ const HeaderNgs = ({ data, items = [], pages = [], generals = [] }) => {
                                                             mobileExpandedCat === cat.slug ? null : cat.slug
                                                         )
                                                     }
-                                                    className="flex items-center justify-between w-full text-xs font-semibold text-slate-700 py-1"
+                                                    className="flex items-center justify-between w-full text-xs font-semibold text-neutral-dark py-1"
                                                 >
                                                     <span>{cat.name}</span>
                                                     {cat.subcategories?.length > 0 && (
@@ -421,7 +421,7 @@ const HeaderNgs = ({ data, items = [], pages = [], generals = [] }) => {
                                         onClick={() => setIsOpen(false)}
                                         className={`block px-4 py-3 text-sm font-medium transition-colors rounded-xl ${isActive
                                             ? "text-primary bg-primary/10 font-bold"
-                                            : "text-slate-700 hover:bg-slate-50"
+                                            : "text-neutral-dark hover:bg-slate-50"
                                             }`}
                                     >
                                         {page.name}

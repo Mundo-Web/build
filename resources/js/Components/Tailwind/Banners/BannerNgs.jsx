@@ -28,7 +28,7 @@ const BannerNgs = ({ data = {} }) => {
     return (
         <section className={`py-12 md:py-20 bg-white ${customClass}`}>
             <div className="w-full mx-auto px-primary 2xl:px-0 2xl:max-w-7xl">
-                <div className="relative w-full rounded-3xl overflow-hidden shadow-2xl min-h-[420px] md:min-h-[500px] flex items-center justify-end bg-neutral-dark">
+                <div className="relative w-full rounded-[2rem] md:rounded-[3rem]  overflow-hidden shadow-2xl min-h-[420px] md:min-h-[500px] flex items-center justify-end bg-neutral-dark">
                     {/* Background Image */}
                     {backgroundUrl && (
                         <div className="absolute inset-0 z-0">

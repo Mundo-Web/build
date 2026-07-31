@@ -71,6 +71,14 @@
           { "label": "SubCategorías de Servicios", "href": "/admin/service-subcategories", "icon": "mdi mdi-file-tree" }
         ]
       },
+      {
+        "label": "Proyectos",
+        "icon": "mdi mdi-folder-multiple-image",
+        "children": [
+          { "label": "Proyectos", "href": "/admin/projects", "icon": "mdi mdi-briefcase-check" },
+          { "label": "Categorías de Proyectos", "href": "/admin/project-categories", "icon": "mdi mdi-shape-outline" }
+        ]
+      },
       { "label": "Nosotros", "href": "/admin/about", "icon": "mdi mdi-briefcase" },
       { "label": "Zonas de Cobertura", "href": "/admin/delivery-zones", "icon": "mdi mdi-map-marker-radius" },
       { "label": "Indicadores", "href": "/admin/indicators", "icon": "mdi mdi-dots-grid" },
