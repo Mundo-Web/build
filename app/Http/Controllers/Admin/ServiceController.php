@@ -171,6 +171,10 @@ class ServiceController extends BasicController
                     'is_features' => $request->is_features ?? true,
                     'is_specifications' => $request->is_specifications ?? true,
                     'is_gallery' => $request->is_gallery ?? true,
+                    'meta_title' => $request->meta_title,
+                    'meta_description' => $request->meta_description,
+                    'meta_keywords' => $request->meta_keywords,
+                    'faqs' => $request->has('faqs') ? (is_array($request->faqs) ? $request->faqs : json_decode($request->faqs, true)) : null,
                 ], $imageData)
             );
 
@@ -356,6 +360,7 @@ class ServiceController extends BasicController
             }
 
             DB::commit();
+            $this->clearCache();
             return response(['message' => 'Servicio guardado correctamente'], 200);
         } catch (\Exception $e) {
             DB::rollBack();

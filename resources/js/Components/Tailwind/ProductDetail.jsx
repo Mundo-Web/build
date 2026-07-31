@@ -57,6 +57,9 @@ const ProductDetailTwenty = React.lazy(
 const ProductDetailFimesac = React.lazy(
     () => import("./ProductDetails/ProductDetailFimesac"),
 );
+const ProductDetailNgs = React.lazy(
+    () => import("./ProductDetails/ProductDetailNgs"),
+);
 const ProductDetail = ({
     which,
     item,
@@ -288,6 +291,19 @@ const ProductDetail = ({
             case "ProductDetailFimesac":
                 return (
                     <ProductDetailFimesac
+                        item={item}
+                        cart={cart}
+                        setCart={setCart}
+                        data={data}
+                        generals={generals}
+                        favorites={favorites}
+                        setFavorites={setFavorites}
+                        onViewUpdate={handleViewUpdate}
+                    />
+                );
+            case "ProductDetailNgs":
+                return (
+                    <ProductDetailNgs
                         item={item}
                         cart={cart}
                         setCart={setCart}

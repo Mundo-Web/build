@@ -38,9 +38,11 @@ import ProductCardSelector from "../Products/ProductCardSelector";
 // Importar diferentes tipos de tarjetas de productos
 import CardProductBananaLab from "../Products/Components/CardProductBananaLab";
 import CardProductMultivet from "../Products/Components/CardProductMultivet";
+import CardProductNgs from "../Products/Components/CardProductNgs";
 import { CurrencySymbol } from "../../../Utils/Number2Currency";
 import ProductCardColors from "../Products/Components/ProductCardColors";
 import LaPetacaCard from "../Products/LaPetacaCard";
+import TextWithHighlight from "../../../Utils/TextWithHighlight";
 // import CardProductDefault from "../Products/Components/CardProductDefault";
 // import CardProductMinimal from "../Products/Components/CardProductMinimal";
 // import CardProductCompact from "../Products/Components/CardProductCompact";
@@ -1682,7 +1684,11 @@ const CatalogoFiltrosMiBalon = ({
                         <h2
                             className={` font-title text-neutral-dark lg:mb-2 ${data?.class_title || 'text-3xl md:text-5xl xl:text-6xl'}`}
                         >
-                            {data?.title}
+                            <TextWithHighlight
+                                text={data?.title || "Nuestro *Catálogo*"}
+                                className="text-neutral-dark font-title "
+                                color="bg-secondary"
+                            />
                         </h2>
                     </motion.div>
 

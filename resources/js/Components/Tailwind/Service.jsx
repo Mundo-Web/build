@@ -16,6 +16,10 @@ const ServiceWebQuirurgica2 = React.lazy(
     () => import("./Services/ServiceWebQuirurgica2"),
 );
 const ServiceFimesac = React.lazy(() => import("./Services/ServiceFimesac"));
+const ServiceNgs = React.lazy(() => import("./Services/ServiceNgs"));
+const ServiceDetailCatalogNgs = React.lazy(
+    () => import("./Services/ServiceDetailCatalogNgs"),
+);
 
 const servicesRest = new ServicesRest();
 
@@ -39,6 +43,15 @@ const Service = ({ data, items, which, generals }) => {
     };
     const getService = () => {
         switch (which) {
+            case "ServiceNgs":
+                return (
+                    <ServiceNgs
+                        data={data}
+                        items={items}
+                        onClickTracking={handleClickTracking}
+                        generals={generals}
+                    />
+                );
             case "ServiceSimple":
                 return (
                     <ServiceSimple
@@ -109,6 +122,14 @@ const Service = ({ data, items, which, generals }) => {
                         data={data}
                         items={items}
                         onClickTracking={handleClickTracking}
+                        generals={generals}
+                    />
+                );
+            case "ServiceDetailCatalogNgs":
+                return (
+                    <ServiceDetailCatalogNgs
+                        data={data}
+                        items={items}
                         generals={generals}
                     />
                 );

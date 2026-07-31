@@ -27,6 +27,9 @@ const IndicatorTwenty = React.lazy(
 const IndicatorFimesac = React.lazy(
     () => import("./Indicators/IndicatorFimesac"),
 );
+const IndicatorNgs = React.lazy(
+    () => import("./Indicators/IndicatorNgs"),
+);
 
 const Indicator = ({ data, which, items, generals }) => {
     const getIndicator = () => {
@@ -63,6 +66,14 @@ const Indicator = ({ data, which, items, generals }) => {
             case "IndicatorFimesac":
                 return (
                     <IndicatorFimesac
+                        data={data}
+                        items={items}
+                        generals={generals}
+                    />
+                );
+            case "IndicatorNgs":
+                return (
+                    <IndicatorNgs
                         data={data}
                         items={items}
                         generals={generals}

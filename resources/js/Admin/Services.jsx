@@ -38,6 +38,9 @@ const Services = ({
     const imageRef = useRef();
     const backgroundImageRef = useRef();
     const slugRef = useRef();
+    const metaTitleRef = useRef();
+    const metaDescriptionRef = useRef();
+    const metaKeywordsRef = useRef();
 
     const [isEditing, setIsEditing] = useState(false);
     const [selectedCategory, setSelectedCategory] = useState(null);
@@ -50,9 +53,10 @@ const Services = ({
     const [videos, setVideos] = useState([]);
     const videoUrlRef = useRef();
 
-    // Features y Specifications
+    // Features, Specifications y FAQs
     const [features, setFeatures] = useState([]);
     const [specifications, setSpecifications] = useState([]);
+    const [serviceFaqs, setServiceFaqs] = useState([]);
 
     /*************************/
     /* Funciones para Gallery */
@@ -298,6 +302,9 @@ const Services = ({
         if (summaryRef.current) summaryRef.current.value = data?.summary ?? "";
         if (pathRef.current) pathRef.current.value = data?.path ?? "";
         if (slugRef.current) slugRef.current.value = data?.slug ?? "";
+        if (metaTitleRef.current) metaTitleRef.current.value = data?.meta_title ?? "";
+        if (metaDescriptionRef.current) metaDescriptionRef.current.value = data?.meta_description ?? "";
+        if (metaKeywordsRef.current) metaKeywordsRef.current.value = data?.meta_keywords ?? "";
 
         // Establecer el contenido del editor Quill
         if (descriptionRef.current && descriptionRef.editor) {
@@ -397,6 +404,9 @@ const Services = ({
             setSpecifications([]);
         }
 
+        const loadedFaqs = Array.isArray(data?.faqs) ? data.faqs : [];
+        setServiceFaqs(loadedFaqs);
+
         const deletedInputs = document.querySelectorAll(
             ".deleted-image-input, .deleted-pdf-input, .deleted-video-input",
         );
@@ -449,6 +459,23 @@ const Services = ({
         const slugValue = slugRef.current?.value;
         if (slugValue && slugValue.trim() !== "") {
             formData.append("slug", slugValue);
+        }
+
+        if (metaTitleRef.current?.value) {
+            formData.append("meta_title", metaTitleRef.current.value);
+        }
+        if (metaDescriptionRef.current?.value) {
+            formData.append("meta_description", metaDescriptionRef.current.value);
+        }
+        if (metaKeywordsRef.current?.value) {
+            formData.append("meta_keywords", metaKeywordsRef.current.value);
+        }
+
+        const validFaqs = serviceFaqs.filter(
+            (f) => f.question?.trim() && f.answer?.trim(),
+        );
+        if (validFaqs.length > 0) {
+            formData.append("faqs", JSON.stringify(validFaqs));
         }
 
         if (imageRef.current) {
@@ -1008,7 +1035,6 @@ const Services = ({
                 size="xl"
             >
                 <input ref={idRef} type="hidden" />
-                <input ref={slugRef} type="hidden" />
 
                 <div id="principal-container">
                     {/* Sistema de Pestañas */}
@@ -1082,6 +1108,26 @@ const Services = ({
                                 Características
                             </button>
                         </li>
+                        <li className="nav-item" role="presentation">
+                            <button
+                                className="nav-link"
+                                id="seo-tab"
+                                data-bs-toggle="pill"
+                                data-bs-target="#seo-tab-content"
+                                type="button"
+                                role="tab"
+                                aria-controls="seo-tab-content"
+                                aria-selected="false"
+                                style={{
+                                    borderRadius: "6px",
+                                    fontWeight: "500",
+                                    transition: "all 0.3s ease",
+                                }}
+                            >
+                                <i className="fas fa-search me-2"></i>
+                                SEO y Metadatos
+                            </button>
+                        </li>
                     </ul>
 
                     {/* Contenido de las Pestañas */}
@@ -1120,7 +1166,79 @@ const Services = ({
                                                             "name",
                                                         )
                                                     }
+                                                    onChange={(e) => {
+                                                        // Auto-generar slug solo si el campo está vacío (crear nuevo)
+                                                        if (slugRef.current && !isEditing) {
+                                                            const generated = e.target.value
+                                                                .toLowerCase()
+                                                                .normalize("NFD")
+                                                                .replace(/[\u0300-\u036f]/g, "")
+                                                                .replace(/[^a-z0-9\s-]/g, "")
+                                                                .trim()
+                                                                .replace(/\s+/g, "-");
+                                                            slugRef.current.value = generated;
+                                                        }
+                                                    }}
                                                 />
+
+                                                {/* Campo Slug */}
+                                                <div className="mb-3">
+                                                    <label className="form-label fw-semibold">
+                                                        <i className="fas fa-link me-1 text-primary"></i>
+                                                        Slug (URL amigable)
+                                                    </label>
+                                                    <div className="input-group">
+                                                        <input
+                                                            ref={slugRef}
+                                                            type="text"
+                                                            className="form-control"
+                                                            placeholder="mi-servicio-personalizado"
+                                                            style={{ fontFamily: "monospace", fontSize: "13px" }}
+                                                            onChange={(e) => {
+                                                                const val = e.target.value
+                                                                    .toLowerCase()
+                                                                    .normalize("NFD")
+                                                                    .replace(/[\u0300-\u036f]/g, "")
+                                                                    .replace(/[^a-z0-9-]/g, "-")
+                                                                    .replace(/-+/g, "-");
+                                                                e.target.value = val;
+                                                            }}
+                                                        />
+                                                        <button
+                                                            type="button"
+                                                            className="btn btn-outline-secondary"
+                                                            title="Copiar slug"
+                                                            onClick={() => {
+                                                                if (slugRef.current?.value) {
+                                                                    navigator.clipboard.writeText(slugRef.current.value);
+                                                                }
+                                                            }}
+                                                        >
+                                                            <i className="fas fa-copy"></i>
+                                                        </button>
+                                                        <button
+                                                            type="button"
+                                                            className="btn btn-outline-primary"
+                                                            title="Re-generar desde el nombre"
+                                                            onClick={() => {
+                                                                if (nameRef.current && slugRef.current) {
+                                                                    const generated = nameRef.current.value
+                                                                        .toLowerCase()
+                                                                        .normalize("NFD")
+                                                                        .replace(/[\u0300-\u036f]/g, "")
+                                                                        .replace(/[^a-z0-9\s-]/g, "")
+                                                                        .trim()
+                                                                        .replace(/\s+/g, "-");
+                                                                    slugRef.current.value = generated;
+                                                                }
+                                                            }}
+                                                        >
+                                                            <i className="fas fa-sync-alt"></i>
+                                                        </button>
+                                                    </div>
+                                                    <small className="text-muted">Solo letras minúsculas, números y guiones.</small>
+                                                </div>
+
                                                 <InputFormGroup
                                                     eRef={pathRef}
                                                     label="Ruta (Path)"
@@ -2304,6 +2422,167 @@ const Services = ({
                                         </div>
                                     </div>
                                 )}
+                            </div>
+                        </div>
+
+                        {/* Pestaña: SEO y Metadatos */}
+                        <div
+                            className="tab-pane fade"
+                            id="seo-tab-content"
+                            role="tabpanel"
+                            aria-labelledby="seo-tab"
+                        >
+                            <div className="card border-0 shadow-sm">
+                                <div className="card-header bg-light">
+                                    <h6 className="mb-0 font-bold text-dark">
+                                        <i className="fas fa-search me-2"></i>
+                                        Configuración de Posicionamiento SEO
+                                    </h6>
+                                </div>
+                                <div className="card-body">
+                                    <div className="row g-3">
+                                        <div className="col-12">
+                                            <div className="form-group mb-3">
+                                                <label className="form-label text-muted fw-semibold">
+                                                    Título SEO (Meta Title)
+                                                </label>
+                                                <input
+                                                    type="text"
+                                                    ref={metaTitleRef}
+                                                    className="form-control form-control-sm"
+                                                    placeholder="Ej: Servicio de Soluciones Tecnológicas - NGS Solutions"
+                                                    maxLength={70}
+                                                />
+                                                <small className="text-muted d-block mt-1">Recomendado: Máx 60-70 caracteres. Si se deja vacío, se usará el nombre del servicio.</small>
+                                            </div>
+                                        </div>
+                                        <div className="col-12">
+                                            <div className="form-group mb-3">
+                                                <label className="form-label text-muted fw-semibold">
+                                                    Descripción SEO (Meta Description)
+                                                </label>
+                                                <textarea
+                                                    ref={metaDescriptionRef}
+                                                    className="form-control form-control-sm"
+                                                    rows="3"
+                                                    placeholder="Resumen optimizado del servicio para motores de búsqueda como Google..."
+                                                    maxLength={160}
+                                                ></textarea>
+                                                <small className="text-muted d-block mt-1">Recomendado: Entre 150-160 caracteres. Atrae a los clientes desde los resultados de búsqueda.</small>
+                                            </div>
+                                        </div>
+                                        <div className="col-12">
+                                            <div className="form-group">
+                                                <label className="form-label text-muted fw-semibold">
+                                                    Palabras Clave (Meta Keywords)
+                                                </label>
+                                                <input
+                                                    type="text"
+                                                    ref={metaKeywordsRef}
+                                                    className="form-control form-control-sm"
+                                                    placeholder="Ej: tecnologia, soporte, consultoria, soluciones informaticas"
+                                                />
+                                                <small className="text-muted d-block mt-1">Separadas por comas.</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* FAQs del Servicio (FAQ Schema) */}
+                            <div className="card border-0 shadow-sm mt-3">
+                                <div className="card-header d-flex justify-content-between align-items-center bg-light">
+                                    <h6 className="mb-0 font-bold text-dark">
+                                        <i className="fas fa-question-circle me-2 text-primary"></i>
+                                        Preguntas Frecuentes del Servicio (FAQ Schema)
+                                    </h6>
+                                    <button
+                                        type="button"
+                                        className="btn btn-sm btn-primary"
+                                        onClick={() =>
+                                            setServiceFaqs((prev) => [
+                                                ...prev,
+                                                { question: "", answer: "" },
+                                            ])
+                                        }
+                                    >
+                                        <i className="fas fa-plus me-1"></i> Añadir Pregunta
+                                    </button>
+                                </div>
+                                <div className="card-body">
+                                    <div className="alert alert-info mb-3 py-2">
+                                        <i className="fas fa-info-circle me-2"></i>
+                                        Estas preguntas aparecerán en la sección de detalles del servicio y en el <strong>Schema FAQPage</strong> para posicionamiento en Google.
+                                    </div>
+                                    {serviceFaqs.length === 0 && (
+                                        <div className="text-center py-4 text-muted">
+                                            <i
+                                                className="fas fa-question-circle d-block mb-2"
+                                                style={{ fontSize: "2rem", opacity: 0.3 }}
+                                            ></i>
+                                            <small>Sin preguntas frecuentes específicas registradas para este servicio.</small>
+                                        </div>
+                                    )}
+                                    {serviceFaqs.map((faq, idx) => (
+                                        <div
+                                            key={idx}
+                                            className="border rounded p-3 mb-3 position-relative"
+                                            style={{ background: "#f8f9fa" }}
+                                        >
+                                            <button
+                                                type="button"
+                                                className="btn btn-xs btn-outline-danger position-absolute"
+                                                style={{ top: "8px", right: "8px" }}
+                                                onClick={() =>
+                                                    setServiceFaqs((prev) =>
+                                                        prev.filter((_, i) => i !== idx),
+                                                    )
+                                                }
+                                                title="Eliminar pregunta"
+                                            >
+                                                <i className="fas fa-times"></i>
+                                            </button>
+                                            <div className="mb-2">
+                                                <label className="form-label text-muted fw-semibold small mb-1">
+                                                    Pregunta #{idx + 1}
+                                                </label>
+                                                <input
+                                                    type="text"
+                                                    className="form-control form-control-sm"
+                                                    placeholder="Ej: ¿Qué incluye este servicio?"
+                                                    value={faq.question || ""}
+                                                    onChange={(e) => {
+                                                        const updated = [...serviceFaqs];
+                                                        updated[idx] = {
+                                                            ...updated[idx],
+                                                            question: e.target.value,
+                                                        };
+                                                        setServiceFaqs(updated);
+                                                    }}
+                                                />
+                                            </div>
+                                            <div>
+                                                <label className="form-label text-muted fw-semibold small mb-1">
+                                                    Respuesta
+                                                </label>
+                                                <textarea
+                                                    className="form-control form-control-sm"
+                                                    rows="2"
+                                                    placeholder="Escribe la respuesta clara y detallada..."
+                                                    value={faq.answer || ""}
+                                                    onChange={(e) => {
+                                                        const updated = [...serviceFaqs];
+                                                        updated[idx] = {
+                                                            ...updated[idx],
+                                                            answer: e.target.value,
+                                                        };
+                                                        setServiceFaqs(updated);
+                                                    }}
+                                                />
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
                             </div>
                         </div>
                     </div>

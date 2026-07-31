@@ -3,6 +3,7 @@ import ServicesRest from "../../Actions/ServicesRest";
 
 const ServiceDetailSimple = React.lazy(() => import("./Services/ServiceDetailSimple"));
 const ServiceDetailCatalog = React.lazy(() => import("./Services/ServiceDetailCatalog"));
+const ServiceDetailCatalogNgs = React.lazy(() => import("./Services/ServiceDetailCatalogNgs"));
 
 const servicesRest = new ServicesRest();
 
@@ -11,6 +12,7 @@ const ServiceDetail = ({
     items,
     which,
     currentService = null,
+    generals,
 }) => {
     // Función centralizada para registrar vista del servicio
     const handleViewUpdate = async (service) => {
@@ -30,6 +32,8 @@ const ServiceDetail = ({
                 return <ServiceDetailSimple data={data} items={items} currentService={currentService} onViewUpdate={handleViewUpdate} />
             case "ServiceDetailCatalog":
                 return <ServiceDetailCatalog data={data} items={items} currentService={currentService} onViewUpdate={handleViewUpdate} />;
+            case "ServiceDetailCatalogNgs":
+                return <ServiceDetailCatalogNgs data={data} items={items} currentService={currentService} onViewUpdate={handleViewUpdate} generals={generals} />;
             default:
                 return <div>No hay componente {which}</div>;
         }

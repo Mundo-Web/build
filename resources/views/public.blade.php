@@ -174,6 +174,20 @@ $isCheckout = ($page->correlative ?? '') === 'checkout' ||
                     "availability" => ($item->stock > 0 || !$item->sold_out) ? "https://schema.org/InStock" : "https://schema.org/OutOfStock"
                 ]
             ];
+        } elseif ($modelName === 'Service') {
+            $graph[] = [
+                "@type" => "Service",
+                "name" => $pageTitle,
+                "description" => $pageDescription,
+                "url" => url()->current(),
+                "provider" => [
+                    "@type" => "Organization",
+                    "name" => $siteName,
+                    "url" => url('/')
+                ],
+                ...(($pageImage) ? ["image" => $pageImage] : []),
+                ...(($item->category) ? ["category" => $item->category->name] : [])
+            ];
         }
     }
 
@@ -229,6 +243,34 @@ $isCheckout = ($page->correlative ?? '') === 'checkout' ||
                     "item" => url()->current()
                 ];
             }
+        } elseif ($modelName === 'Service') {
+            $breadcrumbs[] = [
+                "@type" => "ListItem",
+                "position" => 2,
+                "name" => "Servicios",
+                "item" => url('/servicios')
+            ];
+            if (isset($item->category) && $item->category) {
+                $breadcrumbs[] = [
+                    "@type" => "ListItem",
+                    "position" => 3,
+                    "name" => $item->category->name,
+                    "item" => url('/servicios')
+                ];
+                $breadcrumbs[] = [
+                    "@type" => "ListItem",
+                    "position" => 4,
+                    "name" => $item->name,
+                    "item" => url()->current()
+                ];
+            } else {
+                $breadcrumbs[] = [
+                    "@type" => "ListItem",
+                    "position" => 3,
+                    "name" => $item->name,
+                    "item" => url()->current()
+                ];
+            }
         }
     } elseif (isset($data['name']) && $data['name'] !== $siteTitle) {
          $breadcrumbs[] = [
@@ -247,7 +289,7 @@ $isCheckout = ($page->correlative ?? '') === 'checkout' ||
     }
     @endphp
 
-    <script type="application/ld+json">
+    <script id="server-schema-graph" type="application/ld+json" data-service-slug="<?php echo htmlspecialchars($item->slug ?? '', ENT_QUOTES, 'UTF-8'); ?>">
     {
         "@context": "https://schema.org",
         "@graph": {!! json_encode($graph, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}
@@ -257,10 +299,10 @@ $isCheckout = ($page->correlative ?? '') === 'checkout' ||
     @php
     // FAQs para schema: usar FAQs del producto en páginas de detalle si existen, sino globales
     $faqsToRender = collect([]);
-    if ($isDetailPage && isset($item) && $modelName === 'Item') {
-        $productFaqs = $item->faqs ?? null;
-        if (!empty($productFaqs) && is_array($productFaqs)) {
-            $faqsToRender = collect($productFaqs)->filter(fn($f) => !empty($f['question']) && !empty($f['answer']));
+    if ($isDetailPage && isset($item) && in_array($modelName, ['Item', 'Service'])) {
+        $itemFaqs = $item->faqs ?? null;
+        if (!empty($itemFaqs) && is_array($itemFaqs)) {
+            $faqsToRender = collect($itemFaqs)->filter(fn($f) => !empty($f['question']) && !empty($f['answer']));
         }
     }
     // Fallback: FAQs globales si no hay específicos
@@ -269,7 +311,7 @@ $isCheckout = ($page->correlative ?? '') === 'checkout' ||
     }
     @endphp
     @if($faqsToRender->isNotEmpty())
-    <script type="application/ld+json">
+    <script id="server-schema-faq" type="application/ld+json">
     {
         "@context": "https://schema.org",
         "@type": "FAQPage",

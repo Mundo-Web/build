@@ -33,6 +33,11 @@ class Service extends Model
         'is_gallery',
         'order_index',
 
+        'meta_title',
+        'meta_description',
+        'meta_keywords',
+        'faqs',
+
         "file_catalogo_general"
     ];
 
@@ -45,6 +50,7 @@ class Service extends Model
         'is_gallery' => 'boolean',
         'pdf' => 'array',
         'linkvideo' => 'array',
+        'faqs' => 'array',
     ];
 
     public function category()

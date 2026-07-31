@@ -100,7 +100,7 @@ const BlogSectionMicjc = ({ data, items = [] }) => {
                             <TextWithHighlight
                                 text={data?.title || "Nuestro *Blog* y Novedades"}
                                 className="text-neutral-dark font-title "
-                                color="bg-primary"
+                                color="bg-secondary"
                             />
                         </h2>
                         {data?.description && (

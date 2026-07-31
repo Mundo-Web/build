@@ -40,7 +40,7 @@ const BannerMiBalon = ({ data }) => {
                     {/* Content */}
                     <div className="relative z-20 w-full md:w-2/3 lg:w-2/3 p-8 md:p-16 flex flex-col items-start justify-center text-white">
                         {name && (
-                            <h2 className={`text-5xl md:text-6xl lg:text-8xl font-title mb-4 ${class_title}`}>
+                            <h2 className={` font-title mb-4 ${class_title || "text-5xl md:text-6xl lg:text-8xl "}`}>
                                 {name}
                             </h2>
                         )}
@@ -54,7 +54,7 @@ const BannerMiBalon = ({ data }) => {
                         {button_text && (
                             <a
                                 href={button_link || "#"}
-                                className={`inline-flex items-center justify-center bg-primary text-white px-8 py-4 rounded-full font-bold tracking-wider hover:bg-white hover:text-primary transition-colors duration-300 shadow-lg active:scale-95 ${class_button}`}
+                                className={`inline-flex items-center justify-center  text-white px-8 py-4 rounded-full font-bold neutral-dark hover:bg-white hover:text-primary transition-colors duration-300 shadow-lg active:scale-95 ${class_button || "bg-primary"}`}
                             >
                                 {button_text}
                             </a>

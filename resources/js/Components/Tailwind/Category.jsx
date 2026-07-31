@@ -35,12 +35,15 @@ const CategoryMosaicMiBalon = React.lazy(() => import("./Categories/CategoryMosa
 const CategoryBannerMicjc = React.lazy(() => import("./Categories/CategoryBannerMicjc"));
 const CategoryTwenty = React.lazy(() => import("./Categories/CategoryTwenty"));
 const CategoryFimesac = React.lazy(() => import("./Categories/CategoryFimesac"));
+const CategoryNgs = React.lazy(() => import("./Categories/CategoryNgs"));
 
 const Category = ({ which, data, items }) => {
     const getCategory = () => {
         switch (which) {
             case "CategoryTwenty":
                 return <CategoryTwenty data={data} items={items} />;
+            case "CategoryNgs":
+                return <CategoryNgs data={data} items={items} />;
             case "CategoryMosaic":
                 return <CategoryMosaic data={data} items={items} />;
             case "CategorySimple":

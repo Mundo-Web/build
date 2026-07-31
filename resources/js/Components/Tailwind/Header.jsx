@@ -41,6 +41,7 @@ const HeaderWebQuirurgica2 = React.lazy(
     () => import("./Headers/HeaderWebQuirurgica2"),
 );
 const HeaderFimesac = React.lazy(() => import("./Headers/HeaderFimesac"));
+const HeaderNgs = React.lazy(() => import("./Headers/HeaderNgs"));
 
 const Header = ({
     data,
@@ -390,6 +391,15 @@ const Header = ({
                 return (
                     <HeaderFimesac
                         data={data}
+                        pages={pages}
+                        generals={generals}
+                    />
+                );
+            case "HeaderNgs":
+                return (
+                    <HeaderNgs
+                        data={data}
+                        items={items}
                         pages={pages}
                         generals={generals}
                     />

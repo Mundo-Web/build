@@ -714,9 +714,27 @@
           "class"
         ],
         "generals": []
+      },
+      {
+        "id": "HeaderNgs",
+        "name": "Header NGS Solutions",
+        "image": "header-simple.png",
+        "data": [
+          "class"
+        ],
+        "using": {
+          "model": "Category",
+          "with": [
+            "subcategories"
+          ]
+        },
+        "generals": [
+          "phone_whatsapp",
+          "whatsapp_advisors",
+          "email_contact"
+        ]
       }
     ]
-
   },
   {
     "id": "floating",
@@ -831,6 +849,17 @@
         "using": {
           "model": "Indicator"
         }
+      },
+      {
+        "id": "CarruselNgs",
+        "name": "Métricas / Indicadores NGS",
+        "image": "top-bar-simple.png",
+        "data": [
+          "background"
+        ],
+        "using": {
+          "model": "Indicator"
+        }
       }
     ]
   },
@@ -919,7 +948,6 @@
         }
       },
       {
-
         "id": "SliderMultivet",
         "name": "Slider Multivet",
         "image": "slider-simple.png",
@@ -1113,6 +1141,25 @@
         "using": {
           "model": "Slider"
         }
+      },
+      {
+        "id": "SliderNgs",
+        "name": "Slider Hero NGS Solutions",
+        "image": "slider-simple.png",
+        "data": [
+          "class",
+          "bool:infiniteLoop:Loop Infinito",
+          "bool:showNavigation:Mostrar Flechas de Navegación",
+          "bool:showPagination:Mostrar Paginación",
+          "bool:animation_slider:Animación de Imagen (Efecto Ken Burns)",
+          "bool:show_form:Mostrar Formulario de Contacto Flotante"
+        ],
+        "using": {
+          "model": "Slider"
+        },
+        "generals": [
+          "phone_whatsapp"
+        ]
       }
     ]
   },
@@ -1430,7 +1477,7 @@
           "dat_prices",
           "section_prices",
           "section_stores",
-          "select:type_card_product:Tipo de Tarjeta de Producto:CardProductMiBalon|Mi Balón,CardProductFimesac|Fimesac,CardProductMicjc|Micjc,CardProductBananaLab|Banana Lab,CardProductMultivet|Multivet,CardProductKatya|Katya,ProductCardColors|Sala Fabulosa,ProductCardColorsBoton|Colors Boton,ProductCardFull|Full,ProductCardSimple|Simple",
+          "select:type_card_product:Tipo de Tarjeta de Producto:CardProductNgs|NGS Solutions,CardProductMiBalon|Mi Balón,CardProductFimesac|Fimesac,CardProductMicjc|Micjc,CardProductBananaLab|Banana Lab,CardProductMultivet|Multivet,CardProductKatya|Katya,ProductCardColors|Sala Fabulosa,ProductCardColorsBoton|Colors Boton,ProductCardFull|Full,ProductCardSimple|Simple",
           "class_product_container",
           "class_product_card_container",
           "class_clear_button",
@@ -2114,6 +2161,24 @@
         }
       },
       {
+        "id": "CategoryNgs",
+        "name": "Categorías NGS Solutions",
+        "image": "categories-carousel.png",
+        "data": [
+          "class",
+          "title",
+          "subtitle",
+          "badge",
+          "description"
+        ],
+        "using": {
+          "model": "Category",
+          "with": [
+            "subcategories"
+          ]
+        }
+      },
+      {
         "id": "CategorySimple",
         "name": "Simple",
         "image": "categories-simple.png",
@@ -2566,6 +2631,25 @@
             "order_index"
           ]
         }
+      },
+      {
+        "id": "IndicatorNgs",
+        "name": "Indicadores NGS Solutions",
+        "image": "indicator-simple.png",
+        "data": [
+          "class"
+        ],
+        "using": {
+          "model": "Indicator",
+          "fields": [
+            "symbol",
+            "name",
+            "subtitle",
+            "badge",
+            "description",
+            "order_index"
+          ]
+        }
       }
     ]
   },
@@ -2720,6 +2804,62 @@
           "subtitle",
           "path",
           "link_catalog",
+          "class"
+        ],
+        "using": {
+          "model": "Item",
+          "filters": [
+            "featured",
+            "recommended",
+            "is_new",
+            "most_view"
+          ],
+          "with": [
+            "category",
+            "subcategory",
+            "brand"
+          ],
+          "limit": 12
+        }
+      },
+      {
+        "id": "ProductsNgs",
+        "name": "Productos NGS Solutions",
+        "image": "products-list.png",
+        "data": [
+          "title",
+          "description",
+          "subtitle",
+          "button_text",
+          "button_link",
+          "class"
+        ],
+        "using": {
+          "model": "Item",
+          "filters": [
+            "featured",
+            "recommended",
+            "is_new",
+            "most_view"
+          ],
+          "with": [
+            "category",
+            "subcategory",
+            "brand"
+          ],
+          "limit": 12
+        }
+      },
+      {
+        "id": "ProductNgs",
+        "name": "Producto Grid NGS Solutions",
+        "image": "products-list.png",
+        "data": [
+          "title",
+          "description",
+          "subtitle",
+          "button_text",
+          "button_link",
           "class"
         ],
         "using": {
@@ -3396,6 +3536,28 @@
           ],
           "limit": 12
         }
+      },
+      {
+        "id": "ProductsNgs",
+        "name": "Grid Productos Destacados NGS",
+        "image": "products-grid-rainstar.png",
+        "data": [
+          "title",
+          "subtitle",
+          "button_text",
+          "button_link"
+        ],
+        "using": {
+          "model": "Item",
+          "filters": [
+            "featured"
+          ],
+          "with": [
+            "category",
+            "brand"
+          ],
+          "limit": 8
+        }
       }
     ]
   },
@@ -3640,11 +3802,7 @@
         "name": "Banner Destacado Mi Balón",
         "image": "banner-premium-campaign.png",
         "data": [
-          "name",
-          "description",
-          "button_text",
-          "button_link",
-          "background",
+       
           "bool:show_gradient:Mostrar Degradado",
           "class_title",
           "class_button",
@@ -3692,6 +3850,23 @@
           ],
           "limit": 12
         }
+      },
+      {
+        "id": "BannerNgs",
+        "name": "Banner Destacado NGS Solutions",
+        "image": "banner-premium-campaign.png",
+        "data": [
+          "title",
+          "subtitle",
+          "description",
+          "button_text",
+          "button_link",
+          "background",
+          "bool:show_overlay:Mostrar Capa Oscura (Overlay)",
+          "class",
+          "class_title",
+          "class_button"
+        ]
       }
     ]
   },
@@ -4077,6 +4252,20 @@
         ]
       },
       {
+        "id": "ProductDetailNgs",
+        "name": "Detalle de Producto NGS Solutions",
+        "image": "product-detail-rainstar.png",
+        "data": [
+          "link_cart",
+          "background"
+        ],
+        "generals": [
+          "phone_whatsapp",
+          "message_whatsapp",
+          "delivery_policy"
+        ]
+      },
+      {
         "id": "ProductDetailMiBalon",
         "name": "ProductDetailMiBalon",
         "image": "product-detail-rainstar.png",
@@ -4139,6 +4328,28 @@
           "message_whatsapp",
           "delivery_policy"
         ]
+      },
+      {
+        "id": "ProductDetailNgs",
+        "name": "Detalle de Producto NGS Solutions",
+        "image": "product-detail-rainstar.png",
+        "data": [
+          "class"
+        ],
+        "generals": [
+          "phone_whatsapp"
+        ],
+        "using": {
+          "model": "Item",
+          "with": [
+            "category",
+            "subcategory",
+            "brand",
+            "images",
+            "specifications",
+            "features"
+          ]
+        }
       }
     ]
   },
@@ -4588,6 +4799,22 @@
           "phone_contact",
           "address",
           "opening_hours"
+        ]
+      },
+      {
+        "id": "ContactNgs",
+        "name": "Contacto NGS Solutions",
+        "image": "contact-webquirurgica.png",
+        "data": [
+          "title",
+          "subtitle"
+        ],
+        "generals": [
+          "phone_whatsapp",
+          "email_contact",
+          "address",
+          "opening_hours",
+          "whatsapp_advisors"
         ]
       }
     ]
@@ -5058,6 +5285,21 @@
           "limit": 12
         },
         "generals": []
+      },
+      {
+        "id": "BlogSectionNgs",
+        "name": "Sección Blog NGS Solutions",
+        "image": "blog-rainstar.png",
+        "data": [
+          "title",
+          "subtitle"
+        ],
+        "using": {
+          "model": "Post",
+          "with": [
+            "category"
+          ]
+        }
       }
     ]
   },
@@ -5185,6 +5427,19 @@
             "tags"
           ],
           "relations": [
+            "category",
+            "tags"
+          ]
+        }
+      },
+      {
+        "id": "PostDetailNgs",
+        "name": "Detalle de Post NGS Solutions",
+        "image": "post-detail-rainstar.png",
+        "using": {
+          "model": "Post",
+          "field": "slug",
+          "with": [
             "category",
             "tags"
           ]
@@ -5366,6 +5621,20 @@
         ],
         "generals": [
           "whatsapp_advisors"
+        ],
+        "using": {
+          "model": "Aboutus"
+        }
+      },
+      {
+        "id": "AboutNgs",
+        "name": "Nosotros NGS Solutions",
+        "image": "about-rainstar.png",
+        "data": [
+          "title",
+          "subtitle",
+          "mission",
+          "vision"
         ],
         "using": {
           "model": "Aboutus"
@@ -5884,6 +6153,23 @@
         "using": {
           "model": "Social"
         }
+      },
+      {
+        "id": "FooterNgs",
+        "name": "Footer NGS Solutions",
+        "image": "footer-simple.png",
+        "data": [
+          "class"
+        ],
+        "generals": [
+          "phone_whatsapp",
+          "email_contact",
+          "address",
+          "whatsapp_advisors"
+        ],
+        "using": {
+          "model": "Social"
+        }
       }
     ]
   },
@@ -5905,6 +6191,16 @@
         "data": [
           "select:correlative:Correlativo:privacy_policy|Política de Privacidad,terms_conditions|Términos y Condiciones,delivery_policy|Políticas de Envío,saleback_policy|Políticas de Devolución y Cambio",
           "title"
+        ]
+      },
+      {
+        "id": "LegalNgs",
+        "name": "Página Legal NGS Solutions",
+        "image": "legal-simple.png",
+        "data": [
+          "title",
+          "subtitle",
+          "last_updated"
         ]
       }
     ]
@@ -5959,6 +6255,14 @@
         ],
         "generals": [
           "terms_conditions"
+        ]
+      },
+      {
+        "id": "ComplaintNgs",
+        "name": "Libro de Reclamaciones NGS",
+        "image": "complaint-simple.png",
+        "data": [
+          "title"
         ]
       }
     ]
@@ -6660,6 +6964,27 @@
         "generals": [
           "phone_whatsapp"
         ]
+      },
+      {
+        "id": "ServiceNgs",
+        "name": "Carrusel de Servicios Interactivo NGS",
+        "image": "service-sidebar.png",
+        "data": [
+          "badge",
+          "title",
+          "subtitle",
+          "description",
+          "button_text",
+          "button_link",
+          "class"
+        ],
+        "using": {
+          "model": "Service",
+          "with": [
+            "features"
+          ],
+          "type": "many"
+        }
       }
     ]
   },
@@ -6691,6 +7016,25 @@
         "name": "Catálogo con Sidebar",
         "image": "service-detail-catalog.png",
         "data": [
+          "class"
+        ],
+        "using": {
+          "model": "Service",
+          "with": [
+            "category",
+            "subcategory",
+            "images",
+            "features",
+            "specifications"
+          ]
+        }
+      },
+      {
+        "id": "ServiceDetailCatalogNgs",
+        "name": "Catálogo de Servicios Interactivo NGS",
+        "image": "service-detail-catalog.png",
+        "data": [
+          "title",
           "class"
         ],
         "using": {

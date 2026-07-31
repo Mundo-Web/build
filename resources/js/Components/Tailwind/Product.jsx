@@ -68,6 +68,9 @@ const ProductSwiperBanners = React.lazy(
 const ProductSwiperTwenty = React.lazy(
     () => import("./Products/ProductSwiperTwenty"),
 );
+const ProductsNgs = React.lazy(
+    () => import("./Products/ProductsNgs"),
+);
 
 const Product = ({
     which,
@@ -96,6 +99,16 @@ const Product = ({
 
     const getProduct = () => {
         switch (which) {
+            case "ProductsNgs":
+            case "ProductNgs":
+                return (
+                    <ProductsNgs
+                        data={data}
+                        items={items}
+                        cart={cart}
+                        setCart={setCart}
+                    />
+                );
             case "ProductGridRainstar":
                 return (
                     <ProductGridRainstar

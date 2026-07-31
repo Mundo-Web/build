@@ -373,10 +373,10 @@ const FooterRainstar = ({ pages = [], generals = [], data, socials = [] }) => {
                             </h4>
                             <div className="space-y-6 text-sm tracking-wide">
                                 {address && (
-                                    <div className="flex items-start gap-4 group">
+                                    <div className="flex items-center gap-4 group">
                                         <MapPin
                                             size={18}
-                                            className="text-white mt-1 shrink-0 group-hover:text-white transition-colors"
+                                            className="text-white shrink-0 group-hover:text-white transition-colors"
                                         />
                                         <p className="text-white  group-hover:text-gray-200 transition-colors  text-xs font-medium tracking-wider">
                                             {address}
