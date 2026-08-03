@@ -105,6 +105,11 @@ class UnifiedItemImport implements ToModel, WithHeadingRow, SkipsOnError, SkipsO
                 'especificaciones_principales_separadas_por_comas',
                 'especificaciones_principales_separadas_por_coma',
                 'especificaciones_principales',
+                'especificacion_principal',
+                'especificaciones_destacadas',
+                'caracteristicas_destacadas',
+                'características destacadas',
+                'principales',
                 'specs_principales',
                 'Especificaciones principales (separadas por coma)'
             ],
@@ -118,7 +123,12 @@ class UnifiedItemImport implements ToModel, WithHeadingRow, SkipsOnError, SkipsO
             'especificaciones_tecnicas' => [
                 'especificaciones_tecnicas_separado_por_slash_para_filas_y_dos_puntos_para_columnas',
                 'especificaciones_tecnicas',
-                'specs_tecnicas'
+                'especificacion_tecnica',
+                'datos_tecnicos',
+                'datos técnicos',
+                'datos tecnicos',
+                'specs_tecnicas',
+                'especificaciones tecnicas'
             ],
             'especificaciones_iconos' => [
                 'especificaciones_iconos_separado_por_comas',
@@ -616,11 +626,19 @@ class UnifiedItemImport implements ToModel, WithHeadingRow, SkipsOnError, SkipsO
             }
 
             if ($type === 'principal') {
+                $parts = explode(':', $spec, 2);
+                if (count($parts) == 2) {
+                    $title = trim($parts[0]);
+                    $description = trim($parts[1]);
+                } else {
+                    $title = $spec;
+                    $description = $spec;
+                }
                 ItemSpecification::create([
                     'item_id' => $item->id,
-                    'type' => $type,
-                    'title' => $spec,
-                    'description' => $spec,
+                    'type' => 'principal',
+                    'title' => $title,
+                    'description' => $description,
                 ]);
             } else {
                 $parts = explode(':', $spec, 2);
@@ -632,6 +650,13 @@ class UnifiedItemImport implements ToModel, WithHeadingRow, SkipsOnError, SkipsO
                         'type' => $type,
                         'title' => $title,
                         'description' => $description,
+                    ]);
+                } else {
+                    ItemSpecification::create([
+                        'item_id' => $item->id,
+                        'type' => $type,
+                        'title' => '',
+                        'description' => $spec,
                     ]);
                 }
             }

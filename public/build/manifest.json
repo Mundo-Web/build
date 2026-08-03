@@ -323,8 +323,8 @@
     "file": "assets/DxButton-CkntFyfB.js",
     "name": "DxButton"
   },
-  "_DynamicField-B2AS5vBg.js": {
-    "file": "assets/DynamicField-B2AS5vBg.js",
+  "_DynamicField-D6HCefV6.js": {
+    "file": "assets/DynamicField-D6HCefV6.js",
     "name": "DynamicField",
     "imports": [
       "_vendor-react-DGtfu94Q.js"
@@ -2340,7 +2340,7 @@
     ]
   },
   "resources/js/Admin/Items.jsx": {
-    "file": "assets/Items-DF5bAudf.js",
+    "file": "assets/Items-C89MsTf7.js",
     "name": "Items",
     "src": "resources/js/Admin/Items.jsx",
     "isEntry": true,
@@ -2368,7 +2368,7 @@
       "_SetSelectValue-DCHQOIKz.js",
       "resources/js/Components/Adminto/form/SelectAPIFormGroup.jsx",
       "resources/js/Components/Tailwind/Products/Components/CardProductKatya.jsx",
-      "_DynamicField-B2AS5vBg.js",
+      "_DynamicField-D6HCefV6.js",
       "_ItemVariantsManager-BnndJePT.js",
       "_GeneralsRest-4-yaq0aC.js",
       "resources/js/Components/Adminto/Footer.jsx",
@@ -2948,7 +2948,7 @@
     ]
   },
   "resources/js/Admin/Rooms.jsx": {
-    "file": "assets/Rooms-DG6_bGw7.js",
+    "file": "assets/Rooms-DvlUZAvA.js",
     "name": "Rooms",
     "src": "resources/js/Admin/Rooms.jsx",
     "isEntry": true,
@@ -2966,7 +2966,7 @@
       "_ImageFormGroup-CCSk3Ahc.js",
       "_SwitchFormGroup-DMBXgtDH.js",
       "_QuillFormGroup-d2ZTaana.js",
-      "_DynamicField-B2AS5vBg.js",
+      "_DynamicField-D6HCefV6.js",
       "_DxButton-C6FT_beP.js",
       "_CreateReactScript-CaMCo5oW.js",
       "_ReactAppend-BinpQRD9.js",
@@ -10764,7 +10764,7 @@
     ]
   },
   "resources/js/Components/Tailwind/ProductDetail.jsx": {
-    "file": "assets/ProductDetail-DLhOsX59.js",
+    "file": "assets/ProductDetail-BFboEbEV.js",
     "name": "ProductDetail",
     "src": "resources/js/Components/Tailwind/ProductDetail.jsx",
     "isDynamicEntry": true,
@@ -10936,7 +10936,7 @@
     ]
   },
   "resources/js/Components/Tailwind/ProductDetails/ProductDetailFimesac.jsx": {
-    "file": "assets/ProductDetailFimesac-CSLkVMES.js",
+    "file": "assets/ProductDetailFimesac-CcXbhAGy.js",
     "name": "ProductDetailFimesac",
     "src": "resources/js/Components/Tailwind/ProductDetails/ProductDetailFimesac.jsx",
     "isDynamicEntry": true,
@@ -13868,7 +13868,7 @@
     ]
   },
   "resources/js/Provider/Items.jsx": {
-    "file": "assets/Items-De_Z29yu.js",
+    "file": "assets/Items-DFpZlggB.js",
     "name": "Items",
     "src": "resources/js/Provider/Items.jsx",
     "isEntry": true,
@@ -13895,7 +13895,7 @@
       "_SetSelectValue-DCHQOIKz.js",
       "resources/js/Components/Adminto/form/SelectAPIFormGroup.jsx",
       "resources/js/Components/Tailwind/Products/Components/CardProductKatya.jsx",
-      "_DynamicField-B2AS5vBg.js",
+      "_DynamicField-D6HCefV6.js",
       "_ItemVariantsManager-BnndJePT.js",
       "_BasicRest-Zhrgjp94.js",
       "resources/js/Components/Adminto/Footer.jsx",
@@ -14356,7 +14356,7 @@
     ]
   },
   "resources/js/System.jsx": {
-    "file": "assets/System-aPT3a0Xh.js",
+    "file": "assets/System-CQILuU_B.js",
     "name": "System",
     "src": "resources/js/System.jsx",
     "isEntry": true,

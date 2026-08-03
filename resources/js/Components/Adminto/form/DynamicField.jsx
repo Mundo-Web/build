@@ -72,91 +72,66 @@ const DynamicField = ({ label, structure, value = [], onChange, typeOptions = []
                         transition: 'all 0.3s ease',
                         boxShadow: '0 2px 4px rgba(0,0,0,0.05)'
                     }}>
+                        {/* Botón flotante para eliminar (no altera la grilla) */}
+                        <button
+                            type="button"
+                            className="btn btn-sm btn-outline-danger rounded-circle position-absolute d-flex align-items-center justify-content-center"
+                            onClick={() => handleRemove(index)}
+                            style={{
+                                top: '8px',
+                                right: '8px',
+                                width: '28px',
+                                height: '28px',
+                                zIndex: 10,
+                                padding: 0
+                            }}
+                            title="Eliminar"
+                        >
+                            <i className="fas fa-times" style={{ fontSize: '12px' }}></i>
+                        </button>
+
                         {isObjectStructure ? (
-                            <>
-                                {/* Primera fila: Tipo y Título */}
-                                <div className="row g-3 mb-2">
-                                    <div className="col-md-4">
-                                        <label className="form-label small text-muted text-uppercase fw-bold mb-1">
-                                            Tipo
-                                        </label>
-                                        <select
-                                            className="form-select form-select-sm border-0 bg-white shadow-sm"
-                                            value={field.type || ''}
-                                            onChange={(e) => handleFieldChange(index, 'type', e.target.value)}
-                                            style={{ fontSize: '0.9rem' }}
-                                        >
-                                            <option value="">Seleccionar tipo...</option>
-                                            {typeOptions.map(option => (
-                                                <option key={option} value={option}>{option}</option>
-                                            ))}
-                                        </select>
-                                    </div>
-                                    <div className="col-md-8">
-                                        <label className="form-label small text-muted text-uppercase fw-bold mb-1">
-                                            Título
-                                        </label>
-                                        <input
-                                            type="text"
-                                            className="form-control form-control-sm border-0 bg-white shadow-sm"
-                                            value={field.title || ''}
-                                            onChange={(e) => handleFieldChange(index, 'title', e.target.value)}
-                                            placeholder={getPlaceholder('title', field.type)}
-                                            style={{ fontSize: '0.9rem' }}
-                                        />
-                                    </div>
+                            <div className="pe-4">
+                                {/* Fila 1: Título / Nombre */}
+                                <div className="mb-2">
+                                    <label className="form-label small text-muted text-uppercase fw-bold mb-1">
+                                        Título / Nombre
+                                    </label>
+                                    <input
+                                        type="text"
+                                        className="form-control form-control-sm border-0 bg-white shadow-sm"
+                                        value={field.title || ''}
+                                        onChange={(e) => handleFieldChange(index, 'title', e.target.value)}
+                                        placeholder="Ej: Material, Garantía, Dimensión"
+                                        style={{ fontSize: '0.9rem' }}
+                                    />
                                 </div>
-                                {/* Segunda fila: Descripción y botón eliminar */}
-                                <div className="row g-3">
-                                    <div className="col">
-                                        <label className="form-label small text-muted text-uppercase fw-bold mb-1">
-                                            Descripción
-                                        </label>
-                                        <input
-                                            type="text"
-                                            className="form-control form-control-sm border-0 bg-white shadow-sm"
-                                            value={field.description || ''}
-                                            onChange={(e) => handleFieldChange(index, 'description', e.target.value)}
-                                            placeholder="Descripción de la especificación"
-                                            style={{ fontSize: '0.9rem' }}
-                                        />
-                                    </div>
-                                    <div className="col-auto d-flex align-items-end">
-                                        <button
-                                            type="button"
-                                            className="btn btn-outline-danger btn-sm rounded-circle d-flex align-items-center justify-content-center"
-                                            onClick={() => handleRemove(index)}
-                                            style={{ width: '32px', height: '32px' }}
-                                            title="Eliminar especificación"
-                                        >
-                                            <i className="fas fa-times"></i>
-                                        </button>
-                                    </div>
+
+                                {/* Fila 2: Descripción / Valor (Textarea) */}
+                                <div>
+                                    <label className="form-label small text-muted text-uppercase fw-bold mb-1">
+                                        Descripción / Valor
+                                    </label>
+                                    <textarea
+                                        rows={2}
+                                        className="form-control form-control-sm border-0 bg-white shadow-sm"
+                                        value={field.description || ''}
+                                        onChange={(e) => handleFieldChange(index, 'description', e.target.value)}
+                                        placeholder="Escriba la descripción o detalle correspondiente..."
+                                        style={{ fontSize: '0.9rem', resize: 'vertical' }}
+                                    />
                                 </div>
-                            </>
+                            </div>
                         ) : (
-                            <div className="row g-3">
-                                <div className="col">
-                                    <div className="d-flex align-items-center gap-3">
-                                        <input
-                                            type="text"
-                                            className="form-control border-0 shadow-sm flex-grow-1"
-                                            value={field}
-                                            onChange={(e) => handleFieldChange(index, null, e.target.value)}
-                                            placeholder="Escriba la característica del producto..."
-                                            style={{ fontSize: '0.95rem' }}
-                                        />
-                                        <button
-                                            type="button"
-                                            className="btn btn-outline-danger rounded-circle d-flex align-items-center justify-content-center flex-shrink-0"
-                                            onClick={() => handleRemove(index)}
-                                            title="Eliminar característica"
-                                            style={{ width: '40px', height: '40px' }}
-                                        >
-                                            <i className="fas fa-times"></i>
-                                        </button>
-                                    </div>
-                                </div>
+                            <div className="pe-4">
+                                <input
+                                    type="text"
+                                    className="form-control border-0 shadow-sm"
+                                    value={field}
+                                    onChange={(e) => handleFieldChange(index, null, e.target.value)}
+                                    placeholder="Escriba la característica del producto..."
+                                    style={{ fontSize: '0.95rem' }}
+                                />
                             </div>
                         )}
                     </div>

@@ -687,4 +687,4 @@ $isCheckout = ($page->correlative ?? '') === 'checkout' ||
     </script>
 </body>
 
-</html><?php /**PATH C:\xampp\htdocs\projects\ngs_solutions\resources\views/public.blade.php ENDPATH**/ ?>
+</html><?php /**PATH C:\xampp\htdocs\projects\fimesac\resources\views/public.blade.php ENDPATH**/ ?>

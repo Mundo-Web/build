@@ -415,13 +415,16 @@ const ProductDetailFimesac = ({
         }
     };
 
-    const generalSpecifications = (
+    const allSpecifications = (
         Array.isArray(currentProduct?.specifications) && currentProduct.specifications.length > 0
             ? currentProduct.specifications
             : Array.isArray(item?.specifications)
                 ? item.specifications
                 : []
-    ).filter((s) => s.type === "general" || !s.type);
+    );
+
+    const mainSpecifications = allSpecifications.filter((s) => s.type?.toLowerCase() === "principal");
+    const technicalSpecifications = allSpecifications.filter((s) => s.type?.toLowerCase() !== "principal");
 
     const pdfFiles = (
         Array.isArray(currentProduct?.pdf) && currentProduct.pdf.length > 0
@@ -556,31 +559,55 @@ const ProductDetailFimesac = ({
                             />
                         )}
 
-                        {/* Specifications Box (Datos Técnicos) */}
-                        {generalSpecifications.length > 0 && (
-                            <div className="border border-gray-200 bg-gray-50/50 rounded-none overflow-hidden">
-                                <div className="bg-gray-100/80 px-5 py-3 border-b border-gray-200">
-                                    <span className="text-xs font-bold uppercase tracking-wider text-neutral-dark">
-                                        DATOS TÉCNICOS
-                                    </span>
+                        {/* Especificaciones Principales (Destacados) */}
+                        {mainSpecifications.length > 0 && (
+                            <div className="bg-primary/5 border border-primary/20 p-5 space-y-3">
+                                <div className="text-xs font-bold uppercase tracking-wider text-primary flex items-center gap-2">
+                                    <CheckCircle2 className="w-4 h-4" />
+                                    <span>CARACTERÍSTICAS DESTACADAS</span>
                                 </div>
-                                <div className="p-5 space-y-3">
-                                    {generalSpecifications.map((spec, idx) => (
-                                        <div key={idx} className="flex items-start gap-3 text-sm">
-                                            <span className="w-1.5 h-1.5 bg-neutral-dark mt-2 shrink-0" />
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-1">
+                                    {mainSpecifications.map((spec, idx) => (
+                                        <div key={idx} className="flex items-start gap-2.5 text-sm">
+                                            <CircleCheckIcon className="w-4 h-4 text-primary shrink-0 mt-0.5" />
                                             <div className="flex-1">
-                                                {spec.title && (
-                                                    <span className="font-bold text-neutral-dark uppercase text-xs tracking-wider me-2">
+                                                {spec.title && spec.title !== spec.description && (
+                                                    <span className="font-bold text-neutral-dark me-1">
                                                         {spec.title}:
                                                     </span>
                                                 )}
                                                 <span className="text-neutral-700 font-medium">
-                                                    {spec.description || spec.value}
+                                                    {spec.description || spec.title}
                                                 </span>
                                             </div>
                                         </div>
                                     ))}
                                 </div>
+                            </div>
+                        )}
+
+                        {/* Specifications Box (Datos Técnicos) */}
+                        {technicalSpecifications.length > 0 && (
+                            <div className="border border-gray-200 rounded-none overflow-hidden">
+                                <div className="bg-gray-100 px-4 py-2.5 border-b border-gray-200">
+                                    <span className="text-xs font-bold uppercase tracking-wider text-neutral-dark">
+                                        DATOS TÉCNICOS
+                                    </span>
+                                </div>
+                                <table className="w-full text-sm">
+                                    <tbody className="divide-y divide-gray-200">
+                                        {technicalSpecifications.map((spec, idx) => (
+                                            <tr key={idx} className="odd:bg-white even:bg-gray-50/50">
+                                                <td className="w-1/3 p-3 font-bold text-neutral-dark uppercase text-xs tracking-wider border-r border-gray-200 align-top">
+                                                    {spec.title}
+                                                </td>
+                                                <td className="w-2/3 p-3 text-neutral-700 font-medium whitespace-pre-line align-top">
+                                                    {spec.description || spec.value || '-'}
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
                             </div>
                         )}
 

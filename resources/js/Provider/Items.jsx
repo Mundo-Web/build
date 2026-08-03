@@ -74,7 +74,8 @@ const Items = ({
     const storeRef = useRef();
 
     const featuresRef = useRef([]);
-    const specificationsRef = useRef([]);
+    const mainSpecsRef = useRef([]);
+    const techSpecsRef = useRef([]);
     const weightRef = useRef();
     const amenitiesRef = useRef();
     const applicationsRef = useRef();
@@ -438,17 +439,28 @@ const Items = ({
             setGallery([]);
         }
 
-        if (data?.specifications) {
-            setSpecifications(
-                data.specifications.map((spec) => ({
-                    type: spec.type,
-                    title: spec.title,
-                    description: spec.description,
-                    image: spec.image || "",
-                })),
+        if (data?.specifications && Array.isArray(data.specifications)) {
+            setMainSpecifications(
+                data.specifications
+                    .filter((spec) => spec.type?.toLowerCase() === "principal")
+                    .map((spec) => ({
+                        type: "principal",
+                        title: spec.title || "",
+                        description: spec.description || "",
+                    })),
+            );
+            setTechnicalSpecifications(
+                data.specifications
+                    .filter((spec) => spec.type?.toLowerCase() !== "principal")
+                    .map((spec) => ({
+                        type: spec.type || "tecnica",
+                        title: spec.title || "",
+                        description: spec.description || "",
+                    })),
             );
         } else {
-            setSpecifications([]);
+            setMainSpecifications([]);
+            setTechnicalSpecifications([]);
         }
 
         setIsMaster(Boolean(data?.is_master));
@@ -517,12 +529,24 @@ const Items = ({
             return false;
         });
 
-        // Limpia especificaciones vacías
-        const cleanSpecs = specifications.filter(
-            (s) =>
-                (s.title && s.title.trim() !== "") ||
-                (s.description && s.description.trim() !== ""),
-        );
+        // Limpia y combina especificaciones principales y técnicas
+        const cleanMainSpecs = mainSpecifications
+            .filter(
+                (s) =>
+                    (s.title && s.title.trim() !== "") ||
+                    (s.description && s.description.trim() !== ""),
+            )
+            .map((s) => ({ ...s, type: "principal" }));
+
+        const cleanTechSpecs = technicalSpecifications
+            .filter(
+                (s) =>
+                    (s.title && s.title.trim() !== "") ||
+                    (s.description && s.description.trim() !== ""),
+            )
+            .map((s) => ({ ...s, type: "tecnica" }));
+
+        const cleanSpecs = [...cleanMainSpecs, ...cleanTechSpecs];
 
         const request = {
             id: idRef.current?.value || undefined,
@@ -861,10 +885,8 @@ const Items = ({
     };
 
     const [features, setFeatures] = useState([]); // Características
-    const [specifications, setSpecifications] = useState([]); // Especificaciones
-
-    // Opciones del campo "type"
-    const typeOptions = ["Principal", "General"];
+    const [mainSpecifications, setMainSpecifications] = useState([]); // Especificaciones Principales
+    const [technicalSpecifications, setTechnicalSpecifications] = useState([]); // Especificaciones Técnicas
     const [showImportModal, setShowImportModal] = useState(false);
 
     const onExportItems = async () => {
@@ -2729,29 +2751,54 @@ const Items = ({
                                     </div>
                                 )}
 
-                                {Fillable.has("items", "is_specifications") && (
+                                {Fillable.has("items", "is_main_specifications") && (
                                     <div
-                                        className={`${Fillable.has("items", "is_features") ? "col-md-6" : "col-12"}`}
+                                        className={Fillable.has("items", "is_specifications") ? "col-md-6" : "col-12"}
                                     >
                                         <div className="card border-0 shadow-sm h-100">
-                                            <div className="card-header">
-                                                <h6 className="mb-0">
-                                                    <i className="fas fa-cogs me-2"></i>
-                                                    Especificaciones
+                                            <div className="card-header bg-light">
+                                                <h6 className="mb-0 text-primary fw-bold">
+                                                    <i className="fas fa-star me-2"></i>
+                                                    Especificaciones Principales
                                                 </h6>
                                             </div>
                                             <div className="card-body">
                                                 <DynamicField
-                                                    ref={specificationsRef}
-                                                    label="Especificaciones Técnicas"
+                                                    ref={mainSpecsRef}
+                                                    label="Destacados Principales del Producto"
                                                     structure={{
-                                                        type: "",
                                                         title: "",
                                                         description: "",
                                                     }}
-                                                    value={specifications}
-                                                    onChange={setSpecifications}
-                                                    typeOptions={typeOptions}
+                                                    value={mainSpecifications}
+                                                    onChange={setMainSpecifications}
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {Fillable.has("items", "is_specifications") && (
+                                    <div
+                                        className={Fillable.has("items", "is_main_specifications") ? "col-md-6" : "col-12"}
+                                    >
+                                        <div className="card border-0 shadow-sm h-100">
+                                            <div className="card-header bg-light">
+                                                <h6 className="mb-0 text-primary fw-bold">
+                                                    <i className="fas fa-cogs me-2"></i>
+                                                    Especificaciones Técnicas
+                                                </h6>
+                                            </div>
+                                            <div className="card-body">
+                                                <DynamicField
+                                                    ref={techSpecsRef}
+                                                    label="Detalles y Atributos Técnicos"
+                                                    structure={{
+                                                        title: "",
+                                                        description: "",
+                                                    }}
+                                                    value={technicalSpecifications}
+                                                    onChange={setTechnicalSpecifications}
                                                 />
                                             </div>
                                         </div>

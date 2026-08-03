@@ -26,6 +26,7 @@ const SYSTEM_FIELDS = [
     { key: "tienda", dbKey: "store_id", label: "Tienda", required: false, description: "Tienda o almacén asignado" },
     { key: "regla_descuento", dbKey: "discount_rule", label: "Regla Descuento", required: false, description: "Nombre de regla promocional" },
     { key: "promociones", dbKey: "tags", label: "Etiquetas / Tags", required: false, description: "Etiquetas separadas por comas" },
+    { key: "especificaciones_principales", dbKey: "specs", label: "Especificaciones Principales", required: false, description: "Lista de destacados o viñetas separadas por comas" },
     { key: "especificaciones_tecnicas", dbKey: "specs", label: "Especificaciones Técnicas", required: false, description: "Formato: Clave: Valor/Clave: Valor" },
     { key: "es_nuevo", dbKey: "is_new", label: "Es Nuevo", required: false, description: "1 / Sí / True" },
     { key: "en_oferta", dbKey: "offering", label: "En Oferta", required: false, description: "1 / Sí / True" },
@@ -58,13 +59,14 @@ const ModalImportItem = ({ gridRef, modalRef, excelTemplate }) => {
         if (field.key === "sku" || field.key === "nombre_producto" || field.key === "categoria") return true;
         // Dependencia de imágenes
         if (field.key === "galeria") return Fillable.has("items", "image");
-        // Reglas de negocio especiales
-        if (field.key === "especificaciones_tecnicas") return true;
-        if (field.key === "regla_descuento") return true;
-        if (field.key === "promociones") return true;
-        if (field.key === "atributos") return true;
-        if (field.key === "valores") return true;
-        if (field.key === "stock_unlimited") return true;
+
+        // Reglas de negocio especiales evaluadas en Fillable
+        if (field.key === "especificaciones_principales") return Fillable.has("items", "is_main_specifications");
+        if (field.key === "especificaciones_tecnicas") return Fillable.has("items", "is_specifications");
+        if (field.key === "atributos" || field.key === "valores") return Fillable.has("items", "is_attributes");
+        if (field.key === "promociones") return Fillable.has("items", "is_tags") || Fillable.has("items", "tags");
+        if (field.key === "regla_descuento") return Fillable.has("items", "discount_rule");
+        if (field.key === "stock_unlimited") return Fillable.has("items", "stock_unlimited");
 
         return Fillable.has("items", field.dbKey);
     });
@@ -87,15 +89,29 @@ const ModalImportItem = ({ gridRef, modalRef, excelTemplate }) => {
                 setHeaders(response.preview.headers || []);
                 setSampleRows(response.preview.sample_rows || []);
 
-                // Generar auto-mapeo basado en la respuesta del backend
+                // Generar auto-mapeo basado en la respuesta del backend y sugerencias inteligentes
                 const initialMappings = {};
                 const recognized = response.field_analysis?.recognized_fields || {};
+                const fileHeaders = response.preview.headers || [];
 
                 activeFields.forEach(field => {
-                    // Buscar si hay alguna coincidencia reconocida para este campo del sistema
-                    const matchedHeader = Object.keys(recognized).find(
+                    // 1. Coincidencia previa por backend
+                    let matchedHeader = Object.keys(recognized).find(
                         headerName => recognized[headerName] === field.key
                     );
+
+                    // 2. Coincidencia directa por coincidencia de texto (Key / Label)
+                    if (!matchedHeader && fileHeaders.length > 0) {
+                        const keyClean = field.key.toLowerCase().replace(/_/g, " ").trim();
+                        const labelClean = field.label.toLowerCase().trim();
+
+                        matchedHeader = fileHeaders.find(h => {
+                            if (!h) return false;
+                            const hClean = h.toString().toLowerCase().replace(/_/g, " ").trim();
+                            return hClean === keyClean || hClean === labelClean;
+                        });
+                    }
+
                     initialMappings[field.key] = matchedHeader || "";
                 });
 
