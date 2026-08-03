@@ -10,7 +10,7 @@ const DynamicField = ({ label, structure, value = [], onChange, typeOptions = []
             // Para especificaciones (objetos)
             setFields(value.map(item => ({
                 ...item,
-                type: item.type?.charAt(0).toUpperCase() + item.type?.slice(1).toLowerCase(),
+                type: item.type ? item.type.charAt(0).toUpperCase() + item.type.slice(1).toLowerCase() : '',
             })));
         } else {
             // Para características (strings o objetos)
@@ -40,8 +40,8 @@ const DynamicField = ({ label, structure, value = [], onChange, typeOptions = []
         const newFields = [...fields];
         
         if (isObjectStructure) {
-            newFields[index][key] = key === 'type' 
-                ? value.charAt(0).toUpperCase() + value.slice(1).toLowerCase()
+            newFields[index][key] = key === 'type'
+                ? (value ? value.charAt(0).toUpperCase() + value.slice(1).toLowerCase() : '')
                 : value;
         } else {
             newFields[index] = value;
