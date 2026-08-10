@@ -41,6 +41,7 @@ const PostDetail = React.lazy(() => import("./Components/Tailwind/PostDetail"));
 const Blog = React.lazy(() => import("./Components/Tailwind/Blog"));
 const Innovation = React.lazy(() => import("./Components/Tailwind/Innovation"));
 const Service = React.lazy(() => import("./Components/Tailwind/Service"));
+const Sector = React.lazy(() => import("./Components/Tailwind/Sector"));
 const ServiceDetail = React.lazy(
     () => import("./Components/Tailwind/ServiceDetail"),
 );
@@ -650,6 +651,16 @@ const System = ({
             case "service":
                 return wrapWithAnimation(
                     <Service
+                        which={value}
+                        data={dataWithElementId}
+                        items={getItems(itemsId)}
+                        generals={generals}
+                    />,
+                );
+            case "sector":
+            case "sectores":
+                return wrapWithAnimation(
+                    <Sector
                         which={value}
                         data={dataWithElementId}
                         items={getItems(itemsId)}

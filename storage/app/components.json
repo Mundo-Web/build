@@ -7595,5 +7595,26 @@
         ]
       }
     ]
+  },
+  {
+    "id": "sector",
+    "icon": "mdi mdi-shape-outline",
+    "name": "Sectores",
+    "options": [
+      {
+        "id": "SectorFimesac",
+        "name": "Sectores Fimesac (Grid Industrial)",
+        "image": "application-simple.png",
+        "data": [
+          "title",
+          "subtitle",
+          "description",
+          "class_section"
+        ],
+        "using": {
+          "model": "Sector"
+        }
+      }
+    ]
   }
 ]
