@@ -3730,6 +3730,25 @@
         ]
       },
       {
+        "id": "BannerFimesacContact",
+        "name": "Banner con Formulario de Contacto (BannerFimesacContact)",
+        "image": "banner-multivet.png",
+        "data": [
+          "form_title",
+          "form_description",
+          "subtitle",
+          "class_section",
+          "class_container",
+          "class_content",
+          "class_title",
+          "class_description",
+          "class_button"
+        ],
+        "generals": [
+          "atalaya_leads_api_key"
+        ]
+      },
+      {
         "id": "BannerBlogSectionKatya",
         "name": "BannerBlogSectionKatya",
         "using": {
@@ -7494,6 +7513,29 @@
           "show_edit_button"
         ],
         "generals": []
+      }
+    ]
+  },
+  {
+    "id": "maps",
+    "name": "Mapas",
+    "options": [
+      {
+        "id": "MapFimesac",
+        "name": "Map Fimesac",
+        "image": "map-fimesac.png",
+        "data": [
+          "title",
+          "title_ubication",
+          "stores_support"
+        ],
+        "generals": [
+          "address",
+          "phone_contact",
+          "email_contact",
+          "opening_hours",
+          "location"
+        ]
       }
     ]
   }

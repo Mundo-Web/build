@@ -31,6 +31,7 @@ const ProductDetail = React.lazy(
     () => import("./Components/Tailwind/ProductDetail"),
 );
 const Contact = React.lazy(() => import("./Components/Tailwind/Contact"));
+const Maps = React.lazy(() => import("./Components/Tailwind/Maps"));
 const Frame = React.lazy(() => import("./Components/Tailwind/Frame"));
 const Checkout = React.lazy(() => import("./Components/Tailwind/Checkout"));
 const Menu = React.lazy(() => import("./Components/Tailwind/Menu"));
@@ -584,6 +585,16 @@ const System = ({
                         which={value}
                         data={dataWithElementId}
                         //  contacts={contacts}
+                        generals={generals}
+                        items={getItems(itemsId)}
+                    />,
+                );
+            case "maps":
+            case "mapas":
+                return wrapWithAnimation(
+                    <Maps
+                        which={value}
+                        data={dataWithElementId}
                         generals={generals}
                         items={getItems(itemsId)}
                     />,

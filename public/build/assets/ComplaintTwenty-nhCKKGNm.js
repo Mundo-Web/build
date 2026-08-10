@@ -1,0 +1,1 @@
+import"./vendor-react-DGtfu94Q.js";import"./ComplaintStech-UTCWCW5d.js";import"./AdModal-C9C8GqPd.js";import"./CardProductKatya-DGNAO7IM.js";import"./index-ei4kQ0Q2.js";import"./vendor-icons-BG7cINVd.js";import"./index-Bx5UHif0.js";

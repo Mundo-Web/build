@@ -572,6 +572,11 @@ const Banners = ({ pages, systems: systemsFromProps = [] }) => {
             icon: "mdi mdi-image-area",
         },
         {
+            id: "BannerFimesacContact",
+            name: "Banner con Formulario de Contacto (BannerFimesacContact)",
+            icon: "mdi mdi-image-area",
+        },
+        {
             id: "BannerSimple",
             name: "Banner Simple",
             icon: "mdi mdi-image-size-select-large",
