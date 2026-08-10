@@ -250,7 +250,7 @@ const BannerFimesacContact = ({ data = {}, generals = [] }) => {
                                 request.description ? `Mensaje: ${request.description}` : null,
                             ].filter(Boolean).join(" | "),
                             origin: `Página Web ${Global.APP_NAME}`,
-                            triggered_by: "Formulario de Contacto (BannerFimesacContact)",
+                            triggered_by: "Formulario de Landing Page",
                         }),
                     });
                 } catch (atalayaError) {

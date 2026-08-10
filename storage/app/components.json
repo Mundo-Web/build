@@ -3821,7 +3821,6 @@
         "name": "Banner Destacado Mi Balón",
         "image": "banner-premium-campaign.png",
         "data": [
-       
           "bool:show_gradient:Mostrar Degradado",
           "class_title",
           "class_button",
@@ -3875,8 +3874,6 @@
         "name": "Banner Destacado NGS Solutions",
         "image": "banner-premium-campaign.png",
         "data": [
-       
-        
           "bool:show_overlay:Mostrar Capa Oscura (Overlay)",
           "class",
           "class_title",
@@ -7033,6 +7030,32 @@
           ],
           "type": "many"
         }
+      },
+      {
+        "id": "ServiceDetailCatalogFimesac",
+        "name": "Catálogo de Servicios Fimesac (Sidebar Industrial)",
+        "image": "service-detail-catalog.png",
+        "data": [
+          "title",
+          "subtitle",
+          "description",
+          "badge",
+          "class"
+        ],
+        "using": {
+          "model": "Service",
+          "with": [
+            "category",
+            "subcategory",
+            "images",
+            "features",
+            "specifications"
+          ]
+        },
+        "generals": [
+          "whatsapp_advisors",
+          "phone_whatsapp"
+        ]
       }
     ]
   },
@@ -7095,6 +7118,32 @@
             "specifications"
           ]
         }
+      },
+      {
+        "id": "ServiceDetailCatalogFimesac",
+        "name": "Catálogo de Servicios Fimesac (Sidebar Industrial)",
+        "image": "service-detail-catalog.png",
+        "data": [
+          "title",
+          "subtitle",
+          "description",
+          "badge",
+          "class"
+        ],
+        "using": {
+          "model": "Service",
+          "with": [
+            "category",
+            "subcategory",
+            "images",
+            "features",
+            "specifications"
+          ]
+        },
+        "generals": [
+          "whatsapp_advisors",
+          "phone_whatsapp"
+        ]
       }
     ]
   },

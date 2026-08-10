@@ -1,1 +1,0 @@
-import"./vendor-react-DGtfu94Q.js";import{M as r}from"./MessagesRest-kA4TRzBk.js";import"./CartKuchara-DZk7x9Hi.js";import"./BasicRest-DMVvWTck.js";import"./SelectAPIFormGroup-CLouFGf-.js";import"./___vite-browser-external_commonjs-proxy-B62enZY2.js";import"./CardProductKatya-DGNAO7IM.js";import"./BooleanLimit-q2Ad9fGY.js";import"./vendor-swiper-D_nFw2qY.js";new r;

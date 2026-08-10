@@ -20,6 +20,9 @@ const ServiceNgs = React.lazy(() => import("./Services/ServiceNgs"));
 const ServiceDetailCatalogNgs = React.lazy(
     () => import("./Services/ServiceDetailCatalogNgs"),
 );
+const ServiceDetailCatalogFimesac = React.lazy(
+    () => import("./Services/ServiceDetailCatalogFimesac"),
+);
 
 const servicesRest = new ServicesRest();
 
@@ -130,6 +133,15 @@ const Service = ({ data, items, which, generals }) => {
                     <ServiceDetailCatalogNgs
                         data={data}
                         items={items}
+                        generals={generals}
+                    />
+                );
+            case "ServiceDetailCatalogFimesac":
+                return (
+                    <ServiceDetailCatalogFimesac
+                        data={data}
+                        items={items}
+                        onClickTracking={handleClickTracking}
                         generals={generals}
                     />
                 );

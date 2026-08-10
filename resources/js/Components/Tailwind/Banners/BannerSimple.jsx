@@ -26,7 +26,7 @@ const BannerSimple = ({ data }) => {
     return (
         <section
             id={data?.element_id || null}
-            className={`py-10 bg-gray-50 ${data?.class_section || data?.class || ""}`}
+            className={`py-10 bg-sections-color ${data?.class_section || data?.class || ""}`}
         >
             <div className="px-primary 2xl:max-w-7xl 2xl:px-0 w-full mx-auto">
                 <div

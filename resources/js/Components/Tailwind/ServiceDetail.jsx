@@ -4,6 +4,7 @@ import ServicesRest from "../../Actions/ServicesRest";
 const ServiceDetailSimple = React.lazy(() => import("./Services/ServiceDetailSimple"));
 const ServiceDetailCatalog = React.lazy(() => import("./Services/ServiceDetailCatalog"));
 const ServiceDetailCatalogNgs = React.lazy(() => import("./Services/ServiceDetailCatalogNgs"));
+const ServiceDetailCatalogFimesac = React.lazy(() => import("./Services/ServiceDetailCatalogFimesac"));
 
 const servicesRest = new ServicesRest();
 
@@ -34,6 +35,8 @@ const ServiceDetail = ({
                 return <ServiceDetailCatalog data={data} items={items} currentService={currentService} onViewUpdate={handleViewUpdate} />;
             case "ServiceDetailCatalogNgs":
                 return <ServiceDetailCatalogNgs data={data} items={items} currentService={currentService} onViewUpdate={handleViewUpdate} generals={generals} />;
+            case "ServiceDetailCatalogFimesac":
+                return <ServiceDetailCatalogFimesac data={data} items={items} currentService={currentService} onViewUpdate={handleViewUpdate} generals={generals} />;
             default:
                 return <div>No hay componente {which}</div>;
         }

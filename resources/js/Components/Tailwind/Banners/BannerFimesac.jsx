@@ -17,7 +17,7 @@ const BannerMiBalon = ({ data }) => {
     const backgroundUrl = resolveSystemAsset(background);
 
     return (
-        <section className={`py-12 md:py-16 bg-white ${customClass}`}>
+        <section className={`py-12 md:py-16 bg-sections-color ${customClass}`}>
             <div className="w-full mx-auto px-primary 2xl:px-0 2xl:max-w-7xl">
                 <div className="relative w-full rounded-none overflow-hidden shadow-xl min-h-[500px] md:min-h-[500px] flex items-center">
                     {/* Background Image */}
