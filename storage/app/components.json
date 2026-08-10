@@ -3686,10 +3686,18 @@
       },
       {
         "id": "BannerStaticSecond",
-        "name": "Estatico 2",
+        "name": "Banner Certificaciones",
         "using": {
           "model": "Certification"
-        }
+        },
+        "data": [
+          "title",
+          "subtitle",
+          "description",
+          "class_section",
+          "class_title",
+          "class_description"
+        ]
       },
       {
         "id": "BannerSimpleSF",
