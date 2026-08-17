@@ -8209,7 +8209,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Filter.jsx": {
-    "file": "assets/Filter-DdAcFaXJ.js",
+    "file": "assets/Filter-BI6MPiYz.js",
     "name": "Filter",
     "src": "resources/js/Components/Tailwind/Filter.jsx",
     "isDynamicEntry": true,
@@ -8698,7 +8698,7 @@
     ]
   },
   "resources/js/Components/Tailwind/Filters/FilterHuaillys.jsx": {
-    "file": "assets/FilterHuaillys-BFKjZ4EO.js",
+    "file": "assets/FilterHuaillys-CZXS4RpU.js",
     "name": "FilterHuaillys",
     "src": "resources/js/Components/Tailwind/Filters/FilterHuaillys.jsx",
     "isDynamicEntry": true,
@@ -8707,7 +8707,6 @@
       "_vendor-swiper-DUKK6iF5.js",
       "resources/js/Components/Tailwind/Banners/BannerProductSwiperMiBalon.jsx",
       "_ItemsRest-DwzgpyHJ.js",
-      "_Loading-BwN3AGy7.js",
       "_NoResult-CUgqiIUl.js",
       "resources/js/Components/Adminto/form/SelectAPIFormGroup.jsx",
       "_vendor-icons-BG7cINVd.js",
@@ -14466,7 +14465,7 @@
     ]
   },
   "resources/js/System.jsx": {
-    "file": "assets/System-SPjq9bt0.js",
+    "file": "assets/System-hKX70gfM.js",
     "name": "System",
     "src": "resources/js/System.jsx",
     "isEntry": true,

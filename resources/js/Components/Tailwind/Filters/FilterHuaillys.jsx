@@ -13,9 +13,76 @@ import { GET } from "sode-extend-react";
 
 const itemsRest = new ItemsRest();
 
+// Skeleton card que replica la estructura visual exacta de las tarjetas de producto
+const ProductCardSkeleton = ({ isSharp = false }) => {
+    return (
+        <div className={`flex flex-col justify-between overflow-hidden bg-white border border-slate-200 ${isSharp ? "rounded-none" : "rounded-lg"} shadow-sm h-full w-full animate-pulse`}>
+            {/* Imagen Skeleton */}
+            <div className="relative w-full aspect-square bg-slate-100 flex items-center justify-center p-6 border-b border-slate-100">
+                <div className="w-24 h-24 sm:w-32 sm:h-32 bg-slate-200/80 rounded-md"></div>
+                {/* Badge skeleton */}
+                <div className="absolute top-3 left-3 w-12 sm:w-16 h-5 bg-slate-200/90 rounded"></div>
+            </div>
+
+            {/* Contenido Skeleton */}
+            <div className="p-4 sm:p-5 flex-1 flex flex-col justify-between bg-white gap-4">
+                <div className="space-y-2">
+                    {/* Categoría / SKU */}
+                    <div className="h-3 w-20 sm:w-24 bg-slate-200 rounded"></div>
+                    {/* Título de 2 líneas */}
+                    <div className="h-4 sm:h-5 w-full bg-slate-200 rounded"></div>
+                    <div className="h-4 sm:h-5 w-2/3 bg-slate-200 rounded"></div>
+                </div>
+
+                <div className="pt-2 space-y-3">
+                    {/* Precio */}
+                    <div className="h-5 sm:h-6 w-24 sm:w-28 bg-slate-200 rounded"></div>
+                    {/* Botón de acción */}
+                    <div className={`h-9 sm:h-10 w-full bg-slate-100 border border-slate-200 ${isSharp ? "rounded-none" : "rounded-md"}`}></div>
+                </div>
+            </div>
+        </div>
+    );
+};
+
 const FilterHuaillys = ({ items, data, cart, setCart, filteredData, setFavorites, favorites }) => {
     const navigationPrevRef = useRef(null);
     const navigationNextRef = useRef(null);
+    const productsSectionRef = useRef(null);
+
+    // Función de scroll ultra-suave con desaceleración cúbica (ease-in-out) para desktop y mobile
+    const smoothScrollToProducts = (duration = 750) => {
+        if (!productsSectionRef.current || typeof window === "undefined") return;
+
+        const target = productsSectionRef.current;
+        const startPosition = window.pageYOffset || document.documentElement.scrollTop;
+        const offset = window.innerWidth < 1024 ? 70 : 90; // offset para headers sticky
+        const targetPosition = target.getBoundingClientRect().top + startPosition - offset;
+        const distance = targetPosition - startPosition;
+
+        if (Math.abs(distance) < 15) return;
+
+        let startTime = null;
+
+        const easeInOutCubic = (t) => {
+            return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+        };
+
+        const step = (currentTime) => {
+            if (startTime === null) startTime = currentTime;
+            const timeElapsed = currentTime - startTime;
+            const progress = Math.min(timeElapsed / duration, 1);
+            const ease = easeInOutCubic(progress);
+
+            window.scrollTo(0, startPosition + distance * ease);
+
+            if (timeElapsed < duration) {
+                requestAnimationFrame(step);
+            }
+        };
+
+        requestAnimationFrame(step);
+    };
 
     // Soporte para variante ("original" o "rounded-none" / "fimesac")
     const variant =
@@ -72,128 +139,127 @@ const FilterHuaillys = ({ items, data, cart, setCart, filteredData, setFavorites
         return `/storage/images/category/${img}`;
     };
 
+    // Helper para normalizar cadenas (quitar tildes, minúsculas, espacios)
+    const normalizeStr = (str) =>
+        str ? String(str).toLowerCase().trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "") : "";
+
+    // Obtener el param ?category de la URL — siempre desde window.location en cliente
+    const getUrlCategoryParam = () => {
+        if (typeof window === "undefined") return GET.category || null;
+        return GET.category || new URLSearchParams(window.location.search).get("category") || null;
+    };
+
     const [categories, setCategories] = useState([]);
     const [selectedCategory, setSelectedCategory] = useState(null);
     const [products, setProducts] = useState([]);
+    // loading = true desde el primer frame: siempre muestra skeleton antes que nada
     const [loading, setLoading] = useState(true);
-    const [selectedFilters, setSelectedFilters] = useState({
-        category_id: [], // Inicialmente vacío, se llenará después de cargar categorías
-    });
+    const [selectedFilters, setSelectedFilters] = useState({ category_id: [] });
 
-    // Cargar categorías desde filteredData, data o items como fallback
-    useEffect(() => {
-        const cats =
-            filteredData?.categories ||
-            data?.categories ||
-            (Array.isArray(items) &&
-                items.length > 0 &&
-                items.some((i) => i.name && (i.image || i.banner || i.slug))
-                ? items
-                : []);
+    // Ref para evitar doble fetch en strict mode y detectar si ya se hizo el fetch inicial
+    const fetchedOnce = useRef(false);
 
-        if (cats && cats.length > 0) {
-            setCategories(cats);
-
-            // Si viene category desde URL, seleccionarla y convertir slug a ID
-            if (GET.category) {
-                const categoryFromUrl = cats.find(
-                    (cat) =>
-                        cat.slug === GET.category ||
-                        cat.id === parseInt(GET.category)
-                );
-                if (categoryFromUrl) {
-                    setSelectedCategory(categoryFromUrl);
-                    // Actualizar filtros con el ID de la categoría
-                    setSelectedFilters((prev) => ({
-                        ...prev,
-                        category_id: [categoryFromUrl.id],
-                    }));
-                }
-            }
-        }
-    }, [filteredData, data, items]);
-
-    // Función para transformar filtros al formato del backend (como CatalagoFiltros)
-    const transformFilters = (filters) => {
-        const transformedFilters = [];
-
-        // Category filter
-        if (filters.category_id && filters.category_id.length > 0) {
-            const categoryConditions = filters.category_id.map((id) => [
-                "category.id",
-                "=",
-                id,
-            ]);
-
-            if (categoryConditions.length === 1) {
-                transformedFilters.push(categoryConditions[0]);
-            } else if (categoryConditions.length > 1) {
-                // Join with 'or' if multiple categories
-                const joinedConditions = categoryConditions.reduce((acc, cond, index) => {
-                    if (index === 0) return cond;
-                    return [acc, 'or', cond];
-                });
-                transformedFilters.push(joinedConditions);
-            }
-        }
-
-        // Si no hay filtros, devolver un array vacío para obtener todos los productos
-        return transformedFilters.length > 0 ?
-            (transformedFilters.length === 1 ? transformedFilters[0] :
-                transformedFilters.reduce((acc, filter, index) => {
-                    if (index === 0) return filter;
-                    return [acc, 'and', filter];
-                }))
-            : [];
+    // Función para transformar categoryIds al formato del backend
+    const buildFilter = (categoryIds) => {
+        if (!categoryIds || categoryIds.length === 0) return [];
+        const conditions = categoryIds
+            .map((val) => {
+                const numId = typeof val === "number" ? val : parseInt(val);
+                return !isNaN(numId) ? ["category.id", "=", numId] : null;
+            })
+            .filter(Boolean);
+        if (conditions.length === 0) return [];
+        if (conditions.length === 1) return conditions[0];
+        return conditions.reduce((acc, cond, i) => (i === 0 ? cond : [acc, "or", cond]));
     };
 
-    // Obtener productos filtrados desde el backend (como CatalagoFiltros)
-    const fetchProducts = async (page = 1) => {
+    // Fetch central — recibe categoryIds directamente, sin leer estado
+    const fetchProducts = async (categoryIds) => {
+        console.log("[FilterHuaillys] fetchProducts llamado con ids:", categoryIds);
         setLoading(true);
-
         try {
-            const filters = transformFilters(selectedFilters);
-            const itemsPerPage = 24;
-
-
-
-            const params = {
-                filter: filters,
+            const filter = buildFilter(categoryIds);
+            const response = await itemsRest.paginate({
+                filter,
                 sort: [{ selector: "final_price", desc: true }],
-                skip: (page - 1) * itemsPerPage,
-                take: itemsPerPage,
+                skip: 0,
+                take: 24,
                 requireTotalCount: true,
-            };
-
-
-            const response = await itemsRest.paginate(params);
-
-
-            if (response.status !== 200) {
-                throw new Error(`API returned status ${response.status}`);
-            }
-
+            });
+            if (response.status !== 200) throw new Error(`API status ${response.status}`);
+            console.log("[FilterHuaillys] respuesta OK, productos:", response.data?.length);
             setProducts(response.data || []);
-        } catch (error) {
-            console.error('Error fetching products:', error);
+        } catch (err) {
+            console.error("[FilterHuaillys] error fetch:", err);
             setProducts([]);
         } finally {
             setLoading(false);
         }
     };
 
-    // Cargar productos cuando cambian los filtros
+    // Efecto principal: se ejecuta cuando llegan las categorías/items
+    // Decide si hay param URL para filtrar o si carga todos los productos
     useEffect(() => {
-        fetchProducts();
-    }, [selectedFilters]);
+        // Evitar doble ejecución en Strict Mode
+        if (fetchedOnce.current) return;
 
-    // Cargar productos iniciales si vienen en items
-    useEffect(() => {
-        if (items && items.length > 0 && products.length === 0) {
-            setProducts(items);
-            setLoading(false);
+        const cats =
+            filteredData?.categories ||
+            data?.categories ||
+            (Array.isArray(items) && items.length > 0 && items.some((i) => i.name && (i.image || i.banner || i.slug))
+                ? items
+                : []);
+
+        console.log("[FilterHuaillys] cats encontradas:", cats.length, "| URL param:", getUrlCategoryParam());
+
+        if (cats && cats.length > 0) {
+            setCategories(cats);
+            const urlCat = getUrlCategoryParam();
+
+            if (urlCat) {
+                // Buscar categoría por slug, nombre o id
+                const target = normalizeStr(urlCat);
+                const found = cats.find((cat) => {
+                    const cSlug = normalizeStr(cat.slug || "");
+                    const cId = String(cat.id || "");
+                    const cName = normalizeStr(cat.name || cat.nombre || "");
+                    return (
+                        cId === target ||
+                        cSlug === target ||
+                        cName === target ||
+                        cSlug.includes(target) ||
+                        target.includes(cSlug)
+                    );
+                });
+
+                console.log("[FilterHuaillys] categoría encontrada:", found?.name, "| id:", found?.id);
+
+                if (found) {
+                    setSelectedCategory(found);
+                    setSelectedFilters({ category_id: [found.id] });
+                    setTimeout(() => smoothScrollToProducts(850), 300);
+                }
+
+                fetchedOnce.current = true;
+                fetchProducts(found ? [found.id] : []);
+                return;
+            }
+
+            // Sin param URL: cargar todos los productos
+            fetchedOnce.current = true;
+            fetchProducts([]);
+        } else if (!getUrlCategoryParam()) {
+            // Sin categorías y sin URL param: usar items directamente si son productos
+            if (items && items.length > 0) {
+                // Si items son products (no tienen image+banner+slug típico de categorías)
+                // o si el componente los provee directamente
+                fetchedOnce.current = true;
+                setProducts(items);
+                setLoading(false);
+            }
         }
-    }, [items]);
+        // Si hay URL param pero aún no llegaron cats, esperar a la próxima ejecución
+    }, [filteredData, data, items]);
 
     // Función para procesar texto con formato ** para customtext-primary
     const processHighlightText = (text) => {
@@ -214,32 +280,24 @@ const FilterHuaillys = ({ items, data, cart, setCart, filteredData, setFavorites
         });
     };
 
-    // Manejar click en categoría
+    // Manejar click en categoría: llama fetchProducts directamente, sin depender de useEffect
     const handleCategoryClick = (category) => {
         setSelectedCategory(category);
+        const ids = category ? [category.id] : [];
+        setSelectedFilters({ category_id: ids });
 
-        // Actualizar filtros
+        // Actualizar URL
+        const url = new URL(window.location.href);
         if (category === null) {
-            // Mostrar todos los productos
-            setSelectedFilters({
-                category_id: [],
-            });
-
-            // Actualizar URL
-            const url = new URL(window.location.href);
-            url.searchParams.delete('category');
-            window.history.pushState({}, '', url);
+            url.searchParams.delete("category");
         } else {
-            // Filtrar por categoría - USAR ID no slug
-            setSelectedFilters({
-                category_id: [category.id], // Usar ID numérico
-            });
-
-            // Actualizar URL con slug
-            const url = new URL(window.location.href);
-            url.searchParams.set('category', category.slug || category.id);
-            window.history.pushState({}, '', url);
+            url.searchParams.set("category", category.slug || category.id);
         }
+        window.history.pushState({}, "", url);
+
+        // Smooth scroll + fetch directo con los ids correctos
+        setTimeout(() => smoothScrollToProducts(750), 50);
+        fetchProducts(ids);
     };
 
     // Función para manejar click en producto
@@ -466,7 +524,7 @@ const FilterHuaillys = ({ items, data, cart, setCart, filteredData, setFavorites
             </section>
 
             {/* Sección de Productos Filtrados */}
-            <section className="py-8 lg:py-16 bg-white">
+            <section ref={productsSectionRef} id="productos-filtrados" className="py-8 lg:py-16 bg-white scroll-mt-16 lg:scroll-mt-24">
                 <div className="w-full px-[5%] 2xl:px-0 2xl:max-w-7xl mx-auto">
                     <div className="flex mb-8  w-full flex-col gap-6 lg:flex-row justify-between items-center">
                         <div className="text-left">
@@ -499,9 +557,13 @@ const FilterHuaillys = ({ items, data, cart, setCart, filteredData, setFavorites
                         </div>
                     </div>
 
-                    {/* Productos */}
+                    {/* Productos / Skeleton Loader */}
                     {loading ? (
-                        <Loading />
+                        <div className="grid grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 gap-2 md:gap-6">
+                            {Array.from({ length: 8 }).map((_, index) => (
+                                <ProductCardSkeleton key={index} isSharp={isSharp} />
+                            ))}
+                        </div>
                     ) : products && products.length > 0 ? (
                         <div className="grid grid-cols-2  lg:grid-cols-4 xl:grid-cols-4 gap-2 md:gap-6">
                             {products.map((product) => (
