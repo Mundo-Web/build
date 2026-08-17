@@ -65,7 +65,7 @@ export default function BannerStaticSecond({ data, items = [] }) {
             id={data?.element_id || null}
             className={`py-12 md:py-20 bg-sections-color text-neutral-dark font-paragraph ${data?.class_section || data?.class || ""}`}
         >
-            <div className="w-full mx-auto px-4 md:px-6 2xl:px-0 2xl:max-w-7xl">
+            <div className="w-full mx-auto px-primary 2xl:px-0 2xl:max-w-7xl">
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
 
                     {/* Left Column: Text & Header */}
@@ -146,8 +146,8 @@ export default function BannerStaticSecond({ data, items = [] }) {
                                                     onClick={() => goToPage(pageIndex)}
                                                     aria-label={`Página ${pageIndex + 1}`}
                                                     className={`transition-all duration-300 rounded-none cursor-pointer ${pageIndex === currentPage
-                                                            ? "w-8 h-2 bg-primary"
-                                                            : "w-2 h-2 bg-slate-300 hover:bg-slate-400"
+                                                        ? "w-8 h-2 bg-primary"
+                                                        : "w-2 h-2 bg-slate-300 hover:bg-slate-400"
                                                         }`}
                                                 />
                                             ))}
