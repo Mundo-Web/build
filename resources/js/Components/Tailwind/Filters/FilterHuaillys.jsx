@@ -50,25 +50,26 @@ const FilterHuaillys = ({ items, data, cart, setCart, filteredData, setFavorites
     const navigationNextRef = useRef(null);
     const productsSectionRef = useRef(null);
 
-    // Función de scroll ultra-suave con desaceleración cúbica (ease-in-out) para desktop y mobile
-    const smoothScrollToProducts = (duration = 750) => {
+    // Scroll ultra-suave y sedoso con desaceleración progresiva (easeInOutCubic)
+    const smoothScrollToProducts = (duration = 950) => {
         if (!productsSectionRef.current || typeof window === "undefined") return;
 
         const target = productsSectionRef.current;
+        const offset = window.innerWidth < 1024 ? 75 : 95; // compensar header sticky
         const startPosition = window.pageYOffset || document.documentElement.scrollTop;
-        const offset = window.innerWidth < 1024 ? 70 : 90; // offset para headers sticky
         const targetPosition = target.getBoundingClientRect().top + startPosition - offset;
         const distance = targetPosition - startPosition;
 
-        if (Math.abs(distance) < 15) return;
+        if (Math.abs(distance) < 10) return;
 
         let startTime = null;
 
+        // Curva suave easeInOutCubic para aceleración suave y desaceleración fluida
         const easeInOutCubic = (t) => {
             return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
         };
 
-        const step = (currentTime) => {
+        const animationStep = (currentTime) => {
             if (startTime === null) startTime = currentTime;
             const timeElapsed = currentTime - startTime;
             const progress = Math.min(timeElapsed / duration, 1);
@@ -77,11 +78,11 @@ const FilterHuaillys = ({ items, data, cart, setCart, filteredData, setFavorites
             window.scrollTo(0, startPosition + distance * ease);
 
             if (timeElapsed < duration) {
-                requestAnimationFrame(step);
+                requestAnimationFrame(animationStep);
             }
         };
 
-        requestAnimationFrame(step);
+        requestAnimationFrame(animationStep);
     };
 
     // Soporte para variante ("original" o "rounded-none" / "fimesac")
@@ -158,23 +159,29 @@ const FilterHuaillys = ({ items, data, cart, setCart, filteredData, setFavorites
 
     // Ref para evitar doble fetch en strict mode y detectar si ya se hizo el fetch inicial
     const fetchedOnce = useRef(false);
+    // Flag para ejecutar scroll suave cuando los productos hayan terminado de renderizarse
+    const pendingUrlScroll = useRef(false);
 
-    // Función para transformar categoryIds al formato del backend
+    // Desactivar scroll restoration automático del navegador para evitar que salte a (0,0)
+    useEffect(() => {
+        if (typeof window !== "undefined" && "scrollRestoration" in window.history) {
+            window.history.scrollRestoration = "manual";
+        }
+    }, []);
+
+    // Función para transformar categoryIds al formato del backend (soporta UUIDs y numéricos)
     const buildFilter = (categoryIds) => {
         if (!categoryIds || categoryIds.length === 0) return [];
         const conditions = categoryIds
-            .map((val) => {
-                const numId = typeof val === "number" ? val : parseInt(val);
-                return !isNaN(numId) ? ["category.id", "=", numId] : null;
-            })
-            .filter(Boolean);
+            .filter((val) => val !== null && val !== undefined && val !== "")
+            .map((val) => ["category.id", "=", val]);
         if (conditions.length === 0) return [];
         if (conditions.length === 1) return conditions[0];
         return conditions.reduce((acc, cond, i) => (i === 0 ? cond : [acc, "or", cond]));
     };
 
     // Fetch central — recibe categoryIds directamente, sin leer estado
-    const fetchProducts = async (categoryIds) => {
+    const fetchProducts = async (categoryIds, isUrlTriggered = false) => {
         console.log("[FilterHuaillys] fetchProducts llamado con ids:", categoryIds);
         setLoading(true);
         try {
@@ -194,6 +201,11 @@ const FilterHuaillys = ({ items, data, cart, setCart, filteredData, setFavorites
             setProducts([]);
         } finally {
             setLoading(false);
+            if (isUrlTriggered || pendingUrlScroll.current) {
+                pendingUrlScroll.current = false;
+                // Scroll suave asegurado una vez que los productos ya están en el DOM
+                setTimeout(() => smoothScrollToProducts(), 150);
+            }
         }
     };
 
@@ -237,11 +249,11 @@ const FilterHuaillys = ({ items, data, cart, setCart, filteredData, setFavorites
                 if (found) {
                     setSelectedCategory(found);
                     setSelectedFilters({ category_id: [found.id] });
-                    setTimeout(() => smoothScrollToProducts(850), 300);
+                    pendingUrlScroll.current = true;
                 }
 
                 fetchedOnce.current = true;
-                fetchProducts(found ? [found.id] : []);
+                fetchProducts(found ? [found.id] : [], Boolean(found));
                 return;
             }
 
@@ -251,14 +263,11 @@ const FilterHuaillys = ({ items, data, cart, setCart, filteredData, setFavorites
         } else if (!getUrlCategoryParam()) {
             // Sin categorías y sin URL param: usar items directamente si son productos
             if (items && items.length > 0) {
-                // Si items son products (no tienen image+banner+slug típico de categorías)
-                // o si el componente los provee directamente
                 fetchedOnce.current = true;
                 setProducts(items);
                 setLoading(false);
             }
         }
-        // Si hay URL param pero aún no llegaron cats, esperar a la próxima ejecución
     }, [filteredData, data, items]);
 
     // Función para procesar texto con formato ** para customtext-primary
@@ -286,17 +295,17 @@ const FilterHuaillys = ({ items, data, cart, setCart, filteredData, setFavorites
         const ids = category ? [category.id] : [];
         setSelectedFilters({ category_id: ids });
 
-        // Actualizar URL
+        // Actualizar URL sin reload
         const url = new URL(window.location.href);
         if (category === null) {
             url.searchParams.delete("category");
         } else {
             url.searchParams.set("category", category.slug || category.id);
         }
-        window.history.pushState({}, "", url);
+        window.history.replaceState({}, "", url);
 
         // Smooth scroll + fetch directo con los ids correctos
-        setTimeout(() => smoothScrollToProducts(750), 50);
+        setTimeout(() => smoothScrollToProducts(), 50);
         fetchProducts(ids);
     };
 

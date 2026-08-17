@@ -4794,6 +4794,7 @@
           "description",
           "title_ubication",
           "stores_support",
+          "bool:show_locations:Mostrar Sección de Ubicaciones",
           "redirect"
         ],
         "generals": [

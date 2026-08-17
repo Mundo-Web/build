@@ -223,6 +223,13 @@ const ContactRainstar = ({ data, contacts: passedContacts, generals }) => {
     const rainstarLabelClass =
         "text-[11px] font-bold text-neutral-400 block mb-1.5";
 
+    // Mostrar sección de ubicaciones por defecto true (solo se oculta si es explícitamente false o 'false')
+    const showLocations =
+        data?.show_locations !== false &&
+        data?.show_locations !== "false" &&
+        data?.show_ubication !== false &&
+        data?.show_ubication !== "false";
+
     return (
         <section
             id={data?.element_id}
@@ -441,128 +448,130 @@ const ContactRainstar = ({ data, contacts: passedContacts, generals }) => {
                 </div>
 
                 {/* Map Section */}
-                <motion.div
-                    initial={{ opacity: 0, y: 40 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    className="mt-20"
-                >
-                    <div className="flex items-center justify-between border-b border-gray-100  pb-10 gap-8">
+                {showLocations && (
+                    <motion.div
+                        initial={{ opacity: 0, y: 40 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        className="mt-20"
+                    >
+                        <div className="flex items-center justify-between border-b border-gray-100  pb-10 gap-8">
 
-                        <h2 className="text-4xl md:text-6xl font-black  text-neutral-dark">
-                            <TextWithHighlight
-                                text={
-                                    data?.title_ubication ||
-                                    "Nuestras *Ubicaciones*"
-                                }
-                                className="font-title"
-                            />
-                        </h2>
+                            <h2 className="text-4xl md:text-6xl font-black  text-neutral-dark">
+                                <TextWithHighlight
+                                    text={
+                                        data?.title_ubication ||
+                                        "Nuestras *Ubicaciones*"
+                                    }
+                                    className="font-title"
+                                />
+                            </h2>
 
 
-                    </div>
+                        </div>
 
-                    <div className="relative border-2 border-neutral-dark/10 h-[600px] w-full bg-neutral-100 overflow-hidden shadow-2xl">
-                        {loadingStores && (
-                            <div className="absolute inset-0 bg-white/80 flex items-center justify-center z-10">
-                                <Loader2 className="w-8 h-8 animate-spin" />
-                            </div>
-                        )}
-                        <LoadScript googleMapsApiKey={Global.GMAPS_API_KEY}>
-                            <GoogleMap
-                                mapContainerStyle={{
-                                    width: "100%",
-                                    height: "100%",
-                                }}
-                                zoom={
-                                    selectedStore
-                                        ? 16
-                                        : data?.stores_support &&
-                                            allStores.length > 0
-                                            ? 12
-                                            : 16
-                                }
-                                center={
-                                    selectedStore &&
-                                        selectedStore.latitude &&
-                                        selectedStore.longitude
-                                        ? {
-                                            lat: parseFloat(
-                                                selectedStore.latitude,
-                                            ),
-                                            lng: parseFloat(
-                                                selectedStore.longitude,
-                                            ),
-                                        }
-                                        : locationGps
-                                }
-                                options={{
-                                    styles: [
-                                        {
-                                            featureType: "all",
-                                            elementType: "all",
-                                            stylers: [{ saturation: -100 }], // Grayscale map
-                                        },
-                                    ],
-                                }}
-                            >
-                                <Marker
-                                    position={
-                                        mainStoreData &&
-                                            mainStoreData.latitude &&
-                                            mainStoreData.longitude
+                        <div className="relative border-2 border-neutral-dark/10 h-[600px] w-full bg-neutral-100 overflow-hidden shadow-2xl">
+                            {loadingStores && (
+                                <div className="absolute inset-0 bg-white/80 flex items-center justify-center z-10">
+                                    <Loader2 className="w-8 h-8 animate-spin" />
+                                </div>
+                            )}
+                            <LoadScript googleMapsApiKey={Global.GMAPS_API_KEY}>
+                                <GoogleMap
+                                    mapContainerStyle={{
+                                        width: "100%",
+                                        height: "100%",
+                                    }}
+                                    zoom={
+                                        selectedStore
+                                            ? 16
+                                            : data?.stores_support &&
+                                                allStores.length > 0
+                                                ? 12
+                                                : 16
+                                    }
+                                    center={
+                                        selectedStore &&
+                                            selectedStore.latitude &&
+                                            selectedStore.longitude
                                             ? {
                                                 lat: parseFloat(
-                                                    mainStoreData.latitude,
+                                                    selectedStore.latitude,
                                                 ),
                                                 lng: parseFloat(
-                                                    mainStoreData.longitude,
+                                                    selectedStore.longitude,
                                                 ),
                                             }
                                             : locationGps
                                     }
-                                    title={
-                                        mainStoreData
-                                            ? mainStoreData.name
-                                            : "Sede Principal"
-                                    }
-                                    onClick={() =>
-                                        setSelectedStore(mainStoreData)
-                                    }
-                                />
-
-                                {data?.stores_support &&
-                                    allStores
-                                        .filter(
-                                            (store) =>
-                                                store.latitude &&
-                                                store.longitude &&
-                                                store.latitude !== "0" &&
-                                                store.longitude !== "0" &&
-                                                store.type !==
-                                                "tienda_principal",
-                                        )
-                                        .map((store) => (
-                                            <Marker
-                                                key={store.id}
-                                                position={{
+                                    options={{
+                                        styles: [
+                                            {
+                                                featureType: "all",
+                                                elementType: "all",
+                                                stylers: [{ saturation: -100 }], // Grayscale map
+                                            },
+                                        ],
+                                    }}
+                                >
+                                    <Marker
+                                        position={
+                                            mainStoreData &&
+                                                mainStoreData.latitude &&
+                                                mainStoreData.longitude
+                                                ? {
                                                     lat: parseFloat(
-                                                        store.latitude,
+                                                        mainStoreData.latitude,
                                                     ),
                                                     lng: parseFloat(
-                                                        store.longitude,
+                                                        mainStoreData.longitude,
                                                     ),
-                                                }}
-                                                title={store.name}
-                                                onClick={() =>
-                                                    setSelectedStore(store)
                                                 }
-                                            />
-                                        ))}
-                            </GoogleMap>
-                        </LoadScript>
-                    </div>
-                </motion.div>
+                                                : locationGps
+                                        }
+                                        title={
+                                            mainStoreData
+                                                ? mainStoreData.name
+                                                : "Sede Principal"
+                                        }
+                                        onClick={() =>
+                                            setSelectedStore(mainStoreData)
+                                        }
+                                    />
+
+                                    {data?.stores_support &&
+                                        allStores
+                                            .filter(
+                                                (store) =>
+                                                    store.latitude &&
+                                                    store.longitude &&
+                                                    store.latitude !== "0" &&
+                                                    store.longitude !== "0" &&
+                                                    store.type !==
+                                                    "tienda_principal",
+                                            )
+                                            .map((store) => (
+                                                <Marker
+                                                    key={store.id}
+                                                    position={{
+                                                        lat: parseFloat(
+                                                            store.latitude,
+                                                        ),
+                                                        lng: parseFloat(
+                                                            store.longitude,
+                                                        ),
+                                                    }}
+                                                    title={store.name}
+                                                    onClick={() =>
+                                                        setSelectedStore(store)
+                                                    }
+                                                />
+                                            ))}
+                                </GoogleMap>
+                            </LoadScript>
+                        </div>
+                    </motion.div>
+                )}
             </div>
         </section>
     );
