@@ -18,6 +18,8 @@ import {
     Truck,
     X,
     ZoomIn,
+    FileText,
+    Download,
 } from "lucide-react";
 
 import ItemsRest from "../../../Actions/ItemsRest";
@@ -36,6 +38,23 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import ReactModal from "react-modal";
 import HtmlContent from "../../../Utils/HtmlContent";
 import { CurrencySymbol } from "../../../Utils/Number2Currency";
+
+const DocumentDownloadIcon = ({ className = "w-5 h-5" }) => (
+    <svg
+        className={className}
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+    >
+        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+        <polyline points="14 2 14 8 20 8" />
+        <path d="M12 18v-6" />
+        <path d="m9 15 3 3 3-3" />
+    </svg>
+);
 
 const ProductDetail = ({ item, data, setCart, cart, generals }) => {
     const itemsRest = new ItemsRest();
@@ -96,6 +115,44 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
     const [storeListModalOpen, setStoreListModalOpen] = useState(false);
     const [stores, setStores] = useState([]);
     const [loadingStores, setLoadingStores] = useState(false);
+
+    // Estado para dropdown de PDF
+    const [isPdfDropdownOpen, setIsPdfDropdownOpen] = useState(false);
+
+    const pdfFiles = (() => {
+        if (!item?.pdf) return [];
+        let raw = item.pdf;
+        if (typeof raw === "string") {
+            try {
+                const parsed = JSON.parse(raw);
+                if (Array.isArray(parsed)) raw = parsed;
+                else raw = [parsed];
+            } catch (e) {
+                raw = [{ url: raw, name: item?.name || "Ficha Técnica" }];
+            }
+        }
+        if (Array.isArray(raw)) {
+            return raw.filter(Boolean).map((p, idx) => {
+                if (typeof p === "string") {
+                    return { url: p, name: p.split("/").pop() || `Ficha ${idx + 1}` };
+                }
+                return p;
+            });
+        }
+        return [];
+    })();
+
+    const allSpecifications = Array.isArray(item?.specifications) ? item.specifications : [];
+    const mainSpecifications = allSpecifications.filter(
+        (s) => s?.type?.toLowerCase() === "principal" && (s.description || s.title || s.value)
+    );
+    const generalSpecifications = allSpecifications.filter(
+        (s) => s?.type?.toLowerCase() !== "principal" && (s.description || s.title || s.value)
+    );
+    const hasDescription = Boolean(
+        (item?.description && item.description.replace(/<[^>]*>?/gm, "").trim().length > 0) ||
+        (Array.isArray(item?.features) && item.features.length > 0)
+    );
 
     // Funciones para manejar el zoom de la imagen
     const handleZoomClick = () => {
@@ -275,6 +332,8 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                 const contentHeight = descriptionRef.current.scrollHeight;
                 const maxHeight = 400; // 400px que es nuestra altura máxima
                 setNeedsDescriptionExpand(contentHeight > maxHeight);
+            } else {
+                setNeedsDescriptionExpand(false);
             }
 
             // Verificar especificaciones
@@ -282,6 +341,8 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                 const contentHeight = specificationsRef.current.scrollHeight;
                 const maxHeight = 400; // 400px que es nuestra altura máxima
                 setNeedsSpecificationsExpand(contentHeight > maxHeight);
+            } else {
+                setNeedsSpecificationsExpand(false);
             }
         };
 
@@ -593,7 +654,7 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                                     {CurrencySymbol()} {item?.final_price}
                                     {item?.discount > 0 &&
                                         item?.price > item?.final_price && (
-                                            <span className="ml-2 text-sm line-through text-gray-400">
+                                            <span className="ml-2 text-sm line-through text-neutral-light">
                                                 {CurrencySymbol()} {item?.price}
                                             </span>
                                         )}
@@ -647,75 +708,140 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                     {/* Acordeones */}
                     <div className="space-y-2">
                         {/* Especificaciones */}
-                        <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
-                            <div className="border-b">
-                                <button
-                                    onClick={() =>
-                                        setExpanded(!expandedSpecificationMain)
-                                    }
-                                    aria-label="Mostrar u ocultar especificaciones técnicas"
-                                    className="w-full p-4 flex justify-between items-center"
-                                >
-                                    <span className="font-medium">
-                                        Especificaciones técnicas
-                                    </span>
-                                    <ChevronDown
-                                        className={`transform transition-transform ${expandedSpecificationMain
-                                            ? "rotate-180"
-                                            : ""
-                                            }`}
-                                    />
-                                </button>
-                            </div>
-                            {expandedSpecificationMain && (
-                                <div className="p-4">
-                                    {item?.specifications.map((spec, i) => (
-                                        <div
-                                            key={i}
-                                            className="flex items-start gap-3 text-sm mb-2"
-                                        >
-                                            <CheckCircle2 className="min-w-4 min-h-4 max-w-4 max-h-4 mt-0.5 customtext-primary" />
-                                            <span>{spec.description}</span>
-                                        </div>
-                                    ))}
+                        {allSpecifications.length > 0 && (
+                            <div className="bg-white rounded-2xl shadow-sm overflow-hidden border border-gray-100">
+                                <div className="border-b border-gray-100">
+                                    <button
+                                        onClick={() =>
+                                            setExpanded(!expandedSpecificationMain)
+                                        }
+                                        aria-label="Mostrar u ocultar especificaciones técnicas"
+                                        className="w-full p-4 flex justify-between items-center"
+                                    >
+                                        <span className="font-semibold text-gray-800 text-sm">
+                                            Especificaciones técnicas
+                                        </span>
+                                        <ChevronDown
+                                            className={`w-4 h-4 customtext-neutral-light transform transition-transform ${expandedSpecificationMain
+                                                ? "rotate-180"
+                                                : ""
+                                                }`}
+                                        />
+                                    </button>
                                 </div>
-                            )}
-                        </div>
+                                {expandedSpecificationMain && (
+                                    <div className="p-3 overflow-x-auto">
+                                        <table className="w-full text-left border-collapse">
+                                            <tbody>
+                                                {allSpecifications.map((spec, i) => (
+                                                    <tr
+                                                        key={i}
+                                                        className={i % 2 === 0 ? "bg-[#F7F9FB]" : "bg-white"}
+                                                    >
+                                                        <td className="py-2.5 px-3 text-xs font-medium customtext-neutral-light uppercase tracking-wide w-2/5 align-middle">
+                                                            {spec.title || "Característica"}
+                                                        </td>
+                                                        <td className="py-2.5 px-3 text-xs font-normal customtext-neutral-dark uppercase tracking-wide w-3/5 align-middle">
+                                                            {spec.description || spec.value || spec.title || "-"}
+                                                        </td>
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                )}
+                            </div>
+                        )}
 
                         {/* Descripción */}
-                        <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
-                            <div className="border-b">
-                                <button
-                                    onClick={() => setIsExpanded(!isExpanded)}
-                                    aria-label="Mostrar u ocultar descripción del producto"
-                                    className="w-full p-4 flex justify-between items-center"
-                                >
-                                    <span className="font-medium">
-                                        Descripción del producto
-                                    </span>
-                                    <ChevronDown
-                                        className={`transform transition-transform ${isExpanded ? "rotate-180" : ""
-                                            }`}
-                                    />
-                                </button>
-                            </div>
-                            {isExpanded && (
-                                <div className="p-4">
-                                    <div
-                                        dangerouslySetInnerHTML={{
-                                            __html: item?.description,
-                                        }}
-                                    />
-                                    <ul className="list-disc pl-5 mt-2">
-                                        {item?.features?.map((feature, i) => (
-                                            <li key={i} className="text-sm">
-                                                {feature.feature}
-                                            </li>
-                                        ))}
-                                    </ul>
+                        {hasDescription && (
+                            <div className="bg-white rounded-2xl shadow-sm overflow-hidden border border-gray-100">
+                                <div className="border-b border-gray-100">
+                                    <button
+                                        onClick={() => setIsExpanded(!isExpanded)}
+                                        aria-label="Mostrar u ocultar descripción del producto"
+                                        className="w-full p-4 flex justify-between items-center"
+                                    >
+                                        <span className="font-semibold text-gray-800 text-sm">
+                                            Descripción del producto
+                                        </span>
+                                        <ChevronDown
+                                            className={`w-4 h-4 customtext-neutral-light transform transition-transform ${isExpanded ? "rotate-180" : ""
+                                                }`}
+                                        />
+                                    </button>
                                 </div>
-                            )}
-                        </div>
+                                {isExpanded && (
+                                    <div className="p-4">
+                                        {item?.description && (
+                                            <div
+                                                dangerouslySetInnerHTML={{
+                                                    __html: item?.description,
+                                                }}
+                                            />
+                                        )}
+                                        {Array.isArray(item?.features) && item.features.length > 0 && (
+                                            <ul className="list-disc pl-5 mt-2">
+                                                {item.features.map((feature, i) => (
+                                                    <li key={i} className="text-sm">
+                                                        {feature.feature || feature}
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        )}
+                                    </div>
+                                )}
+                            </div>
+                        )}
+
+                        {/* Descargables y Manuales (PDF) */}
+                        {pdfFiles.length > 0 && (
+                            <div className="bg-white rounded-2xl shadow-sm overflow-hidden border border-gray-100">
+                                <div className="border-b border-gray-100">
+                                    <button
+                                        type="button"
+                                        onClick={() => setIsPdfDropdownOpen(!isPdfDropdownOpen)}
+                                        aria-label="Mostrar u ocultar descargables y manuales PDF"
+                                        className="w-full p-4 flex justify-between items-center"
+                                    >
+                                        <span className="font-semibold text-gray-800 flex items-center gap-2.5 text-sm">
+                                            <DocumentDownloadIcon className="w-5 h-5 customtext-primary flex-shrink-0" />
+                                            Descargables y Manuales
+                                            <span className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full font-normal">
+                                                {pdfFiles.length}
+                                            </span>
+                                        </span>
+                                        <ChevronDown
+                                            className={`w-4 h-4 customtext-neutral-light transition-transform duration-200 ${isPdfDropdownOpen ? "rotate-180" : ""}`}
+                                        />
+                                    </button>
+                                </div>
+                                {isPdfDropdownOpen && (
+                                    <div className="p-3 space-y-2 bg-gray-50/50">
+                                        {pdfFiles.map((pdf, i) => (
+                                            <a
+                                                key={i}
+                                                href={`/storage/images/item/${pdf.url || pdf}`}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="w-full p-3 bg-white border border-gray-200 rounded-xl hover:border-primary flex items-center justify-between transition-all group"
+                                            >
+                                                <div className="flex items-center gap-2.5 min-w-0 flex-1 me-2">
+                                                    <DocumentDownloadIcon className="w-5 h-5 customtext-primary flex-shrink-0" />
+                                                    <div className="min-w-0 flex-1">
+                                                        <p className="text-xs md:text-sm font-semibold text-gray-800 truncate group-hover:customtext-primary transition-colors">
+                                                            {pdf.name || (typeof pdf === "string" ? pdf.split("/").pop() : `Documento ${i + 1}`)}
+                                                        </p>
+                                                        <p className="text-[11px] text-neutral-light">Documento PDF</p>
+                                                    </div>
+                                                </div>
+                                                <Download className="w-4 h-4 text-neutral-light group-hover:customtext-primary transition-colors flex-shrink-0" />
+                                            </a>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                        )}
                     </div>
 
                     {/* Complementary Products Mobile */}
@@ -946,7 +1072,7 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                             onClick={() => onAddClicked(item)}
                             disabled={isOutOfStock}
                             aria-label="Añadir al carrito"
-                            className={`flex-1 py-3 rounded-xl font-medium border active:scale-95 transition-transform ${isOutOfStock ? "bg-gray-100 text-gray-400 border-gray-300 cursor-not-allowed" : "bg-gray-100 customtext-primary border-primary"}`}
+                            className={`flex-1 py-3 rounded-xl font-medium border active:scale-95 transition-transform ${isOutOfStock ? "bg-gray-100 text-neutral-light border-gray-300 cursor-not-allowed" : "bg-gray-100 customtext-primary border-primary"}`}
                         >
                             {isOutOfStock ? "Agotado" : "Añadir al carrito"}
                         </button>
@@ -1266,54 +1392,130 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                                     >
                                         {isOutOfStock ? "Agotado" : "Agregar al carrito"}
                                     </button>
+
+                                    {/* Descargables / Manuales PDF */}
+                                    {pdfFiles.length > 0 && (
+                                        <div className="relative w-full mt-3">
+                                            {pdfFiles.length === 1 ? (
+                                                <a
+                                                    href={`/storage/images/item/${pdfFiles[0].url || pdfFiles[0]}`}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="w-full py-3.5 px-4 bg-white hover:bg-gray-50 text-neutral-dark hover:customtext-primary border-2 border-gray-200 hover:border-primary font-bold text-xs md:text-sm uppercase tracking-wider flex items-center justify-center gap-2.5 transition-all shadow-xs rounded-xl group"
+                                                >
+                                                    <DocumentDownloadIcon className="w-5 h-5 customtext-primary flex-shrink-0 transition-transform group-hover:scale-110" />
+                                                    <span className="truncate">
+                                                        DESCARGAR {pdfFiles[0].name ? (pdfFiles[0].name.length > 22 ? `${pdfFiles[0].name.slice(0, 22)}...` : pdfFiles[0].name) : "MANUAL / FICHA"}
+                                                    </span>
+                                                </a>
+                                            ) : (
+                                                <>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => setIsPdfDropdownOpen(!isPdfDropdownOpen)}
+                                                        className="w-full py-3.5 px-4 bg-white hover:bg-gray-50 text-neutral-dark hover:customtext-primary border-2 border-gray-200 hover:border-primary font-bold text-xs md:text-sm uppercase tracking-wider flex items-center justify-center gap-2.5 transition-all shadow-xs rounded-xl group"
+                                                    >
+                                                        <DocumentDownloadIcon className="w-5 h-5 customtext-primary flex-shrink-0 transition-transform group-hover:scale-110" />
+                                                        <span>DESCARGABLES / MANUALES</span>
+                                                        <ChevronDown className={`w-4 h-4 text-neutral-light group-hover:customtext-primary transition-transform duration-200 ${isPdfDropdownOpen ? "rotate-180" : ""}`} />
+                                                    </button>
+
+                                                    {isPdfDropdownOpen && (
+                                                        <>
+                                                            <div
+                                                                className="fixed inset-0 z-40"
+                                                                onClick={() => setIsPdfDropdownOpen(false)}
+                                                            />
+                                                            <div className="absolute bottom-full left-0 right-0 mb-3 bg-white border border-gray-200 shadow-2xl rounded-2xl z-50 overflow-hidden">
+                                                                <div className="bg-primary px-4 py-2.5 text-white flex items-center justify-between">
+                                                                    <span className="font-bold text-xs uppercase tracking-wider flex items-center gap-2">
+                                                                        <DocumentDownloadIcon className="w-4 h-4 text-white" />
+                                                                        Archivos disponibles
+                                                                    </span>
+                                                                    <button
+                                                                        type="button"
+                                                                        onClick={() => setIsPdfDropdownOpen(false)}
+                                                                        className="p-1 rounded-lg text-white/80 hover:text-white hover:bg-white/20 transition-colors"
+                                                                        aria-label="Cerrar"
+                                                                    >
+                                                                        <X className="w-4 h-4" />
+                                                                    </button>
+                                                                </div>
+                                                                <div className="p-2 space-y-1 max-h-60 overflow-y-auto">
+                                                                    {pdfFiles.map((pdf, idx) => (
+                                                                        <a
+                                                                            key={idx}
+                                                                            href={`/storage/images/item/${pdf.url || pdf}`}
+                                                                            target="_blank"
+                                                                            rel="noopener noreferrer"
+                                                                            className="w-full px-3 py-2.5 text-xs md:text-sm font-semibold text-neutral-dark hover:customtext-primary hover:bg-gray-50 rounded-xl flex items-center justify-between transition-colors group/item"
+                                                                        >
+                                                                            <div className="flex items-center gap-2.5 min-w-0 flex-1 me-2">
+                                                                                <DocumentDownloadIcon className="w-4 h-4 customtext-primary flex-shrink-0" />
+                                                                                <span className="truncate">
+                                                                                    {pdf.name || (typeof pdf === "string" ? pdf.split("/").pop() : `Manual ${idx + 1}`)}
+                                                                                </span>
+                                                                            </div>
+                                                                            <Download className="w-4 h-4 text-neutral-light group-hover/item:customtext-primary flex-shrink-0" />
+                                                                        </a>
+                                                                    ))}
+                                                                </div>
+                                                            </div>
+                                                        </>
+                                                    )}
+                                                </>
+                                            )}
+                                        </div>
+                                    )}
                                 </div>
                             </div>
 
                             {/* Specifications */}
-                            <div className="block lg:hidden flex-1 w-full ">
-                                <div className="bg-[#F7F9FB] rounded-lg p-6">
-                                    <h2 className="font-medium text-sm mb-4">
-                                        Especificaciones principales
-                                    </h2>
-                                    <ul
-                                        className={`space-y-2  customtext-neutral-light mb-4 transition-all duration-300 ${expandedSpecificationMain
-                                            ? "max-h-full"
-                                            : "max-h-24 overflow-hidden"
-                                            }`}
-                                        style={{ listStyleType: "disc" }}
-                                    >
-                                        {item?.specifications.map(
-                                            (spec, index) =>
-                                                spec.type === "principal" && (
+                            {mainSpecifications.length > 0 && (
+                                <div className="block lg:hidden flex-1 w-full ">
+                                    <div className="bg-[#F7F9FB] rounded-lg p-6">
+                                        <h2 className="font-medium text-sm mb-4">
+                                            Especificaciones principales
+                                        </h2>
+                                        <ul
+                                            className={`space-y-2  customtext-neutral-light mb-4 transition-all duration-300 ${expandedSpecificationMain
+                                                ? "max-h-full"
+                                                : "max-h-24 overflow-hidden"
+                                                }`}
+                                            style={{ listStyleType: "disc" }}
+                                        >
+                                            {mainSpecifications.map(
+                                                (spec, index) => (
                                                     <li
                                                         key={index}
                                                         className="flex gap-2"
                                                     >
                                                         <CircleCheckIcon className="customtext-primary" />
-                                                        {spec.description}
+                                                        {spec.description || spec.title || spec.value}
                                                     </li>
                                                 ),
-                                        )}
-                                    </ul>
-                                    <button
-                                        className="customtext-primary text-sm font-semibold hover:underline flex items-center gap-1 transition-all duration-300"
-                                        onClick={() =>
-                                            setExpanded(
-                                                !expandedSpecificationMain,
-                                            )
-                                        }
-                                    >
-                                        {expandedSpecificationMain
-                                            ? "Ver menos"
-                                            : "Ver más especificaciones"}
-                                        {expandedSpecificationMain ? (
-                                            <ChevronUp className="w-4 h-4" />
-                                        ) : (
-                                            <ChevronDown className="w-4 h-4" />
-                                        )}
-                                    </button>
+                                            )}
+                                        </ul>
+                                        <button
+                                            className="customtext-primary text-sm font-semibold hover:underline flex items-center gap-1 transition-all duration-300"
+                                            onClick={() =>
+                                                setExpanded(
+                                                    !expandedSpecificationMain,
+                                                )
+                                            }
+                                        >
+                                            {expandedSpecificationMain
+                                                ? "Ver menos"
+                                                : "Ver más especificaciones"}
+                                            {expandedSpecificationMain ? (
+                                                <ChevronUp className="w-4 h-4" />
+                                            ) : (
+                                                <ChevronDown className="w-4 h-4" />
+                                            )}
+                                        </button>
+                                    </div>
                                 </div>
-                            </div>
+                            )}
 
                             <div className="block lg:hidden mt-8 ">
                                 <div className="flex items-center gap-2 mb-6">
@@ -1663,54 +1865,58 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                             </div>
                             <div className="flex gap-8 border-b-2 pb-8">
                                 {/* Specifications */}
-                                <div className="flex-1 w-7/12 ">
-                                    <div className="bg-[#F7F9FB] rounded-lg p-6">
-                                        <h2 className="font-medium text-sm mb-4">
-                                            Especificaciones principales
-                                        </h2>
-                                        <ul
-                                            className={`space-y-2  customtext-neutral-light mb-4 transition-all duration-300 ${expandedSpecificationMain
-                                                ? "max-h-full"
-                                                : "max-h-28 overflow-hidden"
-                                                }`}
-                                            style={{ listStyleType: "disc" }}
-                                        >
-                                            {item?.specifications.map(
-                                                (spec, index) =>
-                                                    spec.type ===
-                                                    "principal" && (
-                                                        <li
-                                                            key={index}
-                                                            className="flex gap-2 items-start"
-                                                        >
-                                                            <CircleCheckIcon className="customtext-primary min-w-5 min-h-5 max-w-5 max-h-5 mt-1" />
-                                                            {spec.description}
-                                                        </li>
-                                                    ),
+                                {mainSpecifications.length > 0 && (
+                                    <div className="flex-1 w-7/12 ">
+                                        <div className="bg-[#F7F9FB] rounded-lg p-6 h-full flex flex-col justify-between">
+                                            <div>
+                                                <h2 className="font-medium text-sm mb-4">
+                                                    Especificaciones principales
+                                                </h2>
+                                                <ul
+                                                    className={`space-y-2  customtext-neutral-light mb-4 transition-all duration-300 ${expandedSpecificationMain
+                                                        ? "max-h-full"
+                                                        : "max-h-28 overflow-hidden"
+                                                        }`}
+                                                    style={{ listStyleType: "disc" }}
+                                                >
+                                                    {mainSpecifications.map(
+                                                        (spec, index) => (
+                                                            <li
+                                                                key={index}
+                                                                className="flex gap-2 items-start"
+                                                            >
+                                                                <CircleCheckIcon className="customtext-primary min-w-5 min-h-5 max-w-5 max-h-5 mt-1" />
+                                                                {spec.description || spec.title || spec.value}
+                                                            </li>
+                                                        ),
+                                                    )}
+                                                </ul>
+                                            </div>
+                                            {mainSpecifications.length > 3 && (
+                                                <button aria-label="Mostrar más o menos especificaciones principales"
+                                                    className="customtext-primary text-sm font-semibold hover:underline flex items-center gap-1 transition-all duration-300 mt-2"
+                                                    onClick={() =>
+                                                        setExpanded(
+                                                            !expandedSpecificationMain,
+                                                        )
+                                                    }
+                                                >
+                                                    {expandedSpecificationMain
+                                                        ? "Ver menos"
+                                                        : "Ver más especificaciones"}
+                                                    {expandedSpecificationMain ? (
+                                                        <ChevronUp className="w-4 h-4" />
+                                                    ) : (
+                                                        <ChevronDown className="w-4 h-4" />
+                                                    )}
+                                                </button>
                                             )}
-                                        </ul>
-                                        <button aria-label="Mostrar más o menos especificaciones principales"
-                                            className="customtext-primary text-sm font-semibold hover:underline flex items-center gap-1 transition-all duration-300"
-                                            onClick={() =>
-                                                setExpanded(
-                                                    !expandedSpecificationMain,
-                                                )
-                                            }
-                                        >
-                                            {expandedSpecificationMain
-                                                ? "Ver menos"
-                                                : "Ver más especificaciones"}
-                                            {expandedSpecificationMain ? (
-                                                <ChevronUp className="w-4 h-4" />
-                                            ) : (
-                                                <ChevronDown className="w-4 h-4" />
-                                            )}
-                                        </button>
+                                        </div>
                                     </div>
-                                </div>
+                                )}
 
                                 {/* Price Section */}
-                                <div itemProp="offers" itemScope={true} itemType="https://schema.org/Offer" className=" w-5/12 ">
+                                <div itemProp="offers" itemScope={true} itemType="https://schema.org/Offer" className={mainSpecifications.length > 0 ? "w-5/12" : "w-full"}>
                                     <meta itemProp="priceCurrency" content="PEN" />
                                     <link itemProp="availability" href={item?.stock > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock"} />
                                     {item?.discount > 0 &&
@@ -1802,10 +2008,85 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                                             setModalOpen(!modalOpen);
                                         }}
                                         disabled={isOutOfStock}
-                                        className={`w-full bg-primary py-3 font-bold shadow-lg rounded-xl hover:opacity-90 transition-all duration-300 mt-4 ${isOutOfStock ? "bg-gray-300 text-gray-500 cursor-not-allowed" : `bg-primary ${data?.class_button || "text-white"}`}`}
+                                        className={`w-full  py-3 font-bold shadow-lg rounded-xl hover:opacity-90 transition-all duration-300 mt-4 ${isOutOfStock ? "bg-gray-300 text-gray-500 cursor-not-allowed" : `bg-primary ${data?.class_button || "text-white"}`}`}
                                     >
                                         {isOutOfStock ? "Agotado" : "Agregar al carrito"}
                                     </button>
+
+                                    {/* Descargables / Manuales PDF */}
+                                    {pdfFiles.length > 0 && (
+                                        <div className="relative w-full mt-3">
+                                            {pdfFiles.length === 1 ? (
+                                                <a
+                                                    href={`/storage/images/item/${pdfFiles[0].url || pdfFiles[0]}`}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="w-full py-3.5 px-4 bg-white hover:bg-gray-50 text-neutral-dark hover:customtext-primary border-2 border-gray-200 hover:border-primary font-bold text-xs md:text-sm uppercase tracking-wider flex items-center justify-center gap-2.5 transition-all shadow-xs rounded-xl group"
+                                                >
+                                                    <DocumentDownloadIcon className="w-5 h-5 customtext-primary flex-shrink-0 transition-transform group-hover:scale-110" />
+                                                    <span className="truncate">
+                                                        DESCARGAR {pdfFiles[0].name ? (pdfFiles[0].name.length > 25 ? `${pdfFiles[0].name.slice(0, 25)}...` : pdfFiles[0].name) : "MANUAL / FICHA"}
+                                                    </span>
+                                                </a>
+                                            ) : (
+                                                <>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => setIsPdfDropdownOpen(!isPdfDropdownOpen)}
+                                                        className="w-full py-3.5 px-4 bg-white hover:bg-gray-50 text-neutral-dark hover:customtext-primary border-2 border-gray-200 hover:border-primary font-bold text-xs md:text-sm uppercase tracking-wider flex items-center justify-center gap-2.5 transition-all shadow-xs rounded-xl group"
+                                                    >
+                                                        <DocumentDownloadIcon className="w-5 h-5 customtext-primary flex-shrink-0 transition-transform group-hover:scale-110" />
+                                                        <span>DESCARGABLES / MANUALES</span>
+                                                        <ChevronDown className={`w-4 h-4 text-neutral-light group-hover:customtext-primary transition-transform duration-200 ${isPdfDropdownOpen ? "rotate-180" : ""}`} />
+                                                    </button>
+
+                                                    {isPdfDropdownOpen && (
+                                                        <>
+                                                            <div
+                                                                className="fixed inset-0 z-40"
+                                                                onClick={() => setIsPdfDropdownOpen(false)}
+                                                            />
+                                                            <div className="absolute bottom-full left-0 right-0 mb-3 bg-white border border-gray-200 shadow-2xl rounded-2xl z-50 overflow-hidden">
+                                                                <div className="bg-primary px-4 py-2.5 text-white flex items-center justify-between">
+                                                                    <span className="font-bold text-xs uppercase tracking-wider flex items-center gap-2">
+                                                                        <DocumentDownloadIcon className="w-4 h-4 text-white" />
+                                                                        Archivos disponibles
+                                                                    </span>
+                                                                    <button
+                                                                        type="button"
+                                                                        onClick={() => setIsPdfDropdownOpen(false)}
+                                                                        className="p-1 rounded-lg text-white/80 hover:text-white hover:bg-white/20 transition-colors"
+                                                                        aria-label="Cerrar"
+                                                                    >
+                                                                        <X className="w-4 h-4" />
+                                                                    </button>
+                                                                </div>
+                                                                <div className="p-2 space-y-1 max-h-60 overflow-y-auto">
+                                                                    {pdfFiles.map((pdf, idx) => (
+                                                                        <a
+                                                                            key={idx}
+                                                                            href={`/storage/images/item/${pdf.url || pdf}`}
+                                                                            target="_blank"
+                                                                            rel="noopener noreferrer"
+                                                                            className="w-full px-3 py-2.5 text-xs md:text-sm font-semibold text-neutral-dark hover:customtext-primary hover:bg-gray-50 rounded-xl flex items-center justify-between transition-colors group/item"
+                                                                        >
+                                                                            <div className="flex items-center gap-2.5 min-w-0 flex-1 me-2">
+                                                                                <DocumentDownloadIcon className="w-4 h-4 customtext-primary flex-shrink-0" />
+                                                                                <span className="truncate">
+                                                                                    {pdf.name || (typeof pdf === "string" ? pdf.split("/").pop() : `Manual ${idx + 1}`)}
+                                                                                </span>
+                                                                            </div>
+                                                                            <Download className="w-4 h-4 text-neutral-light group-hover/item:customtext-primary flex-shrink-0" />
+                                                                        </a>
+                                                                    ))}
+                                                                </div>
+                                                            </div>
+                                                        </>
+                                                    )}
+                                                </>
+                                            )}
+                                        </div>
+                                    )}
                                 </div>
                             </div>
 
@@ -1961,110 +2242,123 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                         </div>
                     </div>
                 </div>
-                <div className=" grid gap-32 md:grid-cols-2 bg-white rounded-xl p-8 mt-12">
-                    {/* Specifications Section */}
-                    <div>
-                        <h2 className="text-2xl font-bold customtext-neutral-dark mb-4 border-b pb-4">
-                            Especificaciones
-                        </h2>
-                        <div
-                            ref={specificationsRef}
-                            className={`space-y-1 transition-all duration-300 ${!isSpecificationsExpanded
-                                ? "max-h-[400px] overflow-hidden"
-                                : ""
-                                }`}
-                        >
-                            {item?.specifications.map(
-                                (spec, index) =>
-                                    spec.type === "general" && (
-                                        <div
-                                            key={index}
-                                            className={`flex gap-4 px-4 py-1 ${index % 2 === 0
-                                                ? "bg-[#F7F9FB]"
-                                                : "bg-white"
-                                                }`}
-                                        >
-                                            <div className="customtext-neutral-light min-w-56 max-w-56">
-                                                {spec.title}
-                                            </div>
-                                            <div className="customtext-neutral-dark">
-                                                {spec.description}
-                                            </div>
-                                        </div>
-                                    ),
-                            )}
-                        </div>
-                        {needsSpecificationsExpand && (
-                            <button
-                                className="border-2 border-primary w-max px-5 py-3 my-8 rounded-xl flex items-center gap-2 customtext-primary font-semibold cursor-pointer hover:bg-primary hover:text-white transition-all duration-300"
-                                onClick={() =>
-                                    setIsSpecificationsExpanded(
-                                        !isSpecificationsExpanded,
-                                    )
-                                }
-                            >
-                                {isSpecificationsExpanded
-                                    ? "Ver menos"
-                                    : "Ver más especificaciones"}
-                                <ChevronDown
-                                    className={`transform transition-transform ${isSpecificationsExpanded
-                                        ? "rotate-180"
+                {(generalSpecifications.length > 0 || hasDescription) && (
+                    <div className={`grid gap-12 lg:gap-24 bg-white rounded-xl p-8 mt-12 ${generalSpecifications.length > 0 && hasDescription ? "md:grid-cols-2" : "grid-cols-1"}`}>
+                        {/* Specifications Section */}
+                        {generalSpecifications.length > 0 && (
+                            <div className={!hasDescription ? "w-full" : ""}>
+                                <h2 className="text-2xl font-bold customtext-neutral-dark mb-4 border-b pb-4">
+                                    Especificaciones
+                                </h2>
+                                <div
+                                    ref={specificationsRef}
+                                    className={`transition-all duration-300 overflow-hidden ${!isSpecificationsExpanded
+                                        ? "max-h-[400px]"
                                         : ""
                                         }`}
-                                />
-                            </button>
-                        )}
-                    </div>
-
-                    {/* Additional Information Section */}
-                    <div>
-                        <h2 className="text-2xl font-bold customtext-neutral-dark mb-4 border-b pb-4">
-                            Información adicional
-                        </h2>
-                        <div
-                            ref={descriptionRef}
-                            className={`space-y-2 transition-all duration-300 ${!isExpanded
-                                ? "max-h-[400px] overflow-hidden"
-                                : ""
-                                }`}
-                        >
-                            <h3 className="text-xl font-semibold customtext-neutral-dark mb-4">
-                                Acerca de este artículo
-                            </h3>
-                            <div
-                                itemProp="description"
-                                className="customtext-neutral-dark prose prose-base"
-                                dangerouslySetInnerHTML={{
-                                    __html: item?.description,
-                                }}
-                            ></div>
-                            <div className={`pl-10`}>
-                                <ul className="list-disc pl-5 space-y-2">
-                                    {item?.features.map((feature, index) => (
-                                        <li
-                                            key={index}
-                                            className="customtext-neutral-dark"
-                                        >
-                                            {feature.feature}
-                                        </li>
-                                    ))}
-                                </ul>
+                                >
+                                    <table className="w-full text-left border-collapse">
+                                        <tbody>
+                                            {generalSpecifications.map(
+                                                (spec, index) => (
+                                                    <tr
+                                                        key={index}
+                                                        className={index % 2 === 0
+                                                            ? "bg-[#F7F9FB]"
+                                                            : "bg-white"
+                                                        }
+                                                    >
+                                                        <td className="py-3 px-4 text-xs md:text-sm font-medium customtext-neutral-light uppercase tracking-wide w-2/5 md:w-1/3 align-middle">
+                                                            {spec.title || "Característica"}
+                                                        </td>
+                                                        <td className="py-3 px-4 text-xs md:text-sm font-normal customtext-neutral-dark uppercase tracking-wide w-3/5 md:w-2/3 align-middle">
+                                                            {spec.description || spec.value || spec.title || "-"}
+                                                        </td>
+                                                    </tr>
+                                                ),
+                                            )}
+                                        </tbody>
+                                    </table>
+                                </div>
+                                {needsSpecificationsExpand && (
+                                    <button
+                                        className="border-2 border-primary px-6 py-2.5 mt-6 rounded-xl inline-flex items-center gap-2 customtext-primary font-semibold text-sm cursor-pointer hover:bg-primary hover:text-white transition-all duration-300 active:scale-95"
+                                        onClick={() =>
+                                            setIsSpecificationsExpanded(
+                                                !isSpecificationsExpanded,
+                                            )
+                                        }
+                                    >
+                                        {isSpecificationsExpanded
+                                            ? "Ver menos"
+                                            : "Ver más especificaciones"}
+                                        <ChevronDown
+                                            className={`w-4 h-4 transform transition-transform duration-200 ${isSpecificationsExpanded
+                                                ? "rotate-180"
+                                                : ""
+                                                }`}
+                                        />
+                                    </button>
+                                )}
                             </div>
-                        </div>
-                        {needsDescriptionExpand && (
-                            <button
-                                className="border-2 border-primary w-max px-5 py-3 my-8 rounded-xl flex items-center gap-2 customtext-primary font-semibold cursor-pointer hover:bg-primary hover:text-white transition-all duration-300"
-                                onClick={() => setIsExpanded(!isExpanded)}
-                            >
-                                {isExpanded ? "Ver menos" : "Ver más"}
-                                <ChevronDown
-                                    className={`transform transition-transform ${isExpanded ? "rotate-180" : ""
+                        )}
+
+                        {/* Additional Information Section */}
+                        {hasDescription && (
+                            <div className={generalSpecifications.length === 0 ? "w-full" : ""}>
+                                <h2 className="text-2xl font-bold customtext-neutral-dark mb-4 border-b pb-4">
+                                    Información adicional
+                                </h2>
+                                <div
+                                    ref={descriptionRef}
+                                    className={`space-y-4 transition-all duration-300 ${!isExpanded
+                                        ? "max-h-[400px] overflow-hidden"
+                                        : ""
                                         }`}
-                                />
-                            </button>
+                                >
+                                    <h3 className="text-xl font-semibold customtext-neutral-dark mb-2">
+                                        Acerca de este artículo
+                                    </h3>
+                                    {item?.description && (
+                                        <div
+                                            itemProp="description"
+                                            className="customtext-neutral-dark prose prose-base max-w-none"
+                                            dangerouslySetInnerHTML={{
+                                                __html: item?.description,
+                                            }}
+                                        ></div>
+                                    )}
+                                    {Array.isArray(item?.features) && item.features.length > 0 && (
+                                        <div className="pl-4">
+                                            <ul className="list-disc pl-5 space-y-2">
+                                                {item.features.map((feature, index) => (
+                                                    <li
+                                                        key={index}
+                                                        className="customtext-neutral-dark"
+                                                    >
+                                                        {feature.feature || feature}
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        </div>
+                                    )}
+                                </div>
+                                {needsDescriptionExpand && (
+                                    <button
+                                        className="border-2 border-primary w-max px-5 py-3 my-8 rounded-xl flex items-center gap-2 customtext-primary font-semibold cursor-pointer hover:bg-primary hover:text-white transition-all duration-300"
+                                        onClick={() => setIsExpanded(!isExpanded)}
+                                    >
+                                        {isExpanded ? "Ver menos" : "Ver más"}
+                                        <ChevronDown
+                                            className={`transform transition-transform ${isExpanded ? "rotate-180" : ""
+                                                }`}
+                                        />
+                                    </button>
+                                )}
+                            </div>
                         )}
                     </div>
-                </div>
+                )}
             </article>
             {relationsItems.length > 0 && (
                 <ProductInfinite
@@ -2095,7 +2389,7 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                                 onClick={() =>
                                     setDeliveryPolicyModalOpen(false)
                                 }
-                                className="flex-shrink-0 text-gray-400 hover:text-red-500 transition-colors duration-200 p-1 hover:bg-gray-100 rounded-full"
+                                className="flex-shrink-0 text-neutral-light hover:text-red-500 transition-colors duration-200 p-1 hover:bg-gray-100 rounded-full"
                                 aria-label="Cerrar modal"
                             >
                                 <X size={24} strokeWidth={2} />
@@ -2153,7 +2447,7 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                             </div>
                             <button
                                 onClick={() => setStoreListModalOpen(false)}
-                                className="flex-shrink-0 text-gray-400 hover:text-red-500 transition-colors duration-200 p-1 hover:bg-gray-100 rounded-full"
+                                className="flex-shrink-0 text-neutral-light hover:text-red-500 transition-colors duration-200 p-1 hover:bg-gray-100 rounded-full"
                                 aria-label="Cerrar modal"
                             >
                                 <X size={24} strokeWidth={2} />
@@ -2209,7 +2503,7 @@ const ProductDetail = ({ item, data, setCart, cart, generals }) => {
                                                 <div
                                                     className={`w-full h-32 bg-gray-200 rounded-lg flex items-center justify-center ${store.image ? "hidden" : "flex"}`}
                                                 >
-                                                    <Store className="w-12 h-12 text-gray-400" />
+                                                    <Store className="w-12 h-12 text-neutral-light" />
                                                 </div>
                                             </div>
 
