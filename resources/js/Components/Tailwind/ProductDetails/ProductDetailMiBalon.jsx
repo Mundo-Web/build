@@ -574,7 +574,7 @@ const ProductDetailMiBalon = ({
 
     return (
         <main className="bg-white min-h-screen text-neutral-dark py-16 px-4 md:px-6 2xl:px-0">
-            <div className="container mx-auto 2xl:max-w-7xl">
+            <div className="px-primary 2xl:px-0 mx-auto 2xl:max-w-7xl">
                 {/* Desktop View */}
                 <article
                     itemScope={true}
