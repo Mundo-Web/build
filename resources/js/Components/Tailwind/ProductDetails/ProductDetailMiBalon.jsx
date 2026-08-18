@@ -67,6 +67,14 @@ const ProductDetailMiBalon = ({
     const [showAllSpecs, setShowAllSpecs] = useState(false);
     const [relationsItems, setRelationsItems] = useState([]);
 
+    const currentProduct = selectedVariant
+        ? {
+            ...selectedVariant,
+            brand: selectedVariant.brand || item?.brand,
+            category: selectedVariant.category || item?.category,
+        }
+        : item;
+
     const isOutOfStock = !currentProduct?.stock_unlimited && (currentProduct?.stock <= 0 || !currentProduct?.stock);
 
     useEffect(() => {
@@ -101,7 +109,6 @@ const ProductDetailMiBalon = ({
     const [activeImage, setActiveImage] = useState(null);
     const imageRef = useRef(null);
 
-    const currentProduct = selectedVariant || item;
     const advisors = General.whatsapp_advisors || [];
 
     const handleShare = () => {

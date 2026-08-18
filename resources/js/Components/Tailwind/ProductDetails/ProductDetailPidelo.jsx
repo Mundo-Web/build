@@ -42,6 +42,10 @@ export default function ProductDetailPidelo({ item, data, setCart, cart, textsta
     const [quantity, setQuantity] = useState(1);
     const [selectedSize, setSelectedSize] = useState(item?.slug);
     const [selectedVariant, setSelectedVariant] = useState(item);
+    const [associatedItems, setAssociatedItems] = useState([]);
+    const [relationsItems, setRelationsItems] = useState([]);
+    const [variationsItems, setVariationsItems] = useState([]);
+    const [sizesItems, setSizesItems] = useState([]);
 
     const currentProduct = sizesItems.find(v => v.slug === selectedSize) || selectedVariant || item;
     const isOutOfStock = !currentProduct?.stock_unlimited && (currentProduct?.stock <= 0 || !currentProduct?.stock);
@@ -214,10 +218,6 @@ export default function ProductDetailPidelo({ item, data, setCart, cart, textsta
         });
     };
 
-    const [associatedItems, setAssociatedItems] = useState([]);
-    const [relationsItems, setRelationsItems] = useState([]);
-    const [variationsItems, setVariationsItems] = useState([]);
-    const [sizesItems, setSizesItems] = useState([]);
     const inCart = cart?.find((x) => x.id == item?.id);
 
     useEffect(() => {

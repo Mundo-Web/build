@@ -188,13 +188,6 @@ const Product = ({
                         setCart={setCart}
                     />
                 );
-            case "ProductFimesac":
-                return (
-                    <ProductFimesac
-                        data={data}
-                        items={items}
-                    />
-                );
             case "ProductIbergruas":
                 return (
                     <ProductIbergruas
