@@ -18,6 +18,8 @@ import {
     X,
     ZoomIn,
     Quote,
+    FileText,
+    Download,
 } from "lucide-react";
 import ItemsRest from "../../../Actions/ItemsRest";
 import Swal from "sweetalert2";
@@ -34,6 +36,24 @@ import ReactModal from "react-modal";
 import TextWithHighlight from "../../../Utils/TextWithHighlight";
 import CartModalSelector from "../Components/CartModalSelector";
 import ProductSwiperMiBalon from "../Products/ProductSwiperMiBalon";
+
+const DocumentDownloadIcon = ({ className = "w-5 h-5" }) => (
+    <svg
+        className={className}
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+    >
+        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+        <polyline points="14 2 14 8 20 8" />
+        <path d="M12 18v-6" />
+        <path d="m9 15 3 3 3-3" />
+    </svg>
+);
+
 const WhatsAppIcon = ({ className }) => (
     <svg className={className} fill="currentColor" viewBox="0 0 24 24">
         <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.892 3.386" />
@@ -66,6 +86,7 @@ const ProductDetailMiBalon = ({
     const [modalOpen, setModalOpen] = useState(false);
     const [showAllSpecs, setShowAllSpecs] = useState(false);
     const [relationsItems, setRelationsItems] = useState([]);
+    const [isPdfDropdownOpen, setIsPdfDropdownOpen] = useState(false);
 
     const currentProduct = selectedVariant
         ? {
@@ -74,6 +95,30 @@ const ProductDetailMiBalon = ({
             category: selectedVariant.category || item?.category,
         }
         : item;
+
+    const pdfFiles = (() => {
+        const rawPdf = currentProduct?.pdf || item?.pdf;
+        if (!rawPdf) return [];
+        let raw = rawPdf;
+        if (typeof raw === "string") {
+            try {
+                const parsed = JSON.parse(raw);
+                if (Array.isArray(parsed)) raw = parsed;
+                else raw = [parsed];
+            } catch (e) {
+                raw = [{ url: raw, name: currentProduct?.name || item?.name || "Ficha Técnica" }];
+            }
+        }
+        if (Array.isArray(raw)) {
+            return raw.filter(Boolean).map((p, idx) => {
+                if (typeof p === "string") {
+                    return { url: p, name: p.split("/").pop() || `Ficha ${idx + 1}` };
+                }
+                return p;
+            });
+        }
+        return [];
+    })();
 
     const isOutOfStock = !currentProduct?.stock_unlimited && (currentProduct?.stock <= 0 || !currentProduct?.stock);
 
@@ -90,7 +135,7 @@ const ProductDetailMiBalon = ({
 
     const productosRelacionados = async (item) => {
         try {
-            const request = { 
+            const request = {
                 id: item?.id,
                 related_filter: data?.related_filter || 'category',
                 related_limit: data?.related_limit || 10
@@ -879,38 +924,126 @@ const ProductDetailMiBalon = ({
 
                                     return (
                                         <div className="space-y-4">
-                                            {(showBuy || showCart) && (
-                                                <div className="grid grid-cols-2 gap-3">
-                                                    {showBuy && (
-                                                        <button
-                                                            disabled={!isFullySelected || isOutOfStock}
-                                                            onClick={() => {
-                                                                onAddClicked(
-                                                                    currentProduct,
-                                                                );
-                                                                if (isFullySelected) {
-                                                                    window.location.href =
-                                                                        "/cart";
-                                                                }
-                                                            }}
-                                                            className={`${mibalonPrimaryBtn} ${!isFullySelected || isOutOfStock ? "opacity-50 cursor-not-allowed hover:bg-primary hover:border-neutral-dark bg-gray-300 text-gray-500" : ""}`}
+                                            {/* Descargables y Fichas Técnicas (PDF) - Estilo limpio minimalista como Especificaciones */}
+                                            {pdfFiles.length > 0 && (
+                                                <div className="pt-0 pb-4">
+                                                    {pdfFiles.length === 1 ? (
+                                                        <a
+                                                            href={`/storage/images/item/${pdfFiles[0].url || pdfFiles[0]}`}
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                            className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-neutral-dark hover:text-primary transition-colors group cursor-pointer"
                                                         >
-                                                            {isOutOfStock ? "Agotado" : "Comprar ahora"}
-                                                        </button>
-                                                    )}
-                                                    {showCart && (
-                                                        <button
-                                                            disabled={!isFullySelected || isOutOfStock}
-                                                            onClick={() =>
-                                                                onAddClicked(currentProduct)
-                                                            }
-                                                            className={`${mibalonSecondaryBtn} ${!isFullySelected || isOutOfStock ? "opacity-50 cursor-not-allowed hover:bg-white hover:border-gray-200 bg-gray-100 text-gray-400" : ""}`}
-                                                        >
-                                                            {isOutOfStock ? "Agotado" : "Al Carrito"}
-                                                        </button>
+                                                            <span className="underline underline-offset-4 decoration-neutral-dark/40 group-hover:decoration-primary">
+                                                                {pdfFiles[0].name ? (pdfFiles[0].name.length > 35 ? `${pdfFiles[0].name.slice(0, 35)}...` : pdfFiles[0].name) : "Descargar Ficha Técnica"}
+                                                            </span>
+                                                            <Download className="w-3.5 h-3.5 text-neutral-dark/50 group-hover:text-primary transition-colors shrink-0" />
+                                                        </a>
+                                                    ) : (
+                                                        <div className="space-y-1">
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => setIsPdfDropdownOpen(!isPdfDropdownOpen)}
+                                                                className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-neutral-dark hover:text-primary transition-colors group cursor-pointer focus:outline-none"
+                                                            >
+                                                                <span className="underline underline-offset-4 decoration-neutral-dark/40 group-hover:decoration-primary">
+                                                                    Descargables y Fichas Técnicas
+                                                                </span>
+                                                                <ChevronDown
+                                                                    className={`w-3.5 h-3.5 text-neutral-dark/50 group-hover:text-primary transition-transform duration-200 ${isPdfDropdownOpen ? "rotate-180 text-primary" : ""
+                                                                        }`}
+                                                                />
+                                                            </button>
+
+                                                            {/* Despliegue hacia abajo estilo especificaciones (sin rounded, líneas sutiles) */}
+                                                            <AnimatePresence>
+                                                                {isPdfDropdownOpen && (
+                                                                    <motion.div
+                                                                        initial={{ opacity: 0, height: 0 }}
+                                                                        animate={{ opacity: 1, height: "auto" }}
+                                                                        exit={{ opacity: 0, height: 0 }}
+                                                                        transition={{ duration: 0.2, ease: "easeInOut" }}
+                                                                        className="overflow-hidden"
+                                                                    >
+                                                                        <div className="pt-2 border-t border-gray-100">
+                                                                            {pdfFiles.map((pdf, idx) => (
+                                                                                <div
+                                                                                    key={idx}
+                                                                                    className="py-2.5 border-b border-gray-100 flex items-center justify-between group hover:bg-gray-50/50 px-1 transition-colors"
+                                                                                >
+                                                                                    <div className="flex items-center gap-3 min-w-0 flex-1 me-3">
+                                                                                        <span className="text-[10px] text-gray-400 font-mono">
+                                                                                            {(idx + 1).toString().padStart(2, "0")}
+                                                                                        </span>
+                                                                                        <span className="text-sm font-medium text-neutral-dark group-hover:text-primary transition-colors truncate">
+                                                                                            {pdf.name ||
+                                                                                                (typeof pdf === "string"
+                                                                                                    ? pdf.split("/").pop()
+                                                                                                    : `Documento ${idx + 1}`)}
+                                                                                        </span>
+                                                                                    </div>
+                                                                                    <a
+                                                                                        href={`/storage/images/item/${pdf.url || pdf}`}
+                                                                                        target="_blank"
+                                                                                        rel="noopener noreferrer"
+                                                                                        className="inline-flex items-center gap-1.5 text-xs font-semibold text-primary hover:underline uppercase tracking-wider shrink-0"
+                                                                                    >
+                                                                                        <span>Descargar</span>
+                                                                                        <Download className="w-3.5 h-3.5" />
+                                                                                    </a>
+                                                                                </div>
+                                                                            ))}
+                                                                        </div>
+                                                                    </motion.div>
+                                                                )}
+                                                            </AnimatePresence>
+                                                        </div>
                                                     )}
                                                 </div>
                                             )}
+                                            {isOutOfStock ? (
+                                                <button
+                                                    disabled
+                                                    className="w-full py-5 text-lg font-title uppercase bg-gray-200 text-gray-500 rounded-full cursor-not-allowed border border-gray-300 flex items-center justify-center gap-2 opacity-80"
+                                                >
+                                                    <span>Agotado</span>
+                                                </button>
+                                            ) : (
+                                                (showBuy || showCart) && (
+                                                    <div className={`grid ${showBuy && showCart ? "grid-cols-2" : "grid-cols-1"} gap-3`}>
+                                                        {showBuy && (
+                                                            <button
+                                                                disabled={!isFullySelected}
+                                                                onClick={() => {
+                                                                    onAddClicked(
+                                                                        currentProduct,
+                                                                    );
+                                                                    if (isFullySelected) {
+                                                                        window.location.href =
+                                                                            "/cart";
+                                                                    }
+                                                                }}
+                                                                className={`${mibalonPrimaryBtn} ${!isFullySelected ? "opacity-50 cursor-not-allowed hover:bg-primary hover:border-neutral-dark bg-gray-300 text-gray-500" : ""}`}
+                                                            >
+                                                                Comprar ahora
+                                                            </button>
+                                                        )}
+                                                        {showCart && (
+                                                            <button
+                                                                disabled={!isFullySelected}
+                                                                onClick={() =>
+                                                                    onAddClicked(currentProduct)
+                                                                }
+                                                                className={`${mibalonSecondaryBtn} ${!isFullySelected ? "opacity-50 cursor-not-allowed hover:bg-white hover:border-gray-200 bg-gray-100 text-gray-400" : ""}`}
+                                                            >
+                                                                Al Carrito
+                                                            </button>
+                                                        )}
+                                                    </div>
+                                                )
+                                            )}
+
+
 
                                             {showWhatsApp && (
                                                 <button
@@ -1243,6 +1376,41 @@ const ProductDetailMiBalon = ({
                                 ))}
                             </div>
                         </section>
+
+                        {/* Descargables y Manuales Mobile */}
+                        {pdfFiles.length > 0 && (
+                            <section>
+                                <h2 className="text-sm tracking-widest mb-6 text-neutral-dark/60 uppercase">
+                                    03 / DESCARGABLES Y MANUALES
+                                </h2>
+                                <div className="space-y-3">
+                                    {pdfFiles.map((pdf, idx) => (
+                                        <div
+                                            key={idx}
+                                            className="flex justify-between items-center border-b border-gray-50 pb-3"
+                                        >
+                                            <div className="flex items-center gap-3 min-w-0 flex-1 me-3">
+                                                <span className="text-[10px] text-gray-300 font-mono">
+                                                    {(idx + 1).toString().padStart(2, "0")}
+                                                </span>
+                                                <span className="text-sm text-neutral-dark truncate">
+                                                    {pdf.name || (typeof pdf === "string" ? pdf.split("/").pop() : `Documento ${idx + 1}`)}
+                                                </span>
+                                            </div>
+                                            <a
+                                                href={`/storage/images/item/${pdf.url || pdf}`}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="inline-flex items-center gap-1.5 text-xs font-semibold text-primary hover:underline uppercase tracking-wider shrink-0"
+                                            >
+                                                <span>Descargar</span>
+                                                <Download className="w-3.5 h-3.5" />
+                                            </a>
+                                        </div>
+                                    ))}
+                                </div>
+                            </section>
+                        )}
                     </div>
 
                     {data?.showDeliveryPolicy !== false && (
@@ -1271,29 +1439,36 @@ const ProductDetailMiBalon = ({
                         return (
                             <div className="fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-neutral-dark p-4 flex flex-col gap-2 shadow-[0_-10px_30px_rgba(0,0,0,0.05)]">
                                 {(showBuy || showCart) && (
-                                    <div className="flex gap-2">
-                                        {showCart && (
-                                            <button
-                                                onClick={() => onAddClicked(currentProduct)}
-                                                disabled={isOutOfStock}
-                                                className={`${mibalonSecondaryBtn} !py-3 !text-sm flex-1 ${isOutOfStock ? "opacity-50 cursor-not-allowed bg-gray-100 text-gray-400" : ""}`}
-                                            >
-                                                {isOutOfStock ? "Agotado" : "Carrito"}
-                                            </button>
-                                        )}
-                                        {showBuy && (
-                                            <button
-                                                onClick={() => {
-                                                    onAddClicked(currentProduct);
-                                                    window.location.href = "/cart";
-                                                }}
-                                                disabled={isOutOfStock}
-                                                className={`${mibalonPrimaryBtn} !py-3 !text-sm flex-1 ${isOutOfStock ? "opacity-50 cursor-not-allowed bg-gray-300 text-gray-500" : ""}`}
-                                            >
-                                                {isOutOfStock ? "Agotado" : "Pagar"}
-                                            </button>
-                                        )}
-                                    </div>
+                                    isOutOfStock ? (
+                                        <button
+                                            disabled
+                                            className="w-full !py-3.5 !text-sm font-title uppercase bg-gray-200 text-gray-500 rounded-full cursor-not-allowed border border-gray-300 flex items-center justify-center opacity-80"
+                                        >
+                                            Agotado
+                                        </button>
+                                    ) : (
+                                        <div className="flex gap-2">
+                                            {showCart && (
+                                                <button
+                                                    onClick={() => onAddClicked(currentProduct)}
+                                                    className={`${mibalonSecondaryBtn} !py-3 !text-sm flex-1`}
+                                                >
+                                                    Carrito
+                                                </button>
+                                            )}
+                                            {showBuy && (
+                                                <button
+                                                    onClick={() => {
+                                                        onAddClicked(currentProduct);
+                                                        window.location.href = "/cart";
+                                                    }}
+                                                    className={`${mibalonPrimaryBtn} !py-3 !text-sm flex-1`}
+                                                >
+                                                    Pagar
+                                                </button>
+                                            )}
+                                        </div>
+                                    )
                                 )}
                                 {showWhatsApp && (
                                     <button
@@ -1317,9 +1492,9 @@ const ProductDetailMiBalon = ({
                 {relationsItems.length > 0 && (
                     <div className="mt-16 mb-8 w-full border-t border-gray-100 pt-16">
                         <ProductSwiperMiBalon
-                            data={{ 
-                                ...data, 
-                                title: data?.related_title || "También te puede interesar", 
+                            data={{
+                                ...data,
+                                title: data?.related_title || "También te puede interesar",
                                 description: data?.related_description,
                                 class_title: data?.related_class_title || "text-3xl font-title uppercase text-neutral-dark mb-8 text-center",
                                 class_container: data?.related_class_container || "bg-transparent !py-0",
