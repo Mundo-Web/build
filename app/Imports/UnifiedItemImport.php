@@ -36,6 +36,13 @@ class UnifiedItemImport implements ToModel, WithHeadingRow, SkipsOnError, SkipsO
     private $skuImagesCache = [];
     private static $downloadCache = [];
     private $rowCount = 0;
+    private $categoriesCache = [];
+    private $subCategoriesCache = [];
+    private $collectionsCache = [];
+    private $brandsCache = [];
+    private $storesCache = [];
+    private $tagsCache = [];
+    private $attributesCache = [];
 
     /**
      * Constructor con configuración flexible
@@ -60,6 +67,13 @@ class UnifiedItemImport implements ToModel, WithHeadingRow, SkipsOnError, SkipsO
 
         self::$downloadCache = [];
         $this->skuImagesCache = [];
+        $this->categoriesCache = [];
+        $this->subCategoriesCache = [];
+        $this->collectionsCache = [];
+        $this->brandsCache = [];
+        $this->storesCache = [];
+        $this->tagsCache = [];
+        $this->attributesCache = [];
 
         if ($this->truncateMode) {
             $this->truncateTables();
@@ -246,40 +260,14 @@ class UnifiedItemImport implements ToModel, WithHeadingRow, SkipsOnError, SkipsO
             if (!$categoria) {
                 throw new Exception("La categoría es requerida");
             }
-            $category = Category::firstOrCreate(
-                ['name' => $categoria],
-                [
-                    'slug' => Str::slug($categoria),
-                    'status' => true
-                ]
-            );
-
-            // Si el slug o status han cambiado, actualizarlos
-            $category->status = true;
-            $category->save();
+            $category = $this->findOrCreateCategory($categoria);
 
             // 2️⃣ Crear/obtener subcategoría (opcional)
             $subCategory = null;
             if ($this->hasField($row, 'subcategoria')) {
                 $subcategoria = $this->getFieldValue($row, 'subcategoria');
                 if ($subcategoria) {
-                    $subCategorySlug = Str::slug($subcategoria);
-                    $slugExists = SubCategory::where('slug', $subCategorySlug)->exists();
-                    if ($slugExists) {
-                        $subCategorySlug = $subCategorySlug . '-' . Crypto::short();
-                    }
-
-                    $subCategory = SubCategory::firstOrCreate(
-                        ['name' => $subcategoria],
-                        [
-                            'slug' => $subCategorySlug,
-                            'status' => true
-                        ]
-                    );
-                    $subCategory->status = true;
-                    $subCategory->save();
-
-                    $subCategory->categories()->syncWithoutDetaching([$category->id]);
+                    $subCategory = $this->findOrCreateSubCategory($subcategoria, $category->id);
                 }
             }
 
@@ -288,15 +276,7 @@ class UnifiedItemImport implements ToModel, WithHeadingRow, SkipsOnError, SkipsO
             if ($this->hasField($row, 'collection')) {
                 $collectionName = $this->getFieldValue($row, 'collection');
                 if ($collectionName) {
-                    $collection = Collection::firstOrCreate(
-                        ['name' => $collectionName],
-                        [
-                            'slug' => Str::slug($collectionName),
-                            'status' => true
-                        ]
-                    );
-                    $collection->status = true;
-                    $collection->save();
+                    $collection = $this->findOrCreateCollection($collectionName);
                 }
             }
 
@@ -305,15 +285,7 @@ class UnifiedItemImport implements ToModel, WithHeadingRow, SkipsOnError, SkipsO
             if ($this->hasField($row, 'marca')) {
                 $marca = $this->getFieldValue($row, 'marca');
                 if ($marca) {
-                    $brand = Brand::firstOrCreate(
-                        ['name' => $marca],
-                        [
-                            'slug' => Str::slug($marca),
-                            'statud' => true
-                        ]
-                    );
-                    $brand->status = true;
-                    $brand->save();
+                    $brand = $this->findOrCreateBrand($marca);
                 }
             }
 
@@ -330,18 +302,9 @@ class UnifiedItemImport implements ToModel, WithHeadingRow, SkipsOnError, SkipsO
             // 7️⃣ Obtener tienda/store_id si existe
             $store = null;
             if ($this->hasField($row, 'tienda')) {
-                $store = $this->getFieldValue($row, 'tienda');
-                if ($store) {
-                    $store = Store::firstOrCreate(
-                        ['name' => $store],
-                        [
-                            'slug' => Str::slug($store),
-                            'status' => true
-                        ]
-                    );
-
-                    $store->status = true;
-                    $store->save();
+                $storeName = $this->getFieldValue($row, 'tienda');
+                if ($storeName) {
+                    $store = $this->findOrCreateStore($storeName);
                 }
             }
 
@@ -1366,20 +1329,13 @@ class UnifiedItemImport implements ToModel, WithHeadingRow, SkipsOnError, SkipsO
     {
         try {
             $ruleTagName = "Regla: {$discountRule->name}";
-            $ruleTag = Tag::firstOrCreate(
-                ['name' => $ruleTagName],
-                [
-                    'description' => "Tag automático para regla de descuento: {$discountRule->name} (Tipo: {$discountRule->rule_type})",
-                    'tag_type' => 'discount_rule',
-                    'status' => true,
-                    'visible' => false, // No visible en el front, solo para organización
-                    'promotional_status' => 'permanent'
-                ]
-            );
+            $ruleTag = $this->findOrCreateTag($ruleTagName, 'discount_rule');
 
-            // Asociar el tag al producto para facilitar búsquedas y reportes
-            if (!$item->tags()->where('tag_id', $ruleTag->id)->exists()) {
-                $item->tags()->attach($ruleTag->id);
+            if ($ruleTag) {
+                // Asociar el tag al producto para facilitar búsquedas y reportes
+                if (!$item->tags()->where('tag_id', $ruleTag->id)->exists()) {
+                    $item->tags()->attach($ruleTag->id);
+                }
             }
         } catch (Exception $e) {
             Log::error("Error al crear tag informativo: " . $e->getMessage(), [
@@ -1413,14 +1369,10 @@ class UnifiedItemImport implements ToModel, WithHeadingRow, SkipsOnError, SkipsO
             }
 
             // Buscar o crear el tag
-            $tag = Tag::firstOrCreate(
-                ['name' => $promotionName],
-                [
-                    'slug' => Str::slug($promotionName),
-                    'tag_type' => 'item', // Especificar que es para items
-                    'status' => true,
-                ]
-            );
+            $tag = $this->findOrCreateTag($promotionName, 'item');
+            if (!$tag) {
+                continue;
+            }
 
             // Asociar el tag al producto usando la tabla pivot item_tags
             try {
@@ -1465,15 +1417,8 @@ class UnifiedItemImport implements ToModel, WithHeadingRow, SkipsOnError, SkipsO
             $value = $valores[$index] ?? null;
             if (is_null($value) || $value === '') continue;
 
-            $attribute = \App\Models\Attribute::firstOrCreate(
-                ['name' => $attrName],
-                [
-                    'slug' => \Illuminate\Support\Str::slug($attrName),
-                    'type' => 'text',
-                    'status' => true,
-                    'visible' => true
-                ]
-            );
+            $attribute = $this->findOrCreateAttribute($attrName, 'text');
+            if (!$attribute) continue;
 
             $syncData[$attribute->id] = [
                 'value' => $value,
@@ -1653,5 +1598,295 @@ class UnifiedItemImport implements ToModel, WithHeadingRow, SkipsOnError, SkipsO
             Log::error("Error al descargar imagen desde URL {$url}: " . $e->getMessage());
             return null;
         }
+    }
+
+    /**
+     * Limpia y normaliza cadenas de nombres (remueve dos puntos al final, espacios extra, etc.)
+     */
+    private function cleanNameString(?string $name): string
+    {
+        if (is_null($name)) return '';
+        $cleaned = trim($name);
+        // Remover dos puntos, punto y coma, comas sueltas al final
+        $cleaned = rtrim($cleaned, ":;,\t\n\r\0\x0B");
+        // Normalizar múltiples espacios
+        $cleaned = preg_replace('/\s+/', ' ', $cleaned);
+        return trim($cleaned);
+    }
+
+    /**
+     * Busca o crea una categoría de forma segura contra duplicados y case-insensitive
+     */
+    private function findOrCreateCategory(string $rawName): Category
+    {
+        $cleanName = $this->cleanNameString($rawName);
+        $slug = Str::slug($cleanName ?: $rawName);
+        $cacheKey = $slug ?: mb_strtolower($cleanName);
+
+        if (isset($this->categoriesCache[$cacheKey])) {
+            return $this->categoriesCache[$cacheKey];
+        }
+
+        // Buscar por slug, nombre insensible a mayúsculas/minúsculas o nombre exacto
+        $category = Category::where('slug', $slug)
+            ->orWhereRaw('LOWER(TRIM(name)) = ?', [mb_strtolower($cleanName)])
+            ->orWhere('name', $rawName)
+            ->first();
+
+        if (!$category) {
+            if (Category::where('slug', $slug)->exists()) {
+                $slug = $slug . '-' . Crypto::short();
+            }
+
+            $category = Category::create([
+                'name' => $cleanName ?: $rawName,
+                'slug' => $slug,
+                'status' => true
+            ]);
+        } elseif (!$category->status) {
+            $category->status = true;
+            $category->save();
+        }
+
+        $this->categoriesCache[$cacheKey] = $category;
+        return $category;
+    }
+
+    /**
+     * Busca o crea una subcategoría de forma segura contra duplicados
+     */
+    private function findOrCreateSubCategory(string $rawName, string $categoryId): ?SubCategory
+    {
+        $cleanName = $this->cleanNameString($rawName);
+        if (empty($cleanName)) return null;
+
+        $slug = Str::slug($cleanName ?: $rawName);
+        $cacheKey = $slug ?: mb_strtolower($cleanName);
+
+        if (isset($this->subCategoriesCache[$cacheKey])) {
+            $subCategory = $this->subCategoriesCache[$cacheKey];
+        } else {
+            $subCategory = SubCategory::where('slug', $slug)
+                ->orWhereRaw('LOWER(TRIM(name)) = ?', [mb_strtolower($cleanName)])
+                ->orWhere('name', $rawName)
+                ->first();
+
+            if (!$subCategory) {
+                if (SubCategory::where('slug', $slug)->exists()) {
+                    $slug = $slug . '-' . Crypto::short();
+                }
+
+                $subCategory = SubCategory::create([
+                    'name' => $cleanName ?: $rawName,
+                    'slug' => $slug,
+                    'status' => true
+                ]);
+            } elseif (!$subCategory->status) {
+                $subCategory->status = true;
+                $subCategory->save();
+            }
+
+            $this->subCategoriesCache[$cacheKey] = $subCategory;
+        }
+
+        if ($subCategory && $categoryId) {
+            $subCategory->categories()->syncWithoutDetaching([$categoryId]);
+        }
+
+        return $subCategory;
+    }
+
+    /**
+     * Busca o crea una colección de forma segura
+     */
+    private function findOrCreateCollection(string $rawName): ?Collection
+    {
+        $cleanName = $this->cleanNameString($rawName);
+        if (empty($cleanName)) return null;
+
+        $slug = Str::slug($cleanName ?: $rawName);
+        $cacheKey = $slug ?: mb_strtolower($cleanName);
+
+        if (isset($this->collectionsCache[$cacheKey])) {
+            return $this->collectionsCache[$cacheKey];
+        }
+
+        $collection = Collection::where('slug', $slug)
+            ->orWhereRaw('LOWER(TRIM(name)) = ?', [mb_strtolower($cleanName)])
+            ->orWhere('name', $rawName)
+            ->first();
+
+        if (!$collection) {
+            if (Collection::where('slug', $slug)->exists()) {
+                $slug = $slug . '-' . Crypto::short();
+            }
+
+            $collection = Collection::create([
+                'name' => $cleanName ?: $rawName,
+                'slug' => $slug,
+                'status' => true
+            ]);
+        } elseif (!$collection->status) {
+            $collection->status = true;
+            $collection->save();
+        }
+
+        $this->collectionsCache[$cacheKey] = $collection;
+        return $collection;
+    }
+
+    /**
+     * Busca o crea una marca de forma segura
+     */
+    private function findOrCreateBrand(string $rawName): ?Brand
+    {
+        $cleanName = $this->cleanNameString($rawName);
+        if (empty($cleanName)) return null;
+
+        $slug = Str::slug($cleanName ?: $rawName);
+        $cacheKey = $slug ?: mb_strtolower($cleanName);
+
+        if (isset($this->brandsCache[$cacheKey])) {
+            return $this->brandsCache[$cacheKey];
+        }
+
+        $brand = Brand::where('slug', $slug)
+            ->orWhereRaw('LOWER(TRIM(name)) = ?', [mb_strtolower($cleanName)])
+            ->orWhere('name', $rawName)
+            ->first();
+
+        if (!$brand) {
+            if (Brand::where('slug', $slug)->exists()) {
+                $brandSlug = $slug . '-' . Crypto::short();
+            } else {
+                $brandSlug = $slug;
+            }
+
+            $brand = Brand::create([
+                'name' => $cleanName ?: $rawName,
+                'slug' => $brandSlug,
+                'status' => true
+            ]);
+        } elseif (!$brand->status) {
+            $brand->status = true;
+            $brand->save();
+        }
+
+        $this->brandsCache[$cacheKey] = $brand;
+        return $brand;
+    }
+
+    /**
+     * Busca o crea una tienda de forma segura
+     */
+    private function findOrCreateStore(string $rawName): ?Store
+    {
+        $cleanName = $this->cleanNameString($rawName);
+        if (empty($cleanName)) return null;
+
+        $slug = Str::slug($cleanName ?: $rawName);
+        $cacheKey = $slug ?: mb_strtolower($cleanName);
+
+        if (isset($this->storesCache[$cacheKey])) {
+            return $this->storesCache[$cacheKey];
+        }
+
+        $store = Store::where('slug', $slug)
+            ->orWhereRaw('LOWER(TRIM(name)) = ?', [mb_strtolower($cleanName)])
+            ->orWhere('name', $rawName)
+            ->first();
+
+        if (!$store) {
+            if (Store::where('slug', $slug)->exists()) {
+                $slug = $slug . '-' . Crypto::short();
+            }
+
+            $store = Store::create([
+                'name' => $cleanName ?: $rawName,
+                'slug' => $slug,
+                'status' => true
+            ]);
+        } elseif (!$store->status) {
+            $store->status = true;
+            $store->save();
+        }
+
+        $this->storesCache[$cacheKey] = $store;
+        return $store;
+    }
+
+    /**
+     * Busca o crea un tag de forma segura
+     */
+    private function findOrCreateTag(string $rawName, string $tagType = 'item'): ?Tag
+    {
+        $cleanName = $this->cleanNameString($rawName);
+        if (empty($cleanName)) return null;
+
+        $slug = Str::slug($cleanName ?: $rawName);
+        $cacheKey = ($tagType . '_' . $slug) ?: mb_strtolower($cleanName);
+
+        if (isset($this->tagsCache[$cacheKey])) {
+            return $this->tagsCache[$cacheKey];
+        }
+
+        $tag = Tag::where('slug', $slug)
+            ->orWhereRaw('LOWER(TRIM(name)) = ?', [mb_strtolower($cleanName)])
+            ->orWhere('name', $rawName)
+            ->first();
+
+        if (!$tag) {
+            if (Tag::where('slug', $slug)->exists()) {
+                $slug = $slug . '-' . Crypto::short();
+            }
+
+            $tag = Tag::create([
+                'name' => $cleanName ?: $rawName,
+                'slug' => $slug,
+                'tag_type' => $tagType,
+                'status' => true,
+            ]);
+        }
+
+        $this->tagsCache[$cacheKey] = $tag;
+        return $tag;
+    }
+
+    /**
+     * Busca o crea un atributo de forma segura
+     */
+    private function findOrCreateAttribute(string $rawName, string $type = 'text'): ?\App\Models\Attribute
+    {
+        $cleanName = $this->cleanNameString($rawName);
+        if (empty($cleanName)) return null;
+
+        $slug = Str::slug($cleanName ?: $rawName);
+        $cacheKey = $slug ?: mb_strtolower($cleanName);
+
+        if (isset($this->attributesCache[$cacheKey])) {
+            return $this->attributesCache[$cacheKey];
+        }
+
+        $attribute = \App\Models\Attribute::where('slug', $slug)
+            ->orWhereRaw('LOWER(TRIM(name)) = ?', [mb_strtolower($cleanName)])
+            ->orWhere('name', $rawName)
+            ->first();
+
+        if (!$attribute) {
+            if (\App\Models\Attribute::where('slug', $slug)->exists()) {
+                $slug = $slug . '-' . Crypto::short();
+            }
+
+            $attribute = \App\Models\Attribute::create([
+                'name' => $cleanName ?: $rawName,
+                'slug' => $slug,
+                'type' => $type,
+                'status' => true,
+                'visible' => true
+            ]);
+        }
+
+        $this->attributesCache[$cacheKey] = $attribute;
+        return $attribute;
     }
 }
