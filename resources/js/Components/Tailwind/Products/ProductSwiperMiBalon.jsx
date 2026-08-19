@@ -18,9 +18,9 @@ const ProductSwiperMiBalon = ({ items, data, setCart, cart }) => {
             id={data?.element_id || null}
             className={`py-16 md:py-24 bg-sections-color ${data?.class_container || ""}`}
         >
-            <div className="container mx-auto px-primary 2xl:px-0 2xl:max-w-7xl">
+            <div className=" mx-auto px-primary 2xl:px-0 2xl:max-w-7xl">
                 {/* Header */}
-                <div className="flex flex-col md:flex-row lg:justify-between lg:items-center mb-10 gap-4">
+                <div className="flex flex-col md:flex-row lg:justify-between lg:items-center mb-4 gap-4">
                     <div className="lg:text-left">
                         <h2
                             className={`font-title text-neutral-dark mb-2 ${data?.class_title || "text-4xl md:text-7xl"}`}
@@ -32,13 +32,13 @@ const ProductSwiperMiBalon = ({ items, data, setCart, cart }) => {
                             />
                         </h2>
                         {data?.description && (
-                            <p className="text-gray-500 max-w-2xl text-lg">
+                            <p className="text-neutral-light max-w-2xl text-lg">
                                 {data.description}
                             </p>
                         )}
                     </div>
                     {/* Custom Navigation */}
-                    <div className="flex gap-3">
+                    <div className="flex items-end justify-end gap-3">
                         <button
                             ref={prevRef}
                             className="w-12 h-12 flex items-center justify-center rounded-full bg-white text-neutral-dark shadow-md hover:bg-primary hover:text-white transition-colors"
@@ -58,8 +58,8 @@ const ProductSwiperMiBalon = ({ items, data, setCart, cart }) => {
                 <div className="relative ">
                     <Swiper
                         modules={[Autoplay, A11y, Keyboard, Navigation]}
-                        spaceBetween={24}
-                        slidesPerView={1}
+                        spaceBetween={10}
+                        slidesPerView={2}
                         loop={data?.loop !== false}
                         autoplay={data?.autoplay !== false ? {
                             delay: 4000,
@@ -74,12 +74,12 @@ const ProductSwiperMiBalon = ({ items, data, setCart, cart }) => {
                             swiper.params.navigation.nextEl = nextRef.current;
                         }}
                         breakpoints={{
-                            640: { slidesPerView: 2 },
-                            768: { slidesPerView: 3 },
-                            1024: { slidesPerView: 3 },
-                            1280: { slidesPerView: 4 },
+                            640: { slidesPerView: 2, spaceBetween: 16 },
+                            768: { slidesPerView: 3, spaceBetween: 24 },
+                            1024: { slidesPerView: 3, spaceBetween: 24 },
+                            1280: { slidesPerView: 4, spaceBetween: 24 },
                         }}
-                        className="w-full !px-4 !py-7 -mx-4"
+                        className="w-full lg:!px-4 !py-4 -mx-4"
                     >
                         {items.map((product, index) => (
                             <SwiperSlide

@@ -103,7 +103,7 @@ const modernFilterStyles = {
         "w-full flex items-center justify-between p-4 rounded-2xl transition-all duration-300 hover:bg-neutral-50 group",
     filterContent: "bg-neutral-50/50 rounded-2xl border border-gray-100",
     searchInput:
-        "w-full pl-12 pr-4 py-3 bg-white border border-gray-200 rounded-full focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all duration-300 placeholder:text-neutral-400 text-neutral-dark",
+        "w-full pl-12 pr-4 py-3 bg-white border border-gray-200 rounded-full focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all duration-300 placeholder:text-neutral-light text-neutral-dark",
     checkbox:
         "appearance-none relative min-h-5 min-w-5 shrink-0 rounded-[6px] border-2 border-gray-300 bg-white checked:bg-primary checked:border-primary focus:outline-none focus:ring-4 focus:ring-primary/20 transition-all duration-200 cursor-pointer " +
         "checked:after:content-[''] checked:after:absolute checked:after:left-[6px] checked:after:top-[2px] checked:after:w-[5px] checked:after:h-[10px] checked:after:border-white checked:after:border-b-[2.5px] checked:after:border-r-[2.5px] checked:after:rotate-45",
@@ -128,7 +128,7 @@ const SkeletonCard = ({ delay = 0, isSharp = false }) => {
                 ease: "easeOut",
             }}
         >
-            <div className="px-2 h-full">
+            <div className="h-full">
                 <div className={`bg-white ${isSharp ? "rounded-none" : "rounded-3xl"} shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden h-full`}>
                     {/* Contenedor principal con altura fija similar a las tarjetas reales */}
                     <div className="flex flex-col h-[400px] lg:h-[460px] xl:h-[400px] 2xl:h-[430px]">
@@ -252,7 +252,7 @@ const CatalogoFiltrosMiBalon = ({
         filterSection: `group transition-all duration-300 hover:bg-neutral-50 ${isSharp ? "rounded-none" : "rounded-2xl"}`,
         filterButton: `w-full flex items-center justify-between p-4 ${isSharp ? "rounded-none" : "rounded-2xl"} transition-all duration-300 hover:bg-neutral-50 group`,
         filterContent: `bg-neutral-50/50 ${isSharp ? "rounded-none" : "rounded-2xl"} border border-gray-100`,
-        searchInput: `w-full pl-12 pr-4 py-3 bg-white border border-gray-200 ${isSharp ? "rounded-none" : "rounded-full"} focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all duration-300 placeholder:text-neutral-400 text-neutral-dark`,
+        searchInput: `w-full pl-12 pr-4 py-3 bg-white border border-gray-200 ${isSharp ? "rounded-none" : "rounded-full"} focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all duration-300 placeholder:text-neutral-light text-neutral-dark`,
         checkbox: `appearance-none relative min-h-5 min-w-5 shrink-0 ${isSharp ? "rounded-none" : "rounded-[6px]"} border-2 border-gray-300 bg-white checked:bg-primary checked:border-primary focus:outline-none focus:ring-4 focus:ring-primary/20 transition-all duration-200 cursor-pointer ` +
             "checked:after:content-[''] checked:after:absolute checked:after:left-[6px] checked:after:top-[2px] checked:after:w-[5px] checked:after:h-[10px] checked:after:border-white checked:after:border-b-[2.5px] checked:after:border-r-[2.5px] checked:after:rotate-45",
         label: `flex items-center gap-3 py-1.5 px-3 ${isSharp ? "rounded-none" : "rounded-lg"} transition-all duration-200 hover:bg-neutral-100 cursor-pointer group`,
@@ -3748,14 +3748,14 @@ const CatalogoFiltrosMiBalon = ({
 
                                     {/* Grid de skeleton cards */}
                                     <div
-                                        className={`grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-y-6  w-full ${data?.class_product_container || ""} `}
+                                        className={`grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-y-6 gap-x-3  w-full ${data?.class_product_container || ""} `}
                                     >
                                         {Array.from(
                                             { length: 12 },
                                             (_, index) => (
                                                 <div
                                                     key={index}
-                                                    className="h-[400px] lg:h-[460px] xl:h-[400px] 2xl:h-[430px]"
+                                                    className="h-[400px] w-full lg:h-[460px] xl:h-[400px] 2xl:h-[430px]"
                                                 >
                                                     <SkeletonCard
                                                         delay={index * 0.08}
@@ -3767,7 +3767,7 @@ const CatalogoFiltrosMiBalon = ({
                                 </motion.div>
                             ) : (
                                 <motion.div
-                                    className={`grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-4 lg:gap-6 transition-all duration-300 ease-in-out relative ${data?.class_product_container || ""}`}
+                                    className={`grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-3 lg:gap-6 transition-all duration-300 ease-in-out relative ${data?.class_product_container || ""}`}
                                     key="products"
                                     initial={{ opacity: 0 }}
                                     animate={{ opacity: 1 }}

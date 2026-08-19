@@ -50,6 +50,8 @@ composer.lock
 
 
 
+/public/assets/resources/payment-method-*
+/public/assets/resources/bank-*
 /public/assets/resources/transfer-account-*
 /vite.config.js.timestamp*
 /storage/app/*_backup.sql

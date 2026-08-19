@@ -124,6 +124,14 @@ class GeneralController extends BasicController
                         $general->status = $status;
                         $general->save();
                         $updatedCount++;
+                    } else {
+                        General::create([
+                            'correlative' => $correlative,
+                            'name' => ucwords(str_replace('_', ' ', $correlative)),
+                            'description' => '',
+                            'status' => $status
+                        ]);
+                        $updatedCount++;
                     }
                 }
             }

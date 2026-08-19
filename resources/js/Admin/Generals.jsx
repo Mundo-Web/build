@@ -148,6 +148,8 @@ const Generals = ({
             "checkout_transfer_name",
             "checkout_transfer_description",
             "checkout_transfer_commission",
+            "payment_methods",
+            "payment_methods_title",
         ],
         importation: [
             "importation_flete",
@@ -386,46 +388,14 @@ const Generals = ({
                 });
             }
 
-            // Agregar campos SEO que siempre deben estar disponibles (por defecto habilitados)
-            const seoFields = [
-                "site_title",
-                "site_description",
-                "site_keywords",
-                "meta_author",
-                "og_title",
-                "og_description",
-                "og_image",
-                "og_url",
-                "twitter_title",
-                "twitter_description",
-                "twitter_image",
-                "twitter_card",
-                "favicon",
-                "canonical_url",
-                "llms_site_niche",
-                "llms_target_audience",
-                "llms_geo_service_area",
-                "llms_technical_summary",
-                "llms_include_feed",
-                "llms_include_popular",
-                "llms_include_new",
-                "llms_include_devoluciones",
-                "llms_include_privacidad",
-                "llms_include_terminos",
-                "llms_include_faqs",
-                "llms_url_devoluciones",
-                "llms_url_privacidad",
-                "llms_url_terminos",
-                "llms_url_catalogo",
-                "llms_url_populares",
-                "llms_url_nuevos",
-            ];
-            seoFields.forEach((field) => {
-                // Si no existe en allGenerals, habilitarlo por defecto
-                if (!(field in visibility)) {
-                    visibility[field] = true;
-                }
-            });
+            // Asegurar que todos los campos de todos los tabs tengan un estado inicial
+            Object.values(tabCorrelatives)
+                .flat()
+                .forEach((field) => {
+                    if (!(field in visibility)) {
+                        visibility[field] = true;
+                    }
+                });
 
             setFieldVisibility(visibility);
         }
@@ -593,6 +563,32 @@ const Generals = ({
             lat: Number(location.split(",").map((x) => x.trim())[0]),
             lng: Number(location.split(",").map((x) => x.trim())[1]),
         },
+        payment_methods_title:
+            generals.find((x) => x.correlative == "payment_methods_title")
+                ?.description ?? "Contamos con múltiples medios de pago",
+        payment_methods: (() => {
+            const pmGeneral = generals.find(
+                (x) => x.correlative == "payment_methods",
+            );
+            if (!pmGeneral?.description) {
+                return [
+                    { id: 1, name: "Visa", icon: "/assets/img/banks/visa.png", type: "image", enabled: true },
+                    { id: 2, name: "Yape", icon: "/assets/img/banks/yape.png", type: "image", enabled: true },
+                    { id: 3, name: "Mastercard", icon: "/assets/img/banks/mastercard.png", type: "image", enabled: true },
+                    { id: 4, name: "BCP", icon: "/assets/img/banks/bcp.svg", type: "image", enabled: true },
+                    { id: 5, name: "BBVA", icon: "/assets/img/banks/bbva.svg", type: "image", enabled: true },
+                    { id: 6, name: "Interbank", icon: "/assets/img/banks/interbank.svg", type: "image", enabled: true },
+                    { id: 7, name: "Scotiabank", icon: "", type: "image", enabled: true },
+                    { id: 8, name: "Plin", icon: "/assets/img/banks/plin.png", type: "image", enabled: true },
+                ];
+            }
+            try {
+                const parsed = JSON.parse(pmGeneral.description);
+                return Array.isArray(parsed) ? parsed : [];
+            } catch (error) {
+                return [];
+            }
+        })(),
         checkout_culqi:
             generals.find((x) => x.correlative == "checkout_culqi")
                 ?.description ?? "",
@@ -2144,6 +2140,16 @@ const Generals = ({
                 description: JSON.stringify(
                     formData.additional_shipping_costs || [],
                 ),
+            },
+            {
+                correlative: "payment_methods_title",
+                name: "Título Banner Medios de Pago",
+                description: formData.payment_methods_title || "Contamos con múltiples medios de pago",
+            },
+            {
+                correlative: "payment_methods",
+                name: "Medios de Pago Aceptados",
+                description: JSON.stringify(formData.payment_methods || []),
             },
             // Configuración de Hotel
             {
@@ -3753,6 +3759,19 @@ const Generals = ({
                                                 Transferencia
                                             </a>
                                         )}
+                                        {shouldShowField("payment_methods") && (
+                                            <a
+                                                className="nav-link mb-1"
+                                                id="v-payment-methods-tab"
+                                                data-bs-toggle="pill"
+                                                href="#v-payment-methods"
+                                                role="tab"
+                                                aria-controls="v-payment-methods"
+                                                aria-selected="false"
+                                            >
+                                                Medios de Pago (Banner)
+                                            </a>
+                                        )}
                                     </div>
                                 </div>
                                 <div className="tab-content col-sm-9">
@@ -5096,6 +5115,326 @@ const Generals = ({
                                                     Dejar en 0 si no desea
                                                     aplicar comisión
                                                 </small>
+                                            </div>
+                                        </div>
+                                    </ConditionalField>
+
+                                    {/* Tab Medios de Pago (Banner y Logos) */}
+                                    <ConditionalField correlative="payment_methods">
+                                        <div
+                                            className="tab-pane fade"
+                                            id="v-payment-methods"
+                                            role="tabpanel"
+                                            aria-labelledby="v-payment-methods-tab"
+                                        >
+                                            <ConditionalField correlative="payment_methods_title">
+                                                <div className="mb-3">
+                                                    <label className="form-label font-bold">
+                                                        Título del Banner de Medios de Pago
+                                                    </label>
+                                                    <input
+                                                        type="text"
+                                                        className="form-control"
+                                                        placeholder="Ej: Contamos con múltiples medios de pago"
+                                                        value={formData.payment_methods_title || ""}
+                                                        onChange={(e) =>
+                                                            setFormData({
+                                                                ...formData,
+                                                                payment_methods_title: e.target.value,
+                                                            })
+                                                        }
+                                                    />
+                                                    <small className="text-muted">
+                                                        Este título se muestra en la ficha de producto sobre los logos de pago.
+                                                    </small>
+                                                </div>
+                                            </ConditionalField>
+
+                                            <div className="mb-4">
+                                                <div className="d-flex justify-content-between align-items-center mb-3">
+                                                    <div>
+                                                        <h5 className="mb-0">Logos y Medios de Pago Mostrados</h5>
+                                                        <small className="text-muted">Active, desactive, suba logos o agregue los medios de pago que acepta su tienda.</small>
+                                                    </div>
+                                                    <button
+                                                        type="button"
+                                                        className="btn btn-primary btn-sm"
+                                                        onClick={() => {
+                                                            const newId = Date.now();
+                                                            setFormData({
+                                                                ...formData,
+                                                                payment_methods: [
+                                                                    ...(formData.payment_methods || []),
+                                                                    {
+                                                                        id: newId,
+                                                                        name: "Nuevo Método",
+                                                                        icon: "",
+                                                                        type: "image",
+                                                                        enabled: true,
+                                                                    },
+                                                                ],
+                                                            });
+                                                        }}
+                                                    >
+                                                        <i className="fas fa-plus me-1"></i> Agregar Medio
+                                                    </button>
+                                                </div>
+
+                                                <div className="row g-3">
+                                                    {(formData.payment_methods || []).map((method, index) => (
+                                                        <div key={method.id || index} className="col-xxl-3 col-lg-4 col-md-6 col-12">
+                                                            <div
+                                                                className={`card h-100 border transition-all ${
+                                                                    method.enabled !== false
+                                                                        ? "border-secondary-subtle shadow-sm"
+                                                                        : "border-light opacity-75 bg-light"
+                                                                }`}
+                                                                style={{ borderRadius: "12px" }}
+                                                            >
+                                                                <div className="card-body p-3 d-flex flex-column justify-content-between">
+                                                                    {/* Header: Switch Activo + Eliminar método */}
+                                                                    <div className="d-flex justify-content-between align-items-center mb-2">
+                                                                        <div className="form-check form-switch mb-0">
+                                                                            <input
+                                                                                type="checkbox"
+                                                                                className="form-check-input"
+                                                                                id={`pm-switch-${method.id || index}`}
+                                                                                checked={method.enabled !== false}
+                                                                                onChange={(e) => {
+                                                                                    const updated = [...formData.payment_methods];
+                                                                                    updated[index] = {
+                                                                                        ...updated[index],
+                                                                                        enabled: e.target.checked,
+                                                                                    };
+                                                                                    setFormData({
+                                                                                        ...formData,
+                                                                                        payment_methods: updated,
+                                                                                    });
+                                                                                }}
+                                                                            />
+                                                                            <label
+                                                                                className="form-check-label small fw-semibold"
+                                                                                htmlFor={`pm-switch-${method.id || index}`}
+                                                                            >
+                                                                                {method.enabled !== false ? (
+                                                                                    <span className="text-success">Activo</span>
+                                                                                ) : (
+                                                                                    <span className="text-muted">Inactivo</span>
+                                                                                )}
+                                                                            </label>
+                                                                        </div>
+
+                                                                        <Tippy content="Eliminar método">
+                                                                            <button
+                                                                                type="button"
+                                                                                className="btn btn-sm btn-ghost-danger text-danger p-0 border-0"
+                                                                                style={{ lineHeight: 1 }}
+                                                                                onClick={() => {
+                                                                                    const updated = [...formData.payment_methods];
+                                                                                    updated.splice(index, 1);
+                                                                                    setFormData({
+                                                                                        ...formData,
+                                                                                        payment_methods: updated,
+                                                                                    });
+                                                                                }}
+                                                                            >
+                                                                                <i className="mdi mdi-trash-can-outline fs-5"></i>
+                                                                            </button>
+                                                                        </Tippy>
+                                                                    </div>
+
+                                                                    {/* Logo Dropzone / Click to replace */}
+                                                                    <div className="my-2">
+                                                                        <label
+                                                                            htmlFor={`upload-pm-${method.id || index}`}
+                                                                            className="d-block w-100 mb-0"
+                                                                            style={{ cursor: "pointer" }}
+                                                                        >
+                                                                            <input
+                                                                                type="file"
+                                                                                id={`upload-pm-${method.id || index}`}
+                                                                                className="d-none"
+                                                                                accept="image/*"
+                                                                                onChange={async (e) => {
+                                                                                    const file = e.target.files[0];
+                                                                                    if (!file) return;
+                                                                                    e.target.value = null;
+
+                                                                                    const ext = file.name.split(".").pop();
+                                                                                    const imageName = `payment-method-${Date.now()}-${index + 1}.${ext}`;
+
+                                                                                    const request = new FormData();
+                                                                                    request.append("image", file);
+                                                                                    request.append("name", imageName);
+
+                                                                                    const result = await galleryRest.save(request);
+                                                                                    if (!result) return;
+
+                                                                                    const updated = [...formData.payment_methods];
+                                                                                    updated[index] = {
+                                                                                        ...updated[index],
+                                                                                        icon: imageName,
+                                                                                        type: "image",
+                                                                                        bg: undefined,
+                                                                                        nameText: undefined,
+                                                                                    };
+                                                                                    setFormData({
+                                                                                        ...formData,
+                                                                                        payment_methods: updated,
+                                                                                    });
+                                                                                    toast.success("Logotipo actualizado correctamente");
+                                                                                }}
+                                                                            />
+
+                                                                            {method.icon ? (
+                                                                                <div
+                                                                                    className="position-relative bg-white border rounded-3 p-2 d-flex flex-column align-items-center justify-content-center"
+                                                                                    style={{
+                                                                                        height: "90px",
+                                                                                        transition: "all 0.2s ease-in-out",
+                                                                                    }}
+                                                                                    onMouseEnter={(e) =>
+                                                                                        (e.currentTarget.style.borderColor = "var(--bs-primary, #0151fc)")
+                                                                                    }
+                                                                                    onMouseLeave={(e) =>
+                                                                                        (e.currentTarget.style.borderColor = "#dee2e6")
+                                                                                    }
+                                                                                >
+                                                                                    <img
+                                                                                        src={
+                                                                                            method.icon.startsWith("http") ||
+                                                                                            method.icon.startsWith("/")
+                                                                                                ? method.icon
+                                                                                                : `/assets/resources/${method.icon}`
+                                                                                        }
+                                                                                        alt={method.name}
+                                                                                        style={{
+                                                                                            maxHeight: "44px",
+                                                                                            maxWidth: "85%",
+                                                                                            objectFit: "contain",
+                                                                                        }}
+                                                                                        onError={(e) => {
+                                                                                            e.target.style.display = "none";
+                                                                                        }}
+                                                                                    />
+                                                                                    <span
+                                                                                        className="badge bg-light text-primary border mt-1"
+                                                                                        style={{
+                                                                                            fontSize: "10px",
+                                                                                            fontWeight: "600",
+                                                                                        }}
+                                                                                    >
+                                                                                        <i className="mdi mdi-camera-retake-outline me-1"></i>{" "}
+                                                                                        Cambiar logo
+                                                                                    </span>
+                                                                                </div>
+                                                                            ) : (
+                                                                                <div
+                                                                                    className="bg-light border border-dashed rounded-3 p-2 d-flex flex-column align-items-center justify-content-center text-muted"
+                                                                                    style={{
+                                                                                        height: "90px",
+                                                                                        borderWidth: "2px",
+                                                                                        transition: "all 0.2s ease-in-out",
+                                                                                    }}
+                                                                                    onMouseEnter={(e) => {
+                                                                                        e.currentTarget.style.borderColor =
+                                                                                            "var(--bs-primary, #0151fc)";
+                                                                                        e.currentTarget.style.color =
+                                                                                            "var(--bs-primary, #0151fc)";
+                                                                                    }}
+                                                                                    onMouseLeave={(e) => {
+                                                                                        e.currentTarget.style.borderColor = "#dee2e6";
+                                                                                        e.currentTarget.style.color = "#6c757d";
+                                                                                    }}
+                                                                                >
+                                                                                    <i className="mdi mdi-cloud-upload-outline fs-3 mb-1 text-primary"></i>
+                                                                                    <span className="small fw-semibold">
+                                                                                        Subir logotipo
+                                                                                    </span>
+                                                                                </div>
+                                                                            )}
+                                                                        </label>
+                                                                    </div>
+
+                                                                    {/* Name Input */}
+                                                                    <div className="mt-2">
+                                                                        <label className="form-label small text-muted mb-1 fw-semibold">
+                                                                            Nombre del medio
+                                                                        </label>
+                                                                        <input
+                                                                            type="text"
+                                                                            className="form-control form-control-sm"
+                                                                            value={method.name || ""}
+                                                                            placeholder="Ej: Visa, Yape, BCP..."
+                                                                            onChange={(e) => {
+                                                                                const updated = [...formData.payment_methods];
+                                                                                updated[index] = {
+                                                                                    ...updated[index],
+                                                                                    name: e.target.value,
+                                                                                };
+                                                                                setFormData({
+                                                                                    ...formData,
+                                                                                    payment_methods: updated,
+                                                                                });
+                                                                            }}
+                                                                        />
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    ))}
+
+                                                    {/* Card para Agregar Nuevo Medio */}
+                                                    <div className="col-xxl-3 col-lg-4 col-md-6 col-12">
+                                                        <div
+                                                            className="card h-100 border border-dashed text-center d-flex align-items-center justify-content-center p-3 bg-light"
+                                                            style={{
+                                                                borderRadius: "12px",
+                                                                borderWidth: "2px",
+                                                                minHeight: "185px",
+                                                                cursor: "pointer",
+                                                                transition: "all 0.2s ease-in-out",
+                                                            }}
+                                                            onClick={() => {
+                                                                const newId = Date.now();
+                                                                setFormData({
+                                                                    ...formData,
+                                                                    payment_methods: [
+                                                                        ...(formData.payment_methods || []),
+                                                                        {
+                                                                            id: newId,
+                                                                            name: "Nuevo Método",
+                                                                            icon: "",
+                                                                            type: "image",
+                                                                            enabled: true,
+                                                                        },
+                                                                    ],
+                                                                });
+                                                            }}
+                                                            onMouseEnter={(e) => {
+                                                                e.currentTarget.style.borderColor = "var(--bs-primary, #0151fc)";
+                                                                e.currentTarget.style.backgroundColor = "#f0f4ff";
+                                                            }}
+                                                            onMouseLeave={(e) => {
+                                                                e.currentTarget.style.borderColor = "#dee2e6";
+                                                                e.currentTarget.style.backgroundColor = "var(--bs-light, #f8f9fa)";
+                                                            }}
+                                                        >
+                                                            <div className="d-flex flex-column align-items-center text-primary">
+                                                                <div
+                                                                    className="rounded-circle bg-primary bg-opacity-10 d-flex align-items-center justify-content-center mb-2"
+                                                                    style={{ width: "42px", height: "42px" }}
+                                                                >
+                                                                    <i className="mdi mdi-plus fs-3"></i>
+                                                                </div>
+                                                                <span className="fw-bold small">Agregar Nuevo Medio</span>
+                                                                <small className="text-muted" style={{ fontSize: "11px" }}>
+                                                                    Añadir tarjeta o billetera
+                                                                </small>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                     </ConditionalField>
@@ -8776,13 +9115,62 @@ const Generals = ({
                                         const tabName =
                                             tabNames[tabKey] || tabKey;
 
-                                        const tabFields = (
-                                            allGenerals || generals
-                                        ).filter((general) =>
-                                            correlatives.includes(
-                                                general.correlative,
-                                            ),
-                                        );
+                                        const defaultFieldLabels = {
+                                            payment_methods: "Medios de Pago (Logos y Banner)",
+                                            payment_methods_title: "Título de Medios de Pago",
+                                            checkout_culqi: "Culqi",
+                                            checkout_culqi_name: "Culqi - Título",
+                                            checkout_culqi_public_key: "Culqi - Clave Pública",
+                                            checkout_culqi_private_key: "Culqi - Clave Privada",
+                                            checkout_culqi_rsa_id: "Culqi - RSA ID",
+                                            checkout_culqi_rsa_public_key: "Culqi - RSA Clave Pública",
+                                            checkout_culqi_supports_usd: "Culqi - Soporte USD",
+                                            checkout_culqi_commission: "Culqi - Comisión",
+                                            checkout_culqi_enable_card: "Culqi - Permitir Tarjeta",
+                                            checkout_culqi_enable_yape: "Culqi - Permitir Yape",
+                                            checkout_culqi_enable_banking: "Culqi - Permitir Banca por Internet",
+                                            checkout_culqi_enable_agent: "Culqi - Permitir Agente",
+                                            checkout_culqi_enable_wallet: "Culqi - Permitir Billeteras",
+                                            checkout_mercadopago: "Mercado Pago",
+                                            checkout_mercadopago_name: "Mercado Pago - Título",
+                                            checkout_mercadopago_public_key: "Mercado Pago - Clave Pública",
+                                            checkout_mercadopago_private_key: "Mercado Pago - Clave Privada",
+                                            checkout_mercadopago_commission: "Mercado Pago - Comisión",
+                                            checkout_openpay: "OpenPay",
+                                            checkout_openpay_name: "OpenPay - Título",
+                                            checkout_openpay_merchant_id: "OpenPay - Merchant ID",
+                                            checkout_openpay_public_key: "OpenPay - Clave Pública",
+                                            checkout_openpay_private_key: "OpenPay - Clave Privada",
+                                            checkout_openpay_commission: "OpenPay - Comisión",
+                                            checkout_openpay_sandbox_mode: "OpenPay - Modo Sandbox",
+                                            checkout_dwallet: "Billeteras Digitales (Yape / Plin)",
+                                            checkout_dwallet_qr: "Billeteras Digitales - QR",
+                                            checkout_dwallet_name: "Billeteras Digitales - Título",
+                                            checkout_dwallet_description: "Billeteras Digitales - Descripción",
+                                            checkout_dwallet_commission: "Billeteras Digitales - Comisión",
+                                            checkout_transfer: "Transferencia Bancaria",
+                                            transfer_accounts: "Cuentas de Transferencia Bancaria",
+                                            checkout_transfer_cci: "Transferencia - CCI",
+                                            checkout_transfer_name: "Transferencia - Título",
+                                            checkout_transfer_description: "Transferencia - Descripción",
+                                            checkout_transfer_commission: "Transferencia - Comisión",
+                                        };
+
+                                        const tabFields = correlatives.map((correlative) => {
+                                            const existing = (allGenerals || generals || []).find(
+                                                (general) => general.correlative === correlative
+                                            );
+                                            if (existing) return existing;
+                                            return {
+                                                correlative,
+                                                name:
+                                                    defaultFieldLabels[correlative] ||
+                                                    correlative
+                                                        .replace(/_/g, " ")
+                                                        .replace(/\b\w/g, (l) => l.toUpperCase()),
+                                                status: fieldVisibility[correlative] !== false ? 1 : 0,
+                                            };
+                                        });
 
                                         if (tabFields.length === 0) return null;
 

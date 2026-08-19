@@ -51,6 +51,9 @@ const ProductDetailRainstar = React.lazy(
 const ProductDetailMiBalon = React.lazy(
     () => import("./ProductDetails/ProductDetailMiBalon"),
 );
+const ProductDetailMicjc = React.lazy(
+    () => import("./ProductDetails/ProductDetailMicjc"),
+);
 const ProductDetailTwenty = React.lazy(
     () => import("./ProductDetails/ProductDetailTwenty"),
 );
@@ -272,6 +275,19 @@ const ProductDetail = ({
                         setCart={setCart}
                         data={data}
                         generals={generals}
+                        onViewUpdate={handleViewUpdate}
+                    />
+                );
+            case "ProductDetailMicjc":
+                return (
+                    <ProductDetailMicjc
+                        item={item}
+                        cart={cart}
+                        setCart={setCart}
+                        data={data}
+                        generals={generals}
+                        favorites={favorites}
+                        setFavorites={setFavorites}
                         onViewUpdate={handleViewUpdate}
                     />
                 );
