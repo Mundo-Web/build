@@ -161,7 +161,7 @@ export default function SignUpTwenty({ data }) {
                                                 type="text"
                                                 placeholder="Carlos"
                                                 required
-                                                className="w-full bg-transparent border border-white/20 py-4 px-4 text-xs font-paragraph uppercase tracking-wider rounded-none text-white focus:border-white placeholder:text-white/20 focus:ring-0 focus:outline-none"
+                                                className="w-full bg-transparent border border-white/20 py-4 px-4 text-xs font-paragraph tracking-wider rounded-none text-white focus:border-white placeholder:text-white/20 focus:ring-0 focus:outline-none"
                                             />
                                         </div>
                                         <div>
@@ -175,7 +175,7 @@ export default function SignUpTwenty({ data }) {
                                                 type="text"
                                                 placeholder="Soria"
                                                 required
-                                                className="w-full bg-transparent border border-white/20 py-4 px-4 text-xs font-paragraph uppercase tracking-wider rounded-none text-white focus:border-white placeholder:text-white/20 focus:ring-0 focus:outline-none"
+                                                className="w-full bg-transparent border border-white/20 py-4 px-4 text-xs font-paragraph tracking-wider rounded-none text-white focus:border-white placeholder:text-white/20 focus:ring-0 focus:outline-none"
                                             />
                                         </div>
                                     </div>
@@ -193,7 +193,7 @@ export default function SignUpTwenty({ data }) {
                                             required
                                             readOnly={invitationData !== null}
                                             disabled={invitationData !== null}
-                                            className="w-full bg-transparent border border-white/20 py-4 px-4 text-xs font-paragraph uppercase tracking-wider rounded-none text-white focus:border-white placeholder:text-white/20 focus:ring-0 focus:outline-none"
+                                            className="w-full bg-transparent border border-white/20 py-4 px-4 text-xs font-paragraph tracking-wider rounded-none text-white focus:border-white placeholder:text-white/20 focus:ring-0 focus:outline-none"
                                         />
                                         {invitationData && (
                                             <p className="text-[10px] text-white/40 mt-1 uppercase tracking-wider">
@@ -213,7 +213,7 @@ export default function SignUpTwenty({ data }) {
                                                 name="password"
                                                 type={showPassword ? "text" : "password"}
                                                 required
-                                                className="w-full bg-transparent border border-white/20 py-4 px-4 pr-12 text-xs font-paragraph uppercase tracking-wider rounded-none text-white focus:border-white placeholder:text-white/20 focus:ring-0 focus:outline-none"
+                                                className="w-full bg-transparent border border-white/20 py-4 px-4 pr-12 text-xs font-paragraph tracking-wider rounded-none text-white focus:border-white placeholder:text-white/20 focus:ring-0 focus:outline-none"
                                             />
                                             <button
                                                 type="button"
@@ -245,7 +245,7 @@ export default function SignUpTwenty({ data }) {
                                                 name="confirm-password"
                                                 type={showConfirmPassword ? "text" : "password"}
                                                 required
-                                                className="w-full bg-transparent border border-white/20 py-4 px-4 pr-12 text-xs font-paragraph uppercase tracking-wider rounded-none text-white focus:border-white placeholder:text-white/20 focus:ring-0 focus:outline-none"
+                                                className="w-full bg-transparent border border-white/20 py-4 px-4 pr-12 text-xs font-paragraph tracking-wider rounded-none text-white focus:border-white placeholder:text-white/20 focus:ring-0 focus:outline-none"
                                             />
                                             <button
                                                 type="button"

@@ -48,6 +48,7 @@ use App\Http\Controllers\Admin\PackagingController as AdminPackagingController;
 use App\Http\Controllers\Admin\DeliveryPriceController as AdminDeliveryPriceController;
 use App\Http\Controllers\Admin\TypesDeliveryController as AdminTypesDeliveryController;
 use App\Http\Controllers\Admin\StoreController as AdminStoreController;
+use App\Http\Controllers\StoreController;
 use App\Http\Controllers\Admin\GalleryController as AdminGalleryController;
 use App\Http\Controllers\Admin\ItemController as AdminItemController;
 use App\Http\Controllers\Admin\SaleController as AdminSaleController;
@@ -133,10 +134,10 @@ Route::get('/ubigeo/find/{code}', [DeliveryPriceController::class, 'findByCode']
 // Type Delivery routes
 Route::get('/type-delivery/{slug}', [TypeDeliveryController::class, 'getBySlug']);
 
-// Rutas públicas para tiendas (checkout)
-Route::get('/stores', [AdminStoreController::class, 'getActiveStores']);
-Route::get('/stores/main', [AdminStoreController::class, 'getMainStore']);
-Route::get('/stores/by-ubigeo/{ubigeo}', [AdminStoreController::class, 'getByUbigeo']);
+// Rutas públicas para tiendas (checkout, catálogo)
+Route::get('/stores', [StoreController::class, 'getActiveStores']);
+Route::get('/stores/main', [StoreController::class, 'getMainStore']);
+Route::get('/stores/by-ubigeo/{ubigeo}', [StoreController::class, 'getByUbigeo']);
 
 Route::post('/scrap', [ScrapController::class, 'scrap']);
 Route::post('/scrap-shopsimon', [ScrapController::class, 'scrapShopSimon']);

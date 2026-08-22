@@ -68,7 +68,10 @@ class SystemColorSeeder extends Seeder
                 'name' => 'menu-admin',
                 'description' => '', // Por defecto usará el color primary
             ],
-
+            [
+                'name' => 'text-color-input',
+                'description' => '#FFFFFF',
+            ],
         ];
 
 

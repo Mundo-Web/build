@@ -133,7 +133,7 @@ export default function ForgotPasswordTwenty({ data }) {
                                             placeholder="hola@mail.com"
                                             required
                                             disabled={loading}
-                                            className="w-full bg-transparent border border-white/20 py-4 px-4 text-xs font-paragraph uppercase tracking-wider rounded-none text-white focus:border-white placeholder:text-white/20 focus:ring-0 focus:outline-none"
+                                            className="w-full bg-transparent border border-white/20 py-4 px-4 text-xs font-paragraph tracking-wider rounded-none text-white focus:border-white placeholder:text-white/20 focus:ring-0 focus:outline-none"
                                         />
                                     </div>
 

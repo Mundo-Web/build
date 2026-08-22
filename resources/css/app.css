@@ -188,4 +188,19 @@ html::-webkit-scrollbar-thumb:hover {
     scrollbar-color: rgba(255, 255, 255, 0.65) rgba(255, 255, 255, 0.1);
 }
 
+/* =========================================
+   Autofill Chrome / WebKit Universal Override
+   Usa la variable de sistema (--bg-text-color-input) generada dinámicamente
+========================================= */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active,
+textarea:-webkit-autofill,
+select:-webkit-autofill {
+    transition: background-color 5000000s ease-in-out 0s;
+    -webkit-text-fill-color: var(--bg-text-color-input, inherit) !important;
+}
+
+
 

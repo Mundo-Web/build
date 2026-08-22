@@ -1,6 +1,5 @@
 import { StoreIcon } from "lucide-react";
 import React, { useState, useEffect } from "react";
-import StoresRest from "../../../../Actions/Admin/StoresRest";
 
 const StorePickupSelector = ({ 
     ubigeoCode, 
@@ -27,13 +26,14 @@ const StorePickupSelector = ({
         setError(null);
         
         try {
-            const storesRest = new StoresRest();
-            
-            // Usar paginate para traer solo tiendas activas y visibles
-            const result = await storesRest.paginate({
-                status: true,
-                visible: true
+            // Usar la ruta pública /api/stores (no requiere autenticación)
+            const response = await fetch('/api/stores', {
+                method: 'GET',
+                headers: { 'Accept': 'application/json' }
             });
+            
+            if (!response.ok) throw new Error('Error al obtener tiendas');
+            const result = await response.json();
             
             console.log('📦 Resultado completo del API:', result);
             let allStores = result?.data || [];

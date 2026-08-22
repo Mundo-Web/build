@@ -12,7 +12,7 @@ import ButtonSecondary from "./ButtonSecondary";
 import InputForm from "./InputFormTwenty";
 import SelectForm from "./SelectFormTwenty";
 import OptionCard from "./OptionCardTwenty";
-import StorePickupSelector from "./StorePickupSelector";
+import StorePickupSelectorTwenty from "./StorePickupSelectorTwenty";
 import {
     CheckCircleIcon,
     CircleX,
@@ -2824,7 +2824,7 @@ export default function ShippingStepTwenty({
                                     {/* Selector de tiendas para retiro en tienda */}
                                     {showStoreSelector &&
                                         selectedOption === "store_pickup" && (
-                                            <StorePickupSelector
+                                            <StorePickupSelectorTwenty
                                                 ubigeo={
                                                     selectedUbigeo?.data
                                                         ?.reniec ||

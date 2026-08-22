@@ -125,7 +125,7 @@ export default function ResetPasswordTwenty({ data }) {
                                                 ref={passwordRef}
                                                 type={showPassword ? "text" : "password"}
                                                 required
-                                                className="w-full bg-transparent border border-white/20 py-4 px-4 pr-12 text-xs font-paragraph uppercase tracking-wider rounded-none text-white focus:border-white placeholder:text-white/20 focus:ring-0 focus:outline-none"
+                                                className="w-full bg-transparent border border-white/20 py-4 px-4 pr-12 text-xs font-paragraph tracking-wider rounded-none text-white focus:border-white placeholder:text-white/20 focus:ring-0 focus:outline-none"
                                             />
                                             <button
                                                 type="button"
@@ -158,7 +158,7 @@ export default function ResetPasswordTwenty({ data }) {
                                                 type={showConfirmPassword ? "text" : "password"}
                                                 required
                                                 disabled={loading}
-                                                className="w-full bg-transparent border border-white/20 py-4 px-4 pr-12 text-xs font-paragraph uppercase tracking-wider rounded-none text-white focus:border-white placeholder:text-white/20 focus:ring-0 focus:outline-none"
+                                                className="w-full bg-transparent border border-white/20 py-4 px-4 pr-12 text-xs font-paragraph tracking-wider rounded-none text-white focus:border-white placeholder:text-white/20 focus:ring-0 focus:outline-none"
                                             />
                                             <button
                                                 type="button"

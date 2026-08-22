@@ -104,9 +104,9 @@ export default function LoginTwenty({ data }) {
                                                 name="email"
                                                 value={formData.email}
                                                 onChange={handleChange}
-                                                placeholder="hola@mail.com"
+                                                placeholder="ej. hola@mail.com"
                                                 required
-                                                className="w-full bg-transparent border border-white/20 py-4 px-4 text-xs font-paragraph uppercase tracking-wider rounded-none text-white focus:border-white placeholder:text-white/20 focus:ring-0 focus:outline-none"
+                                                className="w-full bg-transparent border border-white/20 py-4 px-4 text-xs font-paragraph tracking-wider rounded-none text-white focus:border-white placeholder:text-white/20 focus:ring-0 focus:outline-none"
                                             />
                                         </div>
 
@@ -123,7 +123,7 @@ export default function LoginTwenty({ data }) {
                                                     name="password"
                                                     type={showPassword ? "text" : "password"}
                                                     required
-                                                    className="w-full bg-transparent border border-white/20 py-4 px-4 pr-12 text-xs font-paragraph uppercase tracking-wider rounded-none text-white focus:border-white placeholder:text-white/20 focus:ring-0 focus:outline-none"
+                                                    className="w-full bg-transparent border border-white/20 py-4 px-4 pr-12 text-xs font-paragraph tracking-wider rounded-none text-white focus:border-white placeholder:text-white/20 focus:ring-0 focus:outline-none"
                                                 />
                                                 <button
                                                     type="button"
